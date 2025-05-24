@@ -4,8 +4,8 @@
   import { validator } from '@felte/validator-yup';
   import * as yup from 'yup';
 
-  import RootServerApi from '../lib/RootServerApi';
-  import type { ServiceBody } from 'bmlt-root-server-client';
+  import RootServerApi from '../lib/ServerApi';
+  import type { ServiceBody } from 'bmlt-server-client';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
 

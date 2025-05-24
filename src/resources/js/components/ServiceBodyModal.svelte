@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Modal } from 'flowbite-svelte';
   import { get } from 'svelte/store';
-  import type { ServiceBody, User } from 'bmlt-root-server-client';
+  import type { ServiceBody, User } from 'bmlt-server-client';
   import ServiceBodyForm from './ServiceBodyForm.svelte';
   import { isDirty } from '../lib/utils';
   import UnsavedChangesModal from './UnsavedChangesModal.svelte';

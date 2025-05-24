@@ -26,7 +26,7 @@ import {
   type UserPartialUpdate,
   type UserUpdate,
   type ValidationError
-} from 'bmlt-root-server-client';
+} from 'bmlt-server-client';
 
 class ApiClient extends RootServerApi {
   private authorizationHeader: string | null = null;

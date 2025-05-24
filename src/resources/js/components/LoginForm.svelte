@@ -5,7 +5,7 @@
   import * as yup from 'yup';
 
   import DarkMode from './DarkMode.svelte';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
   import type { ApiCredentialsStore } from '../stores/apiCredentials';

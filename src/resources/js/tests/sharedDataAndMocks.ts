@@ -35,7 +35,7 @@ import { replace } from 'svelte-spa-router';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 
-import { ResponseError } from 'bmlt-root-server-client';
+import { ResponseError } from 'bmlt-server-client';
 import type {
   Meeting,
   Format,
@@ -51,12 +51,12 @@ import type {
   UserCreate,
   UserPartialUpdate,
   UserUpdate
-} from 'bmlt-root-server-client';
+} from 'bmlt-server-client';
 
-import ApiClientWrapper from '../lib/RootServerApi';
+import ApiClientWrapper from '../lib/ServerApi';
 import { apiCredentials, authenticatedUser } from '../stores/apiCredentials';
 import App from '../App.svelte';
-import runtime from '../../../node_modules/bmlt-root-server-client/dist/runtime';
+import runtime from '../../../node_modules/bmlt-server-client/dist/runtime';
 
 type UserEventInstance = ReturnType<typeof userEvent.setup>;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Modal } from 'flowbite-svelte';
 
-  import type { ServiceBody } from 'bmlt-root-server-client';
+  import type { ServiceBody } from 'bmlt-server-client';
   import ServiceBodyDeleteForm from './ServiceBodyDeleteForm.svelte';
 
   interface Props {

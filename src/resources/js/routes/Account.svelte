@@ -8,10 +8,10 @@
   import { authenticatedUser } from '../stores/apiCredentials';
   import { formIsDirty } from '../lib/utils';
   import Nav from '../components/NavBar.svelte';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
-  import type { ServiceBody, User } from 'bmlt-root-server-client';
+  import type { ServiceBody, User } from 'bmlt-server-client';
   import BasicAccordion from '../components/BasicAccordion.svelte';
 
   let userType = 'unknown';
@@ -245,9 +245,7 @@
           {#if names.length === 0}
             {$translations.none}
           {:else}
-            <Listgroup items={names} let:item>
-              {item}
-            </Listgroup>
+            <Listgroup items={names} />
           {/if}
         {:catch error}
           <p style="color: red">{error.message}</p>

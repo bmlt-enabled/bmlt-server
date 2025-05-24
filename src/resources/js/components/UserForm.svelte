@@ -5,9 +5,9 @@
   import * as yup from 'yup';
 
   import { spinner } from '../stores/spinner';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
-  import type { User } from 'bmlt-root-server-client';
+  import type { User } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
 
