@@ -1,9 +1,8 @@
 name: BMLT Docker Builds
 
 on:
-  schedule:
-    - cron:  '0 12 * * 0'
-  workflow_dispatch:
+  push:
+    branches: ['images']
 
 jobs:
   build-base:
@@ -35,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: bmltenabled/bmlt-root-server-base
+          images: bmltenabled/bmlt-server-base
           tags: |
             type=raw,value=${{ matrix.php_version }}
             type=raw,value=latest,enable=${{ matrix.php_version == '8.2' }}
@@ -87,5 +86,5 @@ jobs:
           context: ./docker
           file: ./docker/Dockerfile-db
           platforms: linux/amd64,linux/arm64/v8
-          tags: bmltenabled/bmlt-root-server-sample-db:latest
+          tags: bmltenabled/bmlt-server-sample-db:latest
           push: true
