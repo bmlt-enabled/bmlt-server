@@ -1,9 +1,9 @@
-# Contributing to the BMLT Root Server
+# Contributing to the BMLT Server
 
 For general information about BMLT, including ways to contribute to the project, please see
 [the BMLT website](https://bmlt.app).
 
-This file contains information specifically about how to set up a development environment to work on the root server.
+This file contains information specifically about how to set up a development environment to work on the server.
 We want the server code (as well as code for the other project core elements) to continue to be of high quality, so
 prospective developers should have a solid grounding in good software engineering practice. In other words, making
 changes to the server code with the intent to contribute them back to
@@ -14,15 +14,15 @@ if the initial translation has already been done, there are often new strings ad
 that need translation.)
 
 There are various ways you can set up your development environment; in the directions here we use
-[Docker](https://www.docker.com). If you don't have them already, clone the root server repo from github, and install
+[Docker](https://www.docker.com). If you don't have them already, clone the server repo from github, and install
 [Docker Desktop](https://www.docker.com/products/docker-desktop). The make file assumes docker-compose v2.
 
-## Running the root server under docker
+## Running the server under docker
 1. You will need to make sure you are using docker-compose v2. You can do this by opening the docker dashboard and going
 to preferences then general then scroll to the bottom and check the box that says `Use Docker Compose V2`, then hit apply &
 restart.
 1. Copy `docker/docker-compose.dev.yml.example` to `docker/docker-compose.dev.yml` and edit it to set the `GKEY` variable to your google api key.
-1. Run the command `make dev` in the top-level `bmlt-root-server` directory. If something isn't working (for example,
+1. Run the command `make dev` in the top-level `bmlt-server` directory. If something isn't working (for example,
 mising packages), try running `make clean` first and then `make dev`.
 1. Browse to `http://localhost:8000/main_server/`.
 1. Login with username "serveradmin" and password "CoreysGoryStory".
@@ -61,7 +61,7 @@ When working on the UI, you'll need to have the [Vite](https://vitejs.dev/) dev 
 This assumes you are using [VS Code](https://code.visualstudio.com) to develop the new UI.
 
 #### Debugging the Browser
-First, follow the instructions above for running the root server under Docker with `NEW_UI_ENABLED` set to `'true'`. This mostly just involves running `make dev`.
+First, follow the instructions above for running the server under Docker with `NEW_UI_ENABLED` set to `'true'`. This mostly just involves running `make dev`.
 
 Then, create `.vscode/launch.json` with a `chrome` debug configuration:
 
@@ -92,9 +92,9 @@ This works exactly as described in the [vitest documentation](https://v0.vitest.
 - `make clean` Clean the build by removing all build artifacts and downloaded dependencies.
 - `make docker` Builds the docker image. You really only need to run this when first getting set up or after a change
 has been made to the Dockerfile or its base image.
-- `make dev` Run the root server under docker (see above).
+- `make dev` Run the server under docker (see above).
 - `make bash` Open a bash shell on the container's file system.  This will start in the directory `/var/www/html/main_server`
-- `make mysql` Start the mysql command-line client with the database `rootserver`, which holds the root server's tables.
+- `make mysql` Start the mysql command-line client with the database `rootserver`, which holds the server's tables.
 - `make test`  Run PHP tests.
 
 There are some additional commands as well; `make help` will list them.
@@ -108,9 +108,9 @@ docker exec -i docker-db-1 sh -c 'exec mariadb -uroot -prootserver rootserver' <
 
 ## Running tests
 
-Start the root server using `make dev` (see above).  Then in a separate terminal, run the tests using `make test`.
+Start the server using `make dev` (see above).  Then in a separate terminal, run the tests using `make test`.
 Somewhat annoyingly, `make test` will clobber your current database, so you'll need to restore it if you want to go
-back to running the root server.
+back to running the server.
 
 
 ## Running lint
@@ -119,11 +119,11 @@ It doesn't work when xdebug is listening, so make sure xdebug is off first.
 
 ## Testing the install wizard
 The Docker files automatically set up an `auto-config.inc.php` file for you. Usually this is great since it saves you
-the bother of going through the install wizard each time you restart the root server. However, if you want to test or
+the bother of going through the install wizard each time you restart the server. However, if you want to test or
 change the install wizard, you can start with the install wizard instead of the login screen by deleting this file.
 Here are modified steps to do that.
 1. Edit `docker-compose.dev.yml` to set your google maps api key, `GKEY: API_KEY`.
-1. Run the command `make dev` in the top-level `bmlt-root-server` directory.
+1. Run the command `make dev` in the top-level `bmlt-server` directory.
 1. In another window, run `make bash` to open a bash shell accessing the container's file system. The shell should
 start in the directory `cd /var/www/html/main_server`.  
 1. In the bash shell, `cd ..` to get to the parent directory, then `rm auto-config.inc.php`.

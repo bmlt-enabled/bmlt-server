@@ -1,7 +1,7 @@
 {
-    "name": "bmlt-enabled/bmlt-root-server",
+    "name": "bmlt-enabled/bmlt-server",
     "type": "project",
-    "description": "The BMLT Root Server.",
+    "description": "The BMLT Server.",
     "keywords": ["bmlt", "bmltenabled"],
     "license": "MIT",
     "require": {
