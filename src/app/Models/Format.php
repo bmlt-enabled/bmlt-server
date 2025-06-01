@@ -10,7 +10,7 @@ class Format extends Model
     protected $table = 'comdef_formats';
     public $timestamps = false;
     protected $fillable = [
-        'root_server_id',
+        'server_id',
         'source_id',
         'shared_id_bigint',
         'key_string',
@@ -26,9 +26,9 @@ class Format extends Model
         return 'shared_id_bigint';
     }
 
-    public function rootServer()
+    public function server()
     {
-        return $this->belongsTo(RootServer::class, 'root_server_id');
+        return $this->belongsTo(Server::class, 'server_id');
     }
 
     public function translations()

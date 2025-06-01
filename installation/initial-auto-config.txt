@@ -14,9 +14,9 @@ $gkey = 'a long string of random characters'; // This is the Google Maps JavaScr
 
 // OTHER DATABASE SETTINGS (CHANGE IF NEEDED, BUT THE DEFAULTS MAY BE OK AS IS)
 $dbType = 'mysql'; // This is the PHP PDO driver name for your database.
-$dbName = 'rootserver'; // This is the name of the database.
+$dbName = 'bmltserver'; // This is the name of the database.
 $dbServer = 'localhost'; // This is the host/server for accessing the database.
-$dbPrefix = 'na'; // This is a table name prefix that can be used to differentiate tables used by different root server instances that share the same database.
+$dbPrefix = 'na'; // This is a table name prefix that can be used to differentiate tables used by different server instances that share the same database.
 
 // OTHER SETTINGS FOLLOW (CHANGE IF NEEDED, BUT THE DEFAULTS MAY BE OK AS IS)
 
@@ -32,8 +32,8 @@ $bmlt_title = 'Basic Meeting List Toolbox Administration';
 $banner_text = 'Administration Login';
 
 // Miscellaneous settings:
-$comdef_global_language = 'en'; // This is the 2-letter code for the default root server localization (will default to 'en' -English, if the localization is not available).
-$min_pw_len = 10;   // The minimum number of characters in a user account password for this root server.
+$comdef_global_language = 'en'; // This is the 2-letter code for the default server localization (will default to 'en' -English, if the localization is not available).
+$min_pw_len = 10;   // The minimum number of characters in a user account password for this server.
 $number_of_meetings_for_auto = 10;   // This is an approximation of the number of meetings to search for in the auto-search feature. The higher the number, the wider the radius.
 $change_depth_for_meetings = 5;   // This is how many changes should be recorded for each meeting. The higher the number, the larger the database will grow, as this can become quite substantial.";
 $default_duration_time = '01:30'; // This is the default duration for meetings that have no duration specified.

@@ -2,9 +2,9 @@
 
 namespace App\Repositories\External;
 
-use App\Models\RootServer;
+use App\Models\Server;
 
-class ExternalRootServer extends ExternalObject
+class ExternalServer extends ExternalObject
 {
     public int $id;
     public string $name;
@@ -14,18 +14,18 @@ class ExternalRootServer extends ExternalObject
     {
         $this->id = $this->validateInt($values, 'id');
         $this->name = $this->validateString($values, 'name');
-        $this->url = $this->validateUrl($values, 'rootURL');
+        $this->url = $this->validateUrl($values, 'url');
     }
 
-    public function isEqual(RootServer $rootServer): bool
+    public function isEqual(Server $server): bool
     {
-        if ($this->id != $rootServer->source_id) {
+        if ($this->id != $server->source_id) {
             return false;
         }
-        if ($this->name != $rootServer->name) {
+        if ($this->name != $server->name) {
             return false;
         }
-        if ($this->url != $rootServer->url) {
+        if ($this->url != $server->url) {
             return false;
         }
         return true;
@@ -33,6 +33,6 @@ class ExternalRootServer extends ExternalObject
 
     protected function throwInvalidObjectException(): void
     {
-        throw new InvalidRootServerException();
+        throw new InvalidServerException();
     }
 }

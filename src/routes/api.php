@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\ErrorTestController;
 use App\Http\Controllers\Admin\FormatController;
 use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\MeetingChangeController;
-use App\Http\Controllers\Admin\RootServerController;
+use App\Http\Controllers\Admin\ServerController;
 use App\Http\Controllers\Admin\ServiceBodyController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\UserController;
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
 Route::post('/auth/token', [TokenController::class, 'token']);
 
-Route::apiResource('/rootservers', RootServerController::class, ['parameters' => ['rootservers' => 'rootServer']]);
+Route::apiResource('/servers', ServerController::class, ['parameters' => ['servers' => 'server']]);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/errortest', [ErrorTestController::class, 'store']);

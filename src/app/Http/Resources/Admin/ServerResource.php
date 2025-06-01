@@ -4,7 +4,7 @@ namespace App\Http\Resources\Admin;
 
 use App\Http\Resources\JsonResource;
 
-class RootServerResource extends JsonResource
+class ServerResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

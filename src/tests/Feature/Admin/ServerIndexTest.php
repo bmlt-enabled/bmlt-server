@@ -5,7 +5,7 @@ namespace Tests\Feature\Admin;
 use App\LegacyConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class RootServerIndexTest extends TestCase
+class ServerIndexTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -18,9 +18,9 @@ class RootServerIndexTest extends TestCase
     public function test()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $this->createRootServer(123);
-        $this->createRootServer(123, 'test2', 'https://test2.com');
-        $this->get("/api/v1/rootservers")
+        $this->createServer(123);
+        $this->createServer(123, 'test2', 'https://test2.com');
+        $this->get("/api/v1/servers")
             ->assertStatus(200)
             ->assertJsonCount(2);
     }

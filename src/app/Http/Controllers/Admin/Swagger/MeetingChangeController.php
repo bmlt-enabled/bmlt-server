@@ -45,7 +45,7 @@ class MeetingChangeController extends Controller
      *     summary="Retrieve changes for a meeting",
      *     description="Retrieve all changes made to a specific meeting.",
      *     operationId="getMeetingChanges",
-     *     tags={"rootServer"},
+     *     tags={"server"},
      *     security={{"bmltToken":{}}},
      *     @OA\Parameter(
      *         description="ID of the meeting",

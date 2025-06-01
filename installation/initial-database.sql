@@ -1,7 +1,7 @@
-/*M!999999\- enable the sandbox mode */ 
+/*M!999999\- enable the sandbox mode */
 -- MariaDB dump 10.19-11.6.2-MariaDB, for debian-linux-gnu (aarch64)
 --
--- Host: localhost    Database: rootserver
+-- Host: localhost    Database: bmltserver
 -- ------------------------------------------------------
 -- Server version	11.6.2-MariaDB-ubu2404
 
@@ -130,7 +130,7 @@ DROP TABLE IF EXISTS `na_comdef_formats`;
 CREATE TABLE `na_comdef_formats` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `shared_id_bigint` bigint(20) unsigned NOT NULL,
-  `root_server_id` bigint(20) unsigned DEFAULT NULL,
+  `server_id` bigint(20) unsigned DEFAULT NULL,
   `source_id` bigint(20) unsigned DEFAULT NULL,
   `key_string` varchar(255) DEFAULT NULL,
   `icon_blob` blob DEFAULT NULL,
@@ -145,8 +145,8 @@ CREATE TABLE `na_comdef_formats` (
   KEY `format_type_enum` (`format_type_enum`),
   KEY `lang_enum` (`lang_enum`),
   KEY `key_string` (`key_string`),
-  KEY `root_server_id_source_id` (`root_server_id`,`source_id`),
-  CONSTRAINT `na_comdef_formats_root_server_id_foreign` FOREIGN KEY (`root_server_id`) REFERENCES `na_root_servers` (`id`) ON DELETE CASCADE
+  KEY `server_id_source_id` (`server_id`,`source_id`),
+  CONSTRAINT `na_comdef_formats_server_id_foreign` FOREIGN KEY (`server_id`) REFERENCES `na_servers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=500 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -763,7 +763,7 @@ DROP TABLE IF EXISTS `na_comdef_meetings_main`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `na_comdef_meetings_main` (
   `id_bigint` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `root_server_id` bigint(20) unsigned DEFAULT NULL,
+  `server_id` bigint(20) unsigned DEFAULT NULL,
   `source_id` bigint(20) unsigned DEFAULT NULL,
   `worldid_mixed` varchar(255) DEFAULT NULL,
   `shared_group_id_bigint` bigint(20) DEFAULT NULL,
@@ -794,8 +794,8 @@ CREATE TABLE `na_comdef_meetings_main` (
   KEY `latitude` (`latitude`),
   KEY `published` (`published`),
   KEY `email_contact` (`email_contact`),
-  KEY `root_server_id_source_id` (`root_server_id`,`source_id`),
-  CONSTRAINT `na_comdef_meetings_main_root_server_id_foreign` FOREIGN KEY (`root_server_id`) REFERENCES `na_root_servers` (`id`) ON DELETE CASCADE
+  KEY `server_id_source_id` (`server_id`,`source_id`),
+  CONSTRAINT `na_comdef_meetings_main_server_id_foreign` FOREIGN KEY (`server_id`) REFERENCES `na_servers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -817,7 +817,7 @@ DROP TABLE IF EXISTS `na_comdef_service_bodies`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `na_comdef_service_bodies` (
   `id_bigint` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `root_server_id` bigint(20) unsigned DEFAULT NULL,
+  `server_id` bigint(20) unsigned DEFAULT NULL,
   `source_id` bigint(20) unsigned DEFAULT NULL,
   `name_string` varchar(255) NOT NULL,
   `description_string` text NOT NULL,
@@ -842,8 +842,8 @@ CREATE TABLE `na_comdef_service_bodies` (
   KEY `sb_owner` (`sb_owner`),
   KEY `sb_owner_2` (`sb_owner_2`),
   KEY `sb_meeting_email` (`sb_meeting_email`),
-  KEY `root_server_id_source_id` (`root_server_id`,`source_id`),
-  CONSTRAINT `na_comdef_service_bodies_root_server_id_foreign` FOREIGN KEY (`root_server_id`) REFERENCES `na_root_servers` (`id`) ON DELETE CASCADE
+  KEY `server_id_source_id` (`server_id`,`source_id`),
+  CONSTRAINT `na_comdef_service_bodies_server_id_foreign` FOREIGN KEY (`server_id`) REFERENCES `na_servers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -970,15 +970,15 @@ LOCK TABLES `na_personal_access_tokens` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `na_root_server_statistics`
+-- Table structure for table `na_server_statistics`
 --
 
-DROP TABLE IF EXISTS `na_root_server_statistics`;
+DROP TABLE IF EXISTS `na_server_statistics`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `na_root_server_statistics` (
+CREATE TABLE `na_server_statistics` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `root_server_id` bigint(20) unsigned NOT NULL,
+  `server_id` bigint(20) unsigned NOT NULL,
   `num_zones` int(10) unsigned NOT NULL,
   `num_regions` int(10) unsigned NOT NULL,
   `num_areas` int(10) unsigned NOT NULL,
@@ -992,30 +992,30 @@ CREATE TABLE `na_root_server_statistics` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `na_root_server_statistics_root_server_id_foreign` (`root_server_id`),
+  KEY `na_server_statistics_server_id_foreign` (`server_id`),
   KEY `is_latest` (`is_latest`),
-  KEY `is_latest_root_server_id` (`is_latest`,`root_server_id`),
-  CONSTRAINT `na_root_server_statistics_root_server_id_foreign` FOREIGN KEY (`root_server_id`) REFERENCES `na_root_servers` (`id`) ON DELETE CASCADE
+  KEY `is_latest_server_id` (`is_latest`,`server_id`),
+  CONSTRAINT `na_server_statistics_server_id_foreign` FOREIGN KEY (`server_id`) REFERENCES `na_servers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `na_root_server_statistics`
+-- Dumping data for table `na_server_statistics`
 --
 
-LOCK TABLES `na_root_server_statistics` WRITE;
-/*!40000 ALTER TABLE `na_root_server_statistics` DISABLE KEYS */;
-/*!40000 ALTER TABLE `na_root_server_statistics` ENABLE KEYS */;
+LOCK TABLES `na_server_statistics` WRITE;
+/*!40000 ALTER TABLE `na_server_statistics` DISABLE KEYS */;
+/*!40000 ALTER TABLE `na_server_statistics` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `na_root_servers`
+-- Table structure for table `na_servers`
 --
 
-DROP TABLE IF EXISTS `na_root_servers`;
+DROP TABLE IF EXISTS `na_servers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `na_root_servers` (
+CREATE TABLE `na_servers` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `source_id` bigint(20) unsigned NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -1029,12 +1029,12 @@ CREATE TABLE `na_root_servers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `na_root_servers`
+-- Dumping data for table `na_servers`
 --
 
-LOCK TABLES `na_root_servers` WRITE;
-/*!40000 ALTER TABLE `na_root_servers` DISABLE KEYS */;
-/*!40000 ALTER TABLE `na_root_servers` ENABLE KEYS */;
+LOCK TABLES `na_servers` WRITE;
+/*!40000 ALTER TABLE `na_servers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `na_servers` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

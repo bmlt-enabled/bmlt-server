@@ -5,7 +5,7 @@ namespace Tests\Feature\Admin;
 use App\LegacyConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class RootServerRouteTest extends TestCase
+class ServerRouteTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,27 +17,27 @@ class RootServerRouteTest extends TestCase
 
     public function testIndexRouteNotExists()
     {
-        $this->get('/api/v1/rootservers')
+        $this->get('/api/v1/servers')
             ->assertStatus(404);
     }
 
     public function testIndexRouteExists()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $this->get('/api/v1/rootservers')->assertStatus(200);
+        $this->get('/api/v1/servers')->assertStatus(200);
     }
 
     public function testShowRouteNotExists()
     {
-        $rootServer = $this->createRootServer(1);
-        $this->get("/api/v1/rootservers/$rootServer->id")
+        $server = $this->createServer(1);
+        $this->get("/api/v1/servers/$server->id")
             ->assertStatus(404);
     }
 
     public function testShowRouteExists()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $rootServer = $this->createRootServer(1);
-        $this->get("/api/v1/rootservers/$rootServer->id")->assertStatus(200);
+        $server = $this->createServer(1);
+        $this->get("/api/v1/servers/$server->id")->assertStatus(200);
     }
 }

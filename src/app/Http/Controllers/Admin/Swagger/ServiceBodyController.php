@@ -38,7 +38,7 @@ class ServiceBodyController extends Controller
 {
 
     /**
-     * @OA\Get(path="/api/v1/servicebodies", summary="Retrieves service bodies", description="Retrieve service bodies for authenticated user.", operationId="getServiceBodies", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/servicebodies", summary="Retrieves service bodies", description="Retrieve service bodies for authenticated user.", operationId="getServiceBodies", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated.",
      *         @OA\JsonContent(ref="#/components/schemas/ServiceBodyCollection")
      *     ),
@@ -52,7 +52,7 @@ class ServiceBodyController extends Controller
     }
 
     /**
-     * @OA\Get(path="/api/v1/servicebodies/{serviceBodyId}", summary="Retrieves a service body", description="Retrieve a single service body by id.", operationId="getServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/servicebodies/{serviceBodyId}", summary="Retrieves a service body", description="Retrieve a single service body by id.", operationId="getServiceBody", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of service body", in="path", name="serviceBodyId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
@@ -72,7 +72,7 @@ class ServiceBodyController extends Controller
     }
 
     /**
-     * @OA\Post(path="/api/v1/servicebodies", summary="Creates a service body", description="Creates a service body.", operationId="createServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Post(path="/api/v1/servicebodies", summary="Creates a service body", description="Creates a service body.", operationId="createServiceBody", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\RequestBody(required=true, description="Pass in service body object",
      *         @OA\JsonContent(ref="#/components/schemas/ServiceBodyCreate"),
      *     ),
@@ -98,7 +98,7 @@ class ServiceBodyController extends Controller
     }
 
     /**
-     * @OA\Put(path="/api/v1/servicebodies/{serviceBodyId}", summary="Updates a Service Body", description="Updates a single service body.", operationId="updateServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Put(path="/api/v1/servicebodies/{serviceBodyId}", summary="Updates a Service Body", description="Updates a single service body.", operationId="updateServiceBody", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of service body", in="path", name="serviceBodyId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
@@ -126,7 +126,7 @@ class ServiceBodyController extends Controller
     }
 
     /**
-     * @OA\Patch(path="/api/v1/servicebodies/{serviceBodyId}", summary="Patches a service body", description="Patches a single service body by id.", operationId="patchServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Patch(path="/api/v1/servicebodies/{serviceBodyId}", summary="Patches a service body", description="Patches a single service body by id.", operationId="patchServiceBody", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of service body", in="path", name="serviceBodyId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
@@ -152,7 +152,7 @@ class ServiceBodyController extends Controller
     {
     }
     /**
-     * @OA\Delete(path="/api/v1/servicebodies/{serviceBodyId}", summary="Deletes a service body", description="Deletes a service body by id.", operationId="deleteServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Delete(path="/api/v1/servicebodies/{serviceBodyId}", summary="Deletes a service body", description="Deletes a service body by id.", operationId="deleteServiceBody", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of service body", in="path", name="serviceBodyId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),

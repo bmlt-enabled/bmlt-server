@@ -69,7 +69,7 @@ class MeetingController extends Controller
 {
 
     /**
-     * @OA\Get(path="/api/v1/meetings", summary="Retrieves meetings", description="Retrieve meetings for authenticated user.", operationId="getMeetings", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/meetings", summary="Retrieves meetings", description="Retrieve meetings for authenticated user.", operationId="getMeetings", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="comma delimited meeting ids", in="query", name="meetingIds", required=false, example="1,2",
      *         @OA\Schema(type="string")
      *     ),
@@ -98,7 +98,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Get(path="/api/v1/meetings/{meetingId}", summary="Retrieves a meeting", description="Retrieve a meeting.", operationId="getMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/meetings/{meetingId}", summary="Retrieves a meeting", description="Retrieve a meeting.", operationId="getMeeting", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer",format="int64")
      *     ),
@@ -118,7 +118,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Post(path="/api/v1/meetings", summary="Creates a meeting", description="Creates a meeting.", operationId="createMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Post(path="/api/v1/meetings", summary="Creates a meeting", description="Creates a meeting.", operationId="createMeeting", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\RequestBody(required=true, description="Pass in meeting object",
      *         @OA\JsonContent(ref="#/components/schemas/MeetingCreate"),
      *     ),
@@ -144,7 +144,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Put(path="/api/v1/meetings/{meetingId}", summary="Updates a meeting", description="Updates a meeting.", operationId="updateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Put(path="/api/v1/meetings/{meetingId}", summary="Updates a meeting", description="Updates a meeting.", operationId="updateMeeting", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting",in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
@@ -171,7 +171,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Patch(path="/api/v1/meetings/{meetingId}", summary="Patches a meeting", description="Patches a meeting by id", operationId="patchMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Patch(path="/api/v1/meetings/{meetingId}", summary="Patches a meeting", description="Patches a meeting by id", operationId="patchMeeting", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
@@ -198,7 +198,7 @@ class MeetingController extends Controller
     }
 
     /**
-     * @OA\Delete(path="/api/v1/meetings/{meetingId}", summary="Deletes a meeting", description="Deletes a meeting by id.", operationId="deleteMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Delete(path="/api/v1/meetings/{meetingId}", summary="Deletes a meeting", description="Deletes a meeting by id.", operationId="deleteMeeting", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),

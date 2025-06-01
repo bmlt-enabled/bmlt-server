@@ -5,7 +5,7 @@ on:
     tags: ['*']
 
 env:
-  IMAGE_NAME: bmltenabled/bmlt-root-server:latest
+  IMAGE_NAME: bmltenabled/bmlt-server:latest
 
 jobs:
   test-php:
@@ -26,10 +26,10 @@ jobs:
         ports:
           - 3306
         env:
-          MARIADB_USER: rootserver
-          MARIADB_PASSWORD: rootserver
-          MARIADB_DATABASE: rootserver
-          MARIADB_ROOT_PASSWORD: rootserver
+          MARIADB_USER: bmltserver
+          MARIADB_PASSWORD: bmltserver
+          MARIADB_DATABASE: bmltserver
+          MARIADB_ROOT_PASSWORD: bmltserver
         options: --health-cmd="${{ (matrix.db == 'latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - name: checkout 🛒
@@ -145,7 +145,7 @@ jobs:
 
       - name: Copy Artifacts to S3 🪣
         run: |
-          aws s3 cp build/bmlt-root-server.zip s3://${{ secrets.S3_BUCKET }}/bmlt-root-server/bmlt-root-server-$(cat src/config/app.php | grep "'version'" | cut -d"'" -f6)-build${GITHUB_RUN_NUMBER}-${GITHUB_SHA}.zip
+          aws s3 cp build/bmlt-server.zip s3://${{ secrets.S3_BUCKET }}/bmlt-server/bmlt-server-$(cat src/config/app.php | grep "'version'" | cut -d"'" -f6)-build${GITHUB_RUN_NUMBER}-${GITHUB_SHA}.zip
 
       - name: Configure AWS Credentials 🪪
         if: contains(github.ref_name, 'main') || contains(github.ref_name, 'unstable')
@@ -185,7 +185,7 @@ jobs:
         uses: ncipollo/release-action@v1.14.0
         if: github.ref_type == 'tag'
         with:
-          artifacts: "build/bmlt-root-server.zip"
+          artifacts: "build/bmlt-server.zip"
           bodyFile: "changelog.txt"
           prerelease: ${{ env.RELEASE_TYPE }}
 

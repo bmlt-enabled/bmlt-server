@@ -24,7 +24,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MARIADB_ROOT_PASSWORD: rootserver
-      MARIADB_DATABASE: rootserver
-      MARIADB_USER: rootserver
-      MARIADB_PASSWORD: rootserver
+      MARIADB_ROOT_PASSWORD: bmltserver
+      MARIADB_DATABASE: bmltserver
+      MARIADB_USER: bmltserver
+      MARIADB_PASSWORD: bmltserver

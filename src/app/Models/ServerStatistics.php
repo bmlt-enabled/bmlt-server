@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RootServerStatistics extends Model
+class ServerStatistics extends Model
 {
-    protected $table = 'root_server_statistics';
+    protected $table = 'server_statistics';
     protected $fillable = [
-        'root_server_id',
+        'server_id',
         'num_zones',
         'num_regions',
         'num_areas',
@@ -21,8 +21,8 @@ class RootServerStatistics extends Model
         'is_latest',
     ];
 
-    public function rootServer()
+    public function server()
     {
-        return $this->belongsTo(RootServer::class);
+        return $this->belongsTo(Server::class);
     }
 }

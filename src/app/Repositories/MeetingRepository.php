@@ -19,8 +19,8 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getSearchResults(
         array $meetingIds = null,
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
+        array $serversInclude = null,
+        array $serversExclude = null,
         array $weekdaysInclude = null,
         array $weekdaysExclude = null,
         array $venueTypesInclude = null,
@@ -46,7 +46,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         string $searchString = null,
         ?bool $published = null,
         bool $eagerServiceBodies = false,
-        bool $eagerRootServers = false,
+        bool $eagerServers = false,
         array $sortKeys = null,
         int $pageSize = null,
         int $pageNum = null,
@@ -55,8 +55,8 @@ class MeetingRepository implements MeetingRepositoryInterface
         if ($eagerServiceBodies) {
             $eagerLoadRelations[] = 'serviceBody';
         }
-        if ($eagerRootServers) {
-            $eagerLoadRelations[] = 'rootServer';
+        if ($eagerServers) {
+            $eagerLoadRelations[] = 'server';
         }
 
         $meetings = Meeting::with($eagerLoadRelations);
@@ -69,12 +69,12 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meetings = $meetings->whereIn('id_bigint', $meetingIds);
         }
 
-        if (!is_null($rootServersInclude)) {
-            $meetings = $meetings->whereIn('root_server_id', $rootServersInclude);
+        if (!is_null($serversInclude)) {
+            $meetings = $meetings->whereIn('server_id', $serversInclude);
         }
 
-        if (!is_null($rootServersExclude)) {
-            $meetings = $meetings->whereNotIn('root_server_id', $rootServersExclude);
+        if (!is_null($serversExclude)) {
+            $meetings = $meetings->whereNotIn('server_id', $serversExclude);
         }
 
         if (!is_null($weekdaysInclude)) {
@@ -814,11 +814,11 @@ class MeetingRepository implements MeetingRepositoryInterface
         ]);
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $serverId, Collection $externalObjects): void
     {
         $sourceIds = $externalObjects->map(fn (ExternalMeeting $ex) => $ex->id);
         $meetingIds = Meeting::query()
-            ->where('root_server_id', $rootServerId)
+            ->where('server_id', $serverId)
             ->whereNotIn('source_id', $sourceIds)
             ->pluck('id_bigint');
 
@@ -827,16 +827,16 @@ class MeetingRepository implements MeetingRepositoryInterface
         MeetingLongData::query()->whereIn('meetingid_bigint', $meetingIds)->delete();
 
         $formatRepository = new FormatRepository();
-        $allFormats = $formatRepository->search(rootServersInclude: [$rootServerId], showAll: true)->groupBy(['shared_id_bigint']);
+        $allFormats = $formatRepository->search(serversInclude: [$serverId], showAll: true)->groupBy(['shared_id_bigint']);
         $formatSharedIdToSourceIdMap = $allFormats->mapWithKeys(fn ($formats, $sharedId) => [$sharedId => $formats->first()->source_id]);
         $formatSourceIdToSharedIdMap = $allFormats->mapWithKeys(fn ($formats, $sharedId) => [$formats->first()->source_id => $sharedId]);
 
         $serviceBodyRepository = new ServiceBodyRepository();
-        $allServiceBodies = $serviceBodyRepository->search(rootServersInclude: [$rootServerId]);
+        $allServiceBodies = $serviceBodyRepository->search(serversInclude: [$serverId]);
         $serviceBodyIdToSourceIdMap = $allServiceBodies->mapWithKeys(fn ($sb, $_) => [$sb->id_bigint => $sb->source_id]);
         $serviceBodySourceIdToIdMap = $allServiceBodies->mapWithKeys(fn ($sb, $_) => [$sb->source_id => $sb->id_bigint]);
 
-        $allMeetings = $this->getSearchResults(rootServersInclude: [$rootServerId]);
+        $allMeetings = $this->getSearchResults(serversInclude: [$serverId]);
         $meetingsBySourceId = $allMeetings->mapWithKeys(fn ($meeting, $_) => [$meeting->source_id => $meeting]);
 
         foreach ($externalObjects as $external) {
@@ -852,10 +852,10 @@ class MeetingRepository implements MeetingRepositoryInterface
             }
 
             if (is_null($db)) {
-                $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
+                $values = $this->externalMeetingToValuesArray($serverId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
                 $this->create($values);
             } else if (!$external->isEqual($db, $serviceBodyIdToSourceIdMap, $formatSharedIdToSourceIdMap)) {
-                $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
+                $values = $this->externalMeetingToValuesArray($serverId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
                 $this->update($db->id_bigint, $values);
             }
         }
@@ -866,11 +866,11 @@ class MeetingRepository implements MeetingRepositoryInterface
         return $obj;
     }
 
-    private function externalMeetingToValuesArray(int $rootServerId, int $serviceBodyId, ExternalMeeting $externalMeeting, Collection $formatSourceIdToSharedIdMap): array
+    private function externalMeetingToValuesArray(int $serverId, int $serviceBodyId, ExternalMeeting $externalMeeting, Collection $formatSourceIdToSharedIdMap): array
     {
 
         return [
-            'root_server_id' => $rootServerId,
+            'server_id' => $serverId,
             'source_id' => $externalMeeting->id,
             'service_body_bigint' => $serviceBodyId,
             'formats' => collect($externalMeeting->formatIds)

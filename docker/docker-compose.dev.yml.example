@@ -2,4 +2,4 @@ services:
   bmlt:
     environment:
       GKEY: ''
-      NEW_UI_ENABLED: 'false'
+      NEW_UI_ENABLED: 'true'

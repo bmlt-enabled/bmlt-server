@@ -4,7 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Meeting;
 use App\Models\MeetingData;
-use App\Models\RootServer;
+use App\Models\Server;
 use App\Models\ServiceBody;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -36,9 +36,9 @@ class TestCase extends BaseTestCase
         'meeting_name' => 'NA Meeting',
     ];
 
-    protected function createRootServer(int $sourceId, string $name = 'test', string $url = 'https://test.com'): RootServer
+    protected function createServer(int $sourceId, string $name = 'test', string $url = 'https://test.com'): Server
     {
-        return RootServer::create([
+        return Server::create([
             'source_id' => $sourceId,
             'name' => $name,
             'url' => $url

@@ -12,7 +12,7 @@ namespace App\Http\Controllers\Admin\Swagger;
 class ErrorTestController extends Controller
 {
     /**
-     * @OA\Post(path="/api/v1/errortest", summary="Tests some errors", description="Tests some errors.", operationId="createErrorTest", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Post(path="/api/v1/errortest", summary="Tests some errors", description="Tests some errors.", operationId="createErrorTest", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\RequestBody(required=true, description="Pass in error test object.",
      *         @OA\JsonContent(ref="#/components/schemas/ErrorTest"),
      *     ),

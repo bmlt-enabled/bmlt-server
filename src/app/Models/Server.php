@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RootServer extends Model
+class Server extends Model
 {
-    protected $table = 'root_servers';
+    protected $table = 'servers';
     protected $fillable = [
         'source_id',
         'name',
@@ -16,6 +16,6 @@ class RootServer extends Model
 
     public function statistics()
     {
-        return $this->hasMany(RootServerStatistics::class);
+        return $this->hasMany(ServerStatistics::class);
     }
 }

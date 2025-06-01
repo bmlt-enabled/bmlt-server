@@ -4,19 +4,19 @@ namespace App\Console\Commands;
 
 use App\Interfaces\FormatRepositoryInterface;
 use App\Interfaces\MeetingRepositoryInterface;
-use App\Interfaces\RootServerRepositoryInterface;
+use App\Interfaces\ServerRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
-use App\Models\RootServer;
-use App\Models\RootServerStatistics;
+use App\Models\Server;
+use App\Models\ServerStatistics;
 use App\Models\ServiceBody;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\External\ExternalMeeting;
-use App\Repositories\External\ExternalRootServer;
+use App\Repositories\External\ExternalServer;
 use App\Repositories\External\ExternalServiceBody;
 use App\Repositories\External\InvalidObjectException;
 use Carbon\Carbon;
@@ -25,11 +25,11 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
-class ImportRootServers extends Command
+class ImportServers extends Command
 {
-    protected $signature = 'aggregator:ImportRootServers {--list-url=https://raw.githubusercontent.com/bmlt-enabled/aggregator/main/rootServerList.json}';
+    protected $signature = 'aggregator:ImportServers {--list-url=https://raw.githubusercontent.com/bmlt-enabled/aggregator/main/serverList.json}';
 
-    protected $description = 'Import root servers';
+    protected $description = 'Import servers';
 
     private const DEFAULT_REQUEST_DELAY_SECONDS = 0;
     private const DEFAULT_RETRY_DELAY_SECONDS = 3;
@@ -37,7 +37,7 @@ class ImportRootServers extends Command
     private static int $retryDelaySeconds = self::DEFAULT_RETRY_DELAY_SECONDS;
 
     public function handle(
-        RootServerRepositoryInterface $rootServerRepository,
+        ServerRepositoryInterface $serverRepository,
         FormatRepositoryInterface $formatRepository,
         MeetingRepositoryInterface $meetingRepository,
         ServiceBodyRepositoryInterface $serviceBodyRepository
@@ -47,17 +47,17 @@ class ImportRootServers extends Command
             return;
         }
 
-        $rateLimits = collect(config('aggregator.rate_limit_root_servers'));
+        $rateLimits = collect(config('aggregator.rate_limit_servers'));
         DB::transaction(fn () => $this->deleteNonAggregatorData());
-        DB::transaction(fn () => $this->importRootServersList($rootServerRepository));
-        foreach ($rootServerRepository->search() as $rootServer) {
+        DB::transaction(fn () => $this->importServersList($serverRepository));
+        foreach ($serverRepository->search() as $server) {
             try {
-                $delaySettings = collect($rateLimits->get($rootServer->source_id));
+                $delaySettings = collect($rateLimits->get($server->source_id));
                 self::$requestDelaySeconds = $delaySettings->get('request_delay') ?? self::DEFAULT_REQUEST_DELAY_SECONDS;
                 self::$retryDelaySeconds = $delaySettings->get('retry_delay') ?? self::DEFAULT_RETRY_DELAY_SECONDS;
-                DB::transaction(fn() => $this->importRootServer(
-                    $rootServer,
-                    $rootServerRepository,
+                DB::transaction(fn() => $this->importServer(
+                    $server,
+                    $serverRepository,
                     $formatRepository,
                     $meetingRepository,
                     $serviceBodyRepository
@@ -71,65 +71,65 @@ class ImportRootServers extends Command
 
     private function deleteNonAggregatorData(): void
     {
-        $meetingIds = Meeting::query()->whereNull('root_server_id')->pluck('id_bigint');
+        $meetingIds = Meeting::query()->whereNull('_server_id')->pluck('id_bigint');
         Meeting::query()->whereIn('id_bigint', $meetingIds)->delete();
         MeetingData::query()->whereIn('meetingid_bigint', $meetingIds)->whereNot('meetingid_bigint', 0)->delete();
         MeetingLongData::query()->whereIn('meetingid_bigint', $meetingIds)->whereNot('meetingid_bigint', 0)->delete();
-        ServiceBody::query()->whereNull('root_server_id')->delete();
-        Format::query()->whereNull('root_server_id')->delete();
+        ServiceBody::query()->whereNull('_server_id')->delete();
+        Format::query()->whereNull('_server_id')->delete();
         Change::query()->delete();
     }
 
-    private function importRootServersList(RootServerRepositoryInterface $rootServerRepository)
+    private function importServersList(ServerRepositoryInterface $serverRepository)
     {
         try {
             $url = $this->option('list-url');
             $response = $this->httpGet($url);
-            $externalRootServers = collect($response)
-                ->map(function ($rootServer) {
+            $externalServers = collect($response)
+                ->map(function ($server) {
                     try {
-                        return new ExternalRootServer($rootServer);
+                        return new ExternalServer($server);
                     } catch (InvalidObjectException) {
                         return null;
                     }
                 })
                 ->reject(fn($e) => is_null($e));
-            $rootServerRepository->import($externalRootServers);
+            $serverRepository->import($externalServers);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             throw $e;
         }
     }
 
-    private function importRootServer(
-        RootServer $rootServer,
-        RootServerRepositoryInterface $rootServerRepository,
+    private function importServer(
+        Server $server,
+        ServerRepositoryInterface $serverRepository,
         FormatRepositoryInterface $formatRepository,
         MeetingRepositoryInterface $meetingRepository,
         ServiceBodyRepositoryInterface $serviceBodyRepository,
     ): void {
-        $this->info("importing root server $rootServer->id:$rootServer->url");
-        $this->importServerInfo($rootServer, $rootServerRepository);
-        $this->importServiceBodies($rootServer, $serviceBodyRepository);
-        $this->importFormats($rootServer, $formatRepository);
-        $this->importMeetings($rootServer, $meetingRepository);
-        $this->updateStatistics($rootServer);
-        $rootServerRepository->update($rootServer->id, ['last_successful_import' => Carbon::now()]);
+        $this->info("importing server $server->id:$server->url");
+        $this->importServerInfo($server, $serverRepository);
+        $this->importServiceBodies($server, $serviceBodyRepository);
+        $this->importFormats($server, $formatRepository);
+        $this->importMeetings($server, $meetingRepository);
+        $this->updateStatistics($server);
+        $serverRepository->update($server->id, ['last_successful_import' => Carbon::now()]);
     }
 
-    private function importServerInfo(RootServer $rootServer, RootServerRepositoryInterface $rootServerRepository)
+    private function importServerInfo(Server $server, ServerRepositoryInterface $serverRepository)
     {
         $this->info('importing server info');
-        $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetServerInfo';
+        $url = rtrim($server->url, '/') . '/client_interface/json/?switcher=GetServerInfo';
         $response = $this->httpGet($url);
-        $rootServerRepository->update($rootServer->id, ['server_info' => json_encode($response[0])]);
-        $rootServer->refresh();
+        $serverRepository->update($server->id, ['server_info' => json_encode($response[0])]);
+        $server->refresh();
     }
 
-    private function importServiceBodies(RootServer $rootServer, ServiceBodyRepositoryInterface $serviceBodyRepository)
+    private function importServiceBodies(Server $server, ServiceBodyRepositoryInterface $serviceBodyRepository)
     {
         $this->info('importing service bodies');
-        $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetServiceBodies';
+        $url = rtrim($server->url, '/') . '/client_interface/json/?switcher=GetServiceBodies';
         $response = $this->httpGet($url);
         $externalServiceBodies = collect($response)
             ->map(function ($serviceBody) {
@@ -141,16 +141,16 @@ class ImportRootServers extends Command
                 }
             })
             ->reject(fn($e) => is_null($e));
-        $serviceBodyRepository->import($rootServer->id, $externalServiceBodies);
+        $serviceBodyRepository->import($server->id, $externalServiceBodies);
     }
 
-    private function importFormats(RootServer $rootServer, FormatRepositoryInterface $formatRepository)
+    private function importFormats(Server $server, FormatRepositoryInterface $formatRepository)
     {
         $this->info('importing formats');
-        $serverInfo = json_decode($rootServer->server_info);
+        $serverInfo = json_decode($server->server_info);
         $languages = explode(',', $serverInfo->langs);
 
-        $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetFormats';
+        $url = rtrim($server->url, '/') . '/client_interface/json/?switcher=GetFormats';
         $externalFormats = collect([]);
         foreach ($languages as $language) {
             $this->info("importing formats:$language");
@@ -170,13 +170,13 @@ class ImportRootServers extends Command
             );
         }
 
-        $formatRepository->import($rootServer->id, $externalFormats);
+        $formatRepository->import($server->id, $externalFormats);
     }
 
-    private function importMeetings(RootServer $rootServer, MeetingRepositoryInterface $meetingRepository)
+    private function importMeetings(Server $server, MeetingRepositoryInterface $meetingRepository)
     {
         $this->info('importing meetings');
-        $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetSearchResults';
+        $url = rtrim($server->url, '/') . '/client_interface/json/?switcher=GetSearchResults';
         $response = $this->httpGet($url);
         $externalMeetings = collect($response)
             ->map(function ($meeting) {
@@ -188,39 +188,39 @@ class ImportRootServers extends Command
                 }
             })
             ->reject(fn($e) => is_null($e));
-        $meetingRepository->import($rootServer->id, $externalMeetings);
+        $meetingRepository->import($server->id, $externalMeetings);
     }
 
-    private function updateStatistics(RootServer $rootServer)
+    private function updateStatistics(Server $server)
     {
-        RootServerStatistics::query()->where('root_server_id', $rootServer->id)->update(['is_latest' => false]);
-        RootServerStatistics::create([
-            'root_server_id' => $rootServer->id,
-            'num_zones' => ServiceBody::query()->where('root_server_id', $rootServer->id)->where('sb_type', ServiceBody::SB_TYPE_ZONE)->count(),
-            'num_regions' => ServiceBody::query()->where('root_server_id', $rootServer->id)->where('sb_type', ServiceBody::SB_TYPE_REGION)->count(),
-            'num_areas' => ServiceBody::query()->where('root_server_id', $rootServer->id)->where('sb_type', ServiceBody::SB_TYPE_AREA)->count(),
-            'num_groups' => $this->getNumGroups($rootServer),
-            'num_total_meetings' => Meeting::query()->where('root_server_id', $rootServer->id)->count(),
-            'num_in_person_meetings' => Meeting::query()->where('root_server_id', $rootServer->id)->where('venue_type', Meeting::VENUE_TYPE_IN_PERSON)->count(),
-            'num_virtual_meetings' => Meeting::query()->where('root_server_id', $rootServer->id)->where('venue_type', Meeting::VENUE_TYPE_VIRTUAL)->count(),
-            'num_hybrid_meetings' => Meeting::query()->where('root_server_id', $rootServer->id)->where('venue_type', Meeting::VENUE_TYPE_HYBRID)->count(),
-            'num_unknown_meetings' => Meeting::query()->where('root_server_id', $rootServer->id)->whereNull('venue_type')->count(),
+        ServerStatistics::query()->where('_server_id', $server->id)->update(['is_latest' => false]);
+        ServerStatistics::create([
+            '_server_id' => $server->id,
+            'num_zones' => ServiceBody::query()->where('_server_id', $server->id)->where('sb_type', ServiceBody::SB_TYPE_ZONE)->count(),
+            'num_regions' => ServiceBody::query()->where('_server_id', $server->id)->where('sb_type', ServiceBody::SB_TYPE_REGION)->count(),
+            'num_areas' => ServiceBody::query()->where('_server_id', $server->id)->where('sb_type', ServiceBody::SB_TYPE_AREA)->count(),
+            'num_groups' => $this->getNumGroups($server),
+            'num_total_meetings' => Meeting::query()->where('_server_id', $server->id)->count(),
+            'num_in_person_meetings' => Meeting::query()->where('_server_id', $server->id)->where('venue_type', Meeting::VENUE_TYPE_IN_PERSON)->count(),
+            'num_virtual_meetings' => Meeting::query()->where('_server_id', $server->id)->where('venue_type', Meeting::VENUE_TYPE_VIRTUAL)->count(),
+            'num_hybrid_meetings' => Meeting::query()->where('_server_id', $server->id)->where('venue_type', Meeting::VENUE_TYPE_HYBRID)->count(),
+            'num_unknown_meetings' => Meeting::query()->where('_server_id', $server->id)->whereNull('venue_type')->count(),
             'is_latest' => true,
         ]);
     }
 
-    private function getNumGroups(RootServer $rootServer): int
+    private function getNumGroups(Server $server): int
     {
         // with world ids
         $numGroups = Meeting::query()
-            ->where('root_server_id', $rootServer->id)
+            ->where('_server_id', $server->id)
             ->whereNotNull('worldid_mixed')
             ->whereNot('worldid_mixed', '')
             ->distinct()
             ->count('worldid_mixed');
 
         // without world ids, unique meeting names per service body
-        $serviceBodies = ServiceBody::query()->where('root_server_id', $rootServer->id)->get();
+        $serviceBodies = ServiceBody::query()->where('_server_id', $server->id)->get();
         foreach ($serviceBodies as $serviceBody) {
             $numGroups += MeetingData::query()
                 ->where('key', 'meeting_name')
@@ -252,8 +252,8 @@ class ImportRootServers extends Command
             $prefix . (new MeetingLongData)->getTable(),
             $prefix . (new ServiceBody)->getTable(),
             $prefix . (new Format)->getTable(),
-            $prefix . (new RootServer)->getTable(),
-            $prefix . (new RootServerStatistics)->getTable(),
+            $prefix . (new Server)->getTable(),
+            $prefix . (new ServerStatistics)->getTable(),
         ];
         foreach ($tableNames as $tableName) {
             $sql = DB::raw("ANALYZE TABLE $tableName;")->getValue(DB::connection()->getQueryGrammar());

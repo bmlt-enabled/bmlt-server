@@ -6,7 +6,7 @@ use App\LegacyConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nette\Utils\DateTime;
 
-class RootServerShowTest extends TestCase
+class ServerShowTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -19,14 +19,14 @@ class RootServerShowTest extends TestCase
     public function testNullLastSuccessfulImport()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $rootServer = $this->createRootServer(123);
-        $this->get("/api/v1/rootservers/$rootServer->id")
+        $server = $this->createServer(123);
+        $this->get("/api/v1/servers/$server->id")
             ->assertStatus(200)
             ->assertExactJson([
-                'id' => $rootServer->id,
-                'sourceId' => $rootServer->source_id,
-                'name' => $rootServer->name,
-                'url' => $rootServer->url,
+                'id' => $server->id,
+                'sourceId' => $server->source_id,
+                'name' => $server->name,
+                'url' => $server->url,
                 'statistics' => [
                     'meetings' => [
                         'numTotal' => null,
@@ -50,16 +50,16 @@ class RootServerShowTest extends TestCase
     public function testNonNullLastSuccessfulImport()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $rootServer = $this->createRootServer(123);
-        $rootServer->last_successful_import = $rootServer->updated_at;
-        $rootServer->save();
-        $this->get("/api/v1/rootservers/$rootServer->id")
+        $server = $this->createServer(123);
+        $server->last_successful_import = $server->updated_at;
+        $server->save();
+        $this->get("/api/v1/servers/$server->id")
             ->assertStatus(200)
             ->assertExactJson([
-                'id' => $rootServer->id,
-                'sourceId' => $rootServer->source_id,
-                'name' => $rootServer->name,
-                'url' => $rootServer->url,
+                'id' => $server->id,
+                'sourceId' => $server->source_id,
+                'name' => $server->name,
+                'url' => $server->url,
                 'statistics' => [
                     'meetings' => [
                         'numTotal' => null,
@@ -76,7 +76,7 @@ class RootServerShowTest extends TestCase
                     ]
                 ],
                 'serverInfo' => null,
-                'lastSuccessfulImport' => $rootServer->last_successful_import->format('Y-m-d H:i:s'),
+                'lastSuccessfulImport' => $server->last_successful_import->format('Y-m-d H:i:s'),
             ]);
     }
 }

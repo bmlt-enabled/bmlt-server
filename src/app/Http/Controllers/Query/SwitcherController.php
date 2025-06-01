@@ -277,16 +277,16 @@ class SwitcherController extends Controller
             $pageNum = is_numeric($pageNum) ? intval($pageNum) : 1;
         }
 
-        $rootServersInclude = null;
-        $rootServersExclude = null;
+        $serversInclude = null;
+        $serversExclude = null;
 
         if ($isAggregatorMode) {
-            $rootServerIds = $request->input('root_server_ids', []);
-            $rootServerIds = ensure_integer_array($rootServerIds);
-            $rootServersInclude = collect($rootServerIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
-            $rootServersInclude = count($rootServersInclude) ? $rootServersInclude : null;
-            $rootServersExclude = collect($rootServerIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
-            $rootServersExclude = count($rootServersExclude) ? $rootServersExclude : null;
+            $serverIds = $request->input('server_ids', []);
+            $serverIds = ensure_integer_array($serverIds);
+            $serversInclude = collect($serverIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
+            $serversInclude = count($serversInclude) ? $serversInclude : null;
+            $serversExclude = collect($serverIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
+            $serversExclude = count($serversExclude) ? $serversExclude : null;
 
             $hasRequiredFilters = false;
             if (!is_null($meetingIds)) {
@@ -295,7 +295,7 @@ class SwitcherController extends Controller
                 $hasRequiredFilters = true;
             } else if (!is_null($formatsInclude)) {
                 $hasRequiredFilters = true;
-            } else if (!is_null($rootServersInclude)) {
+            } else if (!is_null($serversInclude)) {
                 $hasRequiredFilters = true;
             } else if (!is_null($meetingKey) && !is_null($meetingKeyValue)) {
                 $hasRequiredFilters = true;
@@ -312,8 +312,8 @@ class SwitcherController extends Controller
 
         $meetings = $this->meetingRepository->getSearchResults(
             meetingIds: $meetingIds,
-            rootServersInclude: $rootServersInclude,
-            rootServersExclude: $rootServersExclude,
+            serversInclude: $serversInclude,
+            serversExclude: $serversExclude,
             weekdaysInclude: $weekdaysInclude,
             weekdaysExclude: $weekdaysExclude,
             venueTypesInclude: $venueTypesInclude,
@@ -338,7 +338,7 @@ class SwitcherController extends Controller
             sortResultsByDistance: $sortResultsByDistance,
             searchString: $searchString,
             published: $published,
-            eagerRootServers: $isAggregatorMode,
+            eagerServers: $isAggregatorMode,
             sortKeys: $sortKeys,
             pageSize: $pageSize,
             pageNum: $pageNum,
@@ -348,11 +348,11 @@ class SwitcherController extends Controller
         // we don't have foreign keys between the meetings and formats tables.
         $langEnum = $request->input('lang_enum', config('app.locale'));
         $formats = $this->formatRepository->search(
-            rootServersInclude: $rootServersInclude,
-            rootServersExclude: $rootServersExclude,
+            serversInclude: $serversInclude,
+            serversExclude: $serversExclude,
             langEnums: [$langEnum],
             meetings: $meetings,
-            eagerRootServers: $isAggregatorMode,
+            eagerServers: $isAggregatorMode,
         );
 
         $formatsById = $formats->mapWithKeys(fn ($format, $_) => [$format->shared_id_bigint => $format]);
@@ -383,16 +383,16 @@ class SwitcherController extends Controller
     private function getFormats(Request $request): BaseJsonResponse
     {
         $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
-        $rootServersInclude = null;
-        $rootServersExclude = null;
+        $serversInclude = null;
+        $serversExclude = null;
 
         if ($isAggregatorMode) {
-            $rootServerIds = $request->input('root_server_ids', []);
-            $rootServerIds = ensure_integer_array($rootServerIds);
-            $rootServersInclude = collect($rootServerIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
-            $rootServersInclude = count($rootServersInclude) ? $rootServersInclude : null;
-            $rootServersExclude = collect($rootServerIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
-            $rootServersExclude = count($rootServersExclude) ? $rootServersExclude : null;
+            $serverIds = $request->input('server_ids', []);
+            $serverIds = ensure_integer_array($serverIds);
+            $serversInclude = collect($serverIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
+            $serversInclude = count($serversInclude) ? $serversInclude : null;
+            $serversExclude = collect($serverIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
+            $serversExclude = count($serversExclude) ? $serversExclude : null;
         }
 
         $formatIds = $request->input('format_ids', []);
@@ -420,12 +420,12 @@ class SwitcherController extends Controller
         $formats = $this->formatRepository->search(
             formatsInclude: $formatsInclude,
             formatsExclude: $formatsExclude,
-            rootServersInclude: $rootServersInclude,
-            rootServersExclude: $rootServersExclude,
+            serversInclude: $serversInclude,
+            serversExclude: $serversExclude,
             langEnums: $langEnums,
             keyStrings: $keyStrings,
             showAll: $showAll,
-            eagerRootServers: $isAggregatorMode,
+            eagerServers: $isAggregatorMode,
         );
 
         return FormatResource::collection($formats)->response();
@@ -450,15 +450,15 @@ class SwitcherController extends Controller
             }
         }
 
-        $rootServersInclude = null;
-        $rootServersExclude = null;
+        $serversInclude = null;
+        $serversExclude = null;
         if (legacy_config('aggregator_mode_enabled')) {
-            $rootServerIds = $request->input('root_server_ids', []);
-            $rootServerIds = ensure_integer_array($rootServerIds);
-            $rootServersInclude = collect($rootServerIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
-            $rootServersInclude = count($rootServersInclude) ? $rootServersInclude : null;
-            $rootServersExclude = collect($rootServerIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
-            $rootServersExclude = count($rootServersExclude) ? $rootServersExclude : null;
+            $serverIds = $request->input('server_ids', []);
+            $serverIds = ensure_integer_array($serverIds);
+            $serversInclude = collect($serverIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
+            $serversInclude = count($serversInclude) ? $serversInclude : null;
+            $serversExclude = collect($serverIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
+            $serversExclude = count($serversExclude) ? $serversExclude : null;
         }
 
         $recurseChildren = $request->input('recursive') == '1';
@@ -467,8 +467,8 @@ class SwitcherController extends Controller
         $serviceBodies = $this->serviceBodyRepository->search(
             $includeIds,
             $excludeIds,
-            $rootServersInclude,
-            $rootServersExclude,
+            $serversInclude,
+            $serversExclude,
             $recurseChildren,
             $recurseParents
         );
@@ -546,7 +546,7 @@ class SwitcherController extends Controller
             'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
             'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
             'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
-            'available_keys' => $this->meetingRepository->getFieldKeys()->map(fn ($value) => $value['key'])->merge(['root_server_uri', 'format_shared_id_list'])->join(','),
+            'available_keys' => $this->meetingRepository->getFieldKeys()->map(fn ($value) => $value['key'])->merge(['server_uri', 'format_shared_id_list'])->join(','),
             'google_api_key' => legacy_config('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
             'dbVersion' => $this->migrationRepository->getLastMigration()['migration'],
             'dbPrefix' => legacy_config('db_prefix'),
@@ -920,7 +920,7 @@ class SwitcherController extends Controller
         // If the meeting formats include just CLOSED, then it's closed.
         // If the meeting formats don't include either, then it defaults to default_closed_status from the config.
         // If the meeting formats include both OPEN and CLOSED, then it's closed.  (Admins shouldn't do this, but the UI
-        // doesn't prevent it.  This behavior is different from the old root server, which in this case would return
+        // doesn't prevent it.  This behavior is different from the old server, which in this case would return
         // the opposite of default_closed_status.  That seemed like a bug.)
         if (in_array('CLOSED', $meetingFormats)) {
             return 'CLOSED';

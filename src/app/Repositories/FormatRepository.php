@@ -15,18 +15,18 @@ class FormatRepository implements FormatRepositoryInterface
     public function search(
         array $formatsInclude = null,
         array $formatsExclude = null,
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
+        array $serversInclude = null,
+        array $serversExclude = null,
         array $langEnums = null,
         array $keyStrings = null,
         bool $showAll = false,
         Collection $meetings = null,
-        bool $eagerRootServers = false
+        bool $eagerServers = false
     ): Collection {
         $formats = Format::query();
 
-        if ($eagerRootServers) {
-            $formats = $formats->with(['rootServer']);
+        if ($eagerServers) {
+            $formats = $formats->with(['server']);
         }
 
         if (!is_null($formatsInclude)) {
@@ -37,12 +37,12 @@ class FormatRepository implements FormatRepositoryInterface
             $formats = $formats->whereNotIn('shared_id_bigint', $formatsExclude);
         }
 
-        if (!is_null($rootServersInclude)) {
-            $formats = $formats->whereIn('root_server_id', $rootServersInclude);
+        if (!is_null($serversInclude)) {
+            $formats = $formats->whereIn('server_id', $serversInclude);
         }
 
-        if (!is_null($rootServersExclude)) {
-            $formats = $formats->whereNotIn('root_server_id', $rootServersExclude);
+        if (!is_null($serversExclude)) {
+            $formats = $formats->whereNotIn('server_id', $serversExclude);
         }
 
         if (!is_null($langEnums)) {
@@ -237,12 +237,12 @@ class FormatRepository implements FormatRepositoryInterface
         ]);
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $serverId, Collection $externalObjects): void
     {
         // deleted formats
         $sourceIds = $externalObjects->pluck('id');
         Format::query()
-            ->where('root_server_id', $rootServerId)
+            ->where('server_id', $serverId)
             ->whereNotIn('source_id', $sourceIds)
             ->delete();
 
@@ -251,20 +251,20 @@ class FormatRepository implements FormatRepositoryInterface
             // deleted languages
             $languages = $byLanguage->keys();
             Format::query()
-                ->where('root_server_id', $rootServerId)
+                ->where('server_id', $serverId)
                 ->where('source_id', $sourceId)
                 ->whereNotIn('lang_enum', $languages)
                 ->delete();
 
             $existingFormats = Format::query()
-                ->where('root_server_id', $rootServerId)
+                ->where('server_id', $serverId)
                 ->where('source_id', $sourceId)
                 ->get();
 
             $externalFormats = $byLanguage->map(fn ($f) => $f->first());
 
             if ($existingFormats->isEmpty()) {
-                $values = $this->externalFormatToValuesArray($rootServerId, $sourceId, $externalFormats);
+                $values = $this->externalFormatToValuesArray($serverId, $sourceId, $externalFormats);
                 $this->create($values);
             } else {
                 $isDirty = $existingFormats->count() != $externalFormats->count();
@@ -280,18 +280,18 @@ class FormatRepository implements FormatRepositoryInterface
 
                 if ($isDirty) {
                     $sharedId = $existingFormats->first()->shared_id_bigint;
-                    $values = $this->externalFormatToValuesArray($rootServerId, $sourceId, $externalFormats);
+                    $values = $this->externalFormatToValuesArray($serverId, $sourceId, $externalFormats);
                     $this->update($sharedId, $values);
                 }
             }
         }
     }
 
-    private function externalFormatToValuesArray(int $rootServerId, int $sourceId, Collection $externalFormats): array
+    private function externalFormatToValuesArray(int $serverId, int $sourceId, Collection $externalFormats): array
     {
         return $externalFormats
             ->map(fn (ExternalFormat $f) => [
-                'root_server_id' => $rootServerId,
+                'server_id' => $serverId,
                 'source_id' => $sourceId,
                 'key_string' => $f->key,
                 'name_string' => $f->name,

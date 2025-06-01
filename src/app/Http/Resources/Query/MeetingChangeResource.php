@@ -167,7 +167,7 @@ class MeetingChangeResource extends JsonResource
 
         $dataTableValues = $meetingObject['data_table_values'] ?? [];
         foreach ($dataTableValues as $data) {
-            if (isset($data['key']) && $data['key'] == 'root_server_uri') {
+            if (isset($data['key']) && $data['key'] == 'server_uri') {
                 continue;
             }
             if (!isset($data['data_string'])) {

@@ -121,7 +121,7 @@ class MeetingUpdateTest extends TestCase
         $fieldNames = collect(Meeting::$mainFields)->merge(MeetingData::STOCK_FIELDS);
 
         foreach ($fieldNames as $fieldName) {
-            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'root_server_id' || $fieldName == 'source_id') {
+            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'server_id' || $fieldName == 'source_id') {
                 continue;
             }
 
@@ -160,7 +160,7 @@ class MeetingUpdateTest extends TestCase
             ->json();
 
         foreach ($fieldNames as $fieldName) {
-            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'root_server_id' || $fieldName == 'source_id') {
+            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'server_id' || $fieldName == 'source_id') {
                 continue;
             }
 

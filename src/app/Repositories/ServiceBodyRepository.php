@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
-use App\Models\RootServer;
+use App\Models\Server;
 use App\Models\ServiceBody;
 use App\Repositories\External\ExternalServiceBody;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,8 +17,8 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
     public function search(
         array $includeIds = [],
         array $excludeIds = [],
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
+        array $serversInclude = null,
+        array $serversExclude = null,
         bool $recurseChildren = false,
         bool $recurseParents = false
     ): Collection {
@@ -41,12 +41,12 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             $serviceBodies = $serviceBodies->whereNotIn('id_bigint', $excludeIds);
         }
 
-        if (!is_null($rootServersInclude)) {
-            $serviceBodies = $serviceBodies->whereIn('root_server_id', $rootServersInclude);
+        if (!is_null($serversInclude)) {
+            $serviceBodies = $serviceBodies->whereIn('server_id', $serversInclude);
         }
 
-        if (!is_null($rootServersExclude)) {
-            $serviceBodies = $serviceBodies->whereNotIn('root_server_id', $rootServersExclude);
+        if (!is_null($serversExclude)) {
+            $serviceBodies = $serviceBodies->whereNotIn('server_id', $serversExclude);
         }
 
         return $serviceBodies->get();
@@ -235,20 +235,20 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
         }
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $serverId, Collection $externalObjects): void
     {
-        $rootServer = RootServer::query()->where('id', $rootServerId)->firstOrFail();
-        $ignoreServiceBodyIds = collect(config('aggregator.ignore_service_bodies'))->get($rootServer->source_id, []);
+        $server = Server::query()->where('id', $serverId)->firstOrFail();
+        $ignoreServiceBodyIds = collect(config('aggregator.ignore_service_bodies'))->get($server->source_id, []);
         $externalObjects = $externalObjects->reject(fn ($ex) => in_array($ex->id, $ignoreServiceBodyIds));
 
         $sourceIds = $externalObjects->map(fn (ExternalServiceBody $ex) => $ex->id);
         ServiceBody::query()
-            ->where('root_server_id', $rootServerId)
+            ->where('server_id', $serverId)
             ->whereNotIn('source_id', $sourceIds)
             ->delete();
 
         $bySourceId = ServiceBody::query()
-            ->where('root_server_id', $rootServerId)
+            ->where('server_id', $serverId)
             ->get()
             ->mapWithKeys(fn ($sb, $_) => [$sb->source_id => $sb]);
 
@@ -256,10 +256,10 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             $external = $this->castExternal($external);
             $db = $bySourceId->get($external->id);
             if (is_null($db)) {
-                $values = $this->externalServiceBodyToValuesArray($rootServerId, $external);
+                $values = $this->externalServiceBodyToValuesArray($serverId, $external);
                 $bySourceId->put($external->id, $this->create($values));
             } else if (!$external->isEqual($db)) {
-                $values = $this->externalServiceBodyToValuesArray($rootServerId, $external);
+                $values = $this->externalServiceBodyToValuesArray($serverId, $external);
                 $this->update($db->id_bigint, $values);
                 $db->refresh();
                 $bySourceId->put($external->id, $db);
@@ -296,10 +296,10 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
         return $obj;
     }
 
-    private function externalServiceBodyToValuesArray(int $rootServerId, ExternalServiceBody $externalServiceBody): array
+    private function externalServiceBodyToValuesArray(int $serverId, ExternalServiceBody $externalServiceBody): array
     {
         return [
-            'root_server_id' => $rootServerId,
+            'server_id' => $serverId,
             'source_id' => $externalServiceBody->id,
             'name_string' => $externalServiceBody->name,
             'description_string' => $externalServiceBody->description,

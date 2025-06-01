@@ -4,7 +4,7 @@ namespace App\Http\Resources\Legacy;
 
 use App\Http\Resources\JsonResource;
 
-class TomatoRestApiFormatResource extends JsonResource
+class AggregatorRestApiFormatResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

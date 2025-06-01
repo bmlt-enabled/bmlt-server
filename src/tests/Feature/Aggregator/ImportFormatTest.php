@@ -32,12 +32,12 @@ class ImportFormatTest extends TestCase
         ]);
     }
 
-    private function create(int $rootServerId, int $sourceId, string $language, int $sharedId): Format
+    private function create(int $serverId, int $sourceId, string $language, int $sharedId): Format
     {
         $repository = new FormatRepository();
         return $repository->create([[
             'shared_id_bigint' => $sharedId,
-            'root_server_id' => $rootServerId,
+            'server_id' => $serverId,
             'source_id' => $sourceId,
             'key_string' => 'HY',
             'name_string' => 'Hybrid',
@@ -53,16 +53,16 @@ class ImportFormatTest extends TestCase
         LegacyConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
-        $rootServer1 = $this->createRootServer(1);
+        $server1 = $this->createServer(1);
 
         $external1 = $this->external('en');
         $external2 = $this->external('es');
         $external3 = $this->external('de');
 
         $repository = new FormatRepository();
-        $repository->import($rootServer1->id, collect([$external1, $external2, $external3]));
+        $repository->import($server1->id, collect([$external1, $external2, $external3]));
 
-        $all = $repository->search(rootServersInclude: [$rootServer1->id], showAll: true);
+        $all = $repository->search(serversInclude: [$server1->id], showAll: true);
         $this->assertEquals(3, $all->count());
 
         $db = $all->where('source_id', $external1->id)->where('lang_enum', $external1->language)->first();
@@ -80,15 +80,15 @@ class ImportFormatTest extends TestCase
         LegacyConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
-        $rootServer1 = $this->createRootServer(1);
-        $rootServer2 = $this->createRootServer(2);
+        $server1 = $this->createServer(1);
+        $server2 = $this->createServer(2);
 
-        $this->create($rootServer1->id, 1, 'en', 100);
-        $this->create($rootServer1->id, 1, 'es', 100);
-        $this->create($rootServer1->id, 1, 'de', 100);
-        $this->create($rootServer1->id, 1, 'fr', 100);
+        $this->create($server1->id, 1, 'en', 100);
+        $this->create($server1->id, 1, 'es', 100);
+        $this->create($server1->id, 1, 'de', 100);
+        $this->create($server1->id, 1, 'fr', 100);
 
-        $this->create($rootServer2->id, 1, 'fa', 100);
+        $this->create($server2->id, 1, 'fa', 100);
 
         $external1 = $this->external('en');
         $external1->id = 100;
@@ -98,12 +98,12 @@ class ImportFormatTest extends TestCase
         $external3->id = 100;
 
         $repository = new FormatRepository();
-        $repository->import($rootServer1->id, collect([$external1, $external2, $external3]));
+        $repository->import($server1->id, collect([$external1, $external2, $external3]));
 
-        $all = $repository->search(rootServersInclude: [$rootServer2->id], showAll: true);
+        $all = $repository->search(serversInclude: [$server2->id], showAll: true);
         $this->assertEquals(1, $all->count());
 
-        $all = $repository->search(rootServersInclude: [$rootServer1->id], showAll: true);
+        $all = $repository->search(serversInclude: [$server1->id], showAll: true);
         $this->assertEquals(3, $all->count());
 
         $db = $all->where('source_id', $external1->id)->where('lang_enum', $external1->language)->first();
@@ -121,11 +121,11 @@ class ImportFormatTest extends TestCase
         LegacyConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
-        $rootServer1 = $this->createRootServer(1);
+        $server1 = $this->createServer(1);
 
-        $this->create($rootServer1->id, 1, 'en', 100);
-        $this->create($rootServer1->id, 1, 'es', 100);
-        $this->create($rootServer1->id, 1, 'de', 100);
+        $this->create($server1->id, 1, 'en', 100);
+        $this->create($server1->id, 1, 'es', 100);
+        $this->create($server1->id, 1, 'de', 100);
 
         $external1 = $this->external('en');
         $external1->id = 101;
@@ -135,9 +135,9 @@ class ImportFormatTest extends TestCase
         $external3->id = 101;
 
         $repository = new FormatRepository();
-        $repository->import($rootServer1->id, collect([$external1, $external2, $external3]));
+        $repository->import($server1->id, collect([$external1, $external2, $external3]));
 
-        $all = $repository->search(rootServersInclude: [$rootServer1->id], showAll: true);
+        $all = $repository->search(serversInclude: [$server1->id], showAll: true);
         $this->assertEquals(3, $all->count());
 
         $db = $all->where('source_id', $external1->id)->where('lang_enum', $external1->language)->first();

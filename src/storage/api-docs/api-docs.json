@@ -5,7 +5,7 @@
         "description": "BMLT Admin API Documentation",
         "license": {
             "name": "MIT",
-            "url": "https://github.com/bmlt-enabled/bmlt-root-server/blob/main/LICENSE"
+            "url": "https://github.com/bmlt-enabled/bmlt-server/blob/main/LICENSE"
         },
         "version": "1.0.0"
     },
@@ -13,7 +13,7 @@
         "/api/v1/errortest": {
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Tests some errors",
                 "description": "Tests some errors.",
@@ -81,7 +81,7 @@
         "/api/v1/formats": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves formats",
                 "description": "Retrieve formats",
@@ -116,7 +116,7 @@
             },
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Creates a format",
                 "description": "Creates a format.",
@@ -194,7 +194,7 @@
         "/api/v1/formats/{formatId}": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves a format",
                 "description": "Retrieve a format",
@@ -252,7 +252,7 @@
             },
             "put": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Updates a format",
                 "description": "Updates a format.",
@@ -334,7 +334,7 @@
             },
             "delete": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Deletes a format",
                 "description": "Deletes a format by id.",
@@ -415,7 +415,7 @@
             },
             "patch": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Patches a format",
                 "description": "Patches a single format by id.",
@@ -499,7 +499,7 @@
         "/api/v1/logs/laravel": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves laravel log",
                 "description": "Retrieve the laravel log if it exists.",
@@ -557,7 +557,7 @@
         "/api/v1/meetings/{meetingId}/changes": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieve changes for a meeting",
                 "description": "Retrieve all changes made to a specific meeting.",
@@ -630,7 +630,7 @@
         "/api/v1/meetings": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves meetings",
                 "description": "Retrieve meetings for authenticated user.",
@@ -717,7 +717,7 @@
             },
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Creates a meeting",
                 "description": "Creates a meeting.",
@@ -795,7 +795,7 @@
         "/api/v1/meetings/{meetingId}": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves a meeting",
                 "description": "Retrieve a meeting.",
@@ -853,7 +853,7 @@
             },
             "put": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Updates a meeting",
                 "description": "Updates a meeting.",
@@ -935,7 +935,7 @@
             },
             "delete": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Deletes a meeting",
                 "description": "Deletes a meeting by id.",
@@ -996,7 +996,7 @@
             },
             "patch": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Patches a meeting",
                 "description": "Patches a meeting by id",
@@ -1077,21 +1077,21 @@
                 ]
             }
         },
-        "/api/v1/rootservers": {
+        "/api/v1/servers": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
-                "summary": "Retrieves root servers",
-                "description": "Retrieve root servers.",
-                "operationId": "getRootServers",
+                "summary": "Retrieves servers",
+                "description": "Retrieve servers.",
+                "operationId": "getServers",
                 "responses": {
                     "200": {
                         "description": "Successful response.",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RootServerCollection"
+                                    "$ref": "#/components/schemas/ServerCollection"
                                 }
                             }
                         }
@@ -1109,19 +1109,19 @@
                 }
             }
         },
-        "/api/v1/rootservers/{rootServerId}": {
+        "/api/v1/servers/{serverId}": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
-                "summary": "Retrieves a root server",
-                "description": "Retrieve a single root server id.",
-                "operationId": "getRootServer",
+                "summary": "Retrieves a server",
+                "description": "Retrieve a single server id.",
+                "operationId": "getServer",
                 "parameters": [
                     {
-                        "name": "rootServerId",
+                        "name": "serverId",
                         "in": "path",
-                        "description": "ID of root server",
+                        "description": "ID of server",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -1136,13 +1136,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RootServer"
+                                    "$ref": "#/components/schemas/Server"
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Returns when no root server exists.",
+                        "description": "Returns when no server exists.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1157,7 +1157,7 @@
         "/api/v1/servicebodies": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves service bodies",
                 "description": "Retrieve service bodies for authenticated user.",
@@ -1192,7 +1192,7 @@
             },
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Creates a service body",
                 "description": "Creates a service body.",
@@ -1270,7 +1270,7 @@
         "/api/v1/servicebodies/{serviceBodyId}": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves a service body",
                 "description": "Retrieve a single service body by id.",
@@ -1328,7 +1328,7 @@
             },
             "put": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Updates a Service Body",
                 "description": "Updates a single service body.",
@@ -1410,7 +1410,7 @@
             },
             "delete": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Deletes a service body",
                 "description": "Deletes a service body by id.",
@@ -1481,7 +1481,7 @@
             },
             "patch": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Patches a service body",
                 "description": "Patches a single service body by id.",
@@ -1565,7 +1565,7 @@
         "/api/v1/auth/token": {
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Creates a token",
                 "description": "Exchange credentials for a new token",
@@ -1628,7 +1628,7 @@
         "/api/v1/auth/refresh": {
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Revokes and issues a new token",
                 "description": "Refresh token.",
@@ -1665,7 +1665,7 @@
         "/api/v1/auth/logout": {
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Revokes a token",
                 "description": "Revoke token and logout.",
@@ -1695,7 +1695,7 @@
         "/api/v1/users": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves users",
                 "description": "Retrieve users for authenticated user.",
@@ -1730,7 +1730,7 @@
             },
             "post": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Creates a user",
                 "description": "Creates a user.",
@@ -1808,7 +1808,7 @@
         "/api/v1/users/{userId}": {
             "get": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Retrieves a single user",
                 "description": "Retrieve single user.",
@@ -1866,7 +1866,7 @@
             },
             "put": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Update single user",
                 "description": "Updates a user.",
@@ -1948,7 +1948,7 @@
             },
             "delete": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Deletes a user",
                 "description": "Deletes a user by id",
@@ -2019,7 +2019,7 @@
             },
             "patch": {
                 "tags": [
-                    "rootServer"
+                    "server"
                 ],
                 "summary": "Patches a user",
                 "description": "Patches a user by id.",
@@ -2589,7 +2589,7 @@
                     "$ref": "#/components/schemas/Meeting"
                 }
             },
-            "RootServerBase": {
+            "ServerBase": {
                 "properties": {
                     "sourceId": {
                         "type": "integer",
@@ -2683,7 +2683,7 @@
                 },
                 "type": "object"
             },
-            "RootServer": {
+            "Server": {
                 "required": [
                     "id",
                     "sourceId",
@@ -2694,7 +2694,7 @@
                 "type": "object",
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/RootServerBase"
+                        "$ref": "#/components/schemas/ServerBase"
                     },
                     {
                         "properties": {
@@ -2707,10 +2707,10 @@
                     }
                 ]
             },
-            "RootServerCollection": {
+            "ServerCollection": {
                 "type": "array",
                 "items": {
-                    "$ref": "#/components/schemas/RootServer"
+                    "$ref": "#/components/schemas/Server"
                 }
             },
             "ServiceBodyBase": {
@@ -3020,8 +3020,8 @@
     },
     "tags": [
         {
-            "name": "rootServer",
-            "description": "rootServer"
+            "name": "server",
+            "description": "server"
         }
     ]
 }

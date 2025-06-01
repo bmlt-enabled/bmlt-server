@@ -16,8 +16,8 @@ $bmlt_title = 'BMLT Administration'; // This is the page title and heading for t
 $banner_text = 'Administration Login'; // This is text that is displayed just above the login box on the main login page.
 
 // Miscellaneous settings:
-$comdef_global_language ='en'; // This is the 2-letter code for the default root server localization (will default to 'en' -English, if the localization is not available).
-$min_pw_len = 10; // The minimum number of characters in a user account password for this root server.
+$comdef_global_language ='en'; // This is the 2-letter code for the default server localization (will default to 'en' -English, if the localization is not available).
+$min_pw_len = 10; // The minimum number of characters in a user account password for this server.
 $number_of_meetings_for_auto = 10; // This is an approximation of the number of meetings to search for in the auto-search feature. The higher the number, the wider the radius.
 $change_depth_for_meetings = 5; // This is how many changes should be recorded for each meeting. The higher the number, the larger the database will grow, as this can become quite substantial.
 $default_duration_time = '1:00:00'; // This is the default duration for meetings that have no duration specified.

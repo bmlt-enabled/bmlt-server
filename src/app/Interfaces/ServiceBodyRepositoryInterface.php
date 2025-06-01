@@ -10,8 +10,8 @@ interface ServiceBodyRepositoryInterface
     public function search(
         array $includeIds = [],
         array $excludeIds = [],
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
+        array $serversInclude = null,
+        array $serversExclude = null,
         bool $recurseChildren = false,
         bool $recurseParents = false
     ): Collection;
@@ -23,5 +23,5 @@ interface ServiceBodyRepositoryInterface
     public function getChildren(array $parents): array;
     public function getParents(array $children): array;
     public function removeUser(int $userId);
-    public function import(int $rootServerId, Collection $externalObjects): void;
+    public function import(int $serverId, Collection $externalObjects): void;
 }

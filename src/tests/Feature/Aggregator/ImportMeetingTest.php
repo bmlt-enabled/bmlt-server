@@ -84,7 +84,7 @@ class ImportMeetingTest extends TestCase
         ]);
     }
 
-    private function create(int $rootServerId, int $sourceId, $serviceBodyId, array $formatIds): Meeting
+    private function create(int $serverId, int $sourceId, $serviceBodyId, array $formatIds): Meeting
     {
         $meeting = $this->createMeeting(
             [
@@ -118,7 +118,7 @@ class ImportMeetingTest extends TestCase
                 'train_lines' => 'Train Lines changed',
             ]
         );
-        $meeting->root_server_id = $rootServerId;
+        $meeting->server_id = $serverId;
         $meeting->source_id = $sourceId;
         $meeting->save();
         return $meeting;
@@ -127,7 +127,7 @@ class ImportMeetingTest extends TestCase
     public function testCreate()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $rootServer1 = $this->createRootServer(1);
+        $server1 = $this->createServer(1);
 
         $extSb = $this->externalServiceBody();
         $extF1 = $this->externalFormat('500', 'en');
@@ -135,11 +135,11 @@ class ImportMeetingTest extends TestCase
         $externalMeeting = $this->externalMeeting($extSb, [$extF1, $extF2]);
 
         $sbRepository = new ServiceBodyRepository();
-        $sbRepository->import($rootServer1->id, collect([$extSb]));
+        $sbRepository->import($server1->id, collect([$extSb]));
         $fmtRepository = new FormatRepository();
-        $fmtRepository->import($rootServer1->id, collect([$extF1, $extF2]));
+        $fmtRepository->import($server1->id, collect([$extF1, $extF2]));
         $mtgRepository = new MeetingRepository();
-        $mtgRepository->import($rootServer1->id, collect([$externalMeeting]));
+        $mtgRepository->import($server1->id, collect([$externalMeeting]));
 
         $sb = $sbRepository->search()->first();
         $f1 = $fmtRepository->search()->firstWhere('source_id', $extF1->id);
@@ -148,15 +148,15 @@ class ImportMeetingTest extends TestCase
         $this->assertEquals(1, $allMeetings->count());
 
         $db = $allMeetings->first();
-        $this->assertEquals($rootServer1->id, $db->root_server_id);
+        $this->assertEquals($server1->id, $db->server_id);
         $this->assertTrue($externalMeeting->isEqual($db, collect([$sb->id_bigint => $sb->source_id]), collect([$f1->shared_id_bigint => $f1->source_id, $f2->shared_id_bigint => $f2->source_id])));
     }
 
     public function testUpdate()
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
-        $rootServer1 = $this->createRootServer(1);
-        $rootServer2 = $this->createRootServer(2);
+        $server1 = $this->createServer(1);
+        $server2 = $this->createServer(2);
 
         $extSb = $this->externalServiceBody();
         $extF1 = $this->externalFormat('500', 'en');
@@ -164,37 +164,37 @@ class ImportMeetingTest extends TestCase
         $externalMeeting = $this->externalMeeting($extSb, [$extF1, $extF2]);
 
         $sbRepository = new ServiceBodyRepository();
-        $sbRepository->import($rootServer1->id, collect([$extSb]));
-        $sbRepository->import($rootServer2->id, collect([$extSb]));
+        $sbRepository->import($server1->id, collect([$extSb]));
+        $sbRepository->import($server2->id, collect([$extSb]));
         $fmtRepository = new FormatRepository();
-        $fmtRepository->import($rootServer1->id, collect([$extF1, $extF2]));
-        $fmtRepository->import($rootServer2->id, collect([$extF1, $extF2]));
+        $fmtRepository->import($server1->id, collect([$extF1, $extF2]));
+        $fmtRepository->import($server2->id, collect([$extF1, $extF2]));
 
-        $r1sb = $sbRepository->search(rootServersInclude: [$rootServer1->id])->first();
-        $r1f1 = $fmtRepository->search(rootServersInclude: [$rootServer1->id], showAll: true)->firstWhere('source_id', $extF1->id);
-        $r1f2 = $fmtRepository->search(rootServersInclude: [$rootServer1->id], showAll: true)->firstWhere('source_id', $extF2->id);
-        $r2sb = $sbRepository->search(rootServersInclude: [$rootServer2->id])->first();
-        $r2f1 = $fmtRepository->search(rootServersInclude: [$rootServer2->id], showAll: true)->firstWhere('source_id', $extF1->id);
-        $r2f2 = $fmtRepository->search(rootServersInclude: [$rootServer2->id], showAll: true)->firstWhere('source_id', $extF2->id);
+        $r1sb = $sbRepository->search(serversInclude: [$server1->id])->first();
+        $r1f1 = $fmtRepository->search(serversInclude: [$server1->id], showAll: true)->firstWhere('source_id', $extF1->id);
+        $r1f2 = $fmtRepository->search(serversInclude: [$server1->id], showAll: true)->firstWhere('source_id', $extF2->id);
+        $r2sb = $sbRepository->search(serversInclude: [$server2->id])->first();
+        $r2f1 = $fmtRepository->search(serversInclude: [$server2->id], showAll: true)->firstWhere('source_id', $extF1->id);
+        $r2f2 = $fmtRepository->search(serversInclude: [$server2->id], showAll: true)->firstWhere('source_id', $extF2->id);
 
-        $this->create($rootServer1->id, $externalMeeting->id, $r1sb->id_bigint, [$r1f1->shared_id_bigint, $r1f2->shared_id_bigint]);
-        $this->create($rootServer2->id, $externalMeeting->id, $r2sb->id_bigint, [$r2f1->shared_id_bigint, $r2f2->shared_id_bigint]);
+        $this->create($server1->id, $externalMeeting->id, $r1sb->id_bigint, [$r1f1->shared_id_bigint, $r1f2->shared_id_bigint]);
+        $this->create($server2->id, $externalMeeting->id, $r2sb->id_bigint, [$r2f1->shared_id_bigint, $r2f2->shared_id_bigint]);
 
         $repository = new MeetingRepository();
-        $repository->import($rootServer1->id, collect([$externalMeeting]));
+        $repository->import($server1->id, collect([$externalMeeting]));
 
         $all = $repository->getSearchResults();
         $this->assertEquals(2, $all->count());
 
-        $db = $all->firstWhere('root_server_id', $rootServer1->id);
+        $db = $all->firstWhere('server_id', $server1->id);
         $this->assertNotNull($db);
-        $this->assertEquals($rootServer1->id, $db->root_server_id);
+        $this->assertEquals($server1->id, $db->server_id);
         $this->assertTrue($externalMeeting->isEqual($db, collect([$r1sb->id_bigint => $r1sb->source_id]), collect([$r1f1->shared_id_bigint => $r1f1->source_id, $r1f2->shared_id_bigint => $r1f2->source_id])));
 
-        $db = $all->firstWhere('root_server_id', $rootServer2->id);
+        $db = $all->firstWhere('server_id', $server2->id);
         $this->assertNotNull($db);
         $this->assertFalse($externalMeeting->isEqual($db, collect([$r2sb->id_bigint => $r2sb->source_id]), collect([$r2f1->shared_id_bigint => $r2f1->source_id, $r2f2->shared_id_bigint => $r2f2->source_id])));
-        $this->assertEquals($rootServer2->id, $db->root_server_id);
+        $this->assertEquals($server2->id, $db->server_id);
     }
 
     // TODO test removing service body removes meeting

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Swagger;
 
 /**
- * @OA\Schema(schema="RootServerBase",
+ * @OA\Schema(schema="ServerBase",
  *     @OA\Property(property="sourceId", type="integer", example="0"),
  *     @OA\Property(property="name", type="string", example="string"),
  *     @OA\Property(property="url", type="string", example="https://example.com/main_server"),
@@ -25,21 +25,21 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="serverInfo", type="string", example="string"),
  *     @OA\Property(property="lastSuccessfulImport", type="string", format="date-time", example="2022-11-25 04:16:26")
  * ),
- * @OA\Schema(schema="RootServer", required={"id", "sourceId", "name", "url", "lastSuccessfulImport"},
- *     allOf={ @OA\Schema(ref="#/components/schemas/RootServerBase") },
+ * @OA\Schema(schema="Server", required={"id", "sourceId", "name", "url", "lastSuccessfulImport"},
+ *     allOf={ @OA\Schema(ref="#/components/schemas/ServerBase") },
  *     @OA\Property(property="id", type="integer", example="0"),
  * ),
- * @OA\Schema(schema="RootServerCollection", type="array",
- *     @OA\Items(ref="#/components/schemas/RootServer")
+ * @OA\Schema(schema="ServerCollection", type="array",
+ *     @OA\Items(ref="#/components/schemas/Server")
  * ),
  */
-class RootServerController extends Controller
+class ServerController extends Controller
 {
 
     /**
-     * @OA\Get(path="/api/v1/rootservers", summary="Retrieves root servers", description="Retrieve root servers.", operationId="getRootServers", tags={"rootServer"},
+     * @OA\Get(path="/api/v1/servers", summary="Retrieves servers", description="Retrieve servers.", operationId="getServers", tags={"server"},
      *     @OA\Response(response=200, description="Successful response.",
-     *         @OA\JsonContent(ref="#/components/schemas/RootServerCollection")
+     *         @OA\JsonContent(ref="#/components/schemas/ServerCollection")
      *     ),
      *     @OA\Response(response=404, description="Returns when aggregator mode is disabled.",
      *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
@@ -51,14 +51,14 @@ class RootServerController extends Controller
     }
 
     /**
-     * @OA\Get(path="/api/v1/rootservers/{rootServerId}", summary="Retrieves a root server", description="Retrieve a single root server id.", operationId="getRootServer", tags={"rootServer"},
-     *     @OA\Parameter(description="ID of root server", in="path", name="rootServerId", required=true, example="1",
+     * @OA\Get(path="/api/v1/servers/{serverId}", summary="Retrieves a server", description="Retrieve a single server id.", operationId="getServer", tags={"server"},
+     *     @OA\Parameter(description="ID of server", in="path", name="serverId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
      *     @OA\Response(response=200, description="Successful response.",
-     *         @OA\JsonContent(ref="#/components/schemas/RootServer")
+     *         @OA\JsonContent(ref="#/components/schemas/Server")
      *     ),
-     *     @OA\Response(response=404, description="Returns when no root server exists.",
+     *     @OA\Response(response=404, description="Returns when no server exists.",
      *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
      *     ),
      * )

@@ -28,7 +28,7 @@ class ServiceBody extends Model
     ];
 
     public const FIELDS = [
-        'root_server_id',
+        'server_id',
         'source_id',
         'sb_owner',
         'name_string',
@@ -47,9 +47,9 @@ class ServiceBody extends Model
     public $timestamps = false;
     protected $fillable = self::FIELDS;
 
-    public function rootServer()
+    public function server()
     {
-        return $this->belongsTo(RootServer::class, 'root_server_id');
+        return $this->belongsTo(Server::class, 'server_id');
     }
 
     public function meetings()

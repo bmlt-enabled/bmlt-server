@@ -70,9 +70,9 @@ class MeetingResource extends JsonResource
             'distance_in_miles' => $this->getDistanceInMiles(),
             'email_contact' => $this->getEmailContact(),
             'published' => $this->getPublished(),
-            'root_server_uri' => $this->getRootServerUri($request),
+            'server_uri' => $this->getServerUri($request),
             'format_shared_id_list' => $this->getFormatSharedIdList(),
-            'root_server_id' => $this->getRootServerId(),
+            'server_id' => $this->getServerId(),
         ];
 
         // data table keys
@@ -134,7 +134,7 @@ class MeetingResource extends JsonResource
                 ->mapWithKeys(fn($data, $_) => [$data->key => $data->data_string])
                 ->keys()
                 ->merge($meetingRepository->getMainFields())
-                ->merge(['published', 'root_server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km'])
+                ->merge(['published', 'server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km'])
                 ->intersect($dataFieldKeys)
                 ->mapWithKeys(fn($key, $_) => [$key => $key]);
 
@@ -287,11 +287,11 @@ class MeetingResource extends JsonResource
         );
     }
 
-    private function getRootServerUri($request)
+    private function getServerUri($request)
     {
         return $this->when(
-            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('root_server_uri'),
-            self::$isAggregatorModeEnabled && $this->root_server_id ? $this->rootServer->url : $request->getSchemeAndHttpHost() . $request->getBaseUrl()
+            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('server_uri'),
+            self::$isAggregatorModeEnabled && $this->server_id ? $this->server->url : $request->getSchemeAndHttpHost() . $request->getBaseUrl()
         );
     }
 
@@ -303,11 +303,11 @@ class MeetingResource extends JsonResource
         );
     }
 
-    private function getRootServerId()
+    private function getServerId()
     {
         return $this->when(
-            self::$isAggregatorModeEnabled && (!self::$hasDataFieldKeys || self::$dataFieldKeys->has('root_server_id')),
-            $this->root_server_id ?? ''
+            self::$isAggregatorModeEnabled && (!self::$hasDataFieldKeys || self::$dataFieldKeys->has('server_id')),
+            $this->server_id ?? ''
         );
     }
 }

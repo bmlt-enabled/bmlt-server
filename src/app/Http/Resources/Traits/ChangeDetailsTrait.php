@@ -53,7 +53,7 @@ trait ChangeDetailsTrait
         $seenKeys = [];
         $changeStrings = [];
         foreach ($beforeValues->keys()->merge($afterValues->keys()) as $key) {
-            if ($key == 'root_server_uri') {
+            if ($key == 'server_uri') {
                 continue;
             }
 

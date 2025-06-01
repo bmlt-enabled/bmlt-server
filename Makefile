@@ -1,5 +1,5 @@
 COMMIT := $(shell git rev-parse --short=8 HEAD)
-BASE_IMAGE := bmltenabled/bmlt-root-server-base
+BASE_IMAGE := bmltenabled/bmlt-server-base
 BASE_IMAGE_TAG := 8.2
 BASE_IMAGE_BUILD_TAG := $(COMMIT)-$(shell date +%s)
 CROUTON_JS := src/public/client_interface/html/croutonjs/crouton.js
@@ -8,11 +8,11 @@ LEGACY_STATIC_FILES := src/public/local_server/styles.css
 VENDOR_AUTOLOAD := src/vendor/autoload.php
 NODE_MODULES := src/node_modules/.package-lock.json
 FRONTEND := src/public/build/manifest.json
-ZIP_FILE := build/bmlt-root-server.zip
+ZIP_FILE := build/bmlt-server.zip
 EXTRA_DOCKER_COMPOSE_ARGS :=
 ifeq ($(CI)x, x)
 	DOCKERFILE := Dockerfile-debug
-	IMAGE := rootserver
+	IMAGE := bmltserver
 	TAG := local
 	COMPOSER_ARGS :=
 	NPM_FLAG := install
@@ -24,7 +24,7 @@ ifeq ($(CI)x, x)
 	endif
 else
 	DOCKERFILE := Dockerfile
-	IMAGE := bmltenabled/bmlt-root-server
+	IMAGE := bmltenabled/bmlt-server
 	TAG := 3.0.0-$(COMMIT)
 	ifeq ($(strip $(GITHUB_REF_NAME)),main)
 		TAG := latest
@@ -165,7 +165,7 @@ docker-publish-base:  ## Builds Base Docker Image
 
 .PHONY: mysql
 mysql:  ## Runs mysql cli in mysql container
-	docker exec -it docker-db-1 mariadb -u root -prootserver rootserver
+	docker exec -it docker-db-1 mariadb -u root -pbmltserver bmltserver
 
 .PHONY: bash
 bash:  ## Runs bash shell in apache container

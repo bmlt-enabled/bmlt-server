@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Swagger;
 class LogController extends Controller
 {
     /**
-     * @OA\Get(path="/api/v1/logs/laravel", summary="Retrieves laravel log", description="Retrieve the laravel log if it exists.", operationId="getLaravelLog", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/logs/laravel", summary="Retrieves laravel log", description="Retrieve the laravel log if it exists.", operationId="getLaravelLog", tags={"server"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated.",
      *         @OA\MediaType(mediaType="application/gzip", @OA\Schema(type="string", format="binary"))
      *     ),

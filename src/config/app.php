@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'BMLT Root Server'),
+    'name' => env('APP_NAME', 'BMLT Server'),
 
 
     /*

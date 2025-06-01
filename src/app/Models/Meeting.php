@@ -11,7 +11,7 @@ class Meeting extends Model
     protected $primaryKey = 'id_bigint';
     public $timestamps = false;
     protected $fillable = [
-        'root_server_id',
+        'server_id',
         'source_id',
         'worldid_mixed',
         'service_body_bigint',
@@ -43,7 +43,7 @@ class Meeting extends Model
         'latitude',
         'published',
         'email_contact',
-        'root_server_id',
+        'server_id',
         'source_id',
     ];
 
@@ -62,9 +62,9 @@ class Meeting extends Model
         return $this->data->where('key', 'meeting_name')->pluck('data_string')->first();
     }
 
-    public function rootServer()
+    public function server()
     {
-        return $this->belongsTo(RootServer::class, 'root_server_id');
+        return $this->belongsTo(Server::class, 'server_id');
     }
 
     public function serviceBody()
