@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
   container_definitions = jsonencode(
     [
       {
-        name = "bmlt-root-server"
+        name = "bmlt-server"
         portMappings = [
           {
             hostPort      = 0
@@ -50,7 +50,7 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
         ]
         links            = ["bmlt-db"]
         workingDirectory = "/tmp"
-        image            = "bmltenabled/bmlt-root-server:latest"
+        image            = "bmltenabled/bmlt-server:latest"
         repositoryCredentials = {
           credentialsParameter = data.aws_secretsmanager_secret.docker.arn
         }
@@ -61,9 +61,9 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
         logConfiguration = {
           logDriver = "awslogs"
           options = {
-            awslogs-group         = aws_cloudwatch_log_group.bmlt_root.name
+            awslogs-group         = aws_cloudwatch_log_group.bmlt_server.name
             awslogs-region        = "us-east-1"
-            awslogs-stream-prefix = "bmlt-root"
+            awslogs-stream-prefix = "bmlt-server"
           }
         }
         memoryReservation = 256
@@ -98,7 +98,7 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
           }
         ]
         workingDirectory = "/tmp",
-        image            = "bmltenabled/bmlt-root-server-sample-db:unstable"
+        image            = "bmltenabled/bmlt-server-sample-db:unstable"
         repositoryCredentials = {
           credentialsParameter = data.aws_secretsmanager_secret.docker.arn
         }
@@ -130,7 +130,7 @@ resource "aws_ecs_service" "bmlt_unstable" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.bmlt_unstable.id
-    container_name   = "bmlt-root-server"
+    container_name   = "bmlt-server"
     container_port   = 8000
   }
 

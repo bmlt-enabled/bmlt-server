@@ -1,5 +1,5 @@
-resource "aws_cloudwatch_log_group" "bmlt_root" {
-  name              = "bmlt-root"
+resource "aws_cloudwatch_log_group" "bmlt_server" {
+  name              = "bmlt-server"
   retention_in_days = 7
 }
 

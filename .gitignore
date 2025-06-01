@@ -10,6 +10,7 @@ node_modules
 src/legacy/client_interface/html/croutonjs
 croutonjs.zip
 terraform.tfvars
+secrets.auto.tfvars
 build
 docker/docker-compose.dev.yml
 .vscode
