@@ -1,6 +1,6 @@
-# Setting Up a BMLT Root Server
+# Setting Up a BMLT Server
 
-As of version 4.0.0 of the root server, we are dropping support for the Installer Wizard. Setting up a completely new root server
+As of version 4.0.0 of the server, we are dropping support for the Installer Wizard. Setting up a completely new server
 is at this point an infrequent event, and hopefully these directions will be clear enough.
 
 For a more detailed but older tutorial please see https://bmlt.app/setting-up-the-bmlt/. That tutorial is based on the Installer Wizard, so you'll need to adapt it accordingly. But it may be useful to explain some of the steps. Differences are noted below.
@@ -11,7 +11,7 @@ Set up an empty MySQL database, along with a MySQL user that has access to it.  
 
 ## Uploading the BMLT Server Zip File
 
-Get the latest version of the server from https://github.com/bmlt-enabled/bmlt-root-server/releases, and upload it to your web hosting provider's server. (The directions for this step in the older tutorial are also still valid.) For this part of the step, upload the zip file *without* unzipping it on your local machine. Then unzip it on your server. You should end up with a directory `main_server` under the directory that holds the files that show up on your website. Thus, if your web hosting server has a directory `public_html` for the files that show up on your website, put `main_server` in that directory, like this: `public_html/main_server`.
+Get the latest version of the server from https://github.com/bmlt-enabled/bmlt-server/releases, and upload it to your web hosting provider's server. (The directions for this step in the older tutorial are also still valid.) For this part of the step, upload the zip file *without* unzipping it on your local machine. Then unzip it on your server. You should end up with a directory `main_server` under the directory that holds the files that show up on your website. Thus, if your web hosting server has a directory `public_html` for the files that show up on your website, put `main_server` in that directory, like this: `public_html/main_server`.
 
 In addition, unzip the file on your laptop or desktop machine -- you'll need to get a couple of files from it in the following steps. But don't try to upload the unzipped file -- that can result in problems with dropped files and such.
 
@@ -37,7 +37,7 @@ public_html
       ......
 ```
 
-Now edit the `auto-config.inc.php` file with new parameters as needed. You can do this using the `edit` command on cPanel. There are two parameters you definitely need to update, namely `$dbUser` and `$dbPassword` (the user and password for your root server database). You also need to either update the parameter `$gkey` if you are using Google Maps, or else delete this parameter altogether if you are using OSM (Open Street Maps) for maps and nominatim for geocoding.
+Now edit the `auto-config.inc.php` file with new parameters as needed. You can do this using the `edit` command on cPanel. There are two parameters you definitely need to update, namely `$dbUser` and `$dbPassword` (the user and password for your server database). You also need to either update the parameter `$gkey` if you are using Google Maps, or else delete this parameter altogether if you are using OSM (Open Street Maps) for maps and nominatim for geocoding.
 
 There are various other parameters in the file, but the default values may well be what you want.
 
@@ -45,7 +45,7 @@ Alternatively, you can edit the `initial-auto-config.txt` file on your local mac
 
 ## Initial Log In
 
-Now you should be able to go to the website for your new server (which might be at a URL like `https://bmlt.myregion.org/main_server/`). Log in as user `serveradmin` password `change-this-password-first-thing`. As the initial password suggests (not very subtly), first go to the `Account` tab and change the password to something unique for your BMLT root server.
+Now you should be able to go to the website for your new server (which might be at a URL like `https://bmlt.myregion.org/main_server/`). Log in as user `serveradmin` password `change-this-password-first-thing`. As the initial password suggests (not very subtly), first go to the `Account` tab and change the password to something unique for your BMLT server.
 
 ## Adding Users and Service Bodies
 

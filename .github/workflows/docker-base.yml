@@ -35,13 +35,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: bmltenabled/bmlt-root-server-base
+          images: bmltenabled/bmlt-server-base
           tags: |
             type=raw,value=${{ matrix.php_version }}
             type=raw,value=latest,enable=${{ matrix.php_version == '8.2' }}
           labels: |
-            org.opencontainers.image.title=BMLT Root Server Base (PHP ${{ matrix.php_version }})
-            org.opencontainers.image.description=Base image for BMLT Root Server with PHP ${{ matrix.php_version }}
+            org.opencontainers.image.title=BMLT Server Base (PHP ${{ matrix.php_version }})
+            org.opencontainers.image.description=Base image for BMLT Server with PHP ${{ matrix.php_version }}
             org.opencontainers.image.vendor=BMLT
             org.opencontainers.image.created={{date 'YYYY-MM-DDTHH:mm:ssZ'}}
             org.opencontainers.image.version=${{ matrix.php_version }}
@@ -87,5 +87,5 @@ jobs:
           context: ./docker
           file: ./docker/Dockerfile-db
           platforms: linux/amd64,linux/arm64/v8
-          tags: bmltenabled/bmlt-root-server-sample-db:latest
+          tags: bmltenabled/bmlt-server-sample-db:latest
           push: true
