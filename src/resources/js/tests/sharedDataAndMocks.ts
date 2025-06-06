@@ -929,6 +929,13 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'createMeeting').mockImplementation(mockCreateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'updateMeeting').mockImplementation(mockUpdateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'deleteMeeting').mockImplementation(mockDeleteMeeting);
+  Element.prototype.animate = vi.fn().mockReturnValue({
+        finished: Promise.resolve(),
+        cancel: vi.fn(),
+        startTime: null,
+        currentTime: null
+    });
+  HTMLDialogElement.prototype.showModal = vi.fn();
 }
 
 export function sharedBeforeEach() {

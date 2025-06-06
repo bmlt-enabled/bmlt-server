@@ -29,7 +29,7 @@
         "eslint": "^9.25.1",
         "eslint-config-prettier": "^10.1.2",
         "eslint-plugin-svelte": "^3.5.1",
-        "flowbite-svelte": "^1.4.3",
+        "flowbite-svelte": "^1.5.5",
         "flowbite-svelte-icons": "^2.2.0",
         "globals": "^15.15.0",
         "jest": "^29.7.0",
