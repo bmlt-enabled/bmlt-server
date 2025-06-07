@@ -8,20 +8,26 @@
   import { authenticatedUser } from '../stores/apiCredentials';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
 
   import { onMount } from 'svelte';
-  import type { User } from 'bmlt-root-server-client';
+  import type { User } from 'bmlt-server-client';
   import UserForm from '../components/UserForm.svelte';
 
   let isLoaded = $state(false);
   let users: User[] = $state([]);
-  let filteredUsers: User[] = $state([]);
   let showModal = $state(false);
   let showDeleteModal = $state(false);
   let searchTerm = $state('');
   let selectedUser: User | null = $state(null);
   let deleteUser: User | null = $state(null);
+
+  let filteredUsers = $derived(
+    [...users]
+      .sort((u1, u2) => u1.displayName.localeCompare(u2.displayName))
+      .filter((u) => u.id !== $authenticatedUser?.id)
+      .filter((u) => u.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1)
+  );
 
   async function getUsers(): Promise<void> {
     try {
@@ -48,7 +54,9 @@
   function handleDelete(event: MouseEvent, user: User) {
     event.stopPropagation();
     deleteUser = user;
-    showDeleteModal = true;
+    Promise.resolve().then(() => {
+      showDeleteModal = true;
+    });
   }
 
   function onSaved(user: User) {
@@ -75,13 +83,6 @@
   }
 
   onMount(getUsers);
-
-  $effect(() => {
-    filteredUsers = users
-      .sort((u1, u2) => u1.displayName.localeCompare(u2.displayName))
-      .filter((u) => u.id !== $authenticatedUser?.id)
-      .filter((u) => u.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
-  });
 </script>
 
 <Nav />
@@ -109,7 +110,12 @@
               <TableBodyCell class="whitespace-normal">{user.displayName}</TableBodyCell>
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">
-                  <Button color="none" onclick={(e: MouseEvent) => handleDelete(e, user)} class="text-blue-700 dark:text-blue-500" aria-label={$translations.deleteUser + ' ' + user.displayName}>
+                  <Button
+                    color="alternative"
+                    onclick={(e: MouseEvent) => handleDelete(e, user)}
+                    class="border-none text-blue-700 dark:text-blue-500"
+                    aria-label={$translations.deleteUser + ' ' + user.displayName}
+                  >
                     <TrashBinOutline title={{ id: 'deleteUser', title: $translations.deleteUser }} ariaLabel={$translations.deleteUser} />
                   </Button>
                 </TableBodyCell>

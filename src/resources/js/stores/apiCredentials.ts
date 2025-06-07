@@ -1,10 +1,10 @@
 import { get, writable } from 'svelte/store';
 import type { Subscriber, Writable, Unsubscriber } from 'svelte/store';
 
-import type { Token, User } from 'bmlt-root-server-client';
+import type { Token, User } from 'bmlt-server-client';
 
 import { spinner } from './spinner';
-import RootServerApi from '../lib/RootServerApi';
+import RootServerApi from '../lib/ServerApi';
 
 export const authenticatedUser: Writable<User | null> = writable(null);
 

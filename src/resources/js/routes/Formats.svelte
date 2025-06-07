@@ -8,22 +8,25 @@
   import { authenticatedUser } from '../stores/apiCredentials';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
 
   import { onMount } from 'svelte';
-  import type { Format } from 'bmlt-root-server-client';
+  import type { Format } from 'bmlt-server-client';
   import FormatForm from '../components/FormatForm.svelte';
 
   const reservedFormatKeys = ['HY', 'TC', 'VM'];
 
   let isLoaded = $state(false);
   let formats: Format[] = $state([]);
-  let filteredFormats: Format[] = $state([]);
   let showModal = $state(false);
   let showDeleteModal = $state(false);
   let searchTerm = $state('');
   let selectedFormat: Format | null = $state(null);
   let deleteFormat: Format | null = $state(null);
+
+  let filteredFormats = $derived(
+    [...formats].sort((f1, f2) => getFormatName(f1).localeCompare(getFormatName(f2))).filter((f) => getFormatName(f).toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1)
+  );
 
   const language = translations.getLanguage();
 
@@ -53,7 +56,9 @@
   function handleDelete(event: MouseEvent, format: Format) {
     event.stopPropagation();
     deleteFormat = format;
-    showDeleteModal = true;
+    Promise.resolve().then(() => {
+      showDeleteModal = true;
+    });
   }
 
   function onSaved(format: Format) {
@@ -103,14 +108,6 @@
   }
 
   onMount(getFormats);
-
-  $effect(() => {
-    // prettier-ignore
-    filteredFormats = formats
-          .sort((f1, f2) => getFormatName(f1).localeCompare(getFormatName(f2)))
-          .filter((f) => getFormatName(f).toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
-  });
-
   // In the HTML below, we can assume that the authenticatedUser is the admin -- if not, just show a blank page.
   // Formats won't appear in the nav bar, but somebody could get to this page directly.  (There isn't any private
   // information on the formats page, and the server wouldn't let them save, so this wouldn't be a big deal however.)
@@ -138,9 +135,9 @@
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">
                   <Button
-                    color="none"
+                    color="alternative"
                     onclick={(e: MouseEvent) => handleDelete(e, format)}
-                    class="text-blue-700 dark:text-blue-500"
+                    class="border-none text-blue-700 dark:text-blue-500"
                     disabled={isReserved(format)}
                     aria-label={$translations.deleteFormat + ' ' + getFormatName(format)}
                   >

@@ -1,4 +1,4 @@
-import type { MeetingPartialUpdate } from 'bmlt-root-server-client';
+import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
 
 export type GeocodeResult = {

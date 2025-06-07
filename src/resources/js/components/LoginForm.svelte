@@ -5,7 +5,7 @@
   import * as yup from 'yup';
 
   import DarkMode from './DarkMode.svelte';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
   import type { ApiCredentialsStore } from '../stores/apiCredentials';
@@ -75,7 +75,7 @@
       <form use:form>
         <div class="mb-4">
           <Label for="username" class="mb-2">{$translations.usernameTitle}</Label>
-          <Input type="text" name="username" id="username" oninput={() => (errorMessage = '')} />
+          <Input type="text" name="username" id="username" onInput={() => (errorMessage = '')} />
           <Helper class="mt-2" color="red">
             {#if $errors.username}
               {$errors.username}
@@ -84,7 +84,7 @@
         </div>
         <div class="mb-4">
           <Label for="password" class="mb-2">{$translations.passwordTitle}</Label>
-          <Input type="password" name="password" id="password" oninput={() => (errorMessage = '')} />
+          <Input type="password" name="password" id="password" onInput={() => (errorMessage = '')} />
           <Helper class="mt-2" color="red">
             {#if $errors.password}
               {$errors.password}

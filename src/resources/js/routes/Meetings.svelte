@@ -2,10 +2,10 @@
   import { onMount } from 'svelte';
 
   import Nav from '../components/NavBar.svelte';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
-  import type { Format, ServiceBody } from 'bmlt-root-server-client';
+  import type { Format, ServiceBody } from 'bmlt-server-client';
   import MeetingsList from '../components/MeetingsList.svelte';
 
   let serviceBodies: ServiceBody[] = $state([]);

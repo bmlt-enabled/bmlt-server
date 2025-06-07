@@ -3,13 +3,13 @@
   import { TrashBinOutline } from 'flowbite-svelte-icons';
   import { onMount } from 'svelte';
 
-  import type { ServiceBody, User } from 'bmlt-root-server-client';
+  import type { ServiceBody, User } from 'bmlt-server-client';
 
   import Nav from '../components/NavBar.svelte';
   import ServiceBodyDeleteModal from '../components/ServiceBodyDeleteModal.svelte';
   import ServiceBodyForm from '../components/ServiceBodyForm.svelte';
   import ServiceBodyModal from '../components/ServiceBodyModal.svelte';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { authenticatedUser } from '../stores/apiCredentials';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
@@ -62,7 +62,9 @@
   function handleDelete(event: MouseEvent, serviceBody: ServiceBody) {
     event.stopPropagation();
     deleteServiceBody = serviceBody;
-    showDeleteModal = true;
+    Promise.resolve().then(() => {
+      showDeleteModal = true;
+    });
   }
 
   function onSaved(serviceBody: ServiceBody) {
@@ -143,7 +145,7 @@
               <TableBodyCell class="whitespace-normal">{serviceBody.name}</TableBodyCell>
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">
-                  <Button color="none" onclick={(e: MouseEvent) => handleDelete(e, serviceBody)} class="text-blue-700 dark:text-blue-500">
+                  <Button color="alternative" onclick={(e: MouseEvent) => handleDelete(e, serviceBody)} class="border-none text-blue-700 dark:text-blue-500">
                     <TrashBinOutline title={{ id: 'deleteServiceBody', title: $translations.deleteServiceBody }} ariaLabel={$translations.deleteServiceBody + ' ' + serviceBody.name} />
                   </Button>
                 </TableBodyCell>

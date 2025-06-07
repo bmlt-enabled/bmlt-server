@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import { describe, test } from 'vitest';
 import ServiceBodyForm from '../components/ServiceBodyForm.svelte';
 import { translations } from '../stores/localization';
-import type { ServiceBody, User } from 'bmlt-root-server-client';
+import type { ServiceBody, User } from 'bmlt-server-client';
 import { allServiceBodies, allUsers, login } from './sharedDataAndMocks';
 
 const serviceBodies: ServiceBody[] = allServiceBodies;
