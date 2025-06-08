@@ -935,7 +935,11 @@ export function sharedBeforeAll() {
         startTime: null,
         currentTime: null
     });
-  HTMLDialogElement.prototype.showModal = vi.fn();
+  // TODO (perhaps): keep an eye out for tests that rely on the returnValue property of HTMLDialogElement.
+  // Would need to figure out what its value should be though ....
+  HTMLDialogElement.prototype.showModal = vi.fn(function mock(this: HTMLDialogElement) {
+    this.open = true;
+  });
 }
 
 export function sharedBeforeEach() {
