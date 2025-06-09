@@ -44,7 +44,8 @@
 
   function handleOutsideClick(event: MouseEvent) {
     const modalContent = document.querySelector('.modal-content');
-    if (modalContent && !modalContent.contains(event.target as Node)) {
+    const closeModalButton = document.querySelector('[aria-label*="Close"]');
+    if ((modalContent && !modalContent.contains(event.target as Node)) || (closeModalButton && closeModalButton.contains(event.target as Node))) {
       handleClose();
     }
   }
@@ -58,7 +59,7 @@
   });
 </script>
 
-<Modal bind:open={showModal} size="sm" class="modal-content">
+<Modal bind:open={showModal} size="sm" onclose={handleClose} outsideclose={true} class="modal-content">
   <div class="p-4">
     <FormatForm {selectedFormat} {reservedFormatKeys} {onSaveSuccess} />
   </div>

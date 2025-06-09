@@ -44,7 +44,7 @@
 
   function handleOutsideClick(event: MouseEvent) {
     const modalContent = document.querySelector('.modal-content');
-    const closeModalButton = document.querySelector('[aria-label*="Close modal"]');
+    const closeModalButton = document.querySelector('[aria-label*="Close"]');
     if ((modalContent && !modalContent.contains(event.target as Node)) || (closeModalButton && closeModalButton.contains(event.target as Node))) {
       handleClose();
     }
