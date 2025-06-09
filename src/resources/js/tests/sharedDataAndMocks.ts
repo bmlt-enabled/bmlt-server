@@ -930,11 +930,11 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'updateMeeting').mockImplementation(mockUpdateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'deleteMeeting').mockImplementation(mockDeleteMeeting);
   Element.prototype.animate = vi.fn().mockReturnValue({
-        finished: Promise.resolve(),
-        cancel: vi.fn(),
-        startTime: null,
-        currentTime: null
-    });
+    finished: Promise.resolve(),
+    cancel: vi.fn(),
+    startTime: null,
+    currentTime: null
+  });
   // TODO (perhaps): keep an eye out for tests that rely on the returnValue property of HTMLDialogElement.
   // Would need to figure out what its value should be though ....
   HTMLDialogElement.prototype.showModal = vi.fn(function mock(this: HTMLDialogElement) {

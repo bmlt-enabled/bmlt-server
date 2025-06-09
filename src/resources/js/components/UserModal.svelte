@@ -59,7 +59,7 @@
   });
 </script>
 
-<Modal bind:open={showModal} size="sm" class="modal-content">
+<Modal bind:open={showModal} size="sm" onclose={handleClose} outsideclose={true} class="modal-content">
   <div class="p-2">
     <UserForm {users} {selectedUser} {onSaveSuccess} />
   </div>
