@@ -12,7 +12,11 @@
 
   let { updateDuration, initialDuration = '00:00' }: Props = $props();
 
-  let [hours, minutes] = $state(initialDuration.split(':').map((part) => part.padStart(2, '0')));
+  // Fix: Ensure initialDuration is always a string
+  const safeDuration = typeof initialDuration === 'string' ? initialDuration : '00:00';
+  const initialParts = safeDuration.split(':').map((part) => part.padStart(2, '0'));
+  let hours = $state(initialParts[0]);
+  let minutes = $state(initialParts[1]);
   const hourOptions = Array.from({ length: 24 }, (_, i) => ({
     value: i.toString().padStart(2, '0'),
     name: i.toString().padStart(2, '0')
