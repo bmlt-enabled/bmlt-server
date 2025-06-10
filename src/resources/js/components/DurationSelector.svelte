@@ -33,17 +33,17 @@
     const target = event.target as HTMLSelectElement;
     hours = target.value;
     updateDurationHelper();
-  };
+  }
 
   function handleMinuteChange(event: Event) {
     const target = event.target as HTMLSelectElement;
     minutes = target.value;
     updateDurationHelper();
-  };
+  }
 
   function updateDurationHelper() {
     updateDuration(`${hours}:${minutes}`);
-  };
+  }
 
   onMount(initialize);
 </script>

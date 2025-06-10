@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, test } from 'vitest';
-import { screen } from '@testing-library/svelte';
+import { screen, waitFor } from '@testing-library/svelte';
 import { login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
 beforeAll(sharedBeforeAll);
@@ -26,5 +26,22 @@ describe('check content in Meetings tab when logged in as various users', () => 
     await user.click(await screen.findByRole('cell', { name: 'Big Region Gathering' }));
     const day = screen.getByRole('combobox', { name: 'Weekday' }) as HTMLSelectElement;
     expect(day.value).toBe('5');
+  });
+
+  test('test Validation errors are displayed with invalid data', async () => {
+    const user = await login('serveradmin', 'Meetings');
+    const addMeetingButton = await screen.findByRole('button', { name: 'Add Meeting' });
+    await user.click(addMeetingButton);
+    const nameInput = screen.getByLabelText('Name');
+    await user.type(nameInput, ' ');
+    const emailInput = screen.getByLabelText('Email');
+    await user.type(emailInput, 'Invalid-email');
+    // there are now 2 'Add Meeting' buttons
+    const addMeeting2 = screen.getAllByText('Add Meeting');
+    await user.click(addMeeting2[1]);
+    await waitFor(() => {
+      expect(screen.getByText('name is a required field')).toBeInTheDocument();
+      expect(screen.getByText('email must be a valid email')).toBeInTheDocument();
+    });
   });
 });
