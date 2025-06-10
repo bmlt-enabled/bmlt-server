@@ -68,7 +68,7 @@
 
   const formatItems = filteredFormats
     .filter((f): f is NonNullable<typeof f> => f !== null)
-    .map((f) => ({ value: f.id, name: f.name }))
+    .map((f) => ({ value: f.id, name: `${f.key} - ${f.name}` }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const serviceBodyIdItems = serviceBodies.map((u) => ({ value: u.id, name: u.name })).sort((a, b) => a.name.localeCompare(b.name));
