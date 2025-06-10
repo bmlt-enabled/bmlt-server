@@ -233,9 +233,7 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 
-  // TODO: fix this test and unskip it.  The "you have unsaved changes" warning doesn't appear after clicking the "close" button.
-  // Curiously it does appear though if you click outside the modal (see previous test).
-  test.skip('test Confirm modal appears when attempting to close with unsaved changes', async () => {
+  test('test Confirm modal appears when attempting to close with unsaved changes', async () => {
     const user = await login('serveradmin', 'Users');
     await user.click(await screen.findByRole('cell', { name: 'Big Region' }));
     const description = screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement;

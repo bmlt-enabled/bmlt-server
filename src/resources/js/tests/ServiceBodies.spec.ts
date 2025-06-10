@@ -236,16 +236,18 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 
-  // TODO: fix problems and unskip this test. There are two problems. First, there are *two* buttons with the name 'Close', so somehow
-  // the test needs to pick out the right one to click. Second, even if the button is clicked the "you have unsaved changes" warning doesn't
-  // appear.  (This same issue occurs with deleting a User.)
-  test.skip('test Confirm modal appears when attempting to close with unsaved changes', async () => {
+  // TODO: figure out why there are *two* close buttons, and remove the hack in this test
+  test('test Confirm modal appears when attempting to close with unsaved changes', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('cell', { name: 'Rural Area' }));
     const helpline = screen.getByRole('textbox', { name: 'Helpline' }) as HTMLInputElement;
     await user.clear(helpline);
     await user.type(helpline, '555-867-5309');
-    await user.click(await screen.findByRole('button', { name: 'Close' }));
+    // TODO: for some reason there are *two* close buttons.  Mock clicking either one does the right thing.  Figure out why this
+    // is happening and get rid of the extra button.
+    // await user.click(await screen.findByRole('button', { name: 'Close' }));
+    const buttons = await screen.findAllByRole('button', { name: 'Close' });
+    await user.click(buttons[0]);
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 });
