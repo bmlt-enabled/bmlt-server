@@ -99,7 +99,7 @@
         {/if}
         {#if errorMessage}
           <div class="mb-4">
-            <P color="text-red-700 dark:text-red-500">{errorMessage}</P>
+            <P class="text-red-700 dark:text-red-500">{errorMessage}</P>
           </div>
         {/if}
         <div class="mb-2">
