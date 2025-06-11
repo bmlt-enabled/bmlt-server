@@ -11,7 +11,7 @@
   let { open = $bindable(), handleCancelClose, handleConfirmClose }: Props = $props();
 </script>
 
-<Modal bind:open size="sm" defaultClass="border-4">
+<Modal bind:open size="sm" class="border-4">
   <div class="mb-5">
     <P>{$translations.youHaveUnsavedChanges}</P>
     <div class="mt-4 flex justify-end space-x-2">

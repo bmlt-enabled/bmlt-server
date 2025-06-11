@@ -118,7 +118,6 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(mockSavedServiceBodyUpdate?.url).toBe('https://moreruralarea.example.com');
     expect(mockSavedServiceBodyUpdate?.helpline).toBe('843-555-7247');
     expect(mockSavedServiceBodyUpdate?.worldId).toBe('AS788');
-
     // check that service body create and service body delete weren't touched
     expect(mockSavedServiceBodyCreate).toBe(null);
     expect(mockDeletedServiceBodyId).toBe(null);
@@ -127,6 +126,10 @@ describe('check editing, adding, and deleting service bodies using the popup dia
   test('logged in as serveradmin; select Add Service Body', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Add Service Body' }));
+    // The ServiceBodyForm should now be displayed.  So now there are *two* 'Add Service Body' buttons. Grab the second one.  It should be
+    // initially disabled since no changes have been made to the form.
+    const actuallyAddButton = screen.getAllByRole('button', { name: 'Add Service Body' })[1];
+    expect(actuallyAddButton).toBeDisabled();
     // check that the User Type menu is there but don't change the default (we already tested changing it in the update user test)
     const serviceBodyType = screen.getByRole('combobox', { name: 'Service Body Type' }) as HTMLSelectElement;
     expect(serviceBodyType.value).toBe('AS'); // default area service
@@ -162,9 +165,8 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     const worldid = screen.getByRole('textbox', { name: 'World Committee Code' }) as HTMLInputElement;
     await user.type(worldid, 'AS788');
     expect(worldid.value).toBe('AS788');
-    // at this point there are *two* 'Add Service Body' buttons.  Click the second one.  (Kind of funky ...)
-    const addButtons = screen.getAllByRole('button', { name: 'Add Service Body' });
-    await user.click(addButtons[1]);
+    expect(actuallyAddButton).toBeEnabled();
+    await user.click(actuallyAddButton);
     expect(mockSavedServiceBodyCreate?.adminUserId).toBe(6);
     expect(mockSavedServiceBodyCreate?.type).toBe('RS');
     expect(mockSavedServiceBodyCreate?.parentId).toBe(101);
@@ -191,18 +193,21 @@ describe('check editing, adding, and deleting service bodies using the popup dia
   });
 
   test('logged in as Northern Zone; edit Big Region Service Body', async () => {
-    // We already tested the editing form when logged in as serveradmin.  Here just test that the NAme
-    // field is disabled and also hidden, and that one field (Email) is present and enabled.
+    // We already tested the editing form when logged in as serveradmin.  Here just test that the Name
+    // field and the Admin selector menu are disabled, and that the Email field is present and enabled.
     const user = await login('NorthernZone', 'Service Bodies');
     await user.click(await screen.findByRole('cell', { name: 'Big Region' }));
-    expect(screen.getByRole('textbox', { name: 'Name', hidden: true })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: 'Name' })).toBeDisabled();
+    expect(screen.getByRole('combobox', { name: 'Admin' })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeEnabled();
   });
 
   test('logged in as serveradmin; delete Small Region Service Body', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Small Region' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment in Users.spec.ts test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(mockDeletedServiceBodyId).toBe(103);
     expect(mockSavedServiceBodyCreate).toBe(null);
@@ -213,7 +218,9 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     // this should fail because Big Region has children
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Big Region' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment in Users.spec.ts test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(screen.getByText(/Error: The service body could not be deleted/)).toBeInTheDocument();
     expect(mockDeletedServiceBodyId).toBe(null);
@@ -238,7 +245,11 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     const helpline = screen.getByRole('textbox', { name: 'Helpline' }) as HTMLInputElement;
     await user.clear(helpline);
     await user.type(helpline, '555-867-5309');
-    await user.click(await screen.findByRole('button', { name: 'Close modal' }));
+    // There are two close buttons at this point: one for the modal as a whole, the other for the Meeting List Editors multiselect.
+    // Mock clicking either one closes the modal, but the second one is for the modal as a whole, so use that.  (If there were no
+    // meeting list editors then there would be only one close button, but Rural Area does have meeting list editors.)
+    const buttons = await screen.findAllByRole('button', { name: 'Close' });
+    await user.click(buttons[1]);
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 });

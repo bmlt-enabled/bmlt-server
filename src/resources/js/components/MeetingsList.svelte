@@ -7,10 +7,10 @@
   import { convertTo12Hour, is24hrTime, isCommaSeparatedNumbers } from '../lib/utils';
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
-  import type { Meeting, ServiceBody, Format } from 'bmlt-root-server-client';
+  import type { Meeting, ServiceBody, Format } from 'bmlt-server-client';
   import MeetingEditModal from './MeetingEditModal.svelte';
   import { spinner } from '../stores/spinner';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import ServiceBodiesTree from './ServiceBodiesTree.svelte';
 
   interface Props {
@@ -37,7 +37,7 @@
   let selectedMeeting: Meeting | null = $state(null);
   let showModal = $state(false);
   let tableSearchRef: SvelteComponent | null = null;
-  let sortColumn: string | null = $state(null);
+  let sortColumn: keyof Meeting | null = $state(null);
   let sortDirection: 'asc' | 'desc' = $state('asc');
   const weekdayChoices = ($translations.daysOfWeek as string[]).map((day: string, index: number) => ({
     value: index.toString(),
@@ -87,7 +87,6 @@
         const matchesDay = selectedDays.length > 0 ? selectedDays.includes(meeting.day.toString()) : true;
         const matchesPublished = selectedPublished.length > 0 ? selectedPublished.includes(String(meeting.published)) : true;
         const matchesSearch =
-          // search by name, id or location
           meeting.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           String(meeting.id).includes(searchTerm) ||
           [meeting.locationStreet, meeting.locationCitySubsection, meeting.locationMunicipality, meeting.locationProvince, meeting.locationSubProvince, meeting.locationPostalCode1]
@@ -110,7 +109,31 @@
         return matchesTime && matchesPublished && matchesDay && matchesSearch;
       })
       .sort((a, b) => {
-        // Sort by day then time
+        // Apply custom sorting if a sort column is selected
+        if (sortColumn && sortColumn in a) {
+          const valA = a[sortColumn];
+          const valB = b[sortColumn];
+
+          if (valA === undefined && valB === undefined) return 0;
+          if (valA === undefined) return sortDirection === 'asc' ? 1 : -1;
+          if (valB === undefined) return sortDirection === 'asc' ? -1 : 1;
+
+          // Handle different data types properly
+          if (typeof valA === 'string' && typeof valB === 'string') {
+            return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+          }
+
+          if (typeof valA === 'number' && typeof valB === 'number') {
+            return sortDirection === 'asc' ? valA - valB : valB - valA;
+          }
+
+          // Fallback for mixed types
+          const strA = String(valA);
+          const strB = String(valB);
+          return sortDirection === 'asc' ? strA.localeCompare(strB) : strB.localeCompare(strA);
+        }
+
+        // Default sort by day then time (your original sorting)
         const dayComparison = a.day - b.day;
         if (dayComparison !== 0) return dayComparison;
         return a.startTime.localeCompare(b.startTime);
@@ -148,20 +171,8 @@
       sortColumn = column;
       sortDirection = 'asc';
     }
-    [...filteredItems].sort((a, b) => {
-      const valA = a[column];
-      const valB = b[column];
 
-      if (valA === undefined && valB === undefined) return 0;
-      if (valA === undefined) return sortDirection === 'asc' ? 1 : -1;
-      if (valB === undefined) return sortDirection === 'asc' ? -1 : 1;
-
-      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
     currentPosition = 0;
-    filteredItems.slice(currentPosition, currentPosition + itemsPerPage);
   }
 
   function goToPage(pageNumber: number) {
@@ -234,61 +245,70 @@
   const currentPageItems = $derived(filteredItems.slice(currentPosition, currentPosition + itemsPerPage));
 
   const isAllDaysSelected = $derived(selectedDays.length === weekdayChoices.length);
+
+  $effect(() => {
+    updateItemsPerPage();
+  });
 </script>
 
 <TableSearch placeholder={$translations.filter} bind:this={tableSearchRef} hoverable={true} bind:inputValue={searchTerm} {divClass} {innerDivClass} {searchClass} {inputClass}>
-  <div slot="header" class="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0">
-    {#if serviceBodies.length > 1}
-      <Button color="alternative" class="relative" aria-label={$translations.serviceBodiesTitle}>
-        {$translations.serviceBodiesTitle}
-        {#if selectedServiceBodies.length > 0}
+  {#snippet header()}
+    <div class="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-y-0 md:space-x-3">
+      {#if serviceBodies.length > 1}
+        <Button color="alternative" class="relative" aria-label={$translations.serviceBodiesTitle}>
+          {$translations.serviceBodiesTitle}
+          {#if selectedServiceBodies.length > 0}
+            <Indicator color="red" size="sm" placement="top-right" />
+          {/if}
+        </Button>
+        <Dropdown class="top-full z-50 w-90 space-y-2 p-3 text-sm" isOpen={true}>
+          <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByServiceBody}</h6>
+          <ServiceBodiesTree {serviceBodies} bind:selectedValues={selectedServiceBodies} />
+        </Dropdown>
+      {/if}
+      <Button color="alternative" class="relative" aria-label={$translations.day}>
+        {$translations.day}
+        {#if selectedDays.length > 0}
           <Indicator color="red" size="sm" placement="top-right" />
         {/if}
       </Button>
-      <Dropdown class="w-90 top-full z-50 space-y-2 p-3 text-sm" open={true}>
-        <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByServiceBody}</h6>
-        <ServiceBodiesTree {serviceBodies} bind:selectedValues={selectedServiceBodies} />
+      <Dropdown class="top-full z-50 w-48 space-y-2 p-3 text-sm">
+        <h6 class="text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByDay}</h6>
+        <Button onclick={toggleAllDays} size="xs" color="primary" class="w-full">
+          {isAllDaysSelected ? $translations.unselectAllDays : $translations.selectAllDays}
+        </Button>
+        <Checkbox name="weekdays" choices={weekdayChoices} bind:group={selectedDays} class="justify-between" />
       </Dropdown>
-    {/if}
-    <Button color="alternative" class="relative" aria-label={$translations.day}>
-      {$translations.day}
-      {#if selectedDays.length > 0}
-        <Indicator color="red" size="sm" placement="top-right" />
-      {/if}
-    </Button>
-    <Dropdown class="top-full z-50 w-48 space-y-2 p-3 text-sm">
-      <h6 class="text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByDay}</h6>
-      <Button onclick={toggleAllDays} size="xs" color="primary" class="w-full">
-        {isAllDaysSelected ? $translations.unselectAllDays : $translations.selectAllDays}
+      <Button color="alternative" class="relative">
+        {$translations.published}
+        {#if selectedPublished.length > 0}
+          <Indicator color="red" size="sm" placement="top-right" />
+        {/if}
+        <FilterSolid class="ml-2 h-3 w-3 " />
       </Button>
-      <Checkbox name="weekdays" choices={weekdayChoices} bind:group={selectedDays} groupLabelClass="justify-between" />
-    </Dropdown>
-    <Button color="alternative" class="relative">
-      {$translations.published}
-      {#if selectedPublished.length > 0}
-        <Indicator color="red" size="sm" placement="top-right" />
+      <Dropdown class="w-48 space-y-2 p-3 text-sm">
+        <Checkbox name="times" choices={publishedChoices} bind:group={selectedPublished} class="ms-2" />
+      </Dropdown>
+      <Button color="alternative" class="relative">
+        {$translations.time}
+        {#if selectedTimes.length > 0}
+          <Indicator color="red" size="sm" placement="top-right" />
+        {/if}
+        <FilterSolid class="ml-2 h-3 w-3 " />
+      </Button>
+      <Dropdown class="w-48 space-y-2 p-3 text-sm">
+        <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.chooseStartTime}</h6>
+        <Checkbox name="times" choices={timeChoices} bind:group={selectedTimes} class="ms-2" />
+      </Dropdown>
+      <Button onclick={searchMeetings}>{$translations.search}</Button>
+      {#if $authenticatedUser?.type !== 'observer'}
+        <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
+          <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
+        </Button>
       {/if}
-      <FilterSolid class="ml-2 h-3 w-3 " />
-    </Button>
-    <Dropdown class="w-48 space-y-2 p-3 text-sm">
-      <Checkbox name="times" choices={publishedChoices} bind:group={selectedPublished} groupInputClass="ms-2" groupLabelClass="" />
-    </Dropdown>
-    <Button color="alternative" class="relative">
-      {$translations.time}
-      {#if selectedTimes.length > 0}
-        <Indicator color="red" size="sm" placement="top-right" />
-      {/if}
-      <FilterSolid class="ml-2 h-3 w-3 " />
-    </Button>
-    <Dropdown class="w-48 space-y-2 p-3 text-sm">
-      <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.chooseStartTime}</h6>
-      <Checkbox name="times" choices={timeChoices} bind:group={selectedTimes} groupInputClass="ms-2" groupLabelClass="" />
-    </Dropdown>
-    <Button onclick={searchMeetings}>{$translations.search}</Button>
-    {#if $authenticatedUser?.type !== 'observer'}
-      <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}><PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}</Button>
-    {/if}
-  </div>
+    </div>
+  {/snippet}
+
   <TableHead>
     {#if meetings.length}
       <TableHeadCell padding="px-4 py-3 whitespace-nowrap" scope="col" onclick={() => handleSort('day')}>
@@ -323,7 +343,7 @@
       </TableHeadCell>
       <TableHeadCell padding="px-4 py-3" scope="col" onclick={() => handleSort('locationStreet')}>
         Location
-        {#if sortColumn === 'location'}
+        {#if sortColumn === 'locationStreet'}
           {#if sortDirection === 'asc'}
             <ChevronUpOutline class="ml-1 inline-block h-3 w-3" />
           {:else}
@@ -341,12 +361,16 @@
   <TableBody>
     {#each currentPageItems as meeting (meeting.id)}
       <TableBodyRow onclick={() => handleEdit(meeting)}>
-        <TableBodyCell tdClass={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'bg-yellow-400 px-4 py-3 whitespace-nowrap min-w-[100px]'}>{$translations.daysOfWeek[meeting.day]}</TableBodyCell>
-        <TableBodyCell tdClass={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'bg-yellow-400 px-4 py-3 whitespace-nowrap min-w-[100px]'}
-          >{is24hrTime() ? meeting.startTime : convertTo12Hour(meeting.startTime)}</TableBodyCell
-        >
-        <TableBodyCell tdClass={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3'}>{meeting.name}</TableBodyCell>
-        <TableBodyCell tdClass={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3 text-wrap'}>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-400 px-4 py-3 whitespace-nowrap'}>
+          {$translations.daysOfWeek[meeting.day]}
+        </TableBodyCell>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-400 px-4 py-3 whitespace-nowrap'}>
+          {is24hrTime() ? meeting.startTime : convertTo12Hour(meeting.startTime)}
+        </TableBodyCell>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3'}>
+          {meeting.name}
+        </TableBodyCell>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3 text-wrap'}>
           {[meeting.locationStreet, meeting.locationCitySubsection, meeting.locationMunicipality, meeting.locationProvince, meeting.locationSubProvince, meeting.locationPostalCode1]
             .filter(Boolean)
             .join(', ')}
@@ -354,32 +378,35 @@
       </TableBodyRow>
     {/each}
   </TableBody>
-  <div slot="footer" class="flex flex-col items-start justify-between space-y-3 p-4 md:flex-row md:items-center md:space-y-0 {meetings.length ? '' : 'hidden'}" aria-label="Table navigation">
-    {#if meetings.length}
-      <span class="flex items-center space-x-1 text-sm font-normal text-gray-500 dark:text-gray-400">
-        <span>{$translations.paginationShowing}</span>
-        <span class="font-semibold text-gray-900 dark:text-white">{startRange}-{endRange}</span>
-        <span>{$translations.paginationOf}</span>
-        <span class="font-semibold text-gray-900 dark:text-white">{filteredItems.length}</span>
-        <span class="mx-2 text-gray-500 dark:text-gray-400">/</span>
-        <span class="ml-4 flex items-center space-x-1">
-          <Label for="itemsPerPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">{$translations.meetingsPerPage}</Label>
-          <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} name="itemsPerPage" class="w-20 dark:bg-gray-600" on:change={updateItemsPerPage} />
+
+  {#snippet footer()}
+    <div class="flex flex-col items-start justify-between space-y-3 p-4 md:flex-row md:items-center md:space-y-0 {meetings.length ? '' : 'hidden'}" aria-label="Table navigation">
+      {#if meetings.length}
+        <span class="flex items-center space-x-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+          <span>{$translations.paginationShowing}</span>
+          <span class="font-semibold text-gray-900 dark:text-white">{startRange}-{endRange}</span>
+          <span>{$translations.paginationOf}</span>
+          <span class="font-semibold text-gray-900 dark:text-white">{filteredItems.length}</span>
+          <span class="mx-2 text-gray-500 dark:text-gray-400">/</span>
+          <span class="ml-4 flex items-center space-x-1">
+            <Label for="itemsPerPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">{$translations.meetingsPerPage}</Label>
+            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} name="itemsPerPage" class="w-20 dark:bg-gray-600" />
+          </span>
         </span>
-      </span>
-      <ButtonGroup>
-        <Button onclick={loadPreviousPage} disabled={currentPosition === 0}>
-          <ChevronLeftOutline size="xs" class="m-1.5" />
-        </Button>
-        {#each pagesToShow as pageNumber}
-          <Button onclick={() => goToPage(pageNumber)}>{pageNumber}</Button>
-        {/each}
-        <Button onclick={loadNextPage} disabled={currentPosition + itemsPerPage >= filteredItems.length}>
-          <ChevronRightOutline size="xs" class="m-1.5" />
-        </Button>
-      </ButtonGroup>
-    {/if}
-  </div>
+        <ButtonGroup>
+          <Button onclick={loadPreviousPage} disabled={currentPosition === 0}>
+            <ChevronLeftOutline size="xs" class="m-1.5" />
+          </Button>
+          {#each pagesToShow as pageNumber}
+            <Button onclick={() => goToPage(pageNumber)}>{pageNumber}</Button>
+          {/each}
+          <Button onclick={loadNextPage} disabled={currentPosition + itemsPerPage >= filteredItems.length}>
+            <ChevronRightOutline size="xs" class="m-1.5" />
+          </Button>
+        </ButtonGroup>
+      {/if}
+    </div>
+  {/snippet}
 </TableSearch>
 
 <MeetingEditModal bind:showModal {selectedMeeting} {serviceBodies} {formats} {onSaved} onClosed={closeModal} {onDeleted} />

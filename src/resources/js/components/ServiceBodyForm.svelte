@@ -5,9 +5,9 @@
   import * as yup from 'yup';
 
   import { spinner } from '../stores/spinner';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { isDirty, formIsDirty } from '../lib/utils';
-  import type { ServiceBody, ServiceBodyCreate, User } from 'bmlt-root-server-client';
+  import type { ServiceBody, ServiceBodyCreate, User } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
 
@@ -153,6 +153,9 @@
   $effect(() => {
     formIsDirty(initialValues, $data);
   });
+  $effect(() => {
+    setData('assignedUserIds', assignedUserIdsSelected);
+  });
 </script>
 
 <form use:form>
@@ -195,19 +198,12 @@
     </div>
     <div class="md:col-span-2">
       <Label for="assignedUserIds" class="mb-2">{$translations.meetingListEditorsTitle}</Label>
-      <MultiSelect
-        id="assignedUserIds"
-        items={userItems}
-        name="assignedUserIds"
-        class="bg-gray-50 dark:bg-gray-600"
-        bind:value={assignedUserIdsSelected}
-        on:change={() => setData('assignedUserIds', assignedUserIdsSelected)}
-        let:item
-        let:clear
-      >
-        <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} on:close={clear}>
-          {item.name}
-        </Badge>
+      <MultiSelect id="assignedUserIds" items={userItems} name="assignedUserIds" class="bg-gray-50 dark:bg-gray-600" bind:value={assignedUserIdsSelected}>
+        {#snippet children({ item, clear })}
+          <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
+            {item.name}
+          </Badge>
+        {/snippet}
       </MultiSelect>
       <Helper class="mt-2" color="red">
         <!-- For some reason yup fills the errors store with empty objects for this array. The === 'string' ensures only server side errors will display. -->

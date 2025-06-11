@@ -15,8 +15,8 @@ describe('login page tests', () => {
   test('check login page before logging in', async () => {
     render(App);
     await waitFor(() => {
-      expect(document.title).toBe('BMLT Root Server');
-      expect(screen.getByText('Root Server (1.0.0)')).toBeInTheDocument();
+      expect(document.title).toBe('BMLT Server');
+      expect(screen.getByText('BMLT Server (1.0.0)')).toBeInTheDocument();
       expect(screen.getByRole('textbox', { name: 'Username' })).toBeInTheDocument();
       expect(screen.getByLabelText('Password')).toBeInTheDocument();
       expect(screen.getByRole('combobox', { name: 'Select Language' })).toBeInTheDocument();

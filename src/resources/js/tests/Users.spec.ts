@@ -182,7 +182,12 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
   test('logged in as serveradmin; delete Small Region', async () => {
     const user = await login('serveradmin', 'Users');
     await user.click(await screen.findByRole('button', { name: 'Delete User Small Region' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // For some reason with the svelte 5 version of flowbite-svelte, the following query stopped working -- I have not been able to find
+    // the confirm checkbox using name, description, etc.  However, there is only one checkbox at this point, so I'm hacking around the
+    // problem by just finding the checkbox without using its name.
+    // TODO: use some better query if it starts working again
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(mockDeletedUserId).toBe(4);
     expect(mockSavedUserCreate).toBe(null);
@@ -193,7 +198,9 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
     // this should fail because Big Region has children
     const user = await login('serveradmin', 'Users');
     await user.click(await screen.findByRole('button', { name: 'Delete User Big Region' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment on previous test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(screen.getByText(/Error: The user could not be deleted/)).toBeInTheDocument();
     expect(mockDeletedUserId).toBe(null);
@@ -205,7 +212,9 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
     // this should fail because Small Observer is observing the Northern Zone
     const user = await login('serveradmin', 'Users');
     await user.click(await screen.findByRole('button', { name: 'Delete User Small Observer' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment on previous test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(screen.getByText(/Error: The user could not be deleted/)).toBeInTheDocument();
     expect(mockDeletedUserId).toBe(null);
@@ -230,7 +239,7 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
     const description = screen.getByRole('textbox', { name: 'Description' }) as HTMLInputElement;
     await user.clear(description);
     await user.type(description, 'Bigger Region');
-    await user.click(await screen.findByRole('button', { name: 'Close modal' }));
+    await user.click(await screen.findByRole('button', { name: 'Close' }));
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 });

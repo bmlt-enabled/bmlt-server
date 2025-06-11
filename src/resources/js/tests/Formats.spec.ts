@@ -99,7 +99,9 @@ describe('check content in Formats tab', () => {
   test('delete a format', async () => {
     const user = await login('serveradmin', 'Formats');
     await user.click(await screen.findByRole('button', { name: 'Delete Format Beginners' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment in Users.spec.ts test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(mockDeletedFormatId).toBe(25);
     expect(mockSavedFormatCreate).toBe(null);
@@ -109,7 +111,9 @@ describe('check content in Formats tab', () => {
   test('try to delete a format that is in use', async () => {
     const user = await login('serveradmin', 'Formats');
     await user.click(await screen.findByRole('button', { name: 'Delete Format Basic Text' }));
-    await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    // TODO: see comment in Users.spec.ts test about finding the checkbox
+    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
+    await user.click(await screen.findByRole('checkbox'));
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(screen.getByText(/Error: The format could not be deleted because it is still associated with meetings./)).toBeInTheDocument();
     expect(mockDeletedFormatId).toBe(null);

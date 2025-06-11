@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from 'flowbite-svelte';
   import Node from './ServiceBodiesTreeNode.svelte';
-  import type { ServiceBody } from 'bmlt-root-server-client';
+  import type { ServiceBody } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
 
   interface TreeNode {

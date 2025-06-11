@@ -6,9 +6,9 @@
   import * as yup from 'yup';
 
   import { spinner } from '../stores/spinner';
-  import RootServerApi from '../lib/RootServerApi';
+  import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
-  import type { Format } from 'bmlt-root-server-client';
+  import type { Format } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
 
   interface Props {

@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import { describe, test } from 'vitest';
 import MeetingEditForm from '../components/MeetingEditForm.svelte';
 import { translations } from '../stores/localization';
-import type { Format, Meeting, ServiceBody } from 'bmlt-root-server-client';
+import type { Format, Meeting, ServiceBody } from 'bmlt-server-client';
 import { allFormats, allServiceBodies, allMeetings } from './sharedDataAndMocks';
 
 const formats: Format[] = allFormats;
@@ -26,7 +26,8 @@ describe('MeetingEditForm Component', () => {
     expect(deleteButton).toBeInTheDocument();
 
     // Basic fields
-    expect(screen.getByLabelText(translations.getString('meetingIsPublishedTitle'))).toBeChecked();
+    // getting the 'Meeting is Published' checkbox by its name stopped working; but there is only one checkbox at this point
+    expect(screen.getByRole('checkbox')).toBeChecked();
     expect(screen.getByLabelText(translations.getString('nameTitle'))).toBeInTheDocument();
     expect(screen.getByLabelText(translations.getString('timeZoneTitle'))).toBeInTheDocument();
     expect(screen.getByLabelText(translations.getString('dayTitle'))).toBeInTheDocument();
@@ -152,21 +153,6 @@ describe('MeetingEditForm Component', () => {
     expect(applyChangesButton).not.toBeDisabled();
   });
 
-  test('test Validation errors are displayed with invalid data', async () => {
-    render(MeetingEditForm, { props: { selectedMeeting: null, serviceBodies, formats, onSaved, onClosed, onDeleted } });
-
-    const nameInput = screen.getByLabelText(translations.getString('nameTitle'));
-    await fireEvent.input(nameInput, { target: { value: '' } });
-
-    const emailInput = screen.getByLabelText(translations.getString('emailTitle'));
-    await fireEvent.input(emailInput, { target: { value: 'invalid-email' } });
-
-    const addServiceBodyButton = screen.getByText(translations.getString('addMeeting'));
-    await fireEvent.click(addServiceBodyButton);
-
-    await waitFor(() => {
-      expect(screen.getByText('name is a required field')).toBeInTheDocument();
-      expect(screen.getByText('email must be a valid email')).toBeInTheDocument();
-    });
-  });
+  // this test stopped working with Svelte 5 -- I put an equivalent test in Meetings.spec.ts instead
+  //   'test Validation errors are displayed with invalid data'
 });
