@@ -68,7 +68,7 @@
 
   const formatItems = filteredFormats
     .filter((f): f is NonNullable<typeof f> => f !== null)
-    .map((f) => ({ value: f.id, name: `${f.key} - ${f.name}` }))
+    .map((f) => ({ value: f.id, name: `(${f.key}) ${f.name}` }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const serviceBodyIdItems = serviceBodies.map((u) => ({ value: u.id, name: u.name })).sort((a, b) => a.name.localeCompare(b.name));
@@ -816,7 +816,7 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
+    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
         <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
           {item.name}
@@ -1200,3 +1200,9 @@
   </div>
 </form>
 <MeetingDeleteModal bind:showDeleteModal meetingToDelete={meetingToDelete as Meeting} {onDeleted} />
+
+<style>
+  :global(.hide-close-button button[aria-label='Close']) {
+    display: none !important;
+  }
+</style>
