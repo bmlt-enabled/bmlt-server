@@ -64,6 +64,7 @@
         "localized-strings": "^2.0.3",
         "pbf": "^4.0.1",
         "svelte-spa-router": "github:pjaudiomv/svelte-spa-router",
-        "yup": "^1.6.1"
+        "yup": "^1.6.1",
+        "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
 }
