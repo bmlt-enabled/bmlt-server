@@ -34,7 +34,7 @@
       <Button
         color={activeTab === index ? 'light' : 'dark'}
         onclick={() => setActiveTab(index)}
-        class={activeTab === index ? inactiveClasses : activeClasses}
+        class="{activeTab === index ? inactiveClasses : activeClasses} border-1 border-transparent"
         aria-selected={activeTab === index}
         aria-label={tab}
         role="tab"
