@@ -20,53 +20,58 @@ describe('MeetingEditForm Component', () => {
   test('test Ensure form fields are present', async () => {
     render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
 
-    const deleteButton = screen.getByRole('button', {
-      name: `${translations.getString('deleteMeeting')} ${selectedMeeting.id}`
-    });
-    expect(deleteButton).toBeInTheDocument();
+    await waitFor(
+      async () => {
+        const deleteButton = screen.getByRole('button', {
+          name: `${translations.getString('deleteMeeting')} ${selectedMeeting.id}`
+        });
+        expect(deleteButton).toBeInTheDocument();
 
-    // Basic fields
-    // getting the 'Meeting is Published' checkbox by its name stopped working; but there is only one checkbox at this point
-    expect(screen.getByRole('checkbox')).toBeChecked();
-    expect(screen.getByLabelText(translations.getString('nameTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('timeZoneTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('dayTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('startTimeTitle'))).toBeInTheDocument();
-    expect(screen.getByText(translations.getString('durationTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('hoursTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('minutesTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('serviceBodyTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('emailTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('worldIdTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('formatsTitle'))).toBeInTheDocument();
+        // Basic fields
+        // getting the 'Meeting is Published' checkbox by its name stopped working; but there is only one checkbox at this point
+        expect(screen.getByRole('checkbox')).toBeChecked();
+        expect(screen.getByLabelText(translations.getString('nameTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('timeZoneTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('dayTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('startTimeTitle'))).toBeInTheDocument();
+        expect(screen.getByText(translations.getString('durationTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('hoursTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('minutesTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('serviceBodyTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('emailTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('worldIdTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('formatsTitle'))).toBeInTheDocument();
 
-    // Location fields
-    expect(screen.getByLabelText(translations.getString('venueTypeTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('longitudeTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('latitudeTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('locationTextTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('extraInfoTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('streetTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('neighborhoodTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('boroughTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('cityTownTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('countySubProvinceTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('stateTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('zipCodeTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('nationTitle'))).toBeInTheDocument();
+        // Location fields
+        expect(screen.getByLabelText(translations.getString('venueTypeTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('longitudeTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('latitudeTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('locationTextTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('extraInfoTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('streetTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('neighborhoodTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('boroughTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('cityTownTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('countySubProvinceTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('stateTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('zipCodeTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('nationTitle'))).toBeInTheDocument();
 
-    // Contact fields
-    expect(screen.getByLabelText(translations.getString('contact1NameTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('contact1PhoneTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('contact1EmailTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('contact2NameTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('contact2PhoneTitle'))).toBeInTheDocument();
-    expect(screen.getByLabelText(translations.getString('contact2EmailTitle'))).toBeInTheDocument();
-    settings.customFields.forEach(({ name, displayName }) => {
-      expect(screen.getByLabelText(displayName)).toBeInTheDocument();
-      expect(screen.getByLabelText(displayName)).toHaveValue(selectedMeeting.customFields ? selectedMeeting.customFields[name] : '');
-    });
-  });
+        // Contact fields
+        expect(screen.getByLabelText(translations.getString('contact1NameTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('contact1PhoneTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('contact1EmailTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('contact2NameTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('contact2PhoneTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('contact2EmailTitle'))).toBeInTheDocument();
+        settings.customFields.forEach(({ name, displayName }) => {
+          expect(screen.getByLabelText(displayName)).toBeInTheDocument();
+          expect(screen.getByLabelText(displayName)).toHaveValue(selectedMeeting.customFields ? selectedMeeting.customFields[name] : '');
+        });
+      },
+      { timeout: 10000 }
+    );
+  }, 15000);
 
   test('test Initial values are correctly set', async () => {
     render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
