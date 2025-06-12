@@ -23,15 +23,15 @@ describe('check content in Formats tab', () => {
     const cells = screen.getAllByRole('cell');
     expect(cells.length).toBe(16);
     // check for a couple of representative formats
-    expect(screen.getByRole('cell', { name: 'Closed' })).toBeInTheDocument();
-    expect(screen.getByRole('cell', { name: 'Basic Text' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '(C) Closed' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '(BT) Basic Text' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Agnostisch (no English version available)' })).toBeInTheDocument();
   });
 
   test('edit a format', async () => {
     // this test doesn't involve editing a translation in the popup -- that's tested separately to keep the test size more manageable
     const user = await login('serveradmin', 'Formats');
-    await user.click(await screen.findByRole('cell', { name: 'Basic Text' }));
+    await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
     const b = screen.getByRole('button', { name: 'Apply Changes' });
     expect(b).toBeDisabled();
     const nawsFormat = screen.getByRole('combobox', { name: 'NAWS Format' }) as HTMLSelectElement;
@@ -53,7 +53,7 @@ describe('check content in Formats tab', () => {
 
   test('edit translations', async () => {
     const user = await login('serveradmin', 'Formats');
-    await user.click(await screen.findByRole('cell', { name: 'Basic Text' }));
+    await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
     // Since English is the current default language, that translation in the accordion should be open and the others closed.
     // However, BasicAccordion just hides them with css, so they are still in the DOM and can be edited.
     const toggle_de = await screen.findByRole('button', { name: /toggle accordion de/i });
@@ -98,7 +98,7 @@ describe('check content in Formats tab', () => {
 
   test('delete a format', async () => {
     const user = await login('serveradmin', 'Formats');
-    await user.click(await screen.findByRole('button', { name: 'Delete Format Beginners' }));
+    await user.click(await screen.findByRole('button', { name: 'Delete Format (B) Beginners' }));
     // TODO: see comment in Users.spec.ts test about finding the checkbox
     // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
     await user.click(await screen.findByRole('checkbox'));
@@ -110,7 +110,7 @@ describe('check content in Formats tab', () => {
 
   test('try to delete a format that is in use', async () => {
     const user = await login('serveradmin', 'Formats');
-    await user.click(await screen.findByRole('button', { name: 'Delete Format Basic Text' }));
+    await user.click(await screen.findByRole('button', { name: 'Delete Format (BT) Basic Text' }));
     // TODO: see comment in Users.spec.ts test about finding the checkbox
     // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
     await user.click(await screen.findByRole('checkbox'));
@@ -123,7 +123,7 @@ describe('check content in Formats tab', () => {
 
   test('delete should be disabled for reserved formats', async () => {
     await login('serveradmin', 'Formats');
-    const d = await screen.findByRole('button', { name: 'Delete Format Virtual Meeting' });
+    const d = await screen.findByRole('button', { name: 'Delete Format (VM) Virtual Meeting' });
     expect(d).toBeDisabled();
   });
 

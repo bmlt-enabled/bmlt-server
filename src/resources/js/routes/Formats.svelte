@@ -97,7 +97,7 @@
   export function getFormatName(format: Format): string {
     const n = format.translations.find((t) => t.language === language);
     if (n) {
-      return n.name;
+      return `(${n.key}) ${n.name}`;
     } else {
       const e = format.translations.find((t) => t.language === 'en');
       if (e) {
