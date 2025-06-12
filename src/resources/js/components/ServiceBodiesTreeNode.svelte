@@ -18,8 +18,13 @@
 
   let { toggle, tree = $bindable() }: Props = $props();
 
+  if (tree.expanded === undefined) {
+    tree.expanded = false;
+  }
+
   const toggleExpansion = () => {
-    tree.expanded = !tree.expanded;
+    const newTree = { ...tree, expanded: !tree.expanded };
+    tree = newTree;
   };
 
   const toggleCheck = () => {
@@ -30,28 +35,28 @@
 
 <ul>
   <li>
-    {#if tree.children}
-      <div class="flex items-center space-x-2">
-        {#if tree.children.length > 0}
-          <button type="button" onclick={toggleExpansion} class="arrow" class:arrowDown={tree.expanded} aria-expanded={tree.expanded} aria-label="Toggle node"></button>
-        {/if}
-        <Checkbox id={tree.value} data-label={tree.label} checked={tree.checked} indeterminate={tree.indeterminate} onclick={toggleCheck} />
-        <Label for={tree.value} class="ml-2">{tree.label}</Label>
-      </div>
-      {#if tree.expanded}
-        <ul>
-          {#each tree.children as child (child)}
-            <li>
-              <ServiceBodiesTreeNode tree={child} {toggle} />
-            </li>
-          {/each}
-        </ul>
+    <div class="flex items-center space-x-2">
+      {#if tree.children && tree.children.length > 0}
+        <button
+          type="button"
+          onclick={toggleExpansion}
+          class="arrow font-mono text-lg leading-6 text-black dark:text-white"
+          class:arrowDown={tree.expanded}
+          aria-expanded={tree.expanded}
+          aria-label="Toggle node"
+        ></button>
       {/if}
-    {:else}
-      <div class="flex items-center space-x-2">
-        <Checkbox data-label={tree.label} checked={tree.checked} indeterminate={tree.indeterminate} onclick={toggleCheck} />
-        <Label for={tree.label} class="ml-2">{tree.label}</Label>
-      </div>
+      <Checkbox id={tree.value} data-label={tree.label} checked={tree.checked} indeterminate={tree.indeterminate} onclick={toggleCheck} />
+      <Label for={tree.value} class="ml-2">{tree.label}</Label>
+    </div>
+    {#if tree.children && tree.children.length > 0 && tree.expanded}
+      <ul>
+        {#each tree.children as child (child.value)}
+          <li>
+            <ServiceBodiesTreeNode tree={child} {toggle} />
+          </li>
+        {/each}
+      </ul>
     {/if}
   </li>
 </ul>
@@ -69,9 +74,6 @@
     content: var(--tw-content);
     display: inline-block;
     cursor: pointer;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-    font-size: 1rem;
-    line-height: 1.5rem;
   }
 
   .arrowDown::before {

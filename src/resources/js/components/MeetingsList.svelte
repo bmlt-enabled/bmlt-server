@@ -32,6 +32,7 @@
   let itemsPerPage: number = $state(20);
   const itemsPerPageItems = [10, 20, 40, 60, 80, 100].map((value) => ({ value, name: value.toString() }));
   const showPage: number = 5;
+  let dropdownOpen = $state(false);
   let selectedTimes: string[] = $state([]);
   let selectedPublished: string[] = $state([]);
   let selectedMeeting: Meeting | null = $state(null);
@@ -248,6 +249,7 @@
 
   $effect(() => {
     updateItemsPerPage();
+    dropdownOpen = true;
   });
 </script>
 
@@ -261,7 +263,7 @@
             <Indicator color="red" size="sm" placement="top-right" />
           {/if}
         </Button>
-        <Dropdown class="top-full z-50 w-90 space-y-2 p-3 text-sm" isOpen={true}>
+        <Dropdown class="top-full z-50 w-90 space-y-2 divide-y-0 p-3 text-sm" isOpen={dropdownOpen}>
           <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByServiceBody}</h6>
           <ServiceBodiesTree {serviceBodies} bind:selectedValues={selectedServiceBodies} />
         </Dropdown>
@@ -272,7 +274,7 @@
           <Indicator color="red" size="sm" placement="top-right" />
         {/if}
       </Button>
-      <Dropdown class="top-full z-50 w-48 space-y-2 p-3 text-sm">
+      <Dropdown class="top-full z-50 w-48 space-y-2 divide-y-0 p-3 text-sm">
         <h6 class="text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByDay}</h6>
         <Button onclick={toggleAllDays} size="xs" color="primary" class="w-full">
           {isAllDaysSelected ? $translations.unselectAllDays : $translations.selectAllDays}
@@ -286,7 +288,7 @@
         {/if}
         <FilterSolid class="ml-2 h-3 w-3 " />
       </Button>
-      <Dropdown class="w-48 space-y-2 p-3 text-sm">
+      <Dropdown class="w-48 space-y-2 divide-y-0 p-3 text-sm">
         <Checkbox name="times" choices={publishedChoices} bind:group={selectedPublished} class="ms-2" />
       </Dropdown>
       <Button color="alternative" class="relative">
@@ -296,7 +298,7 @@
         {/if}
         <FilterSolid class="ml-2 h-3 w-3 " />
       </Button>
-      <Dropdown class="w-48 space-y-2 p-3 text-sm">
+      <Dropdown class="w-48 space-y-2 divide-y-0 p-3 text-sm">
         <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.chooseStartTime}</h6>
         <Checkbox name="times" choices={timeChoices} bind:group={selectedTimes} class="ms-2" />
       </Dropdown>
