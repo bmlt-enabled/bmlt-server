@@ -57,7 +57,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  * @OA\Schema(schema="MeetingUpdate", required={"serviceBodyId", "formatIds", "venueType", "day", "startTime", "duration", "latitude", "longitude", "published", "name"},
  *     allOf={ @OA\Schema(ref="#/components/schemas/MeetingBase") }
  * ),
- * @OA\Schema(schema="MeetingPartialUpdate", required={"serviceBodyId", "formatIds", "venueType", "day", "startTime", "duration", "latitude", "longitude", "published", "name"},
+ * @OA\Schema(schema="MeetingPartialUpdate",
  *     allOf={ @OA\Schema(ref="#/components/schemas/MeetingBase") }
  * ),
  * @OA\Schema(schema="MeetingCollection", type="array",

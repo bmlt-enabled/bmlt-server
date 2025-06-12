@@ -2565,18 +2565,6 @@
                 ]
             },
             "MeetingPartialUpdate": {
-                "required": [
-                    "serviceBodyId",
-                    "formatIds",
-                    "venueType",
-                    "day",
-                    "startTime",
-                    "duration",
-                    "latitude",
-                    "longitude",
-                    "published",
-                    "name"
-                ],
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/MeetingBase"
