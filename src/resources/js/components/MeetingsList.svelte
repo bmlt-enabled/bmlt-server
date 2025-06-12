@@ -249,7 +249,6 @@
 
   $effect(() => {
     updateItemsPerPage();
-    dropdownOpen = true;
   });
 </script>
 
