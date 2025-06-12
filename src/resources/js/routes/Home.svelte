@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Card, Fileupload, Label, P } from 'flowbite-svelte';
-  import * as XLSX from 'xlsx';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
@@ -11,14 +10,14 @@
   let files = $state<FileList | undefined>(undefined);
   let tableData = $state<Record<string, any>[]>([]);
   let isLoading = $state(false);
-  let errorMessage = $state<string | null>(null);
+  let errorMessage = $state<string[]>([]);
   let isProcessed = $state(false);
   let processedWorldIds = $state<string[]>([]);
 
   async function processFile(file: File): Promise<void> {
     try {
       isLoading = true;
-      errorMessage = null;
+      errorMessage = [];
       console.log('Processing file:', file.name, file.type);
 
       const extension = getFileExtension(file.name);
@@ -27,6 +26,7 @@
         throw new Error('Unsupported file type. Please upload a CSV or Excel file.');
       }
 
+      const XLSX = await import('xlsx');
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, {
         type: 'array',
@@ -48,7 +48,7 @@
         const committee = row['Committee'];
 
         if (!meetingId || !committee) {
-          errorMessage = `Skipping row ${idx + 1} due to missing bmlt_id or Committee`;
+          errorMessage.push(`Skipping row ${idx + 1} due to missing bmlt_id or Committee`);
           continue;
         }
 
@@ -60,11 +60,11 @@
           console.log(`Successfully updated meeting ${meetingId} with committee: ${committee}`);
           processedWorldIds.push(meetingId);
         } catch (err) {
-          errorMessage = `Failed to update meeting ${meetingId}: ${err}`;
+          errorMessage.push(`Failed to update meeting ${meetingId}: ${err}`);
         }
       }
     } catch (err) {
-      errorMessage = err instanceof Error ? err.message : 'An error occurred while processing the file';
+      errorMessage.push(err instanceof Error ? err.message : 'An error occurred while processing the file');
       console.error('Error processing file:', err);
     } finally {
       isProcessed = true;
@@ -90,6 +90,8 @@
   $effect(() => {
     if (files && files.length > 0) {
       isProcessed = false;
+      errorMessage = [];
+      processedWorldIds = [];
     }
   });
 </script>
@@ -137,9 +139,13 @@
           </P>
         </div>
       {/if}
-      {#if errorMessage}
+      {#if errorMessage.length > 0}
         <div class="mb-4">
-          <P class="text-red-700 dark:text-red-500">{errorMessage}</P>
+          <ul class="space-y-1 text-red-700 dark:text-red-500">
+            {#each errorMessage as error}
+              <li class="text-sm">• {error}</li>
+            {/each}
+          </ul>
         </div>
       {/if}
     </div>
