@@ -591,4 +591,16 @@ class GetNawsExportTest extends TestCase
         $this->assertTrue($rows[3]['bmlt_id'] == $meeting3->id_bigint || $rows[3]['bmlt_id'] == $meeting6->id_bigint);
         $this->assertTrue($rows[4]['bmlt_id'] == $meeting3->id_bigint || $rows[4]['bmlt_id'] == $meeting6->id_bigint);
     }
+
+    public function testRejectsNonCsvFormat()
+    {
+        $area1 = $this->createArea('area1', 'area1', 0);
+        $this->get("/client_interface/json/?switcher=GetNAWSDump&sb_id=$area1->id_bigint")
+            ->assertStatus(422)
+            ->assertSee('GetNAWSDump is only valid for csv format');
+
+        $this->get("/client_interface/jsonp/?switcher=GetNAWSDump&sb_id=$area1->id_bigint")
+            ->assertStatus(422)
+            ->assertSee('GetNAWSDump is only valid for csv format');
+    }
 }
