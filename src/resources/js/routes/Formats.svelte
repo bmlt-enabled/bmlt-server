@@ -23,6 +23,7 @@
   let searchTerm = $state('');
   let selectedFormat: Format | null = $state(null);
   let deleteFormat: Format | null = $state(null);
+  let lastEditedFormatId: number | null = $state(null);
 
   let filteredFormats = $derived(
     [...formats].sort((f1, f2) => getFormatName(f1).localeCompare(getFormatName(f2))).filter((f) => getFormatName(f).toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1)
@@ -34,6 +35,7 @@
     try {
       spinner.show();
       formats = await RootServerApi.getFormats();
+      lastEditedFormatId = null;
       formats.sort((a, b) => getFormatName(a).localeCompare(getFormatName(b)));
       isLoaded = true;
     } catch (error: any) {
@@ -68,6 +70,7 @@
     } else {
       formats[i] = format;
     }
+    lastEditedFormatId = format.id;
     closeModal();
   }
 
@@ -130,7 +133,7 @@
         </TableHead>
         <TableBody>
           {#each filteredFormats as format (format.id)}
-            <TableBodyRow onclick={() => handleEdit(format)} class="cursor-pointer" aria-label={$translations.editFormat}>
+            <TableBodyRow onclick={() => handleEdit(format)} class={`cursor-pointer ${format.id === lastEditedFormatId ? 'bg-blue-50 dark:bg-blue-900' : ''}`} aria-label={$translations.editFormat}>
               <TableBodyCell class="whitespace-normal">{getFormatName(format)}</TableBodyCell>
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">

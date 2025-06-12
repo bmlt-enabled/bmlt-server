@@ -40,6 +40,7 @@
   let tableSearchRef: SvelteComponent | null = null;
   let sortColumn: keyof Meeting | null = $state(null);
   let sortDirection: 'asc' | 'desc' = $state('asc');
+  let lastEditedMeetingId: number | null = $state(null);
   const weekdayChoices = ($translations.daysOfWeek as string[]).map((day: string, index: number) => ({
     value: index.toString(),
     label: day
@@ -79,6 +80,7 @@
     } else {
       meetingIds = '';
     }
+    lastEditedMeetingId = null;
     getMeetings(searchTerm, selectedDays.join(','), selectedServiceBodies.join(','), meetingIds);
   }
 
@@ -152,17 +154,20 @@
   function loadNextPage() {
     if (currentPosition + itemsPerPage < filteredItems.length) {
       currentPosition += itemsPerPage;
+      lastEditedMeetingId = null;
     }
   }
 
   function loadPreviousPage() {
     if (currentPosition - itemsPerPage >= 0) {
       currentPosition -= itemsPerPage;
+      lastEditedMeetingId = null;
     }
   }
 
   function updateItemsPerPage() {
     currentPosition = 0; // Reset to first page when itemsPerPage changes
+    lastEditedMeetingId = null;
   }
 
   function handleSort(column: keyof Meeting) {
@@ -178,6 +183,7 @@
 
   function goToPage(pageNumber: number) {
     currentPosition = (pageNumber - 1) * itemsPerPage;
+    lastEditedMeetingId = null;
     filteredItems.slice(currentPosition, currentPosition + itemsPerPage);
   }
 
@@ -188,6 +194,7 @@
     } else {
       meetings[i] = meeting;
     }
+    lastEditedMeetingId = meeting.id;
     closeModal();
   }
 
@@ -361,7 +368,7 @@
   </TableHead>
   <TableBody>
     {#each currentPageItems as meeting (meeting.id)}
-      <TableBodyRow onclick={() => handleEdit(meeting)}>
+      <TableBodyRow onclick={() => handleEdit(meeting)} class={meeting.id === lastEditedMeetingId ? 'bg-blue-50 dark:bg-blue-900' : ''}>
         <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-400 px-4 py-3 whitespace-nowrap'}>
           {$translations.daysOfWeek[meeting.day]}
         </TableBodyCell>
