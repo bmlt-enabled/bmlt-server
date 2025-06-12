@@ -101,9 +101,9 @@
     } else {
       const e = format.translations.find((t) => t.language === 'en');
       if (e) {
-        return e.name + ' (' + $translations.noTranslationAvailable + ')';
+        return `(${e.key}) ${e.name} (${$translations.noTranslationAvailable})`;
       } else if (format.translations[0]) {
-        return format.translations[0].name + ' (' + $translations.noTranslationAvailable + ')';
+        return `(${format.translations[0].key}) ${format.translations[0].name} (${$translations.noTranslationAvailable})`;
       } else {
         return '';
       }

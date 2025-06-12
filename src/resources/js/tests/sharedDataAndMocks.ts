@@ -1018,8 +1018,13 @@ export async function loginDeutsch(username: string, tab: string | null = null):
   await user.type(await screen.findByLabelText('Passwort'), findPassword(username));
   await user.click(await screen.findByRole('button', { name: 'Anmelden' }));
   if (tab) {
-    const link = await screen.findByRole('link', { name: tab, hidden: true });
-    await user.click(link);
+    await waitFor(
+      async () => {
+        const link = await screen.findByRole('link', { name: tab, hidden: true });
+        await user.click(link);
+      },
+      { timeout: 10000 }
+    );
   }
   return user;
 }
