@@ -21,6 +21,7 @@
   let searchTerm = $state('');
   let selectedUser: User | null = $state(null);
   let deleteUser: User | null = $state(null);
+  let lastEditedUserId: number | null = $state(null);
 
   let filteredUsers = $derived(
     [...users]
@@ -33,6 +34,7 @@
     try {
       spinner.show();
       users = await RootServerApi.getUsers();
+      lastEditedUserId = null;
       isLoaded = true;
     } catch (error: any) {
       await RootServerApi.handleErrors(error);
@@ -66,6 +68,7 @@
     } else {
       users[i] = user;
     }
+    lastEditedUserId = user.id;
     closeModal();
   }
 
@@ -106,7 +109,7 @@
         </TableHead>
         <TableBody>
           {#each filteredUsers as user (user.id)}
-            <TableBodyRow onclick={() => handleEdit(user)} class="cursor-pointer" aria-label={$translations.editUser}>
+            <TableBodyRow onclick={() => handleEdit(user)} class={`cursor-pointer ${user.id === lastEditedUserId ? 'bg-blue-50 dark:bg-blue-900' : ''}`} aria-label={$translations.editUser}>
               <TableBodyCell class="whitespace-normal">{user.displayName}</TableBodyCell>
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">

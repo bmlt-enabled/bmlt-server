@@ -24,6 +24,7 @@
   let searchTerm = $state('');
   let selectedServiceBody: ServiceBody | null = $state(null);
   let deleteServiceBody: ServiceBody | null = $state(null);
+  let lastEditedServiceBodyId: number | null = $state(null);
 
   async function getUsers(): Promise<void> {
     try {
@@ -41,6 +42,7 @@
     try {
       spinner.show();
       serviceBodies = await RootServerApi.getServiceBodies();
+      lastEditedServiceBodyId = null;
       serviceBodiesLoaded = true;
     } catch (error: any) {
       await RootServerApi.handleErrors(error);
@@ -74,6 +76,7 @@
     } else {
       serviceBodies[i] = serviceBody;
     }
+    lastEditedServiceBodyId = serviceBody.id;
     closeModal();
   }
 
@@ -141,7 +144,11 @@
         </TableHead>
         <TableBody>
           {#each filteredServiceBodies as serviceBody (serviceBody.id)}
-            <TableBodyRow onclick={() => handleEdit(serviceBody)} class="cursor-pointer" aria-label={$translations.editUser}>
+            <TableBodyRow
+              onclick={() => handleEdit(serviceBody)}
+              class={`cursor-pointer ${serviceBody.id === lastEditedServiceBodyId ? 'bg-blue-50 dark:bg-blue-900' : ''}`}
+              aria-label={$translations.editUser}
+            >
               <TableBodyCell class="whitespace-normal">{serviceBody.name}</TableBodyCell>
               {#if $authenticatedUser?.type === 'admin'}
                 <TableBodyCell class="text-right">
