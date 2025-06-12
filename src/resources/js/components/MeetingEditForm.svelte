@@ -818,9 +818,11 @@
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
     <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
-        <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
-          {item.name}
-        </Badge>
+        <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+          <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
+            {item.name}
+          </Badge>
+        </div>
       {/snippet}
     </MultiSelect>
     <!-- For some reason yup fills the errors store with empty objects for this array. The === 'string' ensures only server side errors will display. -->
