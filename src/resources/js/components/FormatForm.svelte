@@ -240,11 +240,11 @@
     {/if}
     <div class="md:col-span-2">
       <Label for="worldId" class="mb-2 md:col-span-2">{$translations.nawsFormatTitle}</Label>
-      <Select id="worldId" items={$translations.nawsFormats} name="worldId" class="dark:bg-gray-600" />
+      <Select id="worldId" items={$translations.nawsFormats} name="worldId" class="rounded-lg dark:bg-gray-600" />
     </div>
     <div class="md:col-span-2">
       <Label for="type" class="mb-2 md:col-span-2">{$translations.formatTypeTitle}</Label>
-      <Select id="type" items={$translations.formatTypeCodes} name="type" class="dark:bg-gray-600" />
+      <Select id="type" items={$translations.formatTypeCodes} name="type" class="rounded-lg dark:bg-gray-600" />
     </div>
     <div class="md:col-span-2">
       <Button type="submit" class="w-full" disabled={!$isDirty} onclick={disableButtonHack}>
