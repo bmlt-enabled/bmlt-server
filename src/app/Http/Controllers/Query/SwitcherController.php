@@ -52,7 +52,10 @@ class SwitcherController extends Controller
 
         $validValues = ['GetSearchResults', 'GetFormats', 'GetServiceBodies', 'GetFieldKeys', 'GetFieldValues', 'GetChanges', 'GetServerInfo', 'GetCoverageArea', 'GetNAWSDump'];
         if (in_array($switcher, $validValues)) {
-            if ($switcher == 'GetNAWSDump' && $dataFormat == 'csv') {
+            if ($switcher == 'GetNAWSDump') {
+                if ($dataFormat != 'csv') {
+                    abort(422, "GetNAWSDump is only valid for csv format.");
+                }
                 $response = $this->getNawsDump($request);
             } elseif ($dataFormat == 'json' || $dataFormat == 'jsonp') {
                 if ($switcher == 'GetSearchResults') {
