@@ -6,6 +6,7 @@
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
+  import type { MeetingPartialUpdate } from 'bmlt-server-client';
 
   let files = $state<FileList | undefined>(undefined);
   let tableData = $state<Record<string, any>[]>([]);
@@ -52,14 +53,10 @@
         }
 
         try {
-          // May want to use patch but could be useful to ensure meeting exists
-          // and compare existing data
-          const existingMeeting = await RootServerApi.getMeeting(meetingId);
-          const updatedMeeting = {
-            ...existingMeeting,
+          const updatedMeeting: MeetingPartialUpdate = {
             worldId: committee
           };
-          await RootServerApi.updateMeeting(meetingId, updatedMeeting);
+          await RootServerApi.partialUpdateMeeting(meetingId, updatedMeeting);
           console.log(`Successfully updated meeting ${meetingId} with committee: ${committee}`);
           processedWorldIds.push(meetingId);
         } catch (err) {
@@ -136,7 +133,7 @@
       {#if isProcessed && processedWorldIds.length > 0}
         <div class="mb-4">
           <P class="text-green-600 dark:text-green-400">
-            Processed meetings: {processedWorldIds.join(', ')}
+            Processed {processedWorldIds.length} meetings: {processedWorldIds.join(', ')}
           </P>
         </div>
       {/if}
