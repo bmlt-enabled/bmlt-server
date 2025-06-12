@@ -134,6 +134,15 @@
 
 <form use:form>
   <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2">
+      <Label for="displayName" class="mb-2">{$translations.nameTitle}</Label>
+      <Input type="text" id="displayName" name="displayName" required />
+      <Helper class="mt-2" color="red">
+        {#if $errors.displayName}
+          {$errors.displayName}
+        {/if}
+      </Helper>
+    </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
       <Select id="type" items={userTypeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
@@ -149,15 +158,6 @@
       <Helper class="mt-2" color="red">
         {#if $errors.ownerId}
           {$errors.ownerId}
-        {/if}
-      </Helper>
-    </div>
-    <div class="md:col-span-2">
-      <Label for="displayName" class="mb-2">{$translations.nameTitle}</Label>
-      <Input type="text" id="displayName" name="displayName" required />
-      <Helper class="mt-2" color="red">
-        {#if $errors.displayName}
-          {$errors.displayName}
         {/if}
       </Helper>
     </div>
