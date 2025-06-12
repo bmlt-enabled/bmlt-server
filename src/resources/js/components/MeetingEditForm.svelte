@@ -746,7 +746,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" items={timeZoneChoices} name="timeZone" class="dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder} />
+      <Select id="timeZone" items={timeZoneChoices} name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder} />
       {#if $errors.timeZone}
         <Helper class="mt-2" color="red">
           {$errors.timeZone}
@@ -757,7 +757,7 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" class="dark:bg-gray-600" />
+      <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
       {#if $errors.day}
         <Helper class="mt-2" color="red">
           {$errors.day}
@@ -786,7 +786,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
-      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="dark:bg-gray-600" />
+      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="rounded-lg dark:bg-gray-600" />
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
           {$errors.serviceBodyId}
@@ -818,9 +818,11 @@
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
     <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
-        <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
-          {item.name}
-        </Badge>
+        <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+          <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
+            {item.name}
+          </Badge>
+        </div>
       {/snippet}
     </MultiSelect>
     <!-- For some reason yup fills the errors store with empty objects for this array. The === 'string' ensures only server side errors will display. -->
@@ -836,7 +838,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" class="dark:bg-gray-600" />
+      <Select id="venueType" items={venueTypeItems} name="venueType" class="rounded-lg dark:bg-gray-600" />
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -845,7 +847,7 @@
     </div>
   </div>
   {#if selectedMeeting}
-    <div class="grid gap-4 md:grid-cols-2">
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
         <MapAccordion
           title={$translations.locationMapTitle}
@@ -963,7 +965,7 @@
     <div class="w-full">
       <Label for="locationSubProvince" class="mt-2 mb-2">{$translations.countySubProvinceTitle}</Label>
       {#if countiesAndSubProvincesChoices.length > 0}
-        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" class="dark:bg-gray-600" />
+        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" class="rounded-lg dark:bg-gray-600" />
       {:else}
         <Input type="text" id="locationSubProvince" name="locationSubProvince" />
       {/if}
@@ -978,7 +980,7 @@
     <div class="w-full">
       <Label for="locationProvince" class="mt-2 mb-2">{$translations.stateTitle}</Label>
       {#if statesAndProvincesChoices.length > 0}
-        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" class="dark:bg-gray-600" />
+        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" class="rounded-lg dark:bg-gray-600" />
       {:else}
         <Input type="text" id="locationProvince" name="locationProvince" />
       {/if}

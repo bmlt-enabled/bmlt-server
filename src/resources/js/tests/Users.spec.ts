@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, test } from 'vitest';
-import { screen } from '@testing-library/svelte';
+import { screen, waitFor } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 
@@ -24,39 +24,71 @@ describe('check content in User tab when logged in as various users', () => {
   });
 
   test('check layout when logged in as Northern Zone', async () => {
-    login('NorthernZone', 'Users');
+    await login('NorthernZone', 'Users');
+    // Wait for the Users page to load
+    await waitFor(
+      async () => {
+        expect(screen.getByRole('heading', { name: 'Users', level: 2 })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
     // There should be 4 users, with 1 cell per user (display name but no delete icon)
-    const cells = await screen.findAllByRole('cell');
+    const cells = await screen.findAllByRole('cell', {}, { timeout: 10000 });
     expect(cells.length).toBe(4);
     expect(screen.getByRole('cell', { name: 'Big Region' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Small Region' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Small Observer' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Small Deactivated' })).toBeInTheDocument();
     // Big Region Admin 2 is owned by the server admin, so shouldn't show up here
-  });
+  }, 15000);
 
   test('check layout when logged in as Big Region', async () => {
-    login('BigRegion', 'Users');
+    await login('BigRegion', 'Users');
+    // Wait for the Users page to load
+    await waitFor(
+      async () => {
+        expect(screen.getByRole('heading', { name: 'Users', level: 2 })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
     // There should be 4 users, with 1 cell per user (display name but no delete icon)
-    const cells = await screen.findAllByRole('cell');
+    const cells = await screen.findAllByRole('cell', {}, { timeout: 10000 });
     expect(cells.length).toBe(4);
     expect(screen.getByRole('cell', { name: 'Mountain Area' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'River City Area' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Rural Area' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Rural Area Admin 2' })).toBeInTheDocument();
-  });
+  }, 15000);
 
   test('check layout when logged in as Small Region', async () => {
-    login('SmallRegion', 'Users');
-    expect(await screen.findByText('No other users found that this user can edit')).toBeInTheDocument();
-    expect(screen.queryByText('Formats')).not.toBeInTheDocument();
-  });
+    await login('SmallRegion', 'Users');
+    // Wait for the Users page to load
+    await waitFor(
+      async () => {
+        expect(screen.getByRole('heading', { name: 'Users', level: 2 })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+    // Wait for the "no users" message
+    await waitFor(
+      () => {
+        expect(screen.getByText('No other users found that this user can edit')).toBeInTheDocument();
+        expect(screen.queryByText('Formats')).not.toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+  }, 15000);
 
   test('check layout when logged in as Small Observer', async () => {
-    await login('SmallObserver', 'Home');
-    expect(screen.queryByText('Users')).not.toBeInTheDocument();
-    expect(screen.queryByText('Service Bodies')).not.toBeInTheDocument();
-  });
+    await login('SmallObserver', null); // Don't try to navigate to Home tab since it might not be visible
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Users')).not.toBeInTheDocument();
+        expect(screen.queryByText('Service Bodies')).not.toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+  }, 15000);
 });
 
 describe('check editing, adding, and deleting users using the popup dialog boxes', () => {

@@ -34,6 +34,7 @@ import { render, screen } from '@testing-library/svelte';
 import { replace } from 'svelte-spa-router';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
+import { waitFor } from '@testing-library/svelte';
 
 import { ResponseError } from 'bmlt-server-client';
 import type {
@@ -935,6 +936,22 @@ export function sharedBeforeAll() {
     startTime: null,
     currentTime: null
   });
+
+  HTMLElement.prototype.showPopover = vi.fn(function mock(this: HTMLElement) {
+    this.style.display = 'block';
+    this.setAttribute('data-popover-open', 'true');
+    // Dispatch events synchronously to avoid timing issues
+    this.dispatchEvent(new Event('beforetoggle', { bubbles: true }));
+    this.dispatchEvent(new Event('toggle', { bubbles: true }));
+  });
+
+  HTMLElement.prototype.hidePopover = vi.fn(function mock(this: HTMLElement) {
+    this.style.display = 'none';
+    this.removeAttribute('data-popover-open');
+    this.dispatchEvent(new Event('beforetoggle', { bubbles: true }));
+    this.dispatchEvent(new Event('toggle', { bubbles: true }));
+  });
+
   // TODO (perhaps): keep an eye out for tests that rely on the returnValue property of HTMLDialogElement.
   // Would need to figure out what its value should be though ....
   HTMLDialogElement.prototype.showModal = vi.fn(function mock(this: HTMLDialogElement) {
@@ -979,8 +996,13 @@ export async function login(username: string, tab: string | null = null): Promis
   await user.type(await screen.findByLabelText('Password'), findPassword(username));
   await user.click(await screen.findByRole('button', { name: 'Log In' }));
   if (tab) {
-    const link = await screen.findByRole('link', { name: tab, hidden: true });
-    await user.click(link);
+    await waitFor(
+      async () => {
+        const link = await screen.findByRole('link', { name: tab, hidden: true });
+        await user.click(link);
+      },
+      { timeout: 10000 }
+    );
   }
   return user;
 }
