@@ -33,7 +33,7 @@ class MeetingController extends ResourceController
     public function index(Request $request)
     {
         $validated = $request->validate([
-            'meetingIds' => [new Delimited('int|exists:comdef_meetings_main,id_bigint')],
+            'meetingIds' => [new Delimited('int')],
             'days' => [new Delimited('int|between:0,6')],
             'serviceBodyIds' => [new Delimited('int|exists:comdef_service_bodies,id_bigint')],
             'searchString' => 'string|min:3',

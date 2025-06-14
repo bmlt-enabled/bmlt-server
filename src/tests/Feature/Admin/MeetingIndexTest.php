@@ -155,10 +155,10 @@ class MeetingIndexTest extends TestCase
             ->get("/api/v1/meetings?meetingIds={$meeting1->id_bigint},notAnInt")
             ->assertStatus(422);
 
-        // can't be an invalid meeting id
+        // can be an invalid meeting id
         $this->withHeader('Authorization', "Bearer $token")
             ->get("/api/v1/meetings?meetingIds={$meeting1->id_bigint},999")
-            ->assertStatus(422);
+            ->assertStatus(200);
 
         // can be a valid meeting id
         $this->withHeader('Authorization', "Bearer $token")
