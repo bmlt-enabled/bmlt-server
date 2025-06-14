@@ -24,6 +24,9 @@
   </NavBrand>
   <NavUl>
     <NavLi href="#/">{$translations.homeTitle}</NavLi>
+    {#if $authenticatedUser?.type === 'admin'}
+      <NavLi href="#/administration">{$translations.administrationTitle}</NavLi>
+    {/if}
     <NavLi href="#/meetings">{$translations.meetingsTitle}</NavLi>
     {#if $authenticatedUser?.type === 'admin'}
       <NavLi href="#/formats">{$translations.formatsTitle}</NavLi>
