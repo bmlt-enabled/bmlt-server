@@ -6,6 +6,7 @@
   import type { ConditionsFailedEvent } from 'svelte-spa-router';
 
   import Account from './routes/Account.svelte';
+  import Administration from './routes/Administration.svelte';
   import Formats from './routes/Formats.svelte';
   import Home from './routes/Home.svelte';
   import Login from './routes/Login.svelte';
@@ -35,6 +36,10 @@
     }),
     '/account': wrap({
       component: Account,
+      conditions: [requiresAuthentication]
+    }),
+    '/administration': wrap({
+      component: Administration,
       conditions: [requiresAuthentication]
     }),
     '*': wrap({
