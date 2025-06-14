@@ -15,6 +15,7 @@
 
   // Statistics tracking
   let stats = $state({
+    totalRows: 0,
     updated: 0,
     noUpdateNeeded: 0,
     notFound: 0,
@@ -28,6 +29,7 @@
       errorMessage = null;
       // Reset stats
       stats = {
+        totalRows: 0,
         updated: 0,
         noUpdateNeeded: 0,
         notFound: 0,
@@ -59,6 +61,7 @@
       }
 
       tableData = jsonData;
+      stats.totalRows = jsonData.length;
 
       // Build a map of meetingId -> committee from the CSV
       const updateMap = new Map<string, string>();
@@ -158,6 +161,7 @@
     if (files && files.length > 0) {
       isProcessed = false;
       stats = {
+        totalRows: 0,
         updated: 0,
         noUpdateNeeded: 0,
         notFound: 0,
@@ -198,6 +202,9 @@
 
       {#if isProcessed && (stats.updated > 0 || stats.noUpdateNeeded > 0 || stats.notFound > 0)}
         <div class="mb-4 space-y-2">
+          <P class="text-gray-700 dark:text-gray-300">
+            📊 Total rows: {stats.totalRows}
+          </P>
           {#if stats.updated > 0}
             <P class="text-green-600 dark:text-green-400">
               ✅ Updated: {stats.updated} meetings
