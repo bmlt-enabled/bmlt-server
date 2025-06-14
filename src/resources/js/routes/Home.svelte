@@ -10,14 +10,31 @@
   let files = $state<FileList | undefined>(undefined);
   let tableData = $state<Record<string, any>[]>([]);
   let isLoading = $state(false);
-  let errorMessage = $state<string[]>([]);
+  let errorMessage = $state<string | null>(null);
   let isProcessed = $state(false);
-  let processedWorldIds = $state<string[]>([]);
+
+  // Statistics tracking
+  let stats = $state({
+    updated: 0,
+    noUpdateNeeded: 0,
+    notFound: 0,
+    errors: 0,
+    processedMeetingIds: [] as string[]
+  });
 
   async function processFile(file: File): Promise<void> {
     try {
       isLoading = true;
-      errorMessage = [];
+      errorMessage = null;
+      // Reset stats
+      stats = {
+        updated: 0,
+        noUpdateNeeded: 0,
+        notFound: 0,
+        errors: 0,
+        processedMeetingIds: []
+      };
+
       console.log('Processing file:', file.name, file.type);
 
       const extension = getFileExtension(file.name);
@@ -43,28 +60,78 @@
 
       tableData = jsonData;
 
+      // Build a map of meetingId -> committee from the CSV
+      const updateMap = new Map<string, string>();
+      const meetingIds: string[] = [];
+
       for (const [idx, row] of tableData.entries()) {
         const meetingId = row['bmlt_id'];
         const committee = row['Committee'];
 
         if (!meetingId || !committee) {
-          errorMessage.push(`Skipping row ${idx + 1} due to missing bmlt_id or Committee`);
+          console.warn(`Skipping row ${idx + 1} due to missing bmlt_id or Committee`);
+          continue;
+        }
+
+        updateMap.set(meetingId.toString(), committee.toString());
+        meetingIds.push(meetingId.toString());
+      }
+
+      if (meetingIds.length === 0) {
+        throw new Error('No valid meeting IDs found in the file.');
+      }
+
+      console.log(`Found ${meetingIds.length} meetings to process`);
+
+      // Fetch all meetings at once
+      const existingMeetings = await RootServerApi.getMeetings({
+        meetingIds: meetingIds.join(',')
+      });
+
+      console.log(`Retrieved ${existingMeetings.length} existing meetings`);
+
+      // Create a map of existing meetings for quick lookup
+      const existingMeetingsMap = new Map();
+      existingMeetings.forEach((meeting) => {
+        existingMeetingsMap.set(meeting.id.toString(), meeting);
+      });
+
+      // Process each meeting
+      for (const meetingId of meetingIds) {
+        const newCommittee = updateMap.get(meetingId);
+        const existingMeeting = existingMeetingsMap.get(meetingId);
+
+        if (!existingMeeting) {
+          console.warn(`Meeting ${meetingId} not found`);
+          stats.notFound++;
+          continue;
+        }
+
+        // Check if update is needed
+        if (existingMeeting.worldId === newCommittee) {
+          console.log(`Meeting ${meetingId} already has committee ${newCommittee} - no update needed`);
+          stats.noUpdateNeeded++;
           continue;
         }
 
         try {
-          const updatedMeeting: MeetingPartialUpdate = {
-            worldId: committee
+          const updatedValues: MeetingPartialUpdate = {
+            worldId: newCommittee
           };
-          await RootServerApi.partialUpdateMeeting(meetingId, updatedMeeting);
-          console.log(`Successfully updated meeting ${meetingId} with committee: ${committee}`);
-          processedWorldIds.push(meetingId);
+          await RootServerApi.partialUpdateMeeting(Number(meetingId), updatedValues);
+          console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newCommittee}`);
+          stats.updated++;
+          stats.processedMeetingIds.push(meetingId);
         } catch (err) {
-          errorMessage.push(`Failed to update meeting ${meetingId}: ${err}`);
+          console.error(`Failed to update meeting ${meetingId}:`, err);
+          stats.errors++;
+          errorMessage = `Failed to update meeting ${meetingId}: ${err}`;
         }
       }
+
+      console.log('Processing complete:', stats);
     } catch (err) {
-      errorMessage.push(err instanceof Error ? err.message : 'An error occurred while processing the file');
+      errorMessage = err instanceof Error ? err.message : 'An error occurred while processing the file';
       console.error('Error processing file:', err);
     } finally {
       isProcessed = true;
@@ -90,8 +157,13 @@
   $effect(() => {
     if (files && files.length > 0) {
       isProcessed = false;
-      errorMessage = [];
-      processedWorldIds = [];
+      stats = {
+        updated: 0,
+        noUpdateNeeded: 0,
+        notFound: 0,
+        errors: 0,
+        processedMeetingIds: []
+      };
     }
   });
 </script>
@@ -132,20 +204,40 @@
           </Button>
         </div>
       {/if}
-      {#if isProcessed && processedWorldIds.length > 0}
-        <div class="mb-4">
-          <P class="text-green-600 dark:text-green-400">
-            Processed {processedWorldIds.length} meetings: {processedWorldIds.join(', ')}
-          </P>
+
+      {#if isProcessed && (stats.updated > 0 || stats.noUpdateNeeded > 0 || stats.notFound > 0)}
+        <div class="mb-4 space-y-2">
+          {#if stats.updated > 0}
+            <P class="text-green-600 dark:text-green-400">
+              ✅ Updated: {stats.updated} meetings
+            </P>
+          {/if}
+          {#if stats.noUpdateNeeded > 0}
+            <P class="text-blue-600 dark:text-blue-400">
+              ℹ️ No update needed: {stats.noUpdateNeeded} meetings
+            </P>
+          {/if}
+          {#if stats.notFound > 0}
+            <P class="text-yellow-600 dark:text-yellow-400">
+              ⚠️ Not found: {stats.notFound} meetings
+            </P>
+          {/if}
+          {#if stats.errors > 0}
+            <P class="text-red-600 dark:text-red-400">
+              ❌ Errors: {stats.errors} meetings
+            </P>
+          {/if}
+          {#if stats.processedMeetingIds.length > 0}
+            <P class="text-sm text-gray-600 dark:text-gray-400">
+              Updated meeting IDs: {stats.processedMeetingIds.join(', ')}
+            </P>
+          {/if}
         </div>
       {/if}
-      {#if errorMessage.length > 0}
+
+      {#if errorMessage}
         <div class="mb-4">
-          <ul class="space-y-1 text-red-700 dark:text-red-500">
-            {#each errorMessage as error}
-              <li class="text-sm">• {error}</li>
-            {/each}
-          </ul>
+          <P class="text-red-700 dark:text-red-500">{errorMessage}</P>
         </div>
       {/if}
     </div>
