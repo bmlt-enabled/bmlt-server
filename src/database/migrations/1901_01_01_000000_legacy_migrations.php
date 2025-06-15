@@ -25,8 +25,6 @@ return new class extends Migration
         $dbName = config('database.connections.mysql.database');
         $dbPrefix = rtrim(config('database.connections.mysql.prefix'), '_');
 
-        require_once(__DIR__."/../../legacy/server/shared/classes/VenueType.php");
-
         // Make sure version table exists
         $versionTableName = $dbPrefix . "_comdef_db_version";
         $sql = "SELECT COUNT(*) as count FROM information_schema.tables WHERE TABLE_SCHEMA = '$dbName' AND TABLE_NAME = '$versionTableName'";
@@ -459,9 +457,9 @@ return new class extends Migration
                     return $filter . ")";
                 }
 
-                $VENUE_TYPE_HYBRID = VenueType::HYBRID;
-                $VENUE_TYPE_VIRTUAL = VenueType::VIRTUAL;
-                $VENUE_TYPE_IN_PERSON = VenueType::IN_PERSON;
+                $VENUE_TYPE_HYBRID = 3;
+                $VENUE_TYPE_VIRTUAL = 2;
+                $VENUE_TYPE_IN_PERSON = 1;
                 $vmFormatId = getFormatId($this, "VM");
                 $hyFormatId = getFormatId($this, "HY");
                 $tcFormatId = getFormatId($this, "TC");
