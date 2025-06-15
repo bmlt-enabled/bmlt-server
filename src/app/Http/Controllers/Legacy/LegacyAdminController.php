@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Legacy;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\CatchAllController;
+use App\Http\Controllers\UserInterfaceController;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
@@ -39,7 +39,7 @@ class LegacyAdminController extends Controller
             return $this->handleGetUserInfo($request);
         }
 
-        return CatchAllController::handle($request);
+        return UserInterfaceController::handle($request);
     }
 
     private function handleLogin(Request $request)
