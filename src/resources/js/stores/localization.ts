@@ -51,11 +51,14 @@ const strings = new (LocalizedStrings as any)({
     deleteServiceBody: 'Service-Body löschen',
     deleteUser: 'Lösche diesen Benutzer',
     descriptionTitle: 'Beschreibung',
+    details: 'Details', // TODO: translate
     durationTitle: 'Dauer',
     editFormat: 'Format bearbeiten',
     editUser: 'Benutzer bearbeiten',
     emailTitle: 'E-Mail-Adresse',
+    errors: 'Errors', // TODO: translate
     extraInfoTitle: 'Weitere Informationen',
+    fileProcessedSuccessfully: '✓ File Processed Successfully', // TODO: translate
     filter: 'Filter',
     formatDeleteConflictError: 'Fehler: Das Format konnte nicht gelöscht werden, da es noch mit Meetings verknüpft ist.',
     formatId: 'Format-ID',
@@ -82,6 +85,7 @@ const strings = new (LocalizedStrings as any)({
     keyTitle: 'Schlüssel',
     languageSelectTitle: 'Sprache auswählen',
     latitudeTitle: 'Breitengrad',
+    loadFile: 'Load file', // TODO: translate
     loading: 'geladen ...',
     locationMapTitle: 'Lageplan',
     locationStreetErrorMessage: 'Für Hybrid- oder präsenz-Meetings muss eine Straßenadresse angegeben werden.',
@@ -90,9 +94,11 @@ const strings = new (LocalizedStrings as any)({
     loginVerb: 'Anmelden',
     logout: 'Abmelden',
     longitudeTitle: 'Längengrad',
+    malformedRows: 'Malformed rows', // TODO: Translate
     meetingErrorsSomewhere: 'Seiten mit einem oder mehreren Fehlern:',
     meetingIsPublishedTitle: 'Meeting ist veröffentlicht',
     meetingListEditorsTitle: 'Meetingsliste Editors', // TODO: check translation
+    meetings: 'Meetings',
     meetingsPerPage: 'Meetings per page', // TODO: Translate
     meetingsTitle: 'Meetings',
     meetingUnpublishedNote:
@@ -146,7 +152,10 @@ const strings = new (LocalizedStrings as any)({
     noFormatTranslationsError: 'Es ist mindestens eine Übersetzung erforderlich.',
     none: '- Keine -',
     noServiceBodiesTitle: 'Es wurden keine Service-Bodies gefunden, die dieser Benutzer bearbeiten kann',
+    notedAsDeleted: 'Noted as deleted', // TODO: Translate
+    notFound: 'Not found', // TODO: Translate
     noTranslationAvailable: 'keine deutsche Version verfügbar',
+    noUpdateNeeded: 'No update needed', // TODO: Translate
     noUsersTitle: 'Es wurden keine anderen Benutzer gefunden, die dieser Benutzer bearbeiten kann',
     noWhitespaceInKey: 'Leerzeichen im Schlüssel sind nicht erlaubt',
     observerTitle: 'Service-Body Beobachter',
@@ -157,7 +166,9 @@ const strings = new (LocalizedStrings as any)({
     passwordTitle: 'Passwort',
     phoneMeetingTitle: 'Telefonnummer für Telefonmeeting',
     postMeridiem: 'PM',
+    processingFile: 'Processing file...', // TODO: Translate
     published: 'Veröffentlicht',
+    rows: 'Reihen',
     search: 'Suchen',
     searchByDay: 'Suche nach Tag',
     searchByName: 'Suche nach Name',
@@ -178,6 +189,8 @@ const strings = new (LocalizedStrings as any)({
     startTimeTitle: 'Startzeit',
     stateTitle: 'Staat/Provinz',
     streetTitle: 'Straße',
+    summary: 'Überblick',
+    supportedFileFormats: 'Supported formats: Excel (.xlsx) and CSV (.csv)', // TODO: Translate
     tabsBasic: 'Basic',
     tabsChanges: 'Änderungen',
     tabsLocation: 'Standort',
@@ -188,10 +201,13 @@ const strings = new (LocalizedStrings as any)({
     timeMorning: 'Morgen',
     timeZoneSelectPlaceholder: 'Option auswählen (oder leer lassen, um die automatische Erkennung anhand des Standorts zu aktivieren)',
     timeZoneTitle: 'Zeitzone',
+    totalRows: 'Total rows (excluding header)', // TODO: Translate
     trainLinesTitle: 'Zuglinien',
     unpublished: 'Unveröffentlicht',
     unselectAllDays: 'Auswahl für „Alle Tage“ aufheben',
     unselectAllServiceBodies: 'Unselect All Service Bodies', // TODO: Translate
+    updated: 'Updated', // TODO: Translate
+    updateWorldCommitteeCodes: 'Update World Committee Codes', // TODO: Translate
     userDeleteConflictError: 'Fehler: Der Benutzer konnte nicht gelöscht werden, da er noch mindestens einem Service-Body zugeordnet ist oder das übergeordnete Element eines anderen Benutzers ist.',
     userIsDeactivated: 'Benutzer ist deaktiviert.',
     usernameTitle: 'Benutzername',
@@ -253,11 +269,14 @@ const strings = new (LocalizedStrings as any)({
     deleteServiceBody: 'Delete Service Body',
     deleteUser: 'Delete User',
     descriptionTitle: 'Description',
+    details: 'Details',
     durationTitle: 'Duration',
     editFormat: 'Edit Format',
     editUser: 'Edit User',
     emailTitle: 'Email',
+    errors: 'Errors',
     extraInfoTitle: 'Extra Info',
+    fileProcessedSuccessfully: '✓ File Processed Successfully',
     filter: 'Filter',
     formatDeleteConflictError: 'Error: The format could not be deleted because it is still associated with meetings.',
     formatId: 'Format ID',
@@ -284,6 +303,7 @@ const strings = new (LocalizedStrings as any)({
     keyTitle: 'Key',
     languageSelectTitle: 'Select Language',
     latitudeTitle: 'Latitude',
+    loadFile: 'Load file',
     loading: 'loading ...',
     locationMapTitle: 'Location Map', // TOFIX: translate
     locationStreetErrorMessage: 'Hybrid or In-person meetings must have a street address.',
@@ -292,9 +312,11 @@ const strings = new (LocalizedStrings as any)({
     loginVerb: 'Log In',
     logout: 'Logout',
     longitudeTitle: 'Longitude',
+    malformedRows: 'Malformed rows',
     meetingErrorsSomewhere: 'Tabs with one or more errors:',
     meetingIsPublishedTitle: 'Meeting is Published',
     meetingListEditorsTitle: 'Meeting List Editors',
+    meetings: 'meetings',
     meetingsPerPage: 'Meetings per page',
     meetingsTitle: 'Meetings',
     meetingUnpublishedNote: 'Note: Unpublishing a meeting indicates a temporary closure. If this meeting has closed permanently, please delete it.',
@@ -347,7 +369,10 @@ const strings = new (LocalizedStrings as any)({
     noFormatTranslationsError: 'At least one translation is required.',
     none: '- None -',
     noServiceBodiesTitle: 'No service bodies found that this user can edit',
+    notedAsDeleted: 'Noted as deleted',
+    notFound: 'Not found',
     noTranslationAvailable: 'no English version available',
+    noUpdateNeeded: 'No update needed',
     noUsersTitle: 'No other users found that this user can edit',
     noWhitespaceInKey: 'Whitespace not allowed in key',
     observerTitle: 'Service Body Observer',
@@ -358,7 +383,9 @@ const strings = new (LocalizedStrings as any)({
     passwordTitle: 'Password',
     phoneMeetingTitle: 'Phone Meeting Dial-in Number',
     postMeridiem: 'PM',
+    processingFile: 'Processing file...',
     published: 'Published',
+    rows: 'rows',
     search: 'Search',
     searchByDay: 'Search by day',
     searchByName: 'Search by name',
@@ -379,6 +406,8 @@ const strings = new (LocalizedStrings as any)({
     startTimeTitle: 'Start Time',
     stateTitle: 'State/Province',
     streetTitle: 'Street',
+    summary: 'Summary',
+    supportedFileFormats: 'Supported formats: Excel (.xlsx) and CSV (.csv)',
     tabsBasic: 'Basic',
     tabsChanges: 'Changes',
     tabsLocation: 'Location',
@@ -389,10 +418,13 @@ const strings = new (LocalizedStrings as any)({
     timeMorning: 'Morning',
     timeZoneSelectPlaceholder: 'Choose option (or leave blank to auto-detect from location)',
     timeZoneTitle: 'Time Zone',
+    totalRows: 'Total rows (excluding header)',
     trainLinesTitle: 'Train Lines',
     unpublished: 'Unpublished',
     unselectAllDays: 'Unselect All Days',
     unselectAllServiceBodies: 'Unselect All Service Bodies',
+    updated: 'Updated',
+    updateWorldCommitteeCodes: 'Update World Committee Codes',
     userDeleteConflictError: 'Error: The user could not be deleted because it is still associated with at least one service body or is the parent of another user.',
     userIsDeactivated: 'User is deactivated.',
     usernameTitle: 'Username',

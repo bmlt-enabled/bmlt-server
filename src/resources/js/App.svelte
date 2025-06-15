@@ -53,7 +53,7 @@
   }
 
   function requiresAuthenticationAdmin(): boolean {
-    return requiresAuthentication() && $authenticatedUser?.type != 'observer';
+    return requiresAuthentication() && ($authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin');
   }
 
   function requiresAuthenticationServerAdmin(): boolean {

@@ -24,14 +24,14 @@
   </NavBrand>
   <NavUl>
     <NavLi href="#/">{$translations.homeTitle}</NavLi>
-    {#if $authenticatedUser?.type === 'admin'}
+    {#if $authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin'}
       <NavLi href="#/administration">{$translations.administrationTitle}</NavLi>
     {/if}
     <NavLi href="#/meetings">{$translations.meetingsTitle}</NavLi>
     {#if $authenticatedUser?.type === 'admin'}
       <NavLi href="#/formats">{$translations.formatsTitle}</NavLi>
     {/if}
-    {#if $authenticatedUser?.type !== 'observer'}
+    {#if $authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin'}
       <NavLi href="#/servicebodies">{$translations.serviceBodiesTitle}</NavLi>
       <NavLi href="#/users">{$translations.usersTitle}</NavLi>
     {/if}

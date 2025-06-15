@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Card, Fileupload, Label, P } from 'flowbite-svelte';
+  import { Button, Card, Fileupload, Heading, P } from 'flowbite-svelte';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
@@ -8,19 +8,36 @@
   import type { MeetingPartialUpdate } from 'bmlt-server-client';
 
   let files = $state<FileList | undefined>(undefined);
-  let tableData = $state<Record<string, any>[]>([]);
   let isLoading = $state(false);
   let errorMessage = $state<string | null>(null);
   let isProcessed = $state(false);
 
-  // Statistics tracking
-  let stats = $state({
+  // Statistics tracking.  Stats components are as follows. (worldId is known as 'Committee' in NAWS-speak.)
+  //
+  // totalRows       Total number of rows in the spreadsheet, excluding the header row
+  // malformedRows   Array of row numbers in the spreadsheet of rows missing a bmlt_id or worldId (bmlt_id must be a number; worldId can be '' but not missing altogether)
+  // updated         Array of bmlt_ids for meetings that were successfully updated with a new worldId
+  // noUpdateNeeded  Array of bmlt_ids for meetings whose existing worldId is the same as the new worldId
+  // notedAsDeleted  Array of bmlt_ids for meetings marked as 'deleted' and that are not in the database (i.e. they were actually deleted)
+  // notFound        Array of bmlt_ids of meetings with a new worldId (other than 'deleted') but not found in the database.  This could be because the meeting was deleted from the database but not yet marked as 'deleted' on the spreadsheet, but could be due to an invalid bmlt_id.
+  // errors          Array of strings for meetings for which the server returned an error code.  The string should consist of the bmlt_id and then the error returned by the server.
+  interface Stats {
+    totalRows: number;
+    malformedRows: number[];
+    updated: number[];
+    noUpdateNeeded: number[];
+    notedAsDeleted: number[];
+    notFound: number[];
+    errors: string[];
+  }
+  let stats: Stats = $state({
     totalRows: 0,
-    updated: 0,
-    noUpdateNeeded: 0,
-    notFound: 0,
-    errors: 0,
-    processedMeetingIds: [] as string[]
+    malformedRows: [],
+    updated: [],
+    noUpdateNeeded: [],
+    notedAsDeleted: [],
+    notFound: [],
+    errors: []
   });
 
   async function processFile(file: File): Promise<void> {
@@ -30,11 +47,12 @@
       // Reset stats
       stats = {
         totalRows: 0,
-        updated: 0,
-        noUpdateNeeded: 0,
-        notFound: 0,
-        errors: 0,
-        processedMeetingIds: []
+        malformedRows: [],
+        updated: [],
+        noUpdateNeeded: [],
+        notedAsDeleted: [],
+        notFound: [],
+        errors: []
       };
 
       console.log('Processing file:', file.name, file.type);
@@ -54,30 +72,37 @@
 
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet) as Record<string, any>[];
-
-      if (jsonData.length === 0) {
-        throw new Error('The file appears to be empty or has no readable data.');
+      // Convert the spreadsheet to json using the { header: 1 } option so that it explicitly includes the header row.  Then we can check that
+      // the header contains 'bmlt_id' and 'Committee'.  If we didn't use the option, we couldn't tell whether a spreadsheet was missing the
+      // worldId column altogether or if the heading was there but the worldId values were the empty string (which is legal).
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      if (jsonData.length < 2) {
+        throw new Error('The file has no readable data.');
+      }
+      const header = jsonData[0] as string[];
+      const bmltIdIndex = header.findIndex((c) => c === 'bmlt_id');
+      const worldIdIndex = header.findIndex((c) => c === 'Committee');
+      if (bmltIdIndex < 0 || worldIdIndex < 0) {
+        throw new Error('The file is missing a column for bmlt_id or Committee or both.');
       }
 
-      tableData = jsonData;
-      stats.totalRows = jsonData.length;
+      stats.totalRows = jsonData.length - 1;
 
-      // Build a map of meetingId -> committee from the CSV
-      const updateMap = new Map<string, string>();
-      const meetingIds: string[] = [];
+      // Build a map of meetingId -> worldId from the CSV
+      const updateMap = new Map<number, string>();
+      const meetingIds: number[] = [];
 
-      for (const [idx, row] of tableData.entries()) {
-        const meetingId = row['bmlt_id'];
-        const committee = row['Committee'];
-
-        if (!meetingId || !committee) {
-          console.warn(`Skipping row ${idx + 1} due to missing bmlt_id or Committee`);
+      for (let i = 1; i < jsonData.length; i++) {
+        const row = jsonData[i] as any[];
+        const meetingId = row[bmltIdIndex];
+        if (typeof meetingId !== 'number') {
+          console.warn(`Skipping row ${i + 1} due to missing bmlt_id`);
+          stats.malformedRows.push(i + 1);
           continue;
         }
-
-        updateMap.set(meetingId.toString(), committee.toString());
-        meetingIds.push(meetingId.toString());
+        const c = row[worldIdIndex];
+        updateMap.set(meetingId, c === undefined ? '' : c.toString());
+        meetingIds.push(meetingId);
       }
 
       if (meetingIds.length === 0) {
@@ -88,7 +113,7 @@
 
       // Fetch all meetings at once
       const existingMeetings = await RootServerApi.getMeetings({
-        meetingIds: meetingIds.join(',')
+        meetingIds: meetingIds.map((i) => i.toString()).join(',')
       });
 
       console.log(`Retrieved ${existingMeetings.length} existing meetings`);
@@ -96,43 +121,46 @@
       // Create a map of existing meetings for quick lookup
       const existingMeetingsMap = new Map();
       existingMeetings.forEach((meeting) => {
-        existingMeetingsMap.set(meeting.id.toString(), meeting);
+        existingMeetingsMap.set(meeting.id, meeting);
       });
 
       // Process each meeting
       for (const meetingId of meetingIds) {
-        const newCommittee = updateMap.get(meetingId);
+        const newWorldId = updateMap.get(meetingId);
         const existingMeeting = existingMeetingsMap.get(meetingId);
 
         if (!existingMeeting) {
-          console.warn(`Meeting ${meetingId} not found`);
-          stats.notFound++;
+          if (newWorldId?.toLowerCase() === 'deleted') {
+            stats.notedAsDeleted.push(meetingId);
+          } else {
+            console.warn(`Meeting ${meetingId} not found`);
+            stats.notFound.push(meetingId);
+          }
           continue;
         }
 
         // Check if update is needed
-        if (existingMeeting.worldId === newCommittee) {
-          console.log(`Meeting ${meetingId} already has committee ${newCommittee} - no update needed`);
-          stats.noUpdateNeeded++;
+        if (existingMeeting.worldId === newWorldId || (existingMeeting.worldId === null && newWorldId === '')) {
+          console.log(`Meeting ${meetingId} already has committee ${newWorldId} - no update needed`);
+          stats.noUpdateNeeded.push(meetingId);
           continue;
         }
 
         try {
           const updatedValues: MeetingPartialUpdate = {
-            worldId: newCommittee
+            worldId: newWorldId
           };
-          await RootServerApi.partialUpdateMeeting(Number(meetingId), updatedValues);
-          console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newCommittee}`);
-          stats.updated++;
-          stats.processedMeetingIds.push(meetingId);
+          await RootServerApi.partialUpdateMeeting(meetingId, updatedValues);
+          console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newWorldId}`);
+          stats.updated.push(meetingId);
         } catch (err) {
           console.error(`Failed to update meeting ${meetingId}:`, err);
-          stats.errors++;
+          stats.errors.push(meetingId.toString() + ' ' + err);
           errorMessage = `Failed to update meeting ${meetingId}: ${err}`;
         }
       }
 
-      console.log('Processing complete:', stats);
+      console.log('Processing complete:', $state.snapshot(stats));
     } catch (err) {
       errorMessage = err instanceof Error ? err.message : 'An error occurred while processing the file';
       console.error('Error processing file:', err);
@@ -156,17 +184,26 @@
     return ['csv', 'xlsx'].includes(extension);
   }
 
+  function meetingIdsToString(ids: number[]): string {
+    return ids
+      .slice()
+      .sort((a, b) => a - b)
+      .map((m) => m.toString())
+      .join(', ');
+  }
+
   // Reset processed state when new files are selected
   $effect(() => {
     if (files && files.length > 0) {
       isProcessed = false;
       stats = {
         totalRows: 0,
-        updated: 0,
-        noUpdateNeeded: 0,
-        notFound: 0,
-        errors: 0,
-        processedMeetingIds: []
+        malformedRows: [],
+        updated: [],
+        noUpdateNeeded: [],
+        notedAsDeleted: [],
+        notFound: [],
+        errors: []
       };
     }
   });
@@ -174,13 +211,13 @@
 
 <Nav />
 
-{#if $authenticatedUser?.type === 'admin'}
+{#if $authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin'}
   <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
     <div class="p-4">
       <div class="mb-4">
-        <Label for="committee-codes-upload" class="mb-2 block text-left">Updated World Committee Codes Spreadsheet</Label>
+        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">{$translations.updateWorldCommitteeCodes}</Heading>
         <Fileupload bind:files accept=".xlsx,.csv" size="md" clearable={true} disabled={isLoading} id="committee-codes-upload" />
-        <p class="mt-1 text-sm text-gray-500">Supported formats: Excel (.xlsx) and CSV (.csv)</p>
+        <p class="mt-1 text-sm text-gray-500">{$translations.supportedFileFormats}</p>
       </div>
 
       {#if files && files.length > 0}
@@ -189,45 +226,57 @@
             {#if isLoading}
               <div class="flex items-center justify-center">
                 <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                Processing file...
+                {$translations.processingFile}
               </div>
             {:else if isProcessed}
-              ✓ File Processed Successfully
+              {$translations.fileProcessedSuccessfully}
             {:else}
-              Update World Committee Codes
+              {$translations.loadFile}
             {/if}
           </Button>
         </div>
       {/if}
 
-      {#if isProcessed && (stats.updated > 0 || stats.noUpdateNeeded > 0 || stats.notFound > 0)}
+      {#if isProcessed}
+        <Heading tag="h2" class="mb-4 text-xl dark:text-white">{$translations.summary}</Heading>b
         <div class="mb-4 space-y-2">
           <P class="text-gray-700 dark:text-gray-300">
-            📊 Total rows: {stats.totalRows}
+            📊 {$translations.totalRows}: {stats.totalRows}
           </P>
-          {#if stats.updated > 0}
-            <P class="text-green-600 dark:text-green-400">
-              ✅ Updated: {stats.updated} meetings
-            </P>
-          {/if}
-          {#if stats.noUpdateNeeded > 0}
-            <P class="text-blue-600 dark:text-blue-400">
-              ℹ️ No update needed: {stats.noUpdateNeeded} meetings
-            </P>
-          {/if}
-          {#if stats.notFound > 0}
-            <P class="text-yellow-600 dark:text-yellow-400">
-              ⚠️ Not found: {stats.notFound} meetings
-            </P>
-          {/if}
-          {#if stats.errors > 0}
+          {#if stats.malformedRows.length > 0}
             <P class="text-red-600 dark:text-red-400">
-              ❌ Errors: {stats.errors} meetings
+              ❌ {$translations.malformedRows}: {stats.malformedRows.length}
+              {$translations.rows}
             </P>
           {/if}
-          {#if stats.processedMeetingIds.length > 0}
-            <P class="text-sm text-gray-600 dark:text-gray-400">
-              Updated meeting IDs: {stats.processedMeetingIds.join(', ')}
+          {#if stats.updated.length > 0}
+            <P class="text-green-600 dark:text-green-400">
+              ✅ {$translations.updated}: {stats.updated.length}
+              {$translations.meetings}
+            </P>
+          {/if}
+          {#if stats.noUpdateNeeded.length > 0}
+            <P class="text-blue-600 dark:text-blue-400">
+              ℹ️ {$translations.noUpdateNeeded}: {stats.noUpdateNeeded.length}
+              {$translations.meetings}
+            </P>
+          {/if}
+          {#if stats.notedAsDeleted.length > 0}
+            <P class="text-blue-600 dark:text-blue-400">
+              ℹ️ {$translations.notedAsDeleted}: {stats.notedAsDeleted.length}
+              {$translations.meetings}
+            </P>
+          {/if}
+          {#if stats.notFound.length > 0}
+            <P class="text-yellow-600 dark:text-yellow-400">
+              ⚠️ {$translations.notFound}: {stats.notFound.length}
+              {$translations.meetings}
+            </P>
+          {/if}
+          {#if stats.errors.length > 0}
+            <P class="text-red-600 dark:text-red-400">
+              ❌ {$translations.errors}: {stats.errors.length}
+              {$translations.meetings}
             </P>
           {/if}
         </div>
@@ -237,6 +286,42 @@
         <div class="mb-4">
           <P class="text-red-700 dark:text-red-500">{errorMessage}</P>
         </div>
+      {/if}
+
+      {#if isProcessed}
+        <Heading tag="h2" class="mb-4 text-xl dark:text-white">{$translations.details}</Heading>
+        {#if stats.malformedRows.length > 0}
+          <P class="text-red-600 dark:text-red-400">
+            ❌ {$translations.malformedRows}: {meetingIdsToString(stats.malformedRows)}
+          </P>
+        {/if}
+        {#if stats.updated.length > 0}
+          <P class="text-green-600 dark:text-green-400">
+            ✅ {$translations.updated}: {meetingIdsToString(stats.updated)}
+          </P>
+        {/if}
+        {#if stats.noUpdateNeeded.length > 0}
+          <P class="text-blue-600 dark:text-blue-400">
+            ℹ️ {$translations.noUpdateNeeded}: {meetingIdsToString(stats.noUpdateNeeded)}
+          </P>
+        {/if}
+        {#if stats.notedAsDeleted.length > 0}
+          <P class="text-blue-600 dark:text-blue-400">
+            ℹ️ {$translations.notedAsDeleted}: {meetingIdsToString(stats.notedAsDeleted)}
+          </P>
+        {/if}
+        {#if stats.notFound.length > 0}
+          <P class="text-yellow-600 dark:text-yellow-400">
+            ⚠️ {$translations.notFound}: {meetingIdsToString(stats.notFound)}
+          </P>
+        {/if}
+        {#if stats.errors.length > 0}
+          {#each stats.errors as e}
+            <P class="text-red-600 dark:text-red-400">
+              ❌ {$translations.error}: {e}
+            </P>
+          {/each}
+        {/if}
       {/if}
     </div>
   </Card>

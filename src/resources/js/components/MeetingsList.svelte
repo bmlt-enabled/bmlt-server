@@ -309,7 +309,7 @@
         <Checkbox name="times" choices={timeChoices} bind:group={selectedTimes} class="ms-2" />
       </Dropdown>
       <Button onclick={searchMeetings}>{$translations.search}</Button>
-      {#if $authenticatedUser?.type !== 'observer'}
+      {#if $authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin'}
         <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
           <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
         </Button>
