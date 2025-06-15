@@ -551,7 +551,6 @@ class SwitcherController extends Controller
             'regionBias' => legacy_config('region_bias'),
             'charSet' => 'UTF-8',
             'distanceUnits' => legacy_config('distance_units'),
-            'semanticAdmin' => legacy_config('enable_semantic_admin') ? '1' : '0',
             'emailEnabled' => legacy_config('enable_email_contact') ? '1' : '0',
             'emailIncludesServiceBodies' => legacy_config('include_service_body_admin_on_emails') ? '1' : '0',
             'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
