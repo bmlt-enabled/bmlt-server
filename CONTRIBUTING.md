@@ -44,14 +44,11 @@ services:
       DB_PASSWORD: rootserver
       DB_HOST: db
       DB_PREFIX: na
-      NEW_UI_ENABLED: 'true'
       AGGREGATOR_MODE_ENABLED: 'false'
 ```
 
 ## Developing the New UI
 The new UI is developed using [Svelte](https://svelte.dev/), and the code is located in the `resources/js` directory.
-
-You can enable the new UI in the docker container by setting the `NEW_UI_ENABLED` environment variable to `'true'` in `docker/docker-compose.dev.yml`.
 
 To install the UI's dependencies, run the `npm install` command from the `src` directory.
 
@@ -61,7 +58,7 @@ When working on the UI, you'll need to have the [Vite](https://vitejs.dev/) dev 
 This assumes you are using [VS Code](https://code.visualstudio.com) to develop the new UI.
 
 #### Debugging the Browser
-First, follow the instructions above for running the server under Docker with `NEW_UI_ENABLED` set to `'true'`. This mostly just involves running `make dev`.
+First, follow the instructions above for running the server under Docker. This mostly just involves running `make dev`.
 
 Then, create `.vscode/launch.json` with a `chrome` debug configuration:
 
