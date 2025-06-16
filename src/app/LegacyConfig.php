@@ -117,7 +117,7 @@ class LegacyConfig
         $config['auto_geocoding_enabled'] = isset($auto_geocoding_enabled) ? boolval($auto_geocoding_enabled) : true;
         $config['county_auto_geocoding_enabled'] = isset($county_auto_geocoding_enabled) ? boolval($county_auto_geocoding_enabled) : false;
         $config['zip_auto_geocoding_enabled'] = isset($zip_auto_geocoding_enabled) ? boolval($zip_auto_geocoding_enabled) : false;
-        $config['new_ui_enabled'] = $new_ui_enabled ?? false;
+        $config['new_ui_enabled'] = $new_ui_enabled ?? true;
         // If default_closed_status is TRUE, meetings that don't explicitly have an OPEN or CLOSED format are assumed CLOSED for the NAWS export.
         $config['default_closed_status'] = $g_defaultClosedStatus ?? true;
         $config['enable_language_selector'] = $g_enable_language_selector ?? false;
