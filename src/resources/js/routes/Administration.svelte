@@ -67,7 +67,7 @@
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, {
         type: 'array',
-        raw: extension === 'csv'
+        raw: false
       });
 
       const firstSheetName = workbook.SheetNames[0];
@@ -196,6 +196,7 @@
   $effect(() => {
     if (files && files.length > 0) {
       isProcessed = false;
+      errorMessage = null;
       stats = {
         totalRows: 0,
         malformedRows: [],
@@ -238,7 +239,7 @@
       {/if}
 
       {#if isProcessed}
-        <Heading tag="h2" class="mb-4 text-xl dark:text-white">{$translations.summary}</Heading>b
+        <Heading tag="h2" class="mb-4 text-xl dark:text-white">{$translations.summary}</Heading>
         <div class="mb-4 space-y-2">
           <P class="text-gray-700 dark:text-gray-300">
             📊 {$translations.totalRows}: {stats.totalRows}
