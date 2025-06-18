@@ -1,7 +1,7 @@
 export { daTranslations } from './da';
 export { deTranslations } from './de';
-export { enTranslations } from './en';
-export { esTranslations } from './es';
+export { enTranslations, enYupLocale } from './en';
+export { esTranslations, esYupLocale } from './es';
 export { faTranslations } from './fa';
 export { frTranslations } from './fr';
 export { itTranslations } from './it';

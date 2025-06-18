@@ -1,4 +1,5 @@
 import LocalizedStrings from 'localized-strings';
+import { type LocaleObject, setLocale } from 'yup';
 
 import { writable } from 'svelte/store';
 import type { Subscriber, Unsubscriber } from 'svelte/store';
@@ -6,7 +7,9 @@ import {
   daTranslations,
   deTranslations,
   enTranslations,
+  enYupLocale,
   esTranslations,
+  esYupLocale,
   faTranslations,
   frTranslations,
   itTranslations,
@@ -31,6 +34,11 @@ const strings = new (LocalizedStrings as any)({
   sv: svTranslations
 });
 
+export const yupLocales: Record<string, LocaleObject> = {
+  en: enYupLocale,
+  es: esYupLocale
+};
+
 const LANGUAGE_STORAGE_KEY = 'bmltLanguage';
 
 class Translations {
@@ -40,6 +48,7 @@ class Translations {
     const language = localStorage.getItem(LANGUAGE_STORAGE_KEY) || settings.defaultLanguage;
     strings.setLanguage(language);
     this.store.set(strings);
+    setLocale(yupLocales[language] || yupLocales[settings.defaultLanguage]);
   }
 
   get subscribe(): (run: Subscriber<typeof strings>) => Unsubscriber {

@@ -1,3 +1,60 @@
+import type { LocaleObject } from 'yup';
+
+export const enYupLocale: LocaleObject = {
+  array: {
+    length: '${path} must have ${length} items',
+    max: '${path} field must have less than or equal to ${max} items',
+    min: '${path} field must have at least ${min} items'
+  },
+  boolean: {
+    isValue: '${path} field must be ${value}'
+  },
+  date: {
+    max: '${path} field must be at earlier than ${max}',
+    min: '${path} field must be later than ${min}'
+  },
+  mixed: {
+    default: '${path} is invalid',
+    defined: '${path} must be defined',
+    notNull: '${path} cannot be null',
+    notOneOf: '${path} must not be one of the following values: ${values}',
+    notType: '${path} must be a valid type',
+    oneOf: '${path} must be one of the following values: ${values}',
+    required: '${path} is a required field'
+  },
+  number: {
+    integer: '${path} must be an integer',
+    lessThan: '${path} must be less than ${less}',
+    max: '${path} must be less than or equal to ${max}',
+    min: '${path} must be greater than or equal to ${min}',
+    moreThan: '${path} must be greater than ${more}',
+    negative: '${path} must be a negative number',
+    positive: '${path} must be a positive number'
+  },
+  object: {
+    exact: '${path} object contains unknown properties: ${properties}',
+    noUnknown: '${path} field has unspecified keys: ${unknown}'
+  },
+  string: {
+    datetime: '${path} must be a valid ISO date-time',
+    datetime_offset: '${path} must be a valid ISO date-time with UTC "Z" timezone',
+    datetime_precision: '${path} must be a valid ISO date-time with a sub-second precision of exactly ${precision} digits',
+    email: '${path} must be a valid email',
+    length: '${path} must be exactly ${length} characters',
+    lowercase: '${path} must be a lowercase string',
+    matches: '${path} must match the following: "${regex}"',
+    max: '${path} must be at most ${max} characters',
+    min: '${path} must be at least ${min} characters',
+    trim: '${path} must be a trimmed string',
+    uppercase: '${path} must be a upper case string',
+    url: '${path} must be a valid URL',
+    uuid: '${path} must be a valid UUID'
+  },
+  tuple: {
+    notType: '${path} must be a valid tuple type'
+  }
+};
+
 /*eslint sort-keys: ["error", "asc", {caseSensitive: false}]*/
 export const enTranslations = {
   accountSettingsTitle: 'Account Settings',
