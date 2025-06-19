@@ -354,17 +354,6 @@ class ApiClientWrapper {
 
     return console.log('TODO unhandled error, show error dialog', body);
   }
-
-  async getErrorBody(error: Error): Promise<any> {
-    if ('response' in error && error.response instanceof Response) {
-      try {
-        return await error.response.json();
-      } catch {
-        return { message: error.message };
-      }
-    }
-    return { message: error.message };
-  }
 }
 
 export default ApiClientWrapper.instance;

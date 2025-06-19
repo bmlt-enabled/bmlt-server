@@ -156,13 +156,15 @@
           console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newWorldId}`);
           stats.updated.push(meetingId);
         } catch (err) {
-          const errorBody = await RootServerApi.getErrorBody(err as Error);
-          console.error(`Failed to update meeting ${meetingId}:`, errorBody.message);
-          stats.errors.push(meetingId.toString() + ' ' + errorBody.message);
-          errorMessage = `Failed to update meeting ${meetingId}: ${errorBody.message}`;
-          if (errorBody.errors) {
-            console.error('Validation errors:', errorBody.errors);
-          }
+          await RootServerApi.handleErrors(err as Error, {
+            handleError: (error: any) => {
+              console.error(`Failed to update meeting ${meetingId}:`, error.message);
+              stats.errors.push(meetingId.toString() + ' ' + error.message);
+              if (error.errors) {
+                console.error('Validation errors:', error.errors);
+              }
+            }
+          });
         }
       }
 
@@ -211,10 +213,12 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(logUrl);
     } catch (err) {
-      const errorBody = await RootServerApi.getErrorBody(err as Error);
-      console.error('Failed to download Laravel log:', errorBody.message);
-      downloadError = true;
-      console.log('Error downloading Laravel log:', err);
+      await RootServerApi.handleErrors(err as Error, {
+        handleError: (error: any) => {
+          console.error('Failed to download Laravel log:', error.message);
+          downloadError = true;
+        }
+      });
     } finally {
       isDownloadingLog = false;
     }
