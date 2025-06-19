@@ -139,7 +139,8 @@ class MeetingController extends ResourceController
                 ->toArray()
         );
 
-        $validated = $this->validateInputs($request);
+        $skipVenueTypeLocationValidation = $request->query('skipVenueTypeLocationValidation') == "true";
+        $validated = $this->validateInputs($request, $skipVenueTypeLocationValidation);
         $values = $this->buildValuesArray($validated);
         $this->meetingRepository->update($meeting->id_bigint, $values);
         return response()->noContent();
@@ -169,7 +170,7 @@ class MeetingController extends ResourceController
         return $customFields;
     }
 
-    private function validateInputs(Request $request)
+    private function validateInputs(Request $request, $skipVenueTypeLocationValidation = false)
     {
         return collect($request->validate(
             array_merge([
@@ -188,17 +189,17 @@ class MeetingController extends ResourceController
                 'worldId' => 'nullable|string|max:30',
                 'name' => 'required|string|max:128',
                 'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone],
-            ], $this->getDataFieldValidators())
+            ], $this->getDataFieldValidators($skipVenueTypeLocationValidation))
         ));
     }
 
-    private function getDataFieldValidators(): array
+    private function getDataFieldValidators($skipVenueTypeLocationValidation = false): array
     {
         $customFields = $this->getCustomFields();
         return $this->getDataTemplates()
             ->reject(fn ($_, $fieldName) => $fieldName == 'meeting_name' || $customFields->contains($fieldName))
-            ->mapWithKeys(function ($_, $fieldName) {
-                if (in_array($fieldName, VenueTypeLocation::FIELDS)) {
+            ->mapWithKeys(function ($_, $fieldName) use ($skipVenueTypeLocationValidation) {
+                if (!$skipVenueTypeLocationValidation && in_array($fieldName, VenueTypeLocation::FIELDS)) {
                     return [$fieldName => ['max:512', new VenueTypeLocation]];
                 } else {
                     return [$fieldName => 'nullable|string|max:512'];
