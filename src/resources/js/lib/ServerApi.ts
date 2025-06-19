@@ -188,8 +188,12 @@ class ApiClientWrapper {
     return this.api.updateMeeting(params);
   }
 
-  async partialUpdateMeeting(id: number, meeting: MeetingPartialUpdate): Promise<void> {
-    const params = { meetingId: id, meetingPartialUpdate: meeting };
+  async partialUpdateMeeting(id: number, meeting: MeetingPartialUpdate, skipVenueTypeLocationValidation?: boolean): Promise<void> {
+    const params = {
+      meetingId: id,
+      meetingPartialUpdate: meeting,
+      ...(skipVenueTypeLocationValidation && { skipVenueTypeLocationValidation })
+    };
     return this.api.patchMeeting(params);
   }
 
@@ -349,6 +353,17 @@ class ApiClientWrapper {
     }
 
     return console.log('TODO unhandled error, show error dialog', body);
+  }
+
+  async getErrorBody(error: Error): Promise<any> {
+    if ('response' in error && error.response instanceof Response) {
+      try {
+        return await error.response.json();
+      } catch {
+        return { message: error.message };
+      }
+    }
+    return { message: error.message };
   }
 }
 

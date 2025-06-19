@@ -152,13 +152,17 @@
           const updatedValues: MeetingPartialUpdate = {
             worldId: newWorldId
           };
-          await RootServerApi.partialUpdateMeeting(meetingId, updatedValues);
+          await RootServerApi.partialUpdateMeeting(meetingId, updatedValues, true);
           console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newWorldId}`);
           stats.updated.push(meetingId);
         } catch (err) {
-          console.error(`Failed to update meeting ${meetingId}:`, err);
-          stats.errors.push(meetingId.toString() + ' ' + err);
-          errorMessage = `Failed to update meeting ${meetingId}: ${err}`;
+          const errorBody = await RootServerApi.getErrorBody(err as Error);
+          console.error(`Failed to update meeting ${meetingId}:`, errorBody.message);
+          stats.errors.push(meetingId.toString() + ' ' + errorBody.message);
+          errorMessage = `Failed to update meeting ${meetingId}: ${errorBody.message}`;
+          if (errorBody.errors) {
+            console.error('Validation errors:', errorBody.errors);
+          }
         }
       }
 
@@ -207,6 +211,8 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(logUrl);
     } catch (err) {
+      const errorBody = await RootServerApi.getErrorBody(err as Error);
+      console.error('Failed to download Laravel log:', errorBody.message);
       downloadError = true;
       console.log('Error downloading Laravel log:', err);
     } finally {
