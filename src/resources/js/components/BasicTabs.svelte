@@ -3,7 +3,6 @@
   import type { Snippet } from 'svelte';
 
   interface Props {
-    changeActiveTab: (index: number) => void;
     tabs: string[];
     errorTabs: string[];
     tabsSnippets: Snippet[];
@@ -13,7 +12,6 @@
   }
 
   let {
-    changeActiveTab,
     tabs,
     errorTabs,
     tabsSnippets,
@@ -23,7 +21,6 @@
   }: Props = $props();
 
   function setActiveTab(index: number) {
-    changeActiveTab(index);
     activeTab = index;
   }
 </script>

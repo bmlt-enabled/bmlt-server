@@ -39,7 +39,6 @@
   const tabs = selectedMeeting
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
-  const TAB_CHANGES = 3;
   const globalSettings = settings;
   const seenNames = new Set<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -596,10 +595,6 @@
     }
   }
 
-  function handleTabChange(index: number) {
-    if (TAB_CHANGES === index && selectedMeeting) getChanges(selectedMeeting.id);
-  }
-
   function hasBasicErrors(errors: any): boolean {
     return Boolean(
       errors.published ||
@@ -658,6 +653,9 @@
   $effect(() => {
     if (selectedMeeting) {
       initializeMap();
+      if (!changesLoaded) {
+        getChanges(selectedMeeting.id);
+      }
     }
   });
 
@@ -1177,7 +1175,7 @@
 {/snippet}
 
 <form use:form>
-  <BasicTabs changeActiveTab={handleTabChange} {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]} />
+  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]} />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
