@@ -11,6 +11,8 @@
   let isLoading = $state(false);
   let errorMessage = $state<string | null>(null);
   let isProcessed = $state(false);
+  let isDownloadingLog = $state(false);
+  let downloadError = $state(false);
 
   // Statistics tracking.  Stats components are as follows. (worldId is known as 'Committee' in NAWS-speak.)
   //
@@ -192,6 +194,26 @@
       .join(', ');
   }
 
+  async function downloadLaravelLog() {
+    try {
+      isDownloadingLog = true;
+      const logBlob = await RootServerApi.getLaravelLog();
+      const logUrl = URL.createObjectURL(logBlob);
+      const link = document.createElement('a');
+      link.href = logUrl;
+      link.download = 'laravel.log.gz';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(logUrl);
+    } catch (err) {
+      downloadError = true;
+      console.log('Error downloading Laravel log:', err);
+    } finally {
+      isDownloadingLog = false;
+    }
+  }
+
   // Reset processed state when new files are selected
   $effect(() => {
     if (files && files.length > 0) {
@@ -323,6 +345,31 @@
             </P>
           {/each}
         {/if}
+      {/if}
+    </div>
+  </Card>
+{/if}
+
+{#if $authenticatedUser?.type === 'admin'}
+  <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
+    <div class="p-4">
+      <div class="mb-4">
+        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">{$translations.downloadLaravelLog}</Heading>
+        <Button onclick={downloadLaravelLog} disabled={isDownloadingLog} color="primary" class="w-full">
+          {#if isDownloadingLog}
+            <div class="flex items-center justify-center">
+              <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              {$translations.downloading}
+            </div>
+          {:else}
+            {$translations.downloadFile}
+          {/if}
+        </Button>
+      </div>
+      {#if downloadError}
+        <div class="mb-4">
+          <P class="text-center text-red-700 dark:text-red-500">{$translations.noLogsFound}</P>
+        </div>
       {/if}
     </div>
   </Card>

@@ -48,6 +48,9 @@ export const deTranslations = {
   deleteUser: 'Lösche diesen Benutzer',
   descriptionTitle: 'Beschreibung',
   details: 'Details', // TODO: translate
+  downloadFile: 'Download File',
+  downloading: 'Downloading...',
+  downloadLaravelLog: 'Download Laravel Log',
   durationTitle: 'Dauer',
   editFormat: 'Format bearbeiten',
   editUser: 'Benutzer bearbeiten',
@@ -146,6 +149,7 @@ export const deTranslations = {
   nawsFormatTitle: 'NAWS Format',
   neighborhoodTitle: 'Nachbarschaft',
   noFormatTranslationsError: 'Es ist mindestens eine Übersetzung erforderlich.',
+  noLogsFound: 'No logs found',
   none: '- Keine -',
   noServiceBodiesTitle: 'Es wurden keine Service-Bodies gefunden, die dieser Benutzer bearbeiten kann',
   notedAsDeleted: 'Noted as deleted', // TODO: Translate
