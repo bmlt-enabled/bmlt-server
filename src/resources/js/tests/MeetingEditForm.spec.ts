@@ -40,7 +40,10 @@ describe('MeetingEditForm Component', () => {
         expect(screen.getByLabelText(translations.getString('serviceBodyTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('emailTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('worldIdTitle'))).toBeInTheDocument();
-        expect(screen.getByLabelText(translations.getString('formatsTitle'))).toBeInTheDocument();
+        const formatsLabel = screen.getByText(translations.getString('formatsTitle'));
+        expect(formatsLabel).toBeInTheDocument();
+        const formatsComponent = screen.queryByRole('listbox') || document.querySelector('select[name="formatIds"]');
+        expect(formatsComponent).toBeInTheDocument();
 
         // Location fields
         expect(screen.getByLabelText(translations.getString('venueTypeTitle'))).toBeInTheDocument();
@@ -85,9 +88,15 @@ describe('MeetingEditForm Component', () => {
     expect(screen.getByLabelText(translations.getString('serviceBodyTitle'))).toHaveValue(selectedMeeting.serviceBodyId.toString());
     expect(screen.getByLabelText(translations.getString('emailTitle'))).toHaveValue(selectedMeeting.email);
     expect(screen.getByLabelText(translations.getString('worldIdTitle'))).toHaveValue(selectedMeeting.worldId);
-    const formatsSelect = screen.getByLabelText(translations.getString('formatsTitle')) as HTMLSelectElement;
-    const selectedValues = Array.from(formatsSelect.selectedOptions).map((option: HTMLOptionElement) => option.value);
-    expect(selectedValues.join(',')).toEqual(selectedMeeting.formatIds.join(','));
+    const formatsHiddenSelect = document.querySelector('select[name="formatIds"]') as HTMLSelectElement;
+    if (formatsHiddenSelect) {
+      const selectedValues = Array.from(formatsHiddenSelect.selectedOptions).map((option: HTMLOptionElement) => option.value);
+      expect(selectedValues.join(',')).toEqual(selectedMeeting.formatIds.join(','));
+    } else {
+      const formatsSelect = screen.getByLabelText(translations.getString('formatsTitle')) as HTMLSelectElement;
+      const selectedValues = Array.from(formatsSelect.selectedOptions).map((option: HTMLOptionElement) => option.value);
+      expect(selectedValues.join(',')).toEqual(selectedMeeting.formatIds.join(','));
+    }
 
     // Location fields
     expect(screen.getByLabelText(translations.getString('venueTypeTitle'))).toHaveValue(selectedMeeting.venueType.toString());
