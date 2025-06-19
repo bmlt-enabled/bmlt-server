@@ -6,6 +6,7 @@
   import type { ConditionsFailedEvent } from 'svelte-spa-router';
 
   import Account from './routes/Account.svelte';
+  import Administration from './routes/Administration.svelte';
   import Formats from './routes/Formats.svelte';
   import Home from './routes/Home.svelte';
   import Login from './routes/Login.svelte';
@@ -37,6 +38,10 @@
       component: Account,
       conditions: [requiresAuthentication]
     }),
+    '/administration': wrap({
+      component: Administration,
+      conditions: [requiresAuthentication]
+    }),
     '*': wrap({
       component: Home,
       conditions: [requiresAuthentication]
@@ -48,7 +53,7 @@
   }
 
   function requiresAuthenticationAdmin(): boolean {
-    return requiresAuthentication() && $authenticatedUser?.type != 'observer';
+    return requiresAuthentication() && ($authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin');
   }
 
   function requiresAuthenticationServerAdmin(): boolean {

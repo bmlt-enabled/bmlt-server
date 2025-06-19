@@ -75,9 +75,4 @@
     display: inline-block;
     cursor: pointer;
   }
-
-  .arrowDown::before {
-    --tw-content: '-';
-    content: var(--tw-content);
-  }
 </style>
