@@ -1012,6 +1012,16 @@
                             "format": "int64"
                         },
                         "example": "1"
+                    },
+                    {
+                        "name": "skipVenueTypeLocationValidation",
+                        "in": "query",
+                        "description": "specify true to skip venue type location validation",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": "true"
                     }
                 ],
                 "requestBody": {

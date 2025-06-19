@@ -175,6 +175,9 @@ class MeetingController extends Controller
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),
+     *     @OA\Parameter(description="specify true to skip venue type location validation", in="query", name="skipVenueTypeLocationValidation", required=false, example="true",
+     *         @OA\Schema(type="boolean")
+     *     ),
      *     @OA\RequestBody(required=true, description="Pass in fields you want to update.",
      *         @OA\JsonContent(ref="#/components/schemas/MeetingPartialUpdate"),
      *     ),

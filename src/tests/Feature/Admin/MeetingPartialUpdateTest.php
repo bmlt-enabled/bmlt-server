@@ -958,6 +958,26 @@ class MeetingPartialUpdateTest extends TestCase
             ->assertStatus(204);
     }
 
+    public function testPartialUpdateSkipVenueTypeLocationValidation()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $format = Format::query()->first();
+        $meeting = $this->createMeeting(['service_body_bigint' => $area->id_bigint, 'formats' => strval($format->shared_id_bigint)]);
+
+        // create what would normally cause a validation error
+        $meeting->venue_type = Meeting::VENUE_TYPE_VIRTUAL;
+        $meeting->save();
+        $meeting->data->firstWhere('key', 'phone_meeting_number')->delete();
+        $meeting->data->firstWhere('key', 'virtual_meeting_link')->delete();
+
+        $payload['name'] = 'a new name';
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/meetings/$meeting->id_bigint?skipVenueTypeLocationValidation=true", $payload)
+            ->assertStatus(204);
+    }
+
     public function testPartialUpdateNoChangeCreatesNoChangeRecord()
     {
         $user = $this->createAdminUser();
