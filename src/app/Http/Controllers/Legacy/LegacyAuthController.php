@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Legacy;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\CatchAllController;
+use App\Http\Controllers\UserInterfaceController;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -59,7 +59,7 @@ class LegacyAuthController extends Controller
             return $this->logoutResponse($request);
         }
 
-        return CatchAllController::handle($request);
+        return UserInterfaceController::handle($request);
     }
 
     private function loggedInResponse($request)
