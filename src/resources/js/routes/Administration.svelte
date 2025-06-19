@@ -152,7 +152,7 @@
           const updatedValues: MeetingPartialUpdate = {
             worldId: newWorldId
           };
-          await RootServerApi.partialUpdateMeeting(meetingId, updatedValues);
+          await RootServerApi.partialUpdateMeeting(meetingId, updatedValues, true);
           console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newWorldId}`);
           stats.updated.push(meetingId);
         } catch (err) {

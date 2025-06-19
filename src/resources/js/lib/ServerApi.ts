@@ -188,8 +188,12 @@ class ApiClientWrapper {
     return this.api.updateMeeting(params);
   }
 
-  async partialUpdateMeeting(id: number, meeting: MeetingPartialUpdate): Promise<void> {
-    const params = { meetingId: id, meetingPartialUpdate: meeting };
+  async partialUpdateMeeting(id: number, meeting: MeetingPartialUpdate, skipVenueTypeLocationValidation?: boolean): Promise<void> {
+    const params = {
+      meetingId: id,
+      meetingPartialUpdate: meeting,
+      ...(skipVenueTypeLocationValidation && { skipVenueTypeLocationValidation })
+    };
     return this.api.patchMeeting(params);
   }
 
