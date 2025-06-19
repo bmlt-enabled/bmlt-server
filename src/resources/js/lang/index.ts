@@ -1,0 +1,11 @@
+export { daTranslations, daYupLocale } from './da';
+export { deTranslations, deYupLocale } from './de';
+export { enTranslations, enYupLocale } from './en';
+export { esTranslations, esYupLocale } from './es';
+export { faTranslations, faYupLocale } from './fa';
+export { frTranslations, frYupLocale } from './fr';
+export { itTranslations, itYupLocale } from './it';
+export { plTranslations, plYupLocale } from './pl';
+export { ptTranslations, ptYupLocale } from './pt';
+export { ruTranslations, ruYupLocale } from './ru';
+export { svTranslations, svYupLocale } from './sv';
