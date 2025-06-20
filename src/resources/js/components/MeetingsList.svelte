@@ -90,7 +90,7 @@
         const matchesDay = selectedDays.length > 0 ? selectedDays.includes(meeting.day.toString()) : true;
         const matchesPublished = selectedPublished.length > 0 ? selectedPublished.includes(String(meeting.published)) : true;
         const matchesSearch =
-          meeting.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (meeting.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
           String(meeting.id).includes(searchTerm) ||
           [meeting.locationStreet, meeting.locationCitySubsection, meeting.locationMunicipality, meeting.locationProvince, meeting.locationSubProvince, meeting.locationPostalCode1]
             .filter(Boolean)
@@ -100,12 +100,13 @@
         const matchesTime =
           selectedTimes.length === 0 ||
           selectedTimes.some((time) => {
+            const startTime = meeting.startTime || '';
             if (time === 'morning') {
-              return meeting.startTime >= '00:00' && meeting.startTime < '12:00';
+              return startTime >= '00:00' && startTime < '12:00';
             } else if (time === 'afternoon') {
-              return meeting.startTime >= '12:00' && meeting.startTime < '18:00';
+              return startTime >= '12:00' && startTime < '18:00';
             } else if (time === 'evening') {
-              return meeting.startTime >= '18:00' && meeting.startTime <= '23:59';
+              return startTime >= '18:00' && startTime <= '23:59';
             }
             return false;
           });
@@ -139,7 +140,7 @@
         // Default sort by day then time (your original sorting)
         const dayComparison = a.day - b.day;
         if (dayComparison !== 0) return dayComparison;
-        return a.startTime.localeCompare(b.startTime);
+        return (a.startTime || '').localeCompare(b.startTime || '');
       })
   );
 
@@ -369,16 +370,20 @@
   <TableBody>
     {#each currentPageItems as meeting (meeting.id)}
       <TableBodyRow onclick={() => handleEdit(meeting)} class={meeting.id === lastEditedMeetingId ? 'bg-blue-50 dark:bg-blue-900' : ''}>
-        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-400 px-4 py-3 whitespace-nowrap'}>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-200 px-4 py-3 whitespace-nowrap text-gray-800'}>
           {$translations.daysOfWeek[meeting.day]}
         </TableBodyCell>
-        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-400 px-4 py-3 whitespace-nowrap'}>
-          {is24hrTime() ? meeting.startTime : convertTo12Hour(meeting.startTime)}
+        <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-200 px-4 py-3 whitespace-nowrap text-gray-800'}>
+          {#if meeting.startTime}
+            {is24hrTime() ? meeting.startTime : convertTo12Hour(meeting.startTime)}
+          {:else}
+            ''
+          {/if}
         </TableBodyCell>
-        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3'}>
-          {meeting.name}
+        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-200 px-4 py-3 text-gray-800'}>
+          {meeting.name || ''}
         </TableBodyCell>
-        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-400 px-4 py-3 text-wrap'}>
+        <TableBodyCell class={meeting.published ? 'px-4 py-3' : 'bg-yellow-200 px-4 py-3 text-wrap text-gray-800'}>
           {[meeting.locationStreet, meeting.locationCitySubsection, meeting.locationMunicipality, meeting.locationProvince, meeting.locationSubProvince, meeting.locationPostalCode1]
             .filter(Boolean)
             .join(', ')}
@@ -398,7 +403,7 @@
           <span class="mx-2 text-gray-500 dark:text-gray-400">/</span>
           <span class="ml-4 flex items-center space-x-1">
             <Label for="itemsPerPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">{$translations.meetingsPerPage}</Label>
-            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} name="itemsPerPage" class="w-20 dark:bg-gray-600" />
+            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} name="itemsPerPage" class="w-20 rounded-lg dark:bg-gray-600" />
           </span>
         </span>
         <ButtonGroup>
