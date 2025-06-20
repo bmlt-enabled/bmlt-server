@@ -47,7 +47,7 @@ export const deTranslations = {
   deleteServiceBody: 'Service-Body löschen',
   deleteUser: 'Lösche diesen Benutzer',
   descriptionTitle: 'Beschreibung',
-  details: 'Details', // TODO: translate
+  details: 'Details (row number or meeting ID)', // TODO: translate
   downloadFile: 'Download File',
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
@@ -55,7 +55,8 @@ export const deTranslations = {
   editFormat: 'Format bearbeiten',
   editUser: 'Benutzer bearbeiten',
   emailTitle: 'E-Mail-Adresse',
-  errors: 'Errors', // TODO: translate
+  error: 'Fehler',
+  errors: 'Fehler',
   extraInfoTitle: 'Weitere Informationen',
   fileProcessedSuccessfully: '✓ File Processed Successfully', // TODO: translate
   filter: 'Filter',
@@ -94,6 +95,7 @@ export const deTranslations = {
   logout: 'Abmelden',
   longitudeTitle: 'Längengrad',
   malformedRows: 'Malformed rows', // TODO: Translate
+  meeting: 'meeting',
   meetingErrorsSomewhere: 'Seiten mit einem oder mehreren Fehlern:',
   meetingIsPublishedTitle: 'Meeting ist veröffentlicht',
   meetingListEditorsTitle: 'Meetingsliste Editors', // TODO: check translation
@@ -168,7 +170,6 @@ export const deTranslations = {
   postMeridiem: 'PM',
   processingFile: 'Processing file...', // TODO: Translate
   published: 'Veröffentlicht',
-  rows: 'Reihen',
   search: 'Suchen',
   searchByDay: 'Suche nach Tag',
   searchByName: 'Suche nach Name',
