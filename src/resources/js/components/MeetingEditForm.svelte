@@ -16,7 +16,7 @@
   import type { MeetingChangeResource } from 'bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
-  import { timeZones } from '../lib/timeZone/timeZones';
+  import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
   import { Geocoder, createGoogleMapsLoader } from '../lib/geocoder';
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
@@ -103,10 +103,6 @@
     { value: VENUE_TYPE_VIRTUAL, name: 'Virtual' },
     { value: VENUE_TYPE_HYBRID, name: 'Hybrid' }
   ];
-  const timeZoneChoices = timeZones.map((tz) => ({
-    value: tz,
-    name: tz
-  }));
 
   const defaultLatLng = { lat: Number(globalSettings.centerLatitude ?? -79.793701171875), lng: Number(globalSettings.centerLongitude ?? 36.065752051707) };
   let defaultDuration = '01:00';
@@ -213,9 +209,18 @@
       }
 
       if (!values.timeZone && values.latitude && values.longitude) {
-        let tzData = await tzFind(values.latitude, values.longitude);
-        if (tzData.length > 0) {
-          values.timeZone = tzData[0];
+        const tzData = await tzFind(values.latitude, values.longitude);
+        const validTimeZone = tzData.find((tz) => timeZones.includes(tz));
+
+        if (validTimeZone) {
+          values.timeZone = validTimeZone;
+        } else {
+          errors.set({
+            ...errors.value,
+            timeZone: $translations.timeZoneGeocodeError
+          });
+          spinner.hide();
+          throw new Error($translations.timeZoneGeocodeError);
         }
       }
 
@@ -738,7 +743,15 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" items={timeZoneChoices} name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder} />
+      <Select id="timeZone" name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
+        {#each timeZoneGroups as continent}
+          <optgroup label={continent.name}>
+            {#each continent.values as timezone}
+              <option value={timezone.value}>{timezone.name}</option>
+            {/each}
+          </optgroup>
+        {/each}
+      </Select>
       {#if $errors.timeZone}
         <Helper class="mt-2" color="red">
           {$errors.timeZone}

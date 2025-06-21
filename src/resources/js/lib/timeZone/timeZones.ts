@@ -1,6 +1,6 @@
 // Generated from
 // php -r "echo implode(PHP_EOL, timezone_identifiers_list()) . PHP_EOL;"
-export const timeZones: string[] = [
+const timeZones: string[] = [
   'Africa/Abidjan',
   'Africa/Accra',
   'Africa/Addis_Ababa',
@@ -421,3 +421,72 @@ export const timeZones: string[] = [
   'Pacific/Wallis',
   'UTC'
 ];
+
+type TimeZoneOption = {
+  value: string;
+  name: string;
+};
+
+type TimeZoneGroup = {
+  name: string;
+  values: TimeZoneOption[];
+};
+
+function createTimeZoneGroups(timeZones: string[]): TimeZoneGroup[] {
+  const continents: Record<string, TimeZoneOption[]> = {};
+
+  timeZones.forEach((timezone) => {
+    const slashCount = (timezone.match(/\//g) || []).length;
+    if (slashCount < 1 && timezone !== 'UTC') {
+      return;
+    }
+
+    if (timezone === 'UTC') {
+      if (!continents['UTC']) {
+        continents['UTC'] = [];
+      }
+      continents['UTC'].push({
+        value: 'UTC',
+        name: 'UTC'
+      });
+      return;
+    }
+
+    const [continent, ...cityParts] = timezone.split('/');
+    const city = cityParts.join('/');
+
+    if (!continents[continent]) {
+      continents[continent] = [];
+    }
+
+    const displayName = city.replace(/_/g, ' ').replace(/\//g, ' - ');
+
+    continents[continent].push({
+      value: timezone,
+      name: displayName
+    });
+  });
+
+  const groupedChoices: TimeZoneGroup[] = [];
+
+  const sortedContinents = Object.keys(continents).sort((a: string, b: string) => {
+    if (a === 'UTC') return 1;
+    if (b === 'UTC') return -1;
+    return a.localeCompare(b);
+  });
+
+  sortedContinents.forEach((continent) => {
+    const sortedCities = continents[continent].sort((a: TimeZoneOption, b: TimeZoneOption) => a.name.localeCompare(b.name));
+
+    groupedChoices.push({
+      name: continent,
+      values: sortedCities
+    });
+  });
+
+  return groupedChoices;
+}
+
+const timeZoneGroups = createTimeZoneGroups(timeZones);
+
+export { timeZoneGroups, timeZones, type TimeZoneGroup, type TimeZoneOption };

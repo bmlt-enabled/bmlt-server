@@ -200,6 +200,7 @@ export const deTranslations = {
   timeAfternoon: 'Nachmittag',
   timeEvening: 'Abend',
   timeMorning: 'Morgen',
+  timeZoneGeocodeError: 'Unable to determine timezone from coordinates. Please select a timezone manually',
   timeZoneSelectPlaceholder: 'Option auswählen (oder leer lassen, um die automatische Erkennung anhand des Standorts zu aktivieren)',
   timeZoneTitle: 'Zeitzone',
   totalRows: 'Total rows (excluding header)', // TODO: Translate
