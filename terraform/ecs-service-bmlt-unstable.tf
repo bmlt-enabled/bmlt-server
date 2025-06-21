@@ -16,10 +16,6 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
         ]
         environment = [
           {
-            name  = "GKEY",
-            value = var.GOOGLE_API_KEY
-          },
-          {
             name  = "MEETING_STATES_AND_PROVINCES",
             value = "CT,MA,NH,NJ,NY,PA,VT"
           },
