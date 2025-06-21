@@ -279,37 +279,35 @@
           {#if stats.malformedRows.length > 0}
             <P class="text-red-600 dark:text-red-400">
               ❌ {$translations.malformedRows}: {stats.malformedRows.length}
-              {$translations.rows}
             </P>
           {/if}
           {#if stats.updated.length > 0}
             <P class="text-green-600 dark:text-green-400">
               ✅ {$translations.updated}: {stats.updated.length}
-              {$translations.meetings}
+              {stats.updated.length === 1 ? $translations.meeting : $translations.meetings}
             </P>
           {/if}
           {#if stats.noUpdateNeeded.length > 0}
             <P class="text-blue-600 dark:text-blue-400">
               ℹ️ {$translations.noUpdateNeeded}: {stats.noUpdateNeeded.length}
-              {$translations.meetings}
+              {stats.noUpdateNeeded.length === 1 ? $translations.meeting : $translations.meetings}
             </P>
           {/if}
           {#if stats.notedAsDeleted.length > 0}
             <P class="text-blue-600 dark:text-blue-400">
               ℹ️ {$translations.notedAsDeleted}: {stats.notedAsDeleted.length}
-              {$translations.meetings}
+              {stats.notedAsDeleted.length === 1 ? $translations.meeting : $translations.meetings}
             </P>
           {/if}
           {#if stats.notFound.length > 0}
             <P class="text-yellow-600 dark:text-yellow-400">
               ⚠️ {$translations.notFound}: {stats.notFound.length}
-              {$translations.meetings}
+              {stats.notFound.length === 1 ? $translations.meeting : $translations.meetings}
             </P>
           {/if}
           {#if stats.errors.length > 0}
             <P class="text-red-600 dark:text-red-400">
               ❌ {$translations.errors}: {stats.errors.length}
-              {$translations.meetings}
             </P>
           {/if}
         </div>
@@ -348,13 +346,11 @@
             ⚠️ {$translations.notFound}: {meetingIdsToString(stats.notFound)}
           </P>
         {/if}
-        {#if stats.errors.length > 0}
-          {#each stats.errors as e}
-            <P class="text-red-600 dark:text-red-400">
-              ❌ {$translations.error}: {e}
-            </P>
-          {/each}
-        {/if}
+        {#each stats.errors as e}
+          <P class="text-red-600 dark:text-red-400">
+            ❌ {$translations.error}: {e}
+          </P>
+        {/each}
       {/if}
     </div>
   </Card>
