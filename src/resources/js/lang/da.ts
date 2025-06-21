@@ -254,6 +254,7 @@ export const daTranslations = {
   timeAfternoon: 'Afternoon',
   timeEvening: 'Evening',
   timeMorning: 'Morning',
+  timeZoneGeocodeError: 'Unable to determine timezone from coordinates. Please select a timezone manually',
   timeZoneSelectPlaceholder: 'Choose option (or leave blank to auto-detect from location)',
   timeZoneTitle: 'Time Zone',
   totalRows: 'Total rows (excluding header)',
