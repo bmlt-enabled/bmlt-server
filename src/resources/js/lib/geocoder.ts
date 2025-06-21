@@ -1,5 +1,14 @@
 import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
+import { Loader } from '@googlemaps/js-api-loader';
+
+export function createGoogleMapsLoader(apiKey: string): Loader {
+  return new Loader({
+    apiKey,
+    version: 'beta',
+    libraries: ['places', 'marker']
+  });
+}
 
 export type GeocodeResult = {
   lat: number;
@@ -112,10 +121,40 @@ export class Geocoder {
     }
   }
 
+  private isGoogleMapsLoaded(): boolean {
+    return typeof google !== 'undefined' && !!google.maps;
+  }
+
   public async geocode(): Promise<GeocodeResult | string> {
     spinner.show();
-    const result = settings.googleApiKey ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
-    spinner.hide();
-    return result;
+
+    try {
+      const shouldUseGoogle = await this.ensureGoogleMapsReady();
+      return shouldUseGoogle ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      return 'Geocoding failed. Please try again.';
+    } finally {
+      spinner.hide();
+    }
+  }
+
+  private async ensureGoogleMapsReady(): Promise<boolean> {
+    if (!settings.googleApiKey) {
+      return false;
+    }
+
+    if (this.isGoogleMapsLoaded()) {
+      return true;
+    }
+
+    try {
+      const loader = createGoogleMapsLoader(settings.googleApiKey);
+      await loader.importLibrary('maps');
+      return true;
+    } catch (loadError) {
+      console.error('Failed to load Google Maps:', loadError);
+      return false;
+    }
   }
 }
