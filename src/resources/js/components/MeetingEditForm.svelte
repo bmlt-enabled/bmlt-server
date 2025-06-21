@@ -4,7 +4,6 @@
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
-  import { Loader } from '@googlemaps/js-api-loader';
   import { writable } from 'svelte/store';
 
   const showMap = writable(false);
@@ -19,7 +18,7 @@
   import { formIsDirty } from '../lib/utils';
   import { timeZones } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
-  import { Geocoder } from '../lib/geocoder';
+  import { Geocoder, createGoogleMapsLoader } from '../lib/geocoder';
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
@@ -504,12 +503,7 @@
     if (!mapElement) return;
 
     try {
-      const loader = new Loader({
-        apiKey: globalSettings.googleApiKey,
-        version: 'beta',
-        libraries: ['places', 'marker']
-      });
-
+      const loader = createGoogleMapsLoader(globalSettings.googleApiKey);
       const { Map } = await loader.importLibrary('maps');
 
       map = new Map(mapElement, {
