@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\LegacyConfig;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -347,5 +348,31 @@ class LegacyAuthTest extends TestCase
         $user->refresh();
         $this->assertNotEmpty($user->password_string);
         $this->assertNotEquals($oldPasswordhash, $user->password_string);
+    }
+
+    public function testLegacyAuthEndpointsWithNewUiEnabled()
+    {
+        LegacyConfig::set('new_ui_enabled', true);
+
+        $jsonResponse = $this->get('/local_server/server_admin/json.php?admin_action=get_permissions');
+        $jsonResponse->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/json');
+
+        $xmlResponse = $this->get('/local_server/server_admin/xml.php?admin_action=get_permissions');
+        $xmlResponse->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/xml');
+    }
+
+    public function testLegacyAuthEndpointsWithNewUiDisabled()
+    {
+        LegacyConfig::set('new_ui_enabled', false);
+
+        $jsonResponse = $this->get('/local_server/server_admin/json.php?admin_action=get_permissions');
+        $jsonResponse->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/json');
+
+        $xmlResponse = $this->get('/local_server/server_admin/xml.php?admin_action=get_permissions');
+        $xmlResponse->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/xml');
     }
 }

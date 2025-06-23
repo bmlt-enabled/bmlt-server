@@ -12,6 +12,8 @@ class CatchAllController extends Controller
 {
     private static array $allowedLegacyPathEndings = [
         '/client_interface/html/index.php',
+        '/local_server/server_admin/json.php',
+        '/local_server/server_admin/xml.php',
     ];
 
     public function all(Request $request): Response
