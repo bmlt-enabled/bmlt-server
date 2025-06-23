@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ServiceBody;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -34,6 +35,22 @@ class LegacyAuthTest extends TestCase
             'email_address_string' => '',
             'login_string' => 'test',
             'password_string' => password_hash($this->goodPassword, PASSWORD_BCRYPT),
+        ]);
+    }
+
+    public function createArea(string $name, int $principalUserId = null, array $assignedUserIds = null)
+    {
+        return ServiceBody::create([
+            'sb_owner' => 0,
+            'name_string' => $name,
+            'description_string' => 'my area',
+            'sb_type' => 'AS',
+            'uri_string' => null,
+            'kml_file_uri_string' => null,
+            'worldid_mixed' => null,
+            'sb_meeting_email' => '',
+            'principal_user_bigint' => $principalUserId,
+            'editors_string' => !is_null($assignedUserIds) ? implode(',', $assignedUserIds) : null,
         ]);
     }
 
@@ -328,6 +345,35 @@ class LegacyAuthTest extends TestCase
                 ->assertSessionMissing('login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d')
                 ->content()
         );
+    }
+
+    public function testGetPermissionsUnauthenticated()
+    {
+        $this->assertEquals(
+            'NOT AUTHORIZED',
+            $this->post('/local_server/server_admin/json.php', ['admin_action' => 'get_permissions'])
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->content()
+        );
+    }
+
+    public function testGetPermissionsAuthenticated()
+    {
+        $user = $this->createServiceBodyAdmin();
+        $area1 = $this->createArea('area1', $user->id_bigint);
+        $area2 = $this->createArea('area2', $user->id_bigint + 1, [$user->id_bigint]);
+        $response = $this->actingAs($user)
+            ->withSession([
+                'login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d' => $user->id_bigint,
+            ])
+            ->post('/local_server/server_admin/json.php', ['admin_action' => 'get_permissions'])
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/json')
+            ->json();
+        $this->assertEquals(2, count($response['service_body']));
+        $this->assertEquals(['id' => $area1->id_bigint, 'name' => $area1->name_string, 'permissions' => 3], $response['service_body'][0]);
+        $this->assertEquals(['id' => $area2->id_bigint, 'name' => $area2->name_string, 'permissions' => 3], $response['service_body'][1]);
     }
 
     public function testMigratePasswordHash()

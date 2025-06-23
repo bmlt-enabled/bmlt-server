@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Legacy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CatchAllController;
+use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,10 +17,12 @@ class LegacyAuthController extends Controller
     private int $REQUEST_TYPE_ADMIN_JSON = 2;
     private int $REQUEST_TYPE_WEB = 3;
 
+    private ServiceBodyRepositoryInterface $serviceBodyRepository;
     private UserRepositoryInterface $userRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(ServiceBodyRepositoryInterface $serviceBodyRepository, UserRepositoryInterface $userRepository)
     {
+        $this->serviceBodyRepository = $serviceBodyRepository;
         $this->userRepository = $userRepository;
     }
 
@@ -57,6 +60,24 @@ class LegacyAuthController extends Controller
             Auth::logout();
             $request->session()->invalidate();
             return $this->logoutResponse($request);
+        } elseif ($adminAction == 'get_permissions') {
+            $apiType = $this->getApiType($request);
+            if ($apiType != $this->REQUEST_TYPE_ADMIN_JSON) {
+                abort(404);
+            }
+
+            $user = $request->user();
+            if (!$user) {
+                return $this->badCredentialsResponse($request);
+            }
+
+            $serviceBodyIds = $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->toArray();
+            $response = [
+                'service_body' =>$this->serviceBodyRepository->search(includeIds: $serviceBodyIds)
+                    ->map(fn ($sb) => ['id' => $sb->id_bigint, 'name' => $sb->name_string, 'permissions' => 3])
+                    ->toArray()
+            ];
+            return response($response)->header('Content-Type', 'application/json');
         }
 
         return CatchAllController::handle($request);
