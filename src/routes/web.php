@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CatchAllController;
-use App\Http\Controllers\Legacy\LegacyAuthController;
+use App\Http\Controllers\Legacy\LegacyAdminController;
 use App\Http\Controllers\Query\ServerInfoXmlController;
 use App\Http\Controllers\Query\SwitcherController;
 use App\Http\Controllers\SemanticWorkshopController;
@@ -22,13 +22,13 @@ Route::get('/{moreSlashes}client_interface/{dataFormat}', [SwitcherController::c
     ->middleware('json');
 
 // reimplemented auth
-Route::any('/{moreSlashes}local_server/server_admin/{dataFormat}.php', [LegacyAuthController::class, 'handle'])
+Route::any('/{moreSlashes}local_server/server_admin/{dataFormat}.php', [LegacyAdminController::class, 'handle'])
     ->where('moreSlashes', '/*') // some old clients have repeating slashes at beginning of path
     ->where('dataFormat', 'json|xml');
 
-Route::any('/', [LegacyAuthController::class, 'handle'])
+Route::any('/', [LegacyAdminController::class, 'handle'])
     ->name('login');
-Route::any('/{moreSlashes}index.php', [LegacyAuthController::class, 'handle'])
+Route::any('/{moreSlashes}index.php', [LegacyAdminController::class, 'handle'])
     ->where('moreSlashes', '/*'); // some old clients have repeating slashes at beginning of path
 
 // Catch-all for everything else - legacy code or UI

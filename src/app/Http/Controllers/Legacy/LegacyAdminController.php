@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class LegacyAuthController extends Controller
+class LegacyAdminController extends Controller
 {
     private int $REQUEST_TYPE_ADMIN_XML = 1;
     private int $REQUEST_TYPE_ADMIN_JSON = 2;
@@ -30,57 +30,99 @@ class LegacyAuthController extends Controller
     {
         $adminAction = $request->input('admin_action');
         if ($adminAction == 'login') {
-            Auth::logout();
-            $request->session()->invalidate();
-            $username = $request->input('c_comdef_admin_login');
-            $password = $request->input('c_comdef_admin_password');
-            $credentials = ['login_string' => $username, 'password' => $password];
-            $success = Auth::attempt($credentials);
-            if ($success) {
-                if (Hash::needsRehash($request->user()->password_string)) {
-                    $this->userRepository->updatePassword($request->user()->id_bigint, $password);
-                }
-
-                $apiType = $this->getApiType($request);
-                if ($apiType != $this->REQUEST_TYPE_WEB) {
-                    $user = Auth::user();
-                    if ($user) {
-                        if ($user->user_level_tinyint == User::USER_LEVEL_ADMIN || $user->user_level_tinyint == User::USER_LEVEL_DEACTIVATED) {
-                            Auth::logout();
-                            $request->session()->invalidate();
-                            $success = false;
-                        }
-                    }
-                }
-            }
-            return $success
-                ? $this->loggedInResponse($request)
-                : $this->badCredentialsResponse($request);
+            return $this->handleLogin($request);
         } elseif ($adminAction == 'logout') {
-            Auth::logout();
-            $request->session()->invalidate();
-            return $this->logoutResponse($request);
+            return $this->handleLogout($request);
         } elseif ($adminAction == 'get_permissions') {
-            $apiType = $this->getApiType($request);
-            if ($apiType != $this->REQUEST_TYPE_ADMIN_JSON) {
-                abort(404);
-            }
-
-            $user = $request->user();
-            if (!$user) {
-                return $this->badCredentialsResponse($request);
-            }
-
-            $serviceBodyIds = $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->toArray();
-            $response = [
-                'service_body' =>$this->serviceBodyRepository->search(includeIds: $serviceBodyIds)
-                    ->map(fn ($sb) => ['id' => $sb->id_bigint, 'name' => $sb->name_string, 'permissions' => 3])
-                    ->toArray()
-            ];
-            return response($response)->header('Content-Type', 'application/json');
+            return $this->handleGetPermissions($request);
+        } elseif ($adminAction == 'get_user_info') {
+            return $this->handleGetUserInfo($request);
         }
 
         return CatchAllController::handle($request);
+    }
+
+    private function handleLogin(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $username = $request->input('c_comdef_admin_login');
+        $password = $request->input('c_comdef_admin_password');
+        $credentials = ['login_string' => $username, 'password' => $password];
+        $success = Auth::attempt($credentials);
+        if ($success) {
+            if (Hash::needsRehash($request->user()->password_string)) {
+                $this->userRepository->updatePassword($request->user()->id_bigint, $password);
+            }
+
+            $apiType = $this->getApiType($request);
+            if ($apiType != $this->REQUEST_TYPE_WEB) {
+                $user = Auth::user();
+                if ($user) {
+                    if ($user->user_level_tinyint == User::USER_LEVEL_ADMIN || $user->user_level_tinyint == User::USER_LEVEL_DEACTIVATED) {
+                        Auth::logout();
+                        $request->session()->invalidate();
+                        $success = false;
+                    }
+                }
+            }
+        }
+        return $success
+            ? $this->loggedInResponse($request)
+            : $this->badCredentialsResponse($request);
+    }
+
+    private function handleLogout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        return $this->logoutResponse($request);
+    }
+
+    private function handleGetPermissions(Request $request)
+    {
+        $apiType = $this->getApiType($request);
+        if ($apiType != $this->REQUEST_TYPE_ADMIN_JSON) {
+            abort(404);
+        }
+
+        $user = $request->user();
+        if (!$user) {
+            return $this->badCredentialsResponse($request);
+        }
+
+        $serviceBodyIds = $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->toArray();
+        $serviceBodies = empty($serviceBodyIds) ? [] : $this->serviceBodyRepository->search(includeIds: $serviceBodyIds)
+            ->map(fn ($sb) => [
+                'id' => $sb->id_bigint,
+                'name' => $sb->name_string,
+                'permissions' => 3
+            ])
+            ->toArray();
+
+        return response(['service_body' => $serviceBodies])->header('Content-Type', 'application/json');
+    }
+
+    private function handleGetUserInfo(Request $request)
+    {
+        $apiType = $this->getApiType($request);
+        if ($apiType != $this->REQUEST_TYPE_ADMIN_JSON) {
+            abort(404);
+        }
+
+        $user = $request->user();
+        if (!$user) {
+            return $this->badCredentialsResponse($request);
+        }
+
+        $response = [
+            'current_user' => [
+                'id' => $user->id_bigint,
+                'name' => $user->name_string,
+                'type' => $user->user_level_tinyint
+            ]
+        ];
+        return response($response)->header('Content-Type', 'application/json');
     }
 
     private function loggedInResponse($request)
