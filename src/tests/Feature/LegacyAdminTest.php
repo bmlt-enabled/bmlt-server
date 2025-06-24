@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class LegacyAuthTest extends TestCase
+class LegacyAdminTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -374,6 +374,32 @@ class LegacyAuthTest extends TestCase
         $this->assertEquals(2, count($response['service_body']));
         $this->assertEquals(['id' => $area1->id_bigint, 'name' => $area1->name_string, 'permissions' => 3], $response['service_body'][0]);
         $this->assertEquals(['id' => $area2->id_bigint, 'name' => $area2->name_string, 'permissions' => 3], $response['service_body'][1]);
+    }
+
+    public function testGetUserInfoUnauthenticated()
+    {
+        $this->assertEquals(
+            'NOT AUTHORIZED',
+            $this->post('/local_server/server_admin/json.php', ['admin_action' => 'get_user_info'])
+                ->assertStatus(200)
+                ->assertHeader('Content-Type', 'text/html; charset=UTF-8')
+                ->content()
+        );
+    }
+
+    public function testGetUserInfoAuthenticated()
+    {
+        $user = $this->createServiceBodyAdmin();
+        $response = $this->actingAs($user)
+            ->withSession([
+                'login_web_59ba36addc2b2f9401580f014c7f58ea4e30989d' => $user->id_bigint,
+            ])
+            ->post('/local_server/server_admin/json.php', ['admin_action' => 'get_user_info'])
+            ->assertStatus(200)
+            ->assertHeader('Content-Type', 'application/json')
+            ->json();
+        $expected = ['current_user' => ['id' => $user->id_bigint, 'name' => $user->name_string, 'type' => $user->user_level_tinyint]];
+        $this->assertEquals($expected, $response);
     }
 
     public function testMigratePasswordHash()
