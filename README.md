@@ -2,7 +2,7 @@
 
 <h1 align="center">
 <a href="https://github.com/bmlt-enabled/bmlt-server/releases/latest"><img src="https://img.shields.io/github/v/release/bmlt-enabled/bmlt-server"></a>
-<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.1-8892BF.svg" alt="PHP Programming Language"></a>
+<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.2-8892BF.svg" alt="PHP Programming Language"></a>
 <a href="https://raw.githubusercontent.com/bmlt-enabled/bmlt-server/main/LICENSE"><img src="https://img.shields.io/github/license/bmlt-enabled/bmlt-server"></a>
 <a href="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/test.yml"><img src="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
 <a href="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/bmlt-enabled/bmlt-server/main.yml?branch=main&logo=github&style=flat-square" alt="Build Status"></a>
