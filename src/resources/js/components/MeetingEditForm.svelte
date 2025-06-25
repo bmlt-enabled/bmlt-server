@@ -284,10 +284,7 @@
     },
     extend: validator({
       schema: yup.object({
-        serviceBodyId: yup
-          .number()
-          .transform((v) => parseInt(v))
-          .required(),
+        serviceBodyId: yup.number().required().min(1, $translations.serviceBodyInvalid),
         formatIds: yup.array().of(yup.number()),
         venueType: yup.number().oneOf(VALID_VENUE_TYPES).required(),
         temporarilyVirtual: yup.bool(),
@@ -302,7 +299,7 @@
           .required(), // HH:mm
         timeZone: yup
           .string()
-          .oneOf([...timeZones, ''], 'Invalid time zone')
+          .oneOf([...timeZones, ''], $translations.timeZoneInvalid)
           .max(40),
         latitude: yup.number().min(-90).max(90).required(),
         longitude: yup.number().min(-180).max(180).required(),

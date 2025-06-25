@@ -184,6 +184,7 @@ export const deTranslations = {
   serviceBodiesWithEditableMeetings: 'Dieser Benutzer kann Meetings in diesen Service-Bodies bearbeiten:',
   serviceBodyAdminTitle: 'Service-Body Administrator*in',
   serviceBodyDeleteConflictError: 'Fehler: Der Service-Body konnte nicht gelöscht werden, da er noch mit Meetings verknüpft ist oder anderen Service-Bodies übergeordnet ist.',
+  serviceBodyInvalid: 'Please select a valid service body',
   serviceBodyTitle: 'Service-Body',
   serviceBodyTypeTitle: 'Service-Body-Typ',
   showAllTranslations: 'Alle Übersetzungen anzeigen',
@@ -201,6 +202,7 @@ export const deTranslations = {
   timeEvening: 'Abend',
   timeMorning: 'Morgen',
   timeZoneGeocodeError: 'Unable to determine timezone from coordinates. Please select a timezone manually',
+  timeZoneInvalid: 'Invalid time zone',
   timeZoneSelectPlaceholder: 'Option auswählen (oder leer lassen, um die automatische Erkennung anhand des Standorts zu aktivieren)',
   timeZoneTitle: 'Zeitzone',
   totalRows: 'Total rows (excluding header)', // TODO: Translate
