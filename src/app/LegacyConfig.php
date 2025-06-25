@@ -7,7 +7,7 @@ class LegacyConfig
     private static ?array $config = null;
     private static bool $configLoaded = false;
 
-    public static function get(string $key = null, $default = null)
+    public static function get(?string $key = null, $default = null)
     {
         if (!self::$configLoaded) {
             self::loadConfig();
