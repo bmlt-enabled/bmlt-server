@@ -57,8 +57,8 @@ jobs:
           make test
 
       - name: Send coverage data to codecov.io 📀
-        if: matrix.db == 'latest' && matrix.php == '8.1'
-        uses: codecov/codecov-action@v4.4.1
+        if: matrix.db == 'latest' && matrix.php == '8.4'
+        uses: codecov/codecov-action@v5.4.3
         with:
           files: src/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
