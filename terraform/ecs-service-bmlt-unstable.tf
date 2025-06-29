@@ -20,10 +20,6 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
             value = "CT,MA,NH,NJ,NY,PA,VT"
           },
           {
-            name  = "NEW_UI_ENABLED",
-            value = "true"
-          },
-          {
             name  = "DB_DATABASE",
             value = "rootserver"
           },
