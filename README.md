@@ -18,16 +18,12 @@ that has been written for a very specific purpose, for a very specific clientele
 
 It is designed to track and locate Narcotics Anonymous meetings, which are regularly-scheduled, weekly, recurring events.
 
-The original intended clientele is Narcotics Anonymous Service bodies (although other 12 step fellowships have started
-using BMLT as well). The service body implements a BMLT server, and provides the server to other NA Service bodies.
-This project is the server for the BMLT. It is the "server" part of the BMLT "client/server" architecture.
+The original intended clientele is Narcotics Anonymous Service bodies, though it has since been adopted by other 12-step 
+fellowships as well. Service bodies deploy BMLT servers to manage meeting information and share access with other NA 
+Service bodies throughout their region. This repository contains the server component of BMLT's client/server 
+architecture.
 
 You can find out more about the BMLT on the [website](https://bmlt.app).
-
-[Follow this link to access the BMLT Server GitHub repository](https://github.com/bmlt-enabled/bmlt-server).
-There are also links to various predecessor legacy repositories [here](#older-repositories) at the end of this README.
-For specific information on setting up a development environment for work on the BMLT server, please
-see [CONTRIBUTING.md](CONTRIBUTING.md) in the GitHub repository.
 
 REQUIREMENTS
 ------------
@@ -39,8 +35,14 @@ for `mysql` itself.
 
 For more information about server requirements, see the "Things You Will Need Before You Install" section of
 [Installing a New Server](https://bmlt.app/setting-up-the-bmlt/).
- 
+
 INSTALLATION
 ------------
 
-For instructions on installing the server, see [installation/README.md](installation/README.md) in the GitHub repository.
+For instructions on installing the server, see [installation/README.md](installation/README.md).
+
+DEVELOPMENT
+------------
+
+For specific information on setting up a development environment for work on the BMLT server, please
+see [CONTRIBUTING.md](CONTRIBUTING.md).

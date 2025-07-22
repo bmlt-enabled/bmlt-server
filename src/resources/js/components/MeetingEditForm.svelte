@@ -4,6 +4,7 @@
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
+  import { SvelteSet } from 'svelte/reactivity';
   import { writable } from 'svelte/store';
 
   const showMap = writable(false);
@@ -39,7 +40,7 @@
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
   const globalSettings = settings;
-  const seenNames = new Set<string>();
+  const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
     .map((format) => {

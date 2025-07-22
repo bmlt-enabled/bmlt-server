@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { SvelteMap } from 'svelte/reactivity';
   import { Button, Card, Fileupload, Heading, P } from 'flowbite-svelte';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
-  import type { MeetingPartialUpdate } from 'bmlt-server-client';
+  import type { Meeting, MeetingPartialUpdate } from 'bmlt-server-client';
 
   let files = $state<FileList | undefined>(undefined);
   let isLoading = $state(false);
@@ -91,7 +92,7 @@
       stats.totalRows = jsonData.length - 1;
 
       // Build a map of meetingId -> worldId from the CSV
-      const updateMap = new Map<number, string>();
+      const updateMap = new SvelteMap<number, string>();
       const meetingIds: number[] = [];
 
       for (let i = 1; i < jsonData.length; i++) {
@@ -121,7 +122,7 @@
       console.log(`Retrieved ${existingMeetings.length} existing meetings`);
 
       // Create a map of existing meetings for quick lookup
-      const existingMeetingsMap = new Map();
+      const existingMeetingsMap = new SvelteMap<number, Meeting>();
       existingMeetings.forEach((meeting) => {
         existingMeetingsMap.set(meeting.id, meeting);
       });
@@ -150,7 +151,7 @@
 
         try {
           const updatedValues: MeetingPartialUpdate = {
-            worldId: newWorldId
+            worldId: newWorldId || ''
           };
           await RootServerApi.partialUpdateMeeting(meetingId, updatedValues, true);
           console.log(`Successfully updated meeting ${meetingId}: ${existingMeeting.worldId} → ${newWorldId}`);
