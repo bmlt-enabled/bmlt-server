@@ -19,6 +19,9 @@
 
   let { selectedUser, users, onSaveSuccess }: Props = $props();
 
+  let typeSelectValue = $state('');
+  let ownerSelectValue = $state('');
+
   const userOwnerItems = users
     .filter((u) => selectedUser?.id !== u.id)
     .map((u) => ({ value: u.id.toString(), name: u.displayName }))
@@ -130,6 +133,11 @@
   $effect(() => {
     isDirty.set(formIsDirty(initialValues, $data));
   });
+
+  $effect(() => {
+    typeSelectValue = $data.type || initialValues.type || '';
+    ownerSelectValue = $data.ownerId?.toString() || initialValues.ownerId?.toString() || '';
+  });
 </script>
 
 <form use:form>
@@ -145,7 +153,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
-      <Select id="type" items={userTypeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="type" items={userTypeItems} bind:value={typeSelectValue} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -154,7 +162,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="ownerId" class="mb-2">{$translations.ownedByTitle}</Label>
-      <Select id="ownerId" items={userOwnerItems} name="ownerId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="ownerId" items={userOwnerItems} bind:value={ownerSelectValue} name="ownerId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.ownerId}
           {$errors.ownerId}
