@@ -1,6 +1,6 @@
 # Basic Meeting List Toolbox Server
 
-<h1 align="center">
+<h1 style="text-align: center;">
 <a href="https://github.com/bmlt-enabled/bmlt-server/releases/latest"><img src="https://img.shields.io/github/v/release/bmlt-enabled/bmlt-server"></a>
 <a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.2-8892BF.svg" alt="PHP Programming Language"></a>
 <a href="https://raw.githubusercontent.com/bmlt-enabled/bmlt-server/main/LICENSE"><img src="https://img.shields.io/github/license/bmlt-enabled/bmlt-server"></a>
@@ -24,15 +24,10 @@ This project is the server for the BMLT. It is the "server" part of the BMLT "cl
 
 You can find out more about the BMLT on the [website](https://bmlt.app).
 
-[Follow this link to access the BMLT Server GitHub repository](https://github.com/bmlt-enabled/bmlt-server).
-There are also links to various predecessor legacy repositories [here](#older-repositories) at the end of this README.
-For specific information on setting up a development environment for work on the BMLT server, please
-see [CONTRIBUTING.md](CONTRIBUTING.md) in the GitHub repository.
-
 REQUIREMENTS
 ------------
 
-The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.2 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" display when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
+The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.2 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" page in your browser when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
 
 For more information about server requirements, see the "Things You Will Need Before You Install" section of
 [Installing a New Server](https://bmlt.app/setting-up-the-bmlt/).
@@ -41,3 +36,15 @@ INSTALLATION
 ------------
 
 For instructions on installing the server, see [installation/README.md](installation/README.md) in the GitHub repository.
+
+DEVELOPMENT
+-----------
+
+For specific information on setting up a development environment for work on the BMLT server, please
+see [CONTRIBUTING.md](CONTRIBUTING.md) in the GitHub repository.
+
+LICENSE
+-------
+
+The BMLT Server, and all materials in this repository, are made freely available under the
+terms of the [MIT LICENSE](LICENSE).
