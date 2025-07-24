@@ -32,10 +32,7 @@ see [CONTRIBUTING.md](CONTRIBUTING.md) in the GitHub repository.
 REQUIREMENTS
 ------------
 
-The server requires a MySQL 5.7 database or higher and PHP 8.2 or higher.In addition, the following PHP modules
-are required: `curl gd intl mbstring mysql xml zip`. In particular, make sure you have `intl` -- this one is more
-likely to be missing. There are a variety of MySQL modules for PHP, and others will probably work as a substitute
-for `mysql` itself.
+The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.2 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" display when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
 
 For more information about server requirements, see the "Things You Will Need Before You Install" section of
 [Installing a New Server](https://bmlt.app/setting-up-the-bmlt/).
