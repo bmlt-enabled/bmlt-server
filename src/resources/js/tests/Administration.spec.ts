@@ -12,9 +12,9 @@ import { laravelLogMissing, login, sharedAfterEach, sharedBeforeAll, sharedBefor
 // Perhaps overkill ... but keep track of whether URL.createObjectURL and URL.revokeObjectURL are defined, and if they are,
 // restore the old versions after the test is complete.  (They will be defined in a browser but not the testing environment.)
 let originalCreateObjectURL: any, originalRevokeObjectURL: any;
-let mockClickInfo: {download: string, href: string} | null;
+let mockClickInfo: { download: string; href: string } | null;
 function mockClick(this: HTMLAnchorElement) {
-  mockClickInfo = {download: this.download, href: this.href};
+  mockClickInfo = { download: this.download, href: this.href };
 }
 
 beforeAll(() => {
@@ -63,7 +63,7 @@ class MockDataTransfer {
 describe('check Administration tab', () => {
   test('check NAWS import', async () => {
     const user = await login('serveradmin', 'Administration');
-    const fileInput = (await screen.findByLabelText('Update World Committee Codes'));
+    const fileInput = await screen.findByLabelText('Update World Committee Codes');
     expect(fileInput.nodeName).toBe('INPUT');
     expect(screen.queryByText('Supported formats: Excel (.xlsx) and CSV (.csv)')).toBeInTheDocument();
     // TODO: unfortunately I couldn't get the remaining steps in checking the NAWS import button to work, so am just leaving it with this minimal test for now
