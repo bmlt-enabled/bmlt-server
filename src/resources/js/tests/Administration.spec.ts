@@ -1,9 +1,6 @@
 import { beforeAll, beforeEach, describe, test } from 'vitest';
-import { screen, waitFor } from '@testing-library/svelte';
+import { screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
-
-import ApiClientWrapper from '../lib/ServerApi';
-import { ResponseError } from 'bmlt-server-client';
 import { laravelLogMissing, login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
 // These tests include the mocks that override the behavior of clicking on a link.  We don't want to change this for the other tests,
@@ -39,30 +36,9 @@ afterAll(() => {
   }
 });
 
-// TODO: should maybe clean up mocks including DataTrasfer?
-
-class MockDataTransfer {
-  files: File[] = [];
-  items: any = {
-    add: (file: File) => {
-      this.files.push(file);
-    },
-    clear: () => {
-      this.files = [];
-    }
-  };
-  setData(format: string, data: string) {
-    // Implement as needed for your tests
-  }
-  getData(format: string): string {
-    // Implement as needed for your tests
-    return '';
-  }
-}
-
 describe('check Administration tab', () => {
   test('check NAWS import', async () => {
-    const user = await login('serveradmin', 'Administration');
+    await login('serveradmin', 'Administration');
     const fileInput = await screen.findByLabelText('Update World Committee Codes');
     expect(fileInput.nodeName).toBe('INPUT');
     expect(screen.queryByText('Supported formats: Excel (.xlsx) and CSV (.csv)')).toBeInTheDocument();
