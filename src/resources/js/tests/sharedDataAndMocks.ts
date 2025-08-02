@@ -904,6 +904,17 @@ async function mockDeleteMeeting({ meetingId: id }: { meetingId: number }): Prom
   mockDeletedMeetingId = id;
 }
 
+// laravel log mocks
+export const laravelLogMissing = { missing: false };
+async function mockGetLaravelLog(): Promise<Blob> {
+  if (laravelLogMissing.missing) {
+    throw new ResponseError(makeResponse('Response Error', 404, 'Not Found'), 'Response returned an error code');
+  }
+  // u represents the gzipped file laravel.log with contents 'test\n'
+  const u = new Uint8Array([31, 139, 8, 0, 0, 0, 0, 0, 2, 3, 43, 73, 45, 46, 225, 2, 0, 198, 53, 185, 59, 5, 0, 0, 0]);
+  return new Blob([u], { type: 'application/gzip' });
+}
+
 export function sharedBeforeAll() {
   // set up mocks
   vi.spyOn(ApiClientWrapper.api, 'getUser').mockImplementation(mockGetUser);
@@ -930,6 +941,7 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'createMeeting').mockImplementation(mockCreateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'updateMeeting').mockImplementation(mockUpdateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'deleteMeeting').mockImplementation(mockDeleteMeeting);
+  vi.spyOn(ApiClientWrapper.api, 'getLaravelLog').mockImplementation(mockGetLaravelLog);
   Element.prototype.animate = vi.fn().mockReturnValue({
     finished: Promise.resolve(),
     cancel: vi.fn(),

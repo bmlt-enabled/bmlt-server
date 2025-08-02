@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Card, Fileupload, Heading, P } from 'flowbite-svelte';
+  import { Button, Card, Fileupload, Heading, Helper, Label, P } from 'flowbite-svelte';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
@@ -248,9 +248,9 @@
   <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
     <div class="p-4">
       <div class="mb-4">
-        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">{$translations.updateWorldCommitteeCodes}</Heading>
+        <Label for="committee-codes-upload" class="mb-4 text-2xl dark:text-white">{$translations.updateWorldCommitteeCodes}</Label>
         <Fileupload bind:files accept=".xlsx,.csv" size="md" clearable={true} disabled={isLoading} id="committee-codes-upload" />
-        <p class="mt-1 text-sm text-gray-500">{$translations.supportedFileFormats}</p>
+        <Helper>{$translations.supportedFileFormats}</Helper>
       </div>
 
       {#if files && files.length > 0}
