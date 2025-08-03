@@ -262,7 +262,7 @@ class MeetingController extends ResourceController
             'formats' => $this->buildFormatsString($validated),
             'venue_type' => $validated['venueType'],
             'weekday_tinyint' => $validated['day'],
-            'time_zone' => $validated['timeZone'],
+            'time_zone' => $validated['timeZone'] ?? null,
             'start_time' => \DateTime::createFromFormat('H:i', $validated['startTime'])->format('H:i:s'),
             'duration_time' => \DateTime::createFromFormat('H:i', $validated['duration'])->format('H:i:s'),
             'latitude' => $validated['latitude'],

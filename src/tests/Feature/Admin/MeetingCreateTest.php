@@ -1228,5 +1228,11 @@ class MeetingCreateTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->post('/api/v1/meetings', $payload)
             ->assertStatus(201);
+
+        // it can be missing
+        unset($payload['timeZone']);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/meetings', $payload)
+            ->assertStatus(201);
     }
 }
