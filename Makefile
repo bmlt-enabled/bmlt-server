@@ -124,8 +124,8 @@ dev: zip ## Docker Compose Up
 .PHONY: test
 test:  ## Runs PHP Tests
 	$(TEST_PREFIX) php artisan test --parallel --recreate-databases --display-deprecations --coverage-clover coverage.xml
-# 	$(TEST_PREFIX) vendor/bin/phpunit tests/Feature/Admin/ServiceBodyPartialUpdateTest.php
-# 	$(TEST_PREFIX) vendor/bin/phpunit --filter testUpdateServiceBodyAsServiceBodyAdmin tests/Feature/Admin/ServiceBodyPartialUpdateTest.php
+#	$(TEST_PREFIX) vendor/bin/phpunit tests/Feature/Admin/ServiceBodyPartialUpdateTest.php
+#	$(TEST_PREFIX) vendor/bin/phpunit --filter testUpdateServiceBodyAsServiceBodyAdmin tests/Feature/Admin/ServiceBodyPartialUpdateTest.php
 
 .PHONY: test-js
 test-js:  ## Runs JavaScript tests
