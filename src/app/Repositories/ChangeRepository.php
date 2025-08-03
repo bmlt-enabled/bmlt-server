@@ -27,6 +27,8 @@ class ChangeRepository implements ChangeRepositoryInterface
         return $this->getBuilder($startDate, $endDate, $meetingId, $serviceBodyId, $changeTypes)
             ->selectRaw('MAX(change_date) as change_date, COALESCE(before_id_bigint, after_id_bigint) as meeting_id')
             ->groupByRaw('COALESCE(before_id_bigint, after_id_bigint)')
+            ->reorder()
+            ->orderByDesc('change_date')
             ->get()
             ->mapWithKeys(fn ($row, $_) => [$row->meeting_id => strtotime($row->change_date)]);
     }
