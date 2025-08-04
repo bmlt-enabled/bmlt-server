@@ -1,10 +1,10 @@
-import { beforeAll, beforeEach, describe, test } from 'vitest';
+import { beforeAll, beforeEach, describe, test, type MockInstance } from 'vitest';
 import { screen } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import { laravelLogMissing, login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
-// These tests include the mocks that override the behavior of clicking on a link.  We don't want to change this for the other tests,
-// so they are here rather than in the shared mocks file.  We still import the shared mocks.
+// These tests include the mocks that override the behavior of clicking on a link and of console.error.  We don't want to change this
+// for the other tests, so they are here rather than in the shared mocks file.  We still import the shared mocks.
 
 // Perhaps overkill ... but keep track of whether URL.createObjectURL and URL.revokeObjectURL are defined, and if they are,
 // restore the old versions after the test is complete.  (They will be defined in a browser but not the testing environment.)
@@ -13,6 +13,7 @@ let mockClickInfo: { download: string; href: string } | null;
 function mockClick(this: HTMLAnchorElement) {
   mockClickInfo = { download: this.download, href: this.href };
 }
+let consoleErrorSpy: MockInstance<typeof console.error>;
 
 beforeAll(() => {
   originalCreateObjectURL = URL.createObjectURL;
@@ -24,9 +25,13 @@ beforeAll(() => {
 });
 beforeEach(() => {
   mockClickInfo = null;
+  consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   sharedBeforeEach();
 });
-afterEach(sharedAfterEach);
+afterEach(() => {
+  consoleErrorSpy.mockRestore();
+  sharedAfterEach();
+});
 afterAll(() => {
   if (originalCreateObjectURL) {
     URL.createObjectURL = originalCreateObjectURL;
@@ -52,6 +57,7 @@ describe('check Administration tab', () => {
     await user.click(download);
     expect(mockClickInfo?.download).toBe('laravel.log.gz');
     expect(mockClickInfo?.href).toBe('blob:http://localhost:8000/dummyblob');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
   });
 
   test('check bad laravel log', async () => {
@@ -61,5 +67,7 @@ describe('check Administration tab', () => {
     await user.click(download);
     expect(mockClickInfo).toBe(null);
     expect(screen.getByText('No logs found')).toBeInTheDocument();
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to download Laravel log:', 'Response Error');
   });
 });
