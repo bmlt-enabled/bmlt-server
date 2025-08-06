@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
@@ -35,11 +36,13 @@
 
   let { selectedMeeting, serviceBodies, formats, onSaved, onDeleted }: Props = $props();
 
+  const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
+
   const tabs = selectedMeeting
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
   const globalSettings = settings;
-  const seenNames = new Set<string>();
+  const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
     .map((format) => {
@@ -82,7 +85,7 @@
   let isPublishedChecked = $state(true);
   let showDeleteModal = $state(false);
   let meetingToDelete: Meeting | undefined = $state();
-  const weekdayChoices = $translations.daysOfWeek.map((day: string, index: number) => ({
+  const weekdayChoices = daysOfWeek.map((day: string, index: number) => ({
     value: index,
     name: day
   }));

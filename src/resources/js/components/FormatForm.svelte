@@ -33,6 +33,58 @@
   // true if no format translations were entered (bit of a hack to allow an appropriate error message to be displayed)
   let noFormatTranslations: boolean = $state(false);
 
+  const formatTypeCodes = [
+    { name: $translations.formatTypeCode_OPEN_OR_CLOSED, value: 'OPEN_OR_CLOSED' },
+    { name: $translations.formatTypeCode_COMMON_NEEDS_OR_RESTRICTION, value: 'COMMON_NEEDS_OR_RESTRICTION' },
+    { name: $translations.formatTypeCode_ALERT, value: 'ALERT' },
+    { name: $translations.formatTypeCode_LANGUAGE, value: 'LANGUAGE' },
+    { name: $translations.formatTypeCode_LOCATION, value: 'LOCATION' },
+    { name: $translations.formatTypeCode_MEETING_FORMAT, value: 'MEETING_FORMAT' },
+    { name: $translations.formatTypeCode_NONE, value: '' }
+  ];
+
+  const nawsFormats = [
+    { name: $translations.nawsFormat_BEG, value: 'BEG' },
+    { name: $translations.nawsFormat_BT, value: 'BT' },
+    { name: $translations.nawsFormat_CAN, value: 'CAN' },
+    { name: $translations.nawsFormat_CH, value: 'CH' },
+    { name: $translations.nawsFormat_CLOSED, value: 'CLOSED' },
+    { name: $translations.nawsFormat_CPT, value: 'CPT' },
+    { name: $translations.nawsFormat_CW, value: 'CW' },
+    { name: $translations.nawsFormat_DISC, value: 'DISC' },
+    { name: $translations.nawsFormat_GL, value: 'GL' },
+    { name: $translations.nawsFormat_GP, value: 'GP' },
+    { name: $translations.nawsFormat_HYBR, value: 'HYBR' },
+    { name: $translations.nawsFormat_IP, value: 'IP' },
+    { name: $translations.nawsFormat_IW, value: 'IW' },
+    { name: $translations.nawsFormat_JFT, value: 'JFT' },
+    { name: $translations.nawsFormat_LANG, value: 'LANG' },
+    { name: $translations.nawsFormat_LC, value: 'LC' },
+    { name: $translations.nawsFormat_LIT, value: 'LIT' },
+    { name: $translations.nawsFormat_M, value: 'M' },
+    { name: $translations.nawsFormat_MED, value: 'MED' },
+    { name: $translations.nawsFormat_NC, value: 'NC' },
+    { name: $translations.nawsFormat_NONE, value: '' },
+    { name: $translations.nawsFormat_NS, value: 'NS' },
+    { name: $translations.nawsFormat_OPEN, value: 'OPEN' },
+    { name: $translations.nawsFormat_QA, value: 'QA' },
+    { name: $translations.nawsFormat_RA, value: 'RA' },
+    { name: $translations.nawsFormat_SD, value: 'S-D' },
+    { name: $translations.nawsFormat_SMOK, value: 'SMOK' },
+    { name: $translations.nawsFormat_SPAD, value: 'SPAD' },
+    { name: $translations.nawsFormat_SPK, value: 'SPK' },
+    { name: $translations.nawsFormat_STEP, value: 'STEP' },
+    { name: $translations.nawsFormat_SWG, value: 'SWG' },
+    { name: $translations.nawsFormat_TC, value: 'TC' },
+    { name: $translations.nawsFormat_TOP, value: 'TOP' },
+    { name: $translations.nawsFormat_TRAD, value: 'TRAD' },
+    { name: $translations.nawsFormat_VAR, value: 'VAR' },
+    { name: $translations.nawsFormat_VM, value: 'VM' },
+    { name: $translations.nawsFormat_W, value: 'W' },
+    { name: $translations.nawsFormat_WCHR, value: 'WCHR' },
+    { name: $translations.nawsFormat_Y, value: 'Y' }
+  ];
+
   const yupSchema: any = {};
 
   /* Suppose the selected format is 'Beginners', and there are translations available for English and German only.
@@ -240,11 +292,11 @@
     {/if}
     <div class="md:col-span-2">
       <Label for="worldId" class="mb-2 md:col-span-2">{$translations.nawsFormatTitle}</Label>
-      <Select id="worldId" items={$translations.nawsFormats} name="worldId" class="rounded-lg dark:bg-gray-600" />
+      <Select id="worldId" items={nawsFormats} name="worldId" class="rounded-lg dark:bg-gray-600" />
     </div>
     <div class="md:col-span-2">
       <Label for="type" class="mb-2 md:col-span-2">{$translations.formatTypeTitle}</Label>
-      <Select id="type" items={$translations.formatTypeCodes} name="type" class="rounded-lg dark:bg-gray-600" />
+      <Select id="type" items={formatTypeCodes} name="type" class="rounded-lg dark:bg-gray-600" />
     </div>
     <div class="md:col-span-2">
       <Button type="submit" class="w-full" disabled={!$isDirty} onclick={disableButtonHack}>
