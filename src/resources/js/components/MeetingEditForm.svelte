@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
@@ -39,7 +40,7 @@
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
   const globalSettings = settings;
-  const seenNames = new Set<string>();
+  const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
     .map((format) => {

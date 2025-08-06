@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, test, type MockInstance } from 'vitest';
-import { screen } from '@testing-library/svelte';
+import { screen, waitFor } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import { laravelLogMissing, login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
@@ -50,10 +50,10 @@ describe('check Administration tab', () => {
     // TODO: unfortunately I couldn't get the remaining steps in checking the NAWS import button to work, so am just leaving it with this minimal test for now
   });
 
-  test('check dowload laravel log', async () => {
+  test('check download laravel log', async () => {
     laravelLogMissing.missing = false;
     const user = await login('serveradmin', 'Administration');
-    const download = await screen.findByRole('button', { name: 'Download File' });
+    const download = await screen.findByRole('button', { name: 'Download Laravel Log' });
     await user.click(download);
     expect(mockClickInfo?.download).toBe('laravel.log.gz');
     expect(mockClickInfo?.href).toBe('blob:http://localhost:8000/dummyblob');
@@ -63,11 +63,29 @@ describe('check Administration tab', () => {
   test('check bad laravel log', async () => {
     laravelLogMissing.missing = true;
     const user = await login('serveradmin', 'Administration');
-    const download = await screen.findByRole('button', { name: 'Download File' });
+    const download = await screen.findByRole('button', { name: 'Download Laravel Log' });
     await user.click(download);
     expect(mockClickInfo).toBe(null);
     expect(screen.getByText('No logs found')).toBeInTheDocument();
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(2);
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to download Laravel log:', 'Response Error');
+  });
+
+  test('check download translations spreadsheet', async () => {
+    laravelLogMissing.missing = false;
+    const user = await login('serveradmin', 'Administration');
+    const download = await screen.findByRole('button', { name: 'Download Translations Spreadsheet' });
+    await user.click(download);
+
+    // Wait for the async download operation to complete
+    await waitFor(
+      () => {
+        expect(mockClickInfo?.download).toBe('translations.csv');
+      },
+      { timeout: 5000 }
+    );
+
+    expect(mockClickInfo?.href).toBe('blob:http://localhost:8000/dummyblob');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
   });
 });

@@ -1,17 +1,19 @@
 <script lang="ts">
+  import { SvelteMap } from 'svelte/reactivity';
   import { Button, Card, Fileupload, Heading, Helper, Label, P } from 'flowbite-svelte';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
-  import type { MeetingPartialUpdate } from 'bmlt-server-client';
+  import type { Meeting, MeetingPartialUpdate } from 'bmlt-server-client';
 
   let files = $state<FileList | undefined>(undefined);
   let isLoading = $state(false);
   let errorMessage = $state<string | null>(null);
   let isProcessed = $state(false);
   let isDownloadingLog = $state(false);
+  let isDownloadingTranslations = $state(false);
   let downloadError = $state(false);
 
   // Statistics tracking.  Stats components are as follows. (worldId is known as 'Committee' in NAWS-speak.)
@@ -41,6 +43,79 @@
     notFound: [],
     errors: []
   });
+
+  function downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
+    const link = Object.assign(document.createElement('a'), {
+      href: url,
+      download: filename
+    });
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleDownload(downloadFn: () => Promise<{ blob: Blob; filename: string }>, setLoading: (loading: boolean) => void, onError?: (error: any) => void): Promise<void> {
+    try {
+      setLoading(true);
+      downloadError = false;
+      const { blob, filename } = await downloadFn();
+      downloadBlob(blob, filename);
+    } catch (err) {
+      console.error('Download failed:', err);
+      if (onError) {
+        onError(err);
+      } else {
+        downloadError = true;
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function downloadTranslationsCSV(): Promise<void> {
+    await handleDownload(
+      async () => {
+        const processedData = translations.getTranslationsForLanguage('en');
+        const dataArray = Object.entries(processedData).map(([key, value]) => ({
+          key,
+          translation: value
+        }));
+
+        const XLSX = await import('xlsx');
+        const ws = XLSX.utils.json_to_sheet(dataArray);
+        const csvString = XLSX.utils.sheet_to_csv(ws);
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8' });
+
+        return { blob, filename: 'translations.csv' };
+      },
+      (loading) => {
+        isDownloadingTranslations = loading;
+      }
+    );
+  }
+
+  async function downloadLaravelLog(): Promise<void> {
+    await handleDownload(
+      async () => {
+        const blob = await RootServerApi.getLaravelLog();
+        return { blob, filename: 'laravel.log.gz' };
+      },
+      (loading) => {
+        isDownloadingLog = loading;
+      },
+      (error) => {
+        RootServerApi.handleErrors(error as Error, {
+          handleError: (err: any) => {
+            console.error('Failed to download Laravel log:', err.message);
+            downloadError = true;
+          }
+        });
+      }
+    );
+  }
 
   async function processFile(file: File): Promise<void> {
     try {
@@ -91,7 +166,7 @@
       stats.totalRows = jsonData.length - 1;
 
       // Build a map of meetingId -> worldId from the CSV
-      const updateMap = new Map<number, string>();
+      const updateMap = new SvelteMap<number, string>();
       const meetingIds: number[] = [];
 
       for (let i = 1; i < jsonData.length; i++) {
@@ -121,7 +196,7 @@
       console.log(`Retrieved ${existingMeetings.length} existing meetings`);
 
       // Create a map of existing meetings for quick lookup
-      const existingMeetingsMap = new Map();
+      const existingMeetingsMap = new SvelteMap<number, Meeting>();
       existingMeetings.forEach((meeting) => {
         existingMeetingsMap.set(meeting.id, meeting);
       });
@@ -198,30 +273,6 @@
       .sort((a, b) => a - b)
       .map((m) => m.toString())
       .join(', ');
-  }
-
-  async function downloadLaravelLog() {
-    try {
-      isDownloadingLog = true;
-      const logBlob = await RootServerApi.getLaravelLog();
-      const logUrl = URL.createObjectURL(logBlob);
-      const link = document.createElement('a');
-      link.href = logUrl;
-      link.download = 'laravel.log.gz';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(logUrl);
-    } catch (err) {
-      await RootServerApi.handleErrors(err as Error, {
-        handleError: (error: any) => {
-          console.error('Failed to download Laravel log:', error.message);
-          downloadError = true;
-        }
-      });
-    } finally {
-      isDownloadingLog = false;
-    }
   }
 
   // Reset processed state when new files are selected
@@ -355,7 +406,6 @@
     </div>
   </Card>
 {/if}
-
 {#if $authenticatedUser?.type === 'admin'}
   <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
     <div class="p-4">
@@ -368,13 +418,36 @@
               {$translations.downloading}
             </div>
           {:else}
-            {$translations.downloadFile}
+            {$translations.downloadLaravelLog}
           {/if}
         </Button>
       </div>
       {#if downloadError}
         <div class="mb-4">
           <P class="text-center text-red-700 dark:text-red-500">{$translations.noLogsFound}</P>
+        </div>
+      {/if}
+    </div>
+  </Card>
+
+  <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
+    <div class="p-4">
+      <div class="mb-4">
+        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">{$translations.downloadTranslationsSpreadsheet}</Heading>
+        <Button onclick={downloadTranslationsCSV} disabled={isDownloadingTranslations} color="primary" class="w-full">
+          {#if isDownloadingTranslations}
+            <div class="flex items-center justify-center">
+              <div class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              {$translations.downloading}
+            </div>
+          {:else}
+            {$translations.downloadTranslationsSpreadsheet}
+          {/if}
+        </Button>
+      </div>
+      {#if downloadError}
+        <div class="mb-4">
+          <P class="text-center text-red-700 dark:text-red-500">{$translations.errorDownloading}</P>
         </div>
       {/if}
     </div>
