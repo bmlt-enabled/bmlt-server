@@ -489,7 +489,8 @@ class c_comdef_admin_ajax_handler
 
                     if (!$shared_id) {
                         $shared_id = intval($format_data['shared_id']);
-                        $format_type = $format_data['type'];
+                        if (isset($format_data['type']))
+                            $format_type = $format_data['type'];
                     } else {
                         if ($shared_id != intval($format_data['shared_id'])) {  // This should never happen.
                             $the_objects_to_be_changed = null;
