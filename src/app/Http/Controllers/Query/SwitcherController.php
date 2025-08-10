@@ -95,8 +95,13 @@ class SwitcherController extends Controller
     private function getSearchResults(Request $request, ?string $dataFormat = null): BaseJsonResponse
     {
         $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
-        $meetingIds = $request->input('meeting_ids');
-        $meetingIds = !is_null($meetingIds) ? ensure_integer_array($meetingIds) : null;
+        $meetingIds = $request->input('meeting_ids') ?? [];
+        $meetingIds = is_string($meetingIds) ? array_map(fn ($id) => trim($id), explode(',', $meetingIds)) : $meetingIds;
+        $meetingIds = ensure_integer_array($meetingIds);
+        $meetingIdsInclude = collect($meetingIds)->filter(fn ($id) => $id > 0)->toArray();
+        $meetingIdsInclude = !empty($meetingIdsInclude) ? $meetingIdsInclude : null;
+        $meetingIdsExclude = collect($meetingIds)->filter(fn ($id) => $id < 0)->map(fn ($id) => abs($id))->toArray();
+        $meetingIdsExclude = !empty($meetingIdsExclude) ? $meetingIdsExclude : null;
 
         $weekdays = $request->input('weekdays', []);
         $weekdays = is_string($weekdays) ? array_map(fn ($id) => trim($id), explode(',', $weekdays)) : $weekdays;
@@ -292,7 +297,7 @@ class SwitcherController extends Controller
             $rootServersExclude = count($rootServersExclude) ? $rootServersExclude : null;
 
             $hasRequiredFilters = false;
-            if (!is_null($meetingIds)) {
+            if (!is_null($meetingIdsInclude)) {
                 $hasRequiredFilters = true;
             } else if (!is_null($servicesInclude)) {
                 $hasRequiredFilters = true;
@@ -314,7 +319,8 @@ class SwitcherController extends Controller
         }
 
         $meetings = $this->meetingRepository->getSearchResults(
-            meetingIds: $meetingIds,
+            meetingIdsInclude: $meetingIdsInclude,
+            meetingIdsExclude: $meetingIdsExclude,
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
             weekdaysInclude: $weekdaysInclude,
