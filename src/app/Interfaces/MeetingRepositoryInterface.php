@@ -8,7 +8,8 @@ use Illuminate\Support\Collection;
 interface MeetingRepositoryInterface
 {
     public function getSearchResults(
-        array $meetingIds = null,
+        array $meetingIdsInclude = null,
+        array $meetingIdsExclude = null,
         array $rootServersInclude = null,
         array $rootServersExclude = null,
         array $weekdaysInclude = null,

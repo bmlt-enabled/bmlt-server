@@ -51,7 +51,7 @@ class MeetingController extends ResourceController
         }
 
         $meetings = $this->meetingRepository->getSearchResults(
-            meetingIds: $meetingIds,
+            meetingIdsInclude: $meetingIds,
             weekdaysInclude: $days,
             servicesInclude: $serviceBodyIds,
             searchString: $searchString,

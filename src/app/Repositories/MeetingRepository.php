@@ -18,7 +18,8 @@ class MeetingRepository implements MeetingRepositoryInterface
     private string $sqlDistanceFormula = "? * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(latitude)) * COS(RADIANS(?)) * COS(RADIANS(longitude) - RADIANS(?)) + SIN(RADIANS(latitude)) * SIN(RADIANS(?)))))";
 
     public function getSearchResults(
-        array $meetingIds = null,
+        array $meetingIdsInclude = null,
+        array $meetingIdsExclude = null,
         array $rootServersInclude = null,
         array $rootServersExclude = null,
         array $weekdaysInclude = null,
@@ -65,8 +66,12 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meetings = $meetings->where('published', $published ? 1 : 0);
         }
 
-        if (!is_null($meetingIds)) {
-            $meetings = $meetings->whereIn('id_bigint', $meetingIds);
+        if (!is_null($meetingIdsInclude)) {
+            $meetings = $meetings->whereIn('id_bigint', $meetingIdsInclude);
+        }
+
+        if (!is_null($meetingIdsExclude)) {
+            $meetings = $meetings->whereNotIn('id_bigint', $meetingIdsExclude);
         }
 
         if (!is_null($rootServersInclude)) {

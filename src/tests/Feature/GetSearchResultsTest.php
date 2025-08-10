@@ -247,6 +247,26 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
     }
 
+    public function testMeetingIdsExcludeOne()
+    {
+        $meeting1 = $this->createMeeting();
+        $meeting2 = $this->createMeeting();
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]=$meeting1->id_bigint&meeting_ids[]=-$meeting2->id_bigint")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+    }
+
+    public function testMeetingIdsStringExcludeOne()
+    {
+        $meeting1 = $this->createMeeting();
+        $meeting2 = $this->createMeeting();
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids=$meeting1->id_bigint,-$meeting2->id_bigint")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+    }
+
     public function testMultipleLeadingSlashes()
     {
         $meeting1 = $this->createMeeting();
