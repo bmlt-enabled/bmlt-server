@@ -42,6 +42,7 @@ import type {
   Format,
   FormatCreate,
   FormatUpdate,
+  MeetingChangeResource,
   MeetingCreate,
   MeetingUpdate,
   ServiceBody,
@@ -527,6 +528,22 @@ export const bigRegionMeeting: Meeting = {
   worldId: 'G00555555'
 };
 
+// bigRegionMeeting is the only meeting with changes
+export const bigRegionMeetingChanges: MeetingChangeResource[] = [
+  {
+    dateString: '8:00 PM, 3/2/2025',
+    details: ['The day of the week on which the meeting gathers was changed from "Wednesday" to "Friday".', 'The World Committee Code was added as "G1234"'],
+    serviceBodyName: 'Big Region',
+    userName: 'Big Region'
+  },
+  {
+    dateString: '7:00 PM, 2/2/2025',
+    details: ['The meeting was created.'],
+    serviceBodyName: 'Big Region',
+    userName: 'Server Administrator'
+  }
+];
+
 export const allServiceBodies: ServiceBody[] = [northernZone, bigRegion, smallRegion, riverCityArea, mountainArea, ruralArea];
 
 export const allFormats: Format[] = [agnosticFormat, basicTextFormat, beginnersFormat, closedFormat, discussionFormat, jtFormat, openFormat, virtualMeetingFormat];
@@ -904,6 +921,15 @@ async function mockDeleteMeeting({ meetingId: id }: { meetingId: number }): Prom
   mockDeletedMeetingId = id;
 }
 
+// meeting changes
+async function mockGetMeetingChanges({ meetingId: id }: { meetingId: number }): Promise<MeetingChangeResource[]> {
+  if (id === bigRegionMeeting.id) {
+    return bigRegionMeetingChanges;
+  } else {
+    return [];
+  }
+}
+
 // laravel log mocks
 export const laravelLogMissing = { missing: false };
 async function mockGetLaravelLog(): Promise<Blob> {
@@ -941,6 +967,7 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'createMeeting').mockImplementation(mockCreateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'updateMeeting').mockImplementation(mockUpdateMeeting);
   vi.spyOn(ApiClientWrapper.api, 'deleteMeeting').mockImplementation(mockDeleteMeeting);
+  vi.spyOn(ApiClientWrapper.api, 'getMeetingChanges').mockImplementation(mockGetMeetingChanges);
   vi.spyOn(ApiClientWrapper.api, 'getLaravelLog').mockImplementation(mockGetLaravelLog);
   Element.prototype.animate = vi.fn().mockReturnValue({
     finished: Promise.resolve(),

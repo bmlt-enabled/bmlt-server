@@ -3,13 +3,17 @@ import { describe, test } from 'vitest';
 import MeetingEditForm from '../components/MeetingEditForm.svelte';
 import { translations } from '../stores/localization';
 import type { Format, Meeting, ServiceBody } from 'bmlt-server-client';
-import { allFormats, allServiceBodies, allMeetings } from './sharedDataAndMocks';
+import { allFormats, allServiceBodies, allMeetings, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
 const formats: Format[] = allFormats;
 
 const serviceBodies: ServiceBody[] = allServiceBodies;
 
 const selectedMeeting: Meeting = allMeetings[0];
+
+beforeAll(sharedBeforeAll);
+beforeEach(sharedBeforeEach);
+afterEach(sharedAfterEach);
 
 // dummy functions for props
 function onSaved(_: Meeting) {}
