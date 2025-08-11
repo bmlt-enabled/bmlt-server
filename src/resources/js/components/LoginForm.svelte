@@ -109,4 +109,9 @@
     </div>
   </div>
   <DarkMode />
+  {#if globalSettings.bmltNotice}
+    <div class="mt-4 mb-4 px-6 pt-4 pb-4 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+      {globalSettings.bmltNotice}
+    </div>
+  {/if}
 </div>

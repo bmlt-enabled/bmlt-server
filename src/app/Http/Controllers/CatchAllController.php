@@ -39,6 +39,7 @@ class CatchAllController extends Controller
                 'autoGeocodingEnabled' => legacy_config('auto_geocoding_enabled'),
                 'baseUrl' => $request->getBaseurl(),
                 'bmltTitle' => legacy_config('bmlt_title'),
+                'bmltNotice' => legacy_config('bmlt_notice'),
                 'centerLongitude' => legacy_config('search_spec_map_center_longitude'),
                 'centerLatitude' => legacy_config('search_spec_map_center_latitude'),
                 'centerZoom' => legacy_config('search_spec_map_center_zoom'),

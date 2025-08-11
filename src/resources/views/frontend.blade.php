@@ -9,6 +9,7 @@
             apiBaseUrl: '{{ $baseUrl }}',
             autoGeocodingEnabled: {{ $autoGeocodingEnabled ? 'true' : 'false' }},
             bmltTitle: '{{ $bmltTitle }}',
+            bmltNotice: '{{ $bmltNotice }}',
             centerLongitude: '{{ $centerLongitude }}',
             centerLatitude: '{{ $centerLatitude }}',
             centerZoom: '{{ $centerZoom }}',

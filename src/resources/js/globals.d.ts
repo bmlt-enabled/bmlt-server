@@ -1,6 +1,7 @@
 declare const settings: {
   apiBaseUrl: string;
   bmltTitle: string;
+  bmltNotice: string;
   autoGeocodingEnabled: true;
   centerLongitude: number;
   centerLatitude: number;

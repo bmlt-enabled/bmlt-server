@@ -125,6 +125,7 @@ class LegacyConfig
         $config['aggregator_max_geo_width_km'] = isset($aggregator_max_geo_width_km) && is_numeric($aggregator_max_geo_width_km) ? floatval($aggregator_max_geo_width_km) : 1000;
         $config['include_service_body_email_in_semantic'] = $g_include_service_body_email_in_semantic ?? false;
         $config['bmlt_title'] = $bmlt_title ?? '';
+        $config['bmlt_notice'] = $bmlt_notice ?? '';
 
         self::$config = $config;
         self::$configLoaded = true;
