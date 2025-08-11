@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/vitest';
 global.settings = {
   apiBaseUrl: '/',
   bmltTitle: '',
+  bmltNotice: '',
   autoGeocodingEnabled: true,
   centerLongitude: -118.563659,
   centerLatitude: 34.235918,
