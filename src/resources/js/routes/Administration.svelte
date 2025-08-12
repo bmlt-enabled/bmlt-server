@@ -78,7 +78,7 @@
   async function downloadTranslationsCSV(): Promise<void> {
     await handleDownload(
       async () => {
-        const processedData = translations.getTranslationsForLanguage('en');
+        const processedData = translations.getTranslationsForLanguage($translations.getLanguage());
         const dataArray = Object.entries(processedData).map(([key, value]) => ({
           key,
           translation: value
@@ -444,6 +444,7 @@
             {$translations.downloadTranslationsSpreadsheet}
           {/if}
         </Button>
+        <Helper>{$translations.downloadTranslationsForCurrentLanguage}</Helper>
       </div>
       {#if downloadError}
         <div class="mb-4">

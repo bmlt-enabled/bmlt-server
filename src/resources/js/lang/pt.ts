@@ -105,6 +105,7 @@ export const ptTranslations = {
   details: 'Details (row number or meeting ID)',
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
+  downloadTranslationsForCurrentLanguage: 'Download translations for the language selected at login',
   downloadTranslationsSpreadsheet: 'Download Translations Spreadsheet',
   durationTitle: 'Duration',
   editFormat: 'Edit Format',
