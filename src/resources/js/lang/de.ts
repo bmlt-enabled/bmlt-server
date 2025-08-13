@@ -51,7 +51,7 @@ export const deTranslations = {
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
   downloadTranslationsForCurrentLanguage: 'Download translations for the language selected at login',
-  downloadTranslationsSpreadsheet: 'Download Translations Spreadsheet',
+  downloadTranslationsSpreadsheet: 'Übersetzungstabelle herunterladen',
   durationTitle: 'Dauer',
   editFormat: 'Format bearbeiten',
   editUser: 'Benutzer bearbeiten',

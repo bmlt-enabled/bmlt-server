@@ -14,7 +14,8 @@
   let isProcessed = $state(false);
   let isDownloadingLog = $state(false);
   let isDownloadingTranslations = $state(false);
-  let downloadError = $state(false);
+  let laravelDownloadError = $state(false);
+  let translationsDownloadError = $state(false);
 
   // Statistics tracking.  Stats components are as follows. (worldId is known as 'Committee' in NAWS-speak.)
   //
@@ -57,10 +58,11 @@
     URL.revokeObjectURL(url);
   }
 
-  async function handleDownload(downloadFn: () => Promise<{ blob: Blob; filename: string }>, setLoading: (loading: boolean) => void, onError?: (error: any) => void): Promise<void> {
+  async function handleLaravelDownload(downloadFn: () => Promise<{ blob: Blob; filename: string }>, setLoading: (loading: boolean) => void, onError?: (error: any) => void): Promise<void> {
     try {
       setLoading(true);
-      downloadError = false;
+      laravelDownloadError = false;
+      translationsDownloadError = false; // reset them both ...
       const { blob, filename } = await downloadFn();
       downloadBlob(blob, filename);
     } catch (err) {
@@ -68,7 +70,7 @@
       if (onError) {
         onError(err);
       } else {
-        downloadError = true;
+        laravelDownloadError = true;
       }
     } finally {
       setLoading(false);
@@ -76,29 +78,37 @@
   }
 
   async function downloadTranslationsCSV(): Promise<void> {
-    await handleDownload(
-      async () => {
-        const processedData = translations.getTranslationsForLanguage($translations.getLanguage());
-        const dataArray = Object.entries(processedData).map(([key, value]) => ({
-          key,
-          translation: value
-        }));
-
-        const XLSX = await import('xlsx');
-        const ws = XLSX.utils.json_to_sheet(dataArray);
-        const csvString = XLSX.utils.sheet_to_csv(ws);
-        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8' });
-
-        return { blob, filename: 'translations.csv' };
-      },
-      (loading) => {
-        isDownloadingTranslations = loading;
+    try {
+      laravelDownloadError = false; // reset them both ....
+      translationsDownloadError = false;
+      isDownloadingTranslations = true;
+      const curLang = $translations.getLanguage();
+      const curLangName = settings.languageMapping[curLang];
+      const engStrings = translations.getTranslationsForLanguage('en');
+      const curTranslations = translations.getTranslationsForLanguage(curLang);
+      const dataArray: any[] = [];
+      for (const k of Object.keys(engStrings)) {
+        const item: any = { Key: k, English: engStrings[k] };
+        if (curLang !== 'en') {
+          item[curLangName] = curTranslations[k];
+        }
+        dataArray.push(item);
       }
-    );
+      const XLSX = await import('xlsx');
+      const ws = XLSX.utils.json_to_sheet(dataArray);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, ws, 'translations');
+      XLSX.writeFileXLSX(workbook, 'translations.xlsx');
+    } catch (err) {
+      console.error('Download failed:', err);
+      translationsDownloadError = true;
+    } finally {
+      isDownloadingTranslations = false;
+    }
   }
 
   async function downloadLaravelLog(): Promise<void> {
-    await handleDownload(
+    await handleLaravelDownload(
       async () => {
         const blob = await RootServerApi.getLaravelLog();
         return { blob, filename: 'laravel.log.gz' };
@@ -110,7 +120,7 @@
         RootServerApi.handleErrors(error as Error, {
           handleError: (err: any) => {
             console.error('Failed to download Laravel log:', err.message);
-            downloadError = true;
+            laravelDownloadError = true;
           }
         });
       }
@@ -275,7 +285,7 @@
       .join(', ');
   }
 
-  // Reset processed state when new files are selected
+  // Reset processed state for world committee code update when new files are selected
   $effect(() => {
     if (files && files.length > 0) {
       isProcessed = false;
@@ -422,7 +432,7 @@
           {/if}
         </Button>
       </div>
-      {#if downloadError}
+      {#if laravelDownloadError}
         <div class="mb-4">
           <P class="text-center text-red-700 dark:text-red-500">{$translations.noLogsFound}</P>
         </div>
@@ -446,7 +456,7 @@
         </Button>
         <Helper>{$translations.downloadTranslationsForCurrentLanguage}</Helper>
       </div>
-      {#if downloadError}
+      {#if translationsDownloadError}
         <div class="mb-4">
           <P class="text-center text-red-700 dark:text-red-500">{$translations.errorDownloading}</P>
         </div>
