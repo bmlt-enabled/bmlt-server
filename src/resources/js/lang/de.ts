@@ -48,14 +48,16 @@ export const deTranslations = {
   deleteUser: 'Lösche diesen Benutzer',
   descriptionTitle: 'Beschreibung',
   details: 'Details (row number or meeting ID)', // TODO: translate
-  downloadFile: 'Download File',
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
+  downloadTranslationsForCurrentLanguage: 'Download translations for the language selected at login',
+  downloadTranslationsSpreadsheet: 'Übersetzungstabelle herunterladen',
   durationTitle: 'Dauer',
   editFormat: 'Format bearbeiten',
   editUser: 'Benutzer bearbeiten',
   emailTitle: 'E-Mail-Adresse',
   error: 'Fehler',
+  errorDownloading: 'Error Downloading',
   errors: 'Fehler',
   extraInfoTitle: 'Weitere Informationen',
   fileProcessedSuccessfully: '✓ File Processed Successfully', // TODO: translate

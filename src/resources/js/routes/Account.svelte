@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { SvelteSet } from 'svelte/reactivity';
   import { Button, Helper, Input, Label, Listgroup } from 'flowbite-svelte';
   import { createForm } from 'felte';
 
@@ -121,7 +122,7 @@
 
   function findEditableServiceBodyNames(serviceBodies: ServiceBody[]): string[] {
     const id = $authenticatedUser?.id as number;
-    const editableServiceBodies: Set<ServiceBody> = new Set();
+    const editableServiceBodies: Set<ServiceBody> = new SvelteSet();
     if ($authenticatedUser?.type === 'admin') {
       serviceBodies.forEach((s) => editableServiceBodies.add(s));
     } else if ($authenticatedUser?.type === 'serviceBodyAdmin') {
