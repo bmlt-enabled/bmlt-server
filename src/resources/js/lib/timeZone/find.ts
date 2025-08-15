@@ -17,10 +17,7 @@ type TzDataSource = string | (() => Promise<any>);
  * @param tzDataSource A string of the URL of the index.json data or a function that returns an object.
  * @returns An object with a find function that can be used to find the timezone ID(s) at the given GPS coordinates.
  */
-export function init(
-  geoDataSource: GeoDataSource = 'https://cdn.aws.bmlt.app/geo-tz@8.1.1/data/timezones-1970.geojson.geo.dat',
-  tzDataSource: TzDataSource = 'https://cdn.aws.bmlt.app/geo-tz@8.1.1/data/timezones-1970.geojson.index.json'
-) {
+export function init(geoDataSource: GeoDataSource = settings.apiBaseUrl + '/timezones-1970.geojson.geo.dat', tzDataSource: TzDataSource = settings.apiBaseUrl + '/timezones-1970.geojson.index.json') {
   const geoData =
     typeof geoDataSource === 'string'
       ? async (start: number, end: number) => {

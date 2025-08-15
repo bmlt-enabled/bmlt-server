@@ -4,6 +4,7 @@ BASE_IMAGE_TAG := 8.2
 BASE_IMAGE_BUILD_TAG := $(COMMIT)-$(shell date +%s)
 CROUTON_JS := src/public/client_interface/html/croutonjs/crouton.js
 SEMANTIC_HTML := src/public/semantic/index.html
+TIMEZONE_ASSETS := src/public/timezones-1970.geojson.index.json
 LEGACY_STATIC_FILES := src/public/local_server/styles.css
 VENDOR_AUTOLOAD := src/vendor/autoload.php
 NODE_MODULES := src/node_modules/.package-lock.json
@@ -63,6 +64,10 @@ $(SEMANTIC_HTML):
 	unzip semantic-workshop.zip -d src/public/semantic
 	rm -f semantic-workshop.zip
 
+$(TIMEZONE_ASSETS):
+	curl -sL -o src/public/timezones-1970.geojson.geo.dat https://cdn.aws.bmlt.app/geo-tz@8.1.1/data/timezones-1970.geojson.geo.dat
+	curl -sL -o src/public/timezones-1970.geojson.index.json https://cdn.aws.bmlt.app/geo-tz@8.1.1/data/timezones-1970.geojson.index.json
+
 $(NODE_MODULES):
 	cd src && npm $(NPM_FLAG)
 
@@ -85,7 +90,7 @@ $(LEGACY_STATIC_FILES):
 	    --exclude='*' \
 	    src/legacy/ src/public
 
-$(ZIP_FILE): $(VENDOR_AUTOLOAD) $(FRONTEND) $(CROUTON_JS) $(SEMANTIC_HTML) $(LEGACY_STATIC_FILES)
+$(ZIP_FILE): $(VENDOR_AUTOLOAD) $(FRONTEND) $(CROUTON_JS) $(SEMANTIC_HTML) $(TIMEZONE_ASSETS) $(LEGACY_STATIC_FILES)
 	mkdir -p build
 	cp -r src build/main_server
 	cd build && zip -r $(shell basename $(ZIP_FILE)) main_server -x main_server/node_modules/\*
@@ -102,6 +107,9 @@ crouton: $(CROUTON_JS) ## Installs crouton
 
 .PHONY: semantic
 semantic: $(SEMANTIC_HTML) ## Installs semantic workshop
+
+.PHONY:timezone
+timezone: $(TIMEZONE_ASSETS) ## Installs timezone assets
 
 .PHONY: frontend
 frontend: $(FRONTEND)  ## Builds the frontend
