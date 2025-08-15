@@ -5,6 +5,7 @@
 /public/client_interface
 /public/local_server
 /public/semantic
+/public/timezones-1970.geojson.*
 /storage/*.key
 /vendor
 /tests/reports
