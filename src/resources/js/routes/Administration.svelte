@@ -87,13 +87,71 @@
       const engStrings = translations.getTranslationsForLanguage('en');
       const curTranslations = translations.getTranslationsForLanguage(curLang);
       const dataArray: any[] = [];
-      for (const k of Object.keys(engStrings)) {
-        const item: any = { Key: k, English: engStrings[k] };
-        if (curLang !== 'en') {
-          item[curLangName] = curTranslations[k];
+
+      // Helper function to flatten nested objects/arrays into key-value pairs
+      function flattenTranslations(obj: any, prefix: string = ''): Array<{ key: string; value: any }> {
+        const result: Array<{ key: string; value: any }> = [];
+
+        for (const [key, value] of Object.entries(obj)) {
+          const fullKey = prefix ? `${prefix}.${key}` : key;
+
+          if (Array.isArray(value)) {
+            // Handle arrays - create entries for each array item
+            value.forEach((item, index) => {
+              if (typeof item === 'object' && item !== null) {
+                // If array item is an object, flatten it further
+                const subItems = flattenTranslations(item, `${fullKey}[${index}]`);
+                result.push(...subItems);
+              } else {
+                // Simple array item
+                result.push({
+                  key: `${fullKey}[${index}]`,
+                  value: item
+                });
+              }
+            });
+          } else if (typeof value === 'object' && value !== null) {
+            // Handle nested objects
+            const subItems = flattenTranslations(value, fullKey);
+            result.push(...subItems);
+          } else {
+            // Simple value
+            result.push({
+              key: fullKey,
+              value: value
+            });
+          }
         }
-        dataArray.push(item);
+
+        return result;
       }
+
+      // Flatten English translations
+      const flatEnglish = flattenTranslations(engStrings);
+
+      // Flatten current language translations
+      const flatCurrent = curLang !== 'en' ? flattenTranslations(curTranslations) : [];
+
+      // Create a map for quick lookup of current language values
+      const currentMap = new Map();
+      flatCurrent.forEach((item) => {
+        currentMap.set(item.key, item.value);
+      });
+
+      // Build the data array
+      flatEnglish.forEach((englishItem) => {
+        const item: any = {
+          Key: englishItem.key,
+          English: englishItem.value
+        };
+
+        if (curLang !== 'en') {
+          item[curLangName] = currentMap.get(englishItem.key) || '';
+        }
+
+        dataArray.push(item);
+      });
+
       const XLSX = await import('xlsx');
       const ws = XLSX.utils.json_to_sheet(dataArray);
       const workbook = XLSX.utils.book_new();
