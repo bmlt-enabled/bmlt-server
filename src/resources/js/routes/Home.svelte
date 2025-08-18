@@ -15,4 +15,9 @@
       {$authenticatedUser.displayName}
     </h5>
   </Card>
+  {#if settings.bmltNotice}
+    <div class="mt-4 mb-4 px-6 pt-4 pb-4 text-center text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+      {settings.bmltNotice}
+    </div>
+  {/if}
 {/if}
