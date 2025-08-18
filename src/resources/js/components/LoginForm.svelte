@@ -61,9 +61,9 @@
   });
 </script>
 
-<div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:h-screen lg:py-0">
+<div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:min-h-screen lg:py-0">
   {#if globalSettings.bmltTitle}
-    <div class="mb-4 text-4xl font-bold text-black dark:text-white">
+    <div class="my-4 pt-1 text-4xl font-bold text-black dark:text-white">
       {globalSettings.bmltTitle}
     </div>
   {/if}
@@ -110,7 +110,7 @@
   </div>
   <DarkMode />
   {#if globalSettings.bmltNotice}
-    <div class="mt-4 mb-4 px-6 pt-4 pb-4 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
+    <div class="mt-4 mb-4 px-6 pt-4 pb-4 text-center text-3xl font-bold text-yellow-600 dark:text-yellow-400">
       {globalSettings.bmltNotice}
     </div>
   {/if}
