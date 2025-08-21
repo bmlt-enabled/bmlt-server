@@ -202,6 +202,7 @@
     onSubmit: async (values) => {
       spinner.show();
       const isNewMeeting = !selectedMeeting;
+
       if (shouldGeocode(initialValues, values, isNewMeeting)) {
         if (globalSettings.autoGeocodingEnabled && !manualDrag) {
           await handleGeocoding(values);
@@ -209,18 +210,40 @@
       }
 
       if (!values.timeZone && values.latitude && values.longitude) {
-        const tzData = await tzFind(values.latitude, values.longitude);
-        const validTimeZone = tzData.find((tz) => timeZones.includes(tz));
+        try {
+          const tzData = await tzFind(values.latitude, values.longitude);
 
-        if (validTimeZone) {
-          values.timeZone = validTimeZone;
-        } else {
-          errors.set({
-            ...errors.value,
-            timeZone: $translations.timeZoneGeocodeError
-          });
+          if (!tzData || tzData.length === 0) {
+            errors.set({
+              ...errors.value,
+              timeZone: $translations.timeZoneGeocodeError
+            });
+            spinner.hide();
+            return;
+          }
+
+          const validTimeZone = tzData.find((tz) => timeZones.includes(tz));
+
+          if (validTimeZone) {
+            values.timeZone = validTimeZone;
+          } else {
+            errors.set({
+              ...errors.value,
+              timeZone: $translations.timeZoneGeocodeError
+            });
+            spinner.hide();
+            return;
+          }
+        } catch (error) {
+          console.error('Timezone lookup failed:', error);
+          if (!errors.value?.timeZone) {
+            errors.set({
+              ...errors.value,
+              timeZone: error instanceof Error ? error.message : $translations.timeZoneGeocodeError
+            });
+          }
           spinner.hide();
-          throw new Error($translations.timeZoneGeocodeError);
+          return;
         }
       }
 
