@@ -6,7 +6,7 @@
     children?: import('svelte').Snippet;
   }
 
-  let { header, open = $bindable(false), label = 'Toggle accordion', children }: Props = $props();
+  let { header, open = $bindable(true), label = 'Toggle accordion', children }: Props = $props();
 
   function accordionToggle() {
     open = !open;

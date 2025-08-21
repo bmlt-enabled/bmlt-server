@@ -89,11 +89,11 @@ describe('check lists of service bodies different users can edit', () => {
   test('check toggling the accordion', async () => {
     const user = await login('serveradmin', 'Account');
     const toggle = await screen.findByRole('button', { name: /toggle accordion/i });
-    expect(toggle.ariaExpanded).toBe('false');
+    expect(toggle.ariaExpanded).toBe('true');
     // TODO: this test fails -- toBeVisible seems to be always true, even if the accordion is collapsed
     // expect(await screen.findByText('Northern Zone')).not.toBeVisible();
     await user.click(toggle);
-    expect(toggle.ariaExpanded).toBe('true');
+    expect(toggle.ariaExpanded).toBe('false');
     expect(await screen.findByText('Northern Zone')).toBeVisible();
   });
 
