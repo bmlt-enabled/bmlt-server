@@ -1,3 +1,4 @@
+export { csTranslations, csYupLocale } from './cs';
 export { daTranslations, daYupLocale } from './da';
 export { deTranslations, deYupLocale } from './de';
 export { enTranslations, enYupLocale } from './en';
@@ -8,4 +9,5 @@ export { itTranslations, itYupLocale } from './it';
 export { plTranslations, plYupLocale } from './pl';
 export { ptTranslations, ptYupLocale } from './pt';
 export { ruTranslations, ruYupLocale } from './ru';
+export { skTranslations, skYupLocale } from './sk';
 export { svTranslations, svYupLocale } from './sv';
