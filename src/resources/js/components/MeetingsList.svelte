@@ -41,7 +41,8 @@
   let sortColumn: keyof Meeting | null = $state(null);
   let sortDirection: 'asc' | 'desc' = $state('asc');
   let lastEditedMeetingId: number | null = $state(null);
-  const weekdayChoices = ($translations.daysOfWeek as string[]).map((day: string, index: number) => ({
+  const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
+  const weekdayChoices = daysOfWeek.map((day: string, index: number) => ({
     value: index.toString(),
     label: day
   }));
@@ -371,7 +372,7 @@
     {#each currentPageItems as meeting (meeting.id)}
       <TableBodyRow onclick={() => handleEdit(meeting)} class={meeting.id === lastEditedMeetingId ? 'bg-blue-50 dark:bg-blue-900' : ''}>
         <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-200 px-4 py-3 whitespace-nowrap text-gray-800'}>
-          {$translations.daysOfWeek[meeting.day]}
+          {daysOfWeek[meeting.day]}
         </TableBodyCell>
         <TableBodyCell class={meeting.published ? 'px-4 py-3 whitespace-nowrap' : 'min-w-[100px] bg-yellow-200 px-4 py-3 whitespace-nowrap text-gray-800'}>
           {#if meeting.startTime}
