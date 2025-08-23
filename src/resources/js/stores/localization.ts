@@ -4,6 +4,8 @@ import { type LocaleObject, setLocale } from 'yup';
 import { writable } from 'svelte/store';
 import type { Subscriber, Unsubscriber } from 'svelte/store';
 import {
+  csTranslations,
+  csYupLocale,
   daTranslations,
   daYupLocale,
   deTranslations,
@@ -22,6 +24,8 @@ import {
   plYupLocale,
   ruTranslations,
   ruYupLocale,
+  skTranslations,
+  skYupLocale,
   svTranslations,
   svYupLocale,
   ptTranslations,
@@ -30,6 +34,7 @@ import {
 
 /*eslint sort-keys: ["error", "asc", {caseSensitive: false}]*/
 const strings = new (LocalizedStrings as any)({
+  cs: csTranslations,
   da: daTranslations,
   de: deTranslations,
   en: enTranslations,
@@ -40,10 +45,12 @@ const strings = new (LocalizedStrings as any)({
   pl: plTranslations,
   pt: ptTranslations,
   ru: ruTranslations,
+  sk: skTranslations,
   sv: svTranslations
 });
 
 export const yupLocales: Record<string, LocaleObject> = {
+  cs: csYupLocale,
   da: daYupLocale,
   de: deYupLocale,
   en: enYupLocale,
@@ -54,6 +61,7 @@ export const yupLocales: Record<string, LocaleObject> = {
   pl: plYupLocale,
   pt: ptYupLocale,
   ru: ruYupLocale,
+  sk: skYupLocale,
   sv: svYupLocale
 };
 
