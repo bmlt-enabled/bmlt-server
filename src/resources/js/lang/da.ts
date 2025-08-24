@@ -214,7 +214,7 @@ export const daTranslations = {
   noServiceBodiesTitle: 'No service bodies found that this user can edit',
   notedAsDeleted: 'Noted as deleted',
   notFound: 'Not found',
-  noTranslationAvailable: 'no English version available',
+  noTranslationAvailable: 'no translation available',
   noUpdateNeeded: 'No update needed',
   noUsersTitle: 'No other users found that this user can edit',
   noWhitespaceInKey: 'Whitespace not allowed in key',
