@@ -274,7 +274,7 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     // Mock clicking either one closes the modal, but the second one is for the modal as a whole, so use that.  (If there were no
     // meeting list editors then there would be only one close button, but Rural Area does have meeting list editors.)
     const buttons = await screen.findAllByRole('button', { name: 'Close' });
-    await user.click(buttons[1]);
+    await user.click(buttons[0]);
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
 });
