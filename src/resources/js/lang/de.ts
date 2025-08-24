@@ -160,7 +160,7 @@ export const deTranslations = {
   noServiceBodiesTitle: 'Es wurden keine Service-Bodies gefunden, die dieser Benutzer bearbeiten kann',
   notedAsDeleted: 'Noted as deleted', // TODO: Translate
   notFound: 'Not found', // TODO: Translate
-  noTranslationAvailable: 'keine deutsche Version verfügbar',
+  noTranslationAvailable: 'keine Übersetzung verfügbar',
   noUpdateNeeded: 'No update needed', // TODO: Translate
   noUsersTitle: 'Es wurden keine anderen Benutzer gefunden, die dieser Benutzer bearbeiten kann',
   noWhitespaceInKey: 'Leerzeichen im Schlüssel sind nicht erlaubt',

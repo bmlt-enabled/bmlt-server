@@ -214,7 +214,7 @@ export const faTranslations = {
   noServiceBodiesTitle: 'هیچ بدنه خدماتی نیست که این کاربر بتواند ویرایش کند',
   notedAsDeleted: 'به عنوان حذف شده یادداشت شد',
   notFound: 'یافت نشد',
-  noTranslationAvailable: 'نسخه انگلیسی موجود نیست',
+  noTranslationAvailable: 'ترجمه ای موجود نیست', // TODO: check this translation
   noUpdateNeeded: 'نیازی به آپدیت نیست',
   noUsersTitle: 'کاربری دیگری یافت نشد که این کاربر بتواند ویرایش کند',
   noWhitespaceInKey: 'فضای خالی در کلید مجاز نیست',

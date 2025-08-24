@@ -25,7 +25,7 @@ describe('check content in Formats tab', () => {
     // check for a couple of representative formats
     expect(screen.getByRole('cell', { name: '(C) Closed' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: '(BT) Basic Text' })).toBeInTheDocument();
-    expect(screen.getByRole('cell', { name: '(Ag) Agnostisch (no English version available)' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '(Ag) Agnostisch (no translation available)' })).toBeInTheDocument();
   });
 
   test('edit a format', async () => {
@@ -88,6 +88,7 @@ describe('check content in Formats tab', () => {
   test('check accordion when German is selected', async () => {
     const user = await loginDeutsch('serveradmin', 'Formate');
     await user.click(await screen.findByRole('cell', { name: '(BT) BasicText' }));
+    await user.click(await screen.findByRole('cell', { name: '(D) Discussion (keine Übersetzung verfügbar)' }));
     const toggle_de = await screen.findByRole('button', { name: /toggle accordion de/i });
     const toggle_en = await screen.findByRole('button', { name: /toggle accordion en/i });
     const toggle_fr = await screen.findByRole('button', { name: /toggle accordion fr/i });
