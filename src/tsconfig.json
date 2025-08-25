@@ -11,7 +11,7 @@
       "strict": true,
       "module": "es2020",
       "moduleResolution": "bundler",
-      "types": ["vitest/globals"]
+      "types": ["google.maps", "vitest/globals"]
   },
   "include": ["vite.config.ts", "resources/js/*.ts", "resources/js/**/*.ts", "resources/js/**/*.svelte", "resources/js/**/*.spec.ts", "resources/js/**/*.test.ts"],
   "exclude": ["node_modules", "build"]
