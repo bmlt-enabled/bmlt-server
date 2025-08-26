@@ -94,12 +94,12 @@ describe('MeetingEditForm Component', () => {
     expect(screen.getByLabelText(translations.getString('worldIdTitle'))).toHaveValue(selectedMeeting.worldId);
     const formatsHiddenSelect = document.querySelector('select[name="formatIds"]') as HTMLSelectElement;
     if (formatsHiddenSelect) {
-      const selectedValues = Array.from(formatsHiddenSelect.selectedOptions).map((option: HTMLOptionElement) => option.value);
-      expect(selectedValues.join(',')).toEqual(selectedMeeting.formatIds.join(','));
+      const selectedValues = Array.from(formatsHiddenSelect.selectedOptions).map((option: HTMLOptionElement) => Number(option.value));
+      expect(selectedValues.sort()).toEqual(selectedMeeting.formatIds.sort());
     } else {
       const formatsSelect = screen.getByLabelText(translations.getString('formatsTitle')) as HTMLSelectElement;
-      const selectedValues = Array.from(formatsSelect.selectedOptions).map((option: HTMLOptionElement) => option.value);
-      expect(selectedValues.join(',')).toEqual(selectedMeeting.formatIds.join(','));
+      const selectedValues = Array.from(formatsSelect.selectedOptions).map((option: HTMLOptionElement) => Number(option.value));
+      expect(selectedValues.sort()).toEqual(selectedMeeting.formatIds.sort());
     }
 
     // Location fields
