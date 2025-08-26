@@ -845,14 +845,17 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
-        {#each timeZoneGroups as continent}
-          <optgroup label={continent.name}>
-            {#each continent.values as timezone}
-              <option value={timezone.value}>{timezone.name}</option>
-            {/each}
-          </optgroup>
-        {/each}
+      <Select id="timeZone" name="timeZone" bind:value={initialValues.timeZone} class="rounded-lg dark:bg-gray-600" placeholder="">
+        {#snippet children()}
+          <option value="" disabled hidden>Choose time zone …</option>
+          {#each timeZoneGroups as continent}
+            <optgroup label={continent.name}>
+              {#each continent.values as timezone}
+                <option value={timezone.value}>{timezone.name}</option>
+              {/each}
+            </optgroup>
+          {/each}
+        {/snippet}
       </Select>
       {#if $errors.timeZone}
         <Helper class="mt-2" color="red">
@@ -864,7 +867,15 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
+      <Select id="day" name="day" bind:value={initialValues.day} class="rounded-lg dark:bg-gray-600" placeholder="">
+        {#snippet children()}
+          {#each weekdayChoices as item (item.value)}
+            <option value={String(item.value)}>
+              {item.name}
+            </option>
+          {/each}
+        {/snippet}
+      </Select>
       {#if $errors.day}
         <Helper class="mt-2" color="red">
           {$errors.day}
@@ -893,7 +904,15 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
-      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="rounded-lg dark:bg-gray-600" />
+      <Select id="serviceBodyId" name="serviceBodyId" bind:value={initialValues.serviceBodyId} class="rounded-lg dark:bg-gray-600" placeholder="">
+        {#snippet children()}
+          {#each serviceBodyIdItems as item (item.value)}
+            <option value={String(item.value)}>
+              {item.name}
+            </option>
+          {/each}
+        {/snippet}
+      </Select>
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
           {$errors.serviceBodyId}
@@ -945,7 +964,15 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" class="rounded-lg dark:bg-gray-600" />
+      <Select id="venueType" name="venueType" bind:value={initialValues.venueType} class="rounded-lg dark:bg-gray-600" placeholder="">
+        {#snippet children()}
+          {#each venueTypeItems as item (item.value)}
+            <option value={String(item.value)}>
+              {item.name}
+            </option>
+          {/each}
+        {/snippet}
+      </Select>
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -1072,7 +1099,15 @@
     <div class="w-full">
       <Label for="locationSubProvince" class="mt-2 mb-2">{$translations.countySubProvinceTitle}</Label>
       {#if countiesAndSubProvincesChoices.length > 0}
-        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" class="rounded-lg dark:bg-gray-600" />
+        <Select id="locationSubProvince" name="locationSubProvince" bind:value={initialValues.locationSubProvince} class="rounded-lg dark:bg-gray-600" placeholder="">
+          {#snippet children()}
+            {#each countiesAndSubProvincesChoices as item (item.value)}
+              <option value={String(item.value)}>
+                {item.name}
+              </option>
+            {/each}
+          {/snippet}
+        </Select>
       {:else}
         <Input type="text" id="locationSubProvince" name="locationSubProvince" />
       {/if}
@@ -1087,7 +1122,15 @@
     <div class="w-full">
       <Label for="locationProvince" class="mt-2 mb-2">{$translations.stateTitle}</Label>
       {#if statesAndProvincesChoices.length > 0}
-        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" class="rounded-lg dark:bg-gray-600" />
+        <Select id="locationProvince" name="locationProvince" bind:value={initialValues.locationProvince} class="rounded-lg dark:bg-gray-600" placeholder="">
+          {#snippet children()}
+            {#each statesAndProvincesChoices as item (item.value)}
+              <option value={String(item.value)}>
+                {item.name}
+              </option>
+            {/each}
+          {/snippet}
+        </Select>
       {:else}
         <Input type="text" id="locationProvince" name="locationProvince" />
       {/if}
