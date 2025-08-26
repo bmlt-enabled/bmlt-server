@@ -67,11 +67,6 @@
       return true;
     });
 
-  const formatItems = filteredFormats
-    .filter((f): f is NonNullable<typeof f> => f !== null)
-    .map((f) => ({ value: f.id, name: `(${f.key}) ${f.name}` }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
   const serviceBodyIdItems = serviceBodies.map((u) => ({ value: u.id, name: u.name })).sort((a, b) => a.name.localeCompare(b.name));
   const VENUE_TYPE_IN_PERSON = 1;
   const VENUE_TYPE_VIRTUAL = 2;
@@ -385,16 +380,93 @@
     })
   });
 
-  const formatIdToFormatType = Object.fromEntries(filteredFormats.map((f) => [f?.id, f]));
-  function badgeColor(id: string) {
-    if (formatIdToFormatType[id].type === 'MEETING_FORMAT') {
-      return 'green';
-    } else if (formatIdToFormatType[id].type === 'OPEN_OR_CLOSED') {
-      return 'red';
-    } else {
-      return 'yellow';
-    }
+  const FORMAT_TYPE_GROUPS = [
+    { type: 'MEETING_FORMAT', name: $translations.formatTypeCode_MEETING_FORMAT, color: 'green' },
+    { type: 'OPEN_OR_CLOSED', name: $translations.formatTypeCode_OPEN_OR_CLOSED, color: 'pink' },
+    { type: 'COMMON_NEEDS_OR_RESTRICTION', name: $translations.formatTypeCode_COMMON_NEEDS_OR_RESTRICTION, color: 'blue' },
+    { type: 'LOCATION', name: $translations.formatTypeCode_LOCATION, color: 'purple' },
+    { type: 'LANGUAGE', name: $translations.formatTypeCode_LANGUAGE, color: 'yellow' },
+    { type: 'ALERT', name: $translations.formatTypeCode_ALERT, color: 'red' }
+  ];
+
+  function createGroupedFormatItems(filteredFormats: any[]) {
+    const formatsByType = filteredFormats.filter(Boolean).reduce(
+      (groups, format) => {
+        (groups[format.type] ??= []).push(format);
+        return groups;
+      },
+      {} as Record<string, any[]>
+    );
+
+    const createGroupHeader = (type: string, name: string) => ({
+      value: `_group_${type}_`,
+      name: ` ${name} `,
+      disabled: true
+    });
+
+    const formatItem = (format: any) => ({
+      value: format.id,
+      name: `  (${format.key}) ${format.name}`,
+      type: format.type
+    });
+
+    const sortAlphabetically = (items: any[]) => items.sort((a, b) => a.name.localeCompare(b.name));
+
+    const knownGroupItems = FORMAT_TYPE_GROUPS.map((group) => {
+      const formatsInGroup = formatsByType[group.type];
+      if (!formatsInGroup?.length) return null;
+      const header = createGroupHeader(group.type, group.name);
+      const items = sortAlphabetically(formatsInGroup.map(formatItem));
+      return [header, ...items];
+    })
+      .filter(Boolean)
+      .flat();
+
+    const knownTypes = new SvelteSet(FORMAT_TYPE_GROUPS.map((g) => g.type));
+    const unknownTypes = Object.keys(formatsByType).filter((type) => !knownTypes.has(type));
+
+    const noneGroupItems =
+      unknownTypes.length > 0
+        ? [
+            createGroupHeader('none', $translations.formatTypeCode_NONE),
+            ...sortAlphabetically(unknownTypes.flatMap((type) => formatsByType[type]).map((format) => formatItem({ ...format, type: format.type || $translations.formatTypeCode_NONE })))
+          ]
+        : [];
+    return [...knownGroupItems, ...noneGroupItems];
   }
+
+  type BadgeColor =
+    | 'green'
+    | 'red'
+    | 'blue'
+    | 'purple'
+    | 'yellow'
+    | 'gray'
+    | 'primary'
+    | 'secondary'
+    | 'emerald'
+    | 'orange'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'indigo'
+    | 'lime'
+    | 'amber'
+    | 'violet'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+
+  function getBadgeColor(formatId: string, formatLookup: Record<string, any>): BadgeColor {
+    const format = formatLookup[formatId];
+    if (!format) return 'gray';
+
+    const group = FORMAT_TYPE_GROUPS.find((g) => g.type === format.type);
+    return (group?.color ?? 'yellow') as BadgeColor;
+  }
+
+  const formatItems = createGroupedFormatItems(filteredFormats.filter((f): f is NonNullable<typeof f> => f !== null));
+  const formatIdToFormatType = Object.fromEntries(filteredFormats.filter((f) => f !== null).map((f) => [f.id, f]));
 
   function handleDelete(event: MouseEvent, meeting: Meeting) {
     event.stopPropagation();
@@ -847,7 +919,7 @@
     <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
         <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
-          <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
+          <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
             {item.name}
           </Badge>
         </div>
@@ -1234,5 +1306,20 @@
 <style>
   :global(.hide-close-button button[aria-label='Close']) {
     display: none !important;
+  }
+
+  /* Target disabled format menu items (headers) */
+  :global(#formatIds [class*='opacity-50']) {
+    font-weight: bold !important;
+    font-size: 0.925rem !important;
+    background-color: rgb(243, 244, 246) !important; /* gray-100 */
+    color: rgb(31, 41, 55) !important; /* gray-800 */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(#formatIds [class*='opacity-50']) {
+      background-color: rgb(17, 24, 39) !important; /* gray-900 */
+      color: rgb(209, 213, 219) !important; /* gray-300 */
+    }
   }
 </style>
