@@ -160,6 +160,7 @@
   let savedMeeting: Meeting;
   let changes: MeetingChangeResource[] = $state([]);
   let changesLoaded = $state(false);
+  let saveAsCopy = $state(false);
 
   function shouldGeocode(initialValues: MeetingPartialUpdate, values: MeetingPartialUpdate, isNewMeeting: boolean) {
     if (isNewMeeting && values.venueType != VENUE_TYPE_VIRTUAL) {
@@ -245,7 +246,14 @@
         }
       }
 
-      if (selectedMeeting) {
+      if (selectedMeeting && saveAsCopy) {
+        const copyData = {
+          ...values,
+          worldId: '',
+          published: false
+        };
+        savedMeeting = await RootServerApi.createMeeting(copyData);
+      } else if (selectedMeeting) {
         await RootServerApi.updateMeeting(selectedMeeting.id, values);
         savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
       } else {
@@ -476,7 +484,7 @@
 
   // This hack is required until https://github.com/themesberg/flowbite-svelte/issues/1395 is fixed.
   function disableButtonHack(event: MouseEvent) {
-    if (!$isDirty) {
+    if (!$isDirty && !saveAsCopy) {
       event.preventDefault();
     }
   }
@@ -1291,8 +1299,17 @@
           {$translations.meetingErrorsSomewhere + ' ' + errorTabs.join(', ')}
         </Helper>
       {/if}
-      <Button type="submit" class="w-full" disabled={!$isDirty} onclick={disableButtonHack}>
-        {#if selectedMeeting}
+      {#if selectedMeeting}
+        <div class="mb-4">
+          <Checkbox name="saveAsCopy" checked={saveAsCopy} onchange={(e) => (saveAsCopy = (e.target as HTMLInputElement).checked)}>
+            {$translations.saveAsCopyCheckbox}
+          </Checkbox>
+        </div>
+      {/if}
+      <Button type="submit" class="w-full" disabled={!$isDirty && !saveAsCopy} onclick={disableButtonHack}>
+        {#if selectedMeeting && saveAsCopy}
+          {$translations.saveAsNewMeeting}
+        {:else if selectedMeeting}
           {$translations.applyChangesTitle}
         {:else}
           {$translations.addMeeting}

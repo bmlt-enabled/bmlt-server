@@ -33,7 +33,7 @@ describe('MeetingEditForm Component', () => {
 
         // Basic fields
         // getting the 'Meeting is Published' checkbox by its name stopped working; but there is only one checkbox at this point
-        expect(screen.getByRole('checkbox')).toBeChecked();
+        expect(screen.getByRole('checkbox', { name: /meeting is published/i })).toBeChecked();
         expect(screen.getByLabelText(translations.getString('nameTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('timeZoneTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('dayTitle'))).toBeInTheDocument();
