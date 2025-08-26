@@ -174,6 +174,10 @@ export const deTranslations = {
   postMeridiem: 'PM',
   processingFile: 'Processing file...', // TODO: Translate
   published: 'Veröffentlicht',
+  saveAsCopy: 'Als Kopie speichern',
+  saveAsCopyCheckbox: 'Diese Sitzung als Kopie speichern (Erstellt eine neue Sitzung)',
+  saveAsNewMeeting: 'Als neue Sitzung speichern',
+  saving: 'Speichern...',
   search: 'Suchen',
   searchByDay: 'Suche nach Tag',
   searchByName: 'Suche nach Name',
