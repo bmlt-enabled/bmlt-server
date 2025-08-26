@@ -399,8 +399,8 @@
     );
 
     const createGroupHeader = (type: string, name: string) => ({
-      value: `__group_${type}__`,
-      name: `── ${name.toUpperCase()} ──`,
+      value: `_group_${type}_`,
+      name: ` ${name} `,
       disabled: true
     });
 
@@ -1306,5 +1306,20 @@
 <style>
   :global(.hide-close-button button[aria-label='Close']) {
     display: none !important;
+  }
+
+  /* Target disabled format menu items (headers) */
+  :global(#formatIds [class*='opacity-50']) {
+    font-weight: bold !important;
+    font-size: 0.925rem !important;
+    background-color: rgb(243, 244, 246) !important; /* gray-100 */
+    color: rgb(31, 41, 55) !important; /* gray-800 */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(#formatIds [class*='opacity-50']) {
+      background-color: rgb(17, 24, 39) !important; /* gray-900 */
+      color: rgb(209, 213, 219) !important; /* gray-300 */
+    }
   }
 </style>
