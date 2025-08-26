@@ -249,8 +249,7 @@
       if (selectedMeeting && saveAsCopy) {
         const copyData = {
           ...values,
-          worldId: '',
-          published: false
+          worldId: ''
         };
         savedMeeting = await RootServerApi.createMeeting(copyData);
       } else if (selectedMeeting) {
