@@ -5,7 +5,7 @@ on:
 
 jobs:
   test-php:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -33,7 +33,7 @@ jobs:
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
-        uses: shivammathur/setup-php@2.27.1
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v2.6.5
@@ -53,12 +53,10 @@ jobs:
           make test
 
   test-js:
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: node 20 ❇️
         uses: actions/setup-node@v4.0.0
