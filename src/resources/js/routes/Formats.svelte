@@ -52,6 +52,7 @@
 
   function handleEdit(format: Format) {
     selectedFormat = format;
+    lastEditedFormatId = format.id;
     openModal();
   }
 

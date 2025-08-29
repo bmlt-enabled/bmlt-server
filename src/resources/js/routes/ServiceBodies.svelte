@@ -58,6 +58,7 @@
 
   function handleEdit(serviceBody: ServiceBody) {
     selectedServiceBody = serviceBody;
+    lastEditedServiceBodyId = serviceBody.id;
     openModal();
   }
 

@@ -50,6 +50,7 @@
 
   function handleEdit(user: User) {
     selectedUser = user;
+    lastEditedUserId = user.id;
     openModal();
   }
 
