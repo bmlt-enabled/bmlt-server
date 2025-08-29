@@ -12,7 +12,7 @@
         "laravel/framework": "^12.00",
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.10",
-        "phpoffice/phpspreadsheet": "^4.2",
+        "phpoffice/phpspreadsheet": "^5.0",
         "spatie/laravel-validation-rules": "^3.4"
     },
     "require-dev": {
