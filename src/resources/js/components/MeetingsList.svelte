@@ -207,6 +207,7 @@
 
   function handleEdit(meeting: Meeting) {
     selectedMeeting = meeting;
+    lastEditedMeetingId = meeting.id;
     openModal();
   }
 
