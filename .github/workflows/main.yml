@@ -9,7 +9,7 @@ env:
 
 jobs:
   test-php:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -33,14 +33,14 @@ jobs:
         options: --health-cmd="${{ (matrix.db == 'latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
-        uses: shivammathur/setup-php@2.30.4
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2.6.5
+          tools: composer:v2.8.8
 
       - name: make composer 🎼
         run: |
@@ -58,19 +58,19 @@ jobs:
 
       - name: Send coverage data to codecov.io 📀
         if: matrix.db == 'latest' && matrix.php == '8.4'
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@v5.5.0
         with:
           files: src/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
   test-js:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: node 20 ❇️
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
 
@@ -91,7 +91,7 @@ jobs:
           make test-js
 
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [test-php, test-js]
     permissions:
       id-token: write
@@ -102,7 +102,7 @@ jobs:
 
       - name: php 8.2 🐘
         id: setup-php
-        uses: shivammathur/setup-php@2.30.4
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: '8.2'
           tools: composer:v2.8.8
@@ -112,7 +112,7 @@ jobs:
           make composer
 
       - name: setup node 20 ❇️
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20
 
@@ -182,7 +182,7 @@ jobs:
           echo "RELEASE_TYPE=${RELEASE_TYPE}" >> $GITHUB_ENV
 
       - name: Create Release 🎉
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.18.0
         if: github.ref_type == 'tag'
         with:
           artifacts: "build/bmlt-server.zip"
@@ -190,7 +190,7 @@ jobs:
           prerelease: ${{ env.RELEASE_TYPE }}
 
   deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     concurrency: deploy-${{ matrix.env }}
     needs: [build]
     permissions:
@@ -205,7 +205,7 @@ jobs:
           - "unstable"
     steps:
       - name: Checkout 🛒
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Configure AWS Credentials 🪪
         uses: aws-actions/configure-aws-credentials@v4
