@@ -83,7 +83,7 @@ type ConflictErrorHandler = (error: ConflictError) => void;
 type ValidationErrorHandler = (error: ValidationError) => void;
 type ServerErrorHandler = (error: ResponseError) => void;
 type NetworkErrorHandler = () => void;
-type GenericErrorHandler = (error: Error) => void;
+type GenericErrorHandler = (error: Error, innerError?: Error) => void;
 type ErrorHandlers = {
   handleAuthenticationError?: AuthenticationErrorHandler;
   handleAuthorizationError?: AuthorizationErrorHandler;
@@ -117,6 +117,28 @@ class ApiClientWrapper {
     }
 
     this.api = new ApiClient(token);
+
+    this.initializeDefaultErrorHandlers({
+      handleNetworkError: () => {
+        errorModal.show({
+          title: 'Network Error',
+          message: 'Failed to connect to the server. Please check your internet connection and try again.',
+          timestamp: new Date()
+        });
+      },
+      handleError: (error: Error, innerError?: Error) => {
+        let details = `Error: ${JSON.stringify(error)}`;
+        if (innerError) {
+          details += `\nInner Error: ${JSON.stringify(innerError)}`;
+        }
+        errorModal.show({
+          title: 'Unhandled Error',
+          message: error?.message || 'An unknown error occurred.',
+          details: details,
+          timestamp: new Date()
+        });
+      }
+    });
   }
 
   initializeDefaultErrorHandlers(defaultErrorHandlers: ErrorHandlers): void {
@@ -304,95 +326,57 @@ class ApiClientWrapper {
     const handleServerError = overrideErrorHandlers?.handleServerError ?? this.defaultServerErrorHandler;
     const handleError = overrideErrorHandlers?.handleError ?? this.defaultErrorHandler;
 
-    // handle network errors first
-    if (error.message === 'Failed to fetch' || error.name === 'FetchError' || error.message.includes('NetworkError') || !('response' in error)) {
-      if (handleNetworkError) {
-        return handleNetworkError();
-      }
-
-      if (handleError) {
-        return handleError(error);
-      }
-
-      errorModal.show({
-        title: 'Network Error',
-        message: 'Failed to connect to the server. Please check your internet connection and try again.',
-        details: error.message + (error.stack ? '\n\nStack trace:\n' + error.stack : ''),
-        timestamp: new Date()
-      });
-      return;
-    }
-
-    const responseError = error as ResponseError;
-    if (!responseError.response) {
-      if (handleError) {
-        return handleError(error);
-      }
-
-      errorModal.show({
-        title: 'Unexpected Error',
-        message: error.message || 'An unexpected error occurred.',
-        details: error.stack || JSON.stringify(error, null, 2),
-        timestamp: new Date()
-      });
-      return;
-    }
-
-    let body: any;
     try {
-      body = await responseError.response.json();
-    } catch (jsonError) {
-      errorModal.show({
-        title: 'Server Error',
-        message: `Server returned status ${responseError.response.status} but response could not be parsed.`,
-        details: `Status: ${responseError.response.status}\nStatus Text: ${responseError.response.statusText}\nJSON Parse Error: ${(jsonError as Error).message}`,
-        timestamp: new Date()
-      });
-      return;
+      if ('response' in error) {
+        const responseError = error as ResponseError;
+        const body = await responseError.response.json();
+
+        if (handleAuthenticationError && responseError.response.status === 401) {
+          return handleAuthenticationError(body as AuthenticationError);
+        }
+
+        if (handleAuthorizationError && responseError.response.status === 403) {
+          return handleAuthorizationError(body as AuthorizationError);
+        }
+
+        if (handleNotFoundError && responseError.response.status === 404) {
+          return handleNotFoundError(body as NotFoundError);
+        }
+
+        if (handleConflictError && responseError.response.status === 409) {
+          return handleConflictError(body as ConflictError);
+        }
+
+        if (handleValidationError && responseError.response.status === 422) {
+          return handleValidationError(body as ValidationError);
+        }
+
+        if (handleServerError && responseError.response.status > 499) {
+          return handleServerError(body);
+        }
+
+        if (handleError) {
+          return handleError(body);
+        }
+
+        return;
+      }
+
+      if (error.message === 'Failed to fetch' || error.name === 'FetchError' || error.message.includes('NetworkError')) {
+        if (handleNetworkError) {
+          return handleNetworkError();
+        }
+      }
+
+      if (handleError) {
+        return handleError(error);
+      }
+    } catch (e) {
+      if (handleError) {
+        handleError(e as Error, error);
+      }
     }
 
-    if (handleAuthenticationError && responseError.response.status === 401) {
-      // message
-      return handleAuthenticationError(body as AuthenticationError);
-    }
-
-    if (handleAuthorizationError && responseError.response.status === 403) {
-      // message
-      return handleAuthorizationError(body as AuthorizationError);
-    }
-
-    if (handleNotFoundError && responseError.response.status === 404) {
-      return handleNotFoundError(body as NotFoundError);
-    }
-
-    if (handleConflictError && responseError.response.status === 409) {
-      return handleConflictError(body as ConflictError);
-    }
-
-    if (handleValidationError && responseError.response.status === 422) {
-      // message, errors
-      // console.log('body', body);
-      return handleValidationError(body as ValidationError);
-    }
-
-    if (handleServerError && responseError.response.status > 499) {
-      return handleServerError(body);
-    }
-
-    if (handleError) {
-      return handleError(body);
-    }
-
-    const errorTitle = body?.error || body?.message || 'Unexpected Error';
-    const errorMessage = body?.message || 'An unexpected error occurred.';
-    const errorDetails = JSON.stringify(body, null, 2);
-
-    errorModal.show({
-      title: errorTitle,
-      message: errorMessage,
-      details: errorDetails,
-      timestamp: new Date()
-    });
     return;
   }
 }
