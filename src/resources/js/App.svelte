@@ -14,6 +14,7 @@
   import ServiceBodies from './routes/ServiceBodies.svelte';
   import Users from './routes/Users.svelte';
   import SpinnerModal from './components/SpinnerModal.svelte';
+  import ErrorModal from './components/ErrorModal.svelte';
   import { apiCredentials, authenticatedUser } from './stores/apiCredentials';
 
   const routes = {
@@ -82,3 +83,4 @@
 
 <Router {routes} onconditionsFailed={conditionsFailed} />
 <SpinnerModal />
+<ErrorModal />

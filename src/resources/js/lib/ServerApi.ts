@@ -27,6 +27,7 @@ import {
   type UserUpdate,
   type ValidationError
 } from 'bmlt-server-client';
+import { errorModal } from '../stores/errorModal';
 
 class ApiClient extends RootServerApi {
   private authorizationHeader: string | null = null;
@@ -304,7 +305,7 @@ class ApiClientWrapper {
     const handleError = overrideErrorHandlers?.handleError ?? this.defaultErrorHandler;
 
     // handle network errors first
-    if (error.message === 'Failed to fetch' || error.name === 'FetchError') {
+    if (error.message === 'Failed to fetch' || error.name === 'FetchError' || error.message.includes('NetworkError') || !('response' in error)) {
       if (handleNetworkError) {
         return handleNetworkError();
       }
@@ -313,12 +314,42 @@ class ApiClientWrapper {
         return handleError(error);
       }
 
-      return console.log('TODO show error dialog', error.message);
+      errorModal.show({
+        title: 'Network Error',
+        message: 'Failed to connect to the server. Please check your internet connection and try again.',
+        details: error.message + (error.stack ? '\n\nStack trace:\n' + error.stack : ''),
+        timestamp: new Date()
+      });
+      return;
     }
 
-    // handle api errors
     const responseError = error as ResponseError;
-    const body = await responseError.response.json();
+    if (!responseError.response) {
+      if (handleError) {
+        return handleError(error);
+      }
+
+      errorModal.show({
+        title: 'Unexpected Error',
+        message: error.message || 'An unexpected error occurred.',
+        details: error.stack || JSON.stringify(error, null, 2),
+        timestamp: new Date()
+      });
+      return;
+    }
+
+    let body: any;
+    try {
+      body = await responseError.response.json();
+    } catch (jsonError) {
+      errorModal.show({
+        title: 'Server Error',
+        message: `Server returned status ${responseError.response.status} but response could not be parsed.`,
+        details: `Status: ${responseError.response.status}\nStatus Text: ${responseError.response.statusText}\nJSON Parse Error: ${(jsonError as Error).message}`,
+        timestamp: new Date()
+      });
+      return;
+    }
 
     if (handleAuthenticationError && responseError.response.status === 401) {
       // message
@@ -352,7 +383,17 @@ class ApiClientWrapper {
       return handleError(body);
     }
 
-    return console.log('TODO unhandled error, show error dialog', body);
+    const errorTitle = body?.error || body?.message || 'Unexpected Error';
+    const errorMessage = body?.message || 'An unexpected error occurred.';
+    const errorDetails = JSON.stringify(body, null, 2);
+
+    errorModal.show({
+      title: errorTitle,
+      message: errorMessage,
+      details: errorDetails,
+      timestamp: new Date()
+    });
+    return;
   }
 }
 
