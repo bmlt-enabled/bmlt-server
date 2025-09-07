@@ -873,6 +873,17 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonFragment(['worldid_mixed' => 'testvalue']);
     }
 
+    public function testMeetingKeyValueServiceBodyName()
+    {
+        $area1 = $this->createArea('area1', 'area1', 0);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&services=$area1->id_bigint")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['service_body_name' => $area1->name_string]);
+    }
+
     public function testMeetingKeyValueTimeFieldsValid()
     {
         $fieldNames = ['start_time', 'duration_time'];

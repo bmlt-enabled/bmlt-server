@@ -57,6 +57,7 @@ class MeetingResource extends JsonResource
             'worldid_mixed' => $this->getWorldIdMixed(),
             'shared_group_id_bigint' => $this->getSharedGroupIdBigint(),
             'service_body_bigint' => $this->getServiceBodyBigint(),
+            'service_body_name' => $this->getServiceBodyName(),
             'weekday_tinyint' => $this->getWeekdayTinyint(),
             'venue_type' => $this->getVenueType(),
             'start_time' => $this->getStartTime(),
@@ -172,6 +173,14 @@ class MeetingResource extends JsonResource
         return $this->when(
             !self::$hasDataFieldKeys || self::$dataFieldKeys->has('service_body_bigint'),
             strval($this->service_body_bigint)
+        );
+    }
+
+    private function getServiceBodyName()
+    {
+        return $this->when(
+            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('service_body_name'),
+            $this->serviceBody?->name_string ?? ''
         );
     }
 
