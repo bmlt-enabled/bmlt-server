@@ -91,7 +91,9 @@ class TsmlMeetingResource extends JsonResource
                 ->values()
                 ->toArray(),
             'notes' => $allData['location_info'] ?? '',
-            'coordinates' => (!empty($this->latitude) && !empty($this->longitude)) ? "{$this->latitude},{$this->longitude}" : null,
+            'coordinates' =>  $this->venue_type == 2
+                ? null
+                : (($this->latitude && $this->longitude) ? "{$this->latitude},{$this->longitude}" : null),
             'slug' => \Str::slug($allData['meeting_name']),
             'updated' => $this->updated_at ?? null,
             'region' => $this->serviceBody->name_string ?? '',

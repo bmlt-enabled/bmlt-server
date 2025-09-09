@@ -2337,4 +2337,36 @@ class GetSearchResultsTest extends TestCase
         $this->assertArrayHasKey('region', $meetingData);
         $this->assertEquals('Test Area', $meetingData['region']);
     }
+
+    public function testTsmlOutputFormatVenueType2CoordinatesNull()
+    {
+        $serviceBody = $this->createArea('Test Area', 'A test area', 0);
+        $this->createMeeting([
+            'service_body_bigint' => $serviceBody->id_bigint,
+            'weekday_tinyint' => 2,
+            'start_time' => '10:00:00',
+            'duration_time' => '01:30:00',
+            'formats' => '999',
+            'venue_type' => 2,
+            'longitude' => -118.5635721,
+            'latitude' => 34.2359759,
+        ], [
+            'meeting_name' => 'Virtual Meeting',
+            'location_text' => 'Test Church',
+            'location_street' => '19737 Nordhoff Place',
+            'location_municipality' => 'Los Angeles',
+            'location_province' => 'CA',
+            'location_postal_code_1' => '91324',
+            'location_nation' => 'USA',
+        ]);
+
+        $response = $this->get("/client_interface/tsml/?switcher=GetSearchResults");
+        $response->assertStatus(200);
+        $data = $response->json();
+        $meetingData = $data[0];
+
+        // coordinates should be null despite lat/lng existing
+        $this->assertArrayHasKey('coordinates', $meetingData);
+        $this->assertNull($meetingData['coordinates']);
+    }
 }
