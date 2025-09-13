@@ -1,6 +1,26 @@
 import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
 import { Loader } from '@googlemaps/js-api-loader';
+import { errorModal } from '../stores/errorModal';
+
+let googleMapsHasErrors = false;
+
+if (typeof window !== 'undefined') {
+  const originalConsoleError = console.error;
+  console.error = function (...args) {
+    const errorMessage = args.join(' ').toLowerCase();
+    if (errorMessage.includes('invalidkeymaperror') || args.some((arg) => typeof arg === 'string' && arg.includes('InvalidKeyMapError'))) {
+      googleMapsHasErrors = true;
+      errorModal.show({
+        title: 'Google Maps API Key Issue',
+        message: 'Google Maps geocoding is unavailable due to an API key issue. Falling back to OpenStreetMap.',
+        details: 'Your Google Maps API key appears to be invalid, expired, or not properly configured. The system will continue using OpenStreetMap for geocoding.',
+        timestamp: new Date()
+      });
+    }
+    originalConsoleError.apply(console, args);
+  };
+}
 
 export function createGoogleMapsLoader(apiKey: string): Loader {
   return new Loader({
@@ -66,7 +86,6 @@ export class Geocoder {
   private async geocodeWithGoogle(): Promise<GeocodeResult | string> {
     const geocoder = new google.maps.Geocoder();
     const { results, status } = await promisifyGeocode(geocoder, this.address);
-
     if (status === google.maps.GeocoderStatus.OK && results) {
       const location = results[0].geometry.location;
       let county = '';
@@ -88,8 +107,7 @@ export class Geocoder {
         zipCode
       };
     } else {
-      logError('Google Geocoding failed:', status);
-      return `Google Geocoding failed: ${status}`;
+      throw new Error(`Google Geocoding failed: ${status}`);
     }
   }
 
@@ -127,10 +145,22 @@ export class Geocoder {
 
   public async geocode(): Promise<GeocodeResult | string> {
     spinner.show();
-
     try {
+      if (googleMapsHasErrors) {
+        return await this.geocodeWithNominatim();
+      }
       const shouldUseGoogle = await this.ensureGoogleMapsReady();
-      return shouldUseGoogle ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
+      if (shouldUseGoogle) {
+        try {
+          return await this.geocodeWithGoogle();
+        } catch (error) {
+          console.error('Geocoding error:', error);
+          googleMapsHasErrors = true;
+          return await this.geocodeWithNominatim();
+        }
+      } else {
+        return await this.geocodeWithNominatim();
+      }
     } catch (error) {
       console.error('Geocoding error:', error);
       return 'Geocoding failed. Please try again.';
@@ -153,7 +183,7 @@ export class Geocoder {
       await loader.importLibrary('maps');
       return true;
     } catch (loadError) {
-      console.error('Failed to load Google Maps:', loadError);
+      logError('Google Maps loading failed, falling back to Nominatim', loadError);
       return false;
     }
   }
