@@ -127,7 +127,7 @@ docker-push: ## Pushes docker image to Dockerhub
 
 .PHONY: dev
 dev: zip ## Docker Compose Up
-	docker-compose -f docker/docker-compose.yml $(EXTRA_DOCKER_COMPOSE_ARGS) up --build
+	docker compose -f docker/docker-compose.yml $(EXTRA_DOCKER_COMPOSE_ARGS) up --build
 
 .PHONY: test
 test:  ## Runs PHP Tests
