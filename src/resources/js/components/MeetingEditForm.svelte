@@ -2,7 +2,7 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
-  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
+  import { Button, Checkbox, Hr, Label, Input, Textarea, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -1020,7 +1020,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="locationInfo" class="mt-2 mb-2">{$translations.extraInfoTitle}</Label>
-      <Input type="text" id="locationInfo" name="locationInfo" />
+      <Textarea id="locationInfo" name="locationInfo" rows={4} />
       {#if $errors.locationInfo}
         <Helper class="mt-2" color="red">
           {$errors.locationInfo}
