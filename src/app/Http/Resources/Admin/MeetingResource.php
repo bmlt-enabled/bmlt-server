@@ -30,7 +30,16 @@ class MeetingResource extends JsonResource
         self::$hiddenFormatIds = null;
         self::$temporarilyClosedFormatId = null;
     }
-
+    private function languagePriority($langEnum, $requestedLangEnum)
+    {
+        if ($langEnum === $requestedLangEnum) {
+            return 3;
+        }
+        if ($langEnum === config('app.locale')) {
+            return 2;
+        }
+        return 1;
+    }
     public function toArray($request)
     {
         if (!self::$isRequestInitialized) {
@@ -47,9 +56,17 @@ class MeetingResource extends JsonResource
             self::$hiddenFormatIds = collect([self::$virtualFormatId, self::$hybridFormatId, self::$temporarilyClosedFormatId]);
             self::$isRequestInitialized = true;
         }
-
-        $meetingData = $this->data
-            ->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])
+        $requestedLangEnum = $request->cookie('lang', config('app.locale'));
+        $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
+            if (!isset($carry[0][$item->key])) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            }
+            return $carry;
+        }, [[], []])[0])
             ->toBase()
             ->merge(
                 $this->longdata
