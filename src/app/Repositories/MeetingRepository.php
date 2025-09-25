@@ -634,7 +634,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $t->lang_enum,
+                        'lang_enum' => $this->getRequestedLanguage(),
                         'data_blob' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -643,7 +643,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $t->lang_enum,
+                        'lang_enum' => $this->getRequestedLanguage(),
                         'data_string' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -655,7 +655,10 @@ class MeetingRepository implements MeetingRepositoryInterface
             return $meeting;
         });
     }
-
+    private function getRequestedLanguage(): string
+    {
+        return request()->cookie('lang', config('app.locale'));
+    }
     public function update(int $id, array $values): bool
     {
         $values = collect($values);
@@ -668,7 +671,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
-                MeetingData::query()->where('meetingid_bigint', $id)->delete();
+                MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getRequestedLanguage())->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
                     $t = $dataTemplates->get($fieldName);
@@ -677,7 +680,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
+                            'lang_enum' => $this->getRequestedLanguage(),
                             'data_blob' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
@@ -686,7 +689,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
+                            'lang_enum' => $this->getRequestedLanguage(),
                             'data_string' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
@@ -858,10 +861,10 @@ class MeetingRepository implements MeetingRepositoryInterface
 
             if (is_null($db)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
-                $this->create($values);
+                $this->create($values,'en');
             } else if (!$external->isEqual($db, $serviceBodyIdToSourceIdMap, $formatSharedIdToSourceIdMap)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
-                $this->update($db->id_bigint, $values);
+                $this->update($db->id_bigint, $values, 'en');
             }
         }
     }

@@ -30,6 +30,10 @@
     onSubmit: async (values) => {
       spinner.show();
       await apiCredentials.login(values.username, values.password);
+      if (globalSettings.isLanguageSelectorEnabled) {
+        const langCookie = `lang=${selectedLanguage}; expires=Fri, 31 Dec 2037 23:59:59 GMT" Path=/;`!;
+        document.cookie = langCookie;
+      }
     },
     onSuccess: () => {
       spinner.hide();
