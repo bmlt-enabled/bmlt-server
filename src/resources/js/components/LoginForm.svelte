@@ -34,6 +34,8 @@
       if (globalSettings.isLanguageSelectorEnabled && acknowledgeTranslation) {
         const langCookie = `lang=${selectedLanguage}; Path=/;`!;
         document.cookie = langCookie;
+      } else {
+        document.cookie = 'lang=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
       }
     },
     onSuccess: () => {
@@ -105,7 +107,7 @@
         {#if settings.defaultLanguage != selectedLanguage}
           <div class="mb-4">
             <label class="mb-2">
-	            <input type="checkbox" checked={acknowledgeTranslation} />{$translations.acknowledgeTranslation}
+              <input type="checkbox" bind:checked={acknowledgeTranslation} />{$translations.acknowledgeTranslation}
             </label>
           </div>
         {/if}
