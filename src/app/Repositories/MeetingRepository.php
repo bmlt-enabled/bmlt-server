@@ -861,7 +861,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
             if (is_null($db)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
-                $this->create($values,'en');
+                $this->create($values, 'en');
             } else if (!$external->isEqual($db, $serviceBodyIdToSourceIdMap, $formatSharedIdToSourceIdMap)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
                 $this->update($db->id_bigint, $values, 'en');

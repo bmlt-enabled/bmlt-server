@@ -60,6 +60,7 @@ export const svTranslations = {
   accountSettingsTitle: 'Account Settings',
   accountTitle: 'Account',
   accountTypeTitle: 'Account Type',
+  acknowledgeTranslation: 'Interpret meeting data as specific to the selected language.',
   addFormat: 'Add Format',
   addMeeting: 'Add Meeting',
   addServiceBody: 'Add Service Body',

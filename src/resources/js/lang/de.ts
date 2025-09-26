@@ -5,6 +5,7 @@ export const deTranslations = {
   accountSettingsTitle: 'Account Einstellungen',
   accountTitle: 'Account',
   accountTypeTitle: 'AccountTyp',
+  acknowledgeTranslation: 'Meeting-Daten sollen als spezifisch für die ausgewählte Sprache interpretiert.',
   addFormat: 'Format hinzufügen',
   addMeeting: 'Meeting hinzufügen',
   addServiceBody: 'Service-Body hinzufügen',

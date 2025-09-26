@@ -21,6 +21,7 @@
   const languageOptions = Object.entries(globalSettings.languageMapping).map((lang) => ({ value: lang[0], name: lang[1] }));
   let selectedLanguage = $state(translations.getLanguage());
   let errorMessage: string | undefined = $state();
+  let acknowledgeTranslation = $state(false);
 
   const { form, errors } = createForm({
     initialValues: {
@@ -30,8 +31,8 @@
     onSubmit: async (values) => {
       spinner.show();
       await apiCredentials.login(values.username, values.password);
-      if (globalSettings.isLanguageSelectorEnabled) {
-        const langCookie = `lang=${selectedLanguage}; expires=Fri, 31 Dec 2037 23:59:59 GMT" Path=/;`!;
+      if (globalSettings.isLanguageSelectorEnabled && acknowledgeTranslation) {
+        const langCookie = `lang=${selectedLanguage}; Path=/;`!;
         document.cookie = langCookie;
       }
     },
@@ -99,6 +100,13 @@
           <div class="mb-4">
             <Label for="languageSelection" class="mb-2">{$translations.languageSelectTitle}</Label>
             <Select id="languageSelection" items={languageOptions} bind:value={selectedLanguage} onchange={() => translations.setLanguage(selectedLanguage)} />
+          </div>
+        {/if}
+        {#if settings.defaultLanguage != selectedLanguage}
+          <div class="mb-4">
+            <label class="mb-2">
+	            <input type="checkbox" checked={acknowledgeTranslation} />{$translations.acknowledgeTranslation}
+            </label>
           </div>
         {/if}
         {#if errorMessage}
