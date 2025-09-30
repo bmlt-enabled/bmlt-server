@@ -51,8 +51,9 @@ class MeetingRepository implements MeetingRepositoryInterface
         array $sortKeys = null,
         int $pageSize = null,
         int $pageNum = null,
+        bool $returnGroups = false
     ): Collection {
-        $eagerLoadRelations = ['data', 'longdata'];
+        $eagerLoadRelations = ['data', 'longdata', 'group'];
         if ($eagerServiceBodies) {
             $eagerLoadRelations[] = 'serviceBody';
         }
@@ -65,7 +66,12 @@ class MeetingRepository implements MeetingRepositoryInterface
         if (!is_null($published)) {
             $meetings = $meetings->where('published', $published ? 1 : 0);
         }
-
+        if (!is_null($returnGroups)) {
+            if ($returnGroups)
+                $meetings = $meetings->whereNull('group_id');
+            else
+                $meetings = $meetings->where('is_group', 0);
+        }
         if (!is_null($meetingIdsInclude)) {
             $meetings = $meetings->whereIn('id_bigint', $meetingIdsInclude);
         }
@@ -114,7 +120,13 @@ class MeetingRepository implements MeetingRepositoryInterface
                             ->orWhere('formats', "$formatId")
                             ->orWhere('formats', 'LIKE', "$formatId,%")
                             ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId");
+                            ->orWhere('formats', 'LIKE', "%,$formatId")
+                            ->orWhereHas('group', function (Builder $query) use ($formatId) {
+                                $query->where('formats', "$formatId")
+                                      ->orWhere('formats', 'LIKE', "$formatId,%")
+                                      ->orWhere('formats', 'LIKE', "%,$formatId,%")
+                                      ->orWhere('formats', 'LIKE', "%,$formatId");
+                            });
                     });
                 }
             } else {
@@ -125,7 +137,13 @@ class MeetingRepository implements MeetingRepositoryInterface
                                 ->orWhere('formats', "$formatId")
                                 ->orWhere('formats', 'LIKE', "$formatId,%")
                                 ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId");
+                                ->orWhere('formats', 'LIKE', "%,$formatId")
+                                ->orWhereHas('group', function (Builder $query) use ($formatId) {
+                                    $query->where('formats', "$formatId")
+                                          ->orWhere('formats', 'LIKE', "$formatId,%")
+                                          ->orWhere('formats', 'LIKE', "%,$formatId,%")
+                                          ->orWhere('formats', 'LIKE', "%,$formatId");
+                            });
                         });
                     }
                 });
@@ -153,6 +171,9 @@ class MeetingRepository implements MeetingRepositoryInterface
                 $meetings = $meetings->where(function (Builder $query) use ($meetingKey, $meetingKeyValue) {
                     $query
                         ->whereHas('data', function (Builder $query) use ($meetingKey, $meetingKeyValue) {
+                            $query->where('key', $meetingKey)->where('data_string', $meetingKeyValue);
+                        })
+                        ->orWhereHas('groupData', function (Builder $query) use ($meetingKey, $meetingKeyValue) {
                             $query->where('key', $meetingKey)->where('data_string', $meetingKeyValue);
                         })
                         ->orWhereHas('longdata', function (Builder $query) use ($meetingKey, $meetingKeyValue) {

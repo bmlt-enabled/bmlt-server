@@ -41,6 +41,7 @@ interface MeetingRepositoryInterface
         array $sortKeys = null,
         int $pageSize = null,
         int $pageNum = null,
+        bool $returnGroups = false,
     ): Collection;
     public function getFieldKeys(): Collection;
     public function getFieldValues(string $fieldName, array $specificFormats = [], bool $allFormats = false): Collection;
