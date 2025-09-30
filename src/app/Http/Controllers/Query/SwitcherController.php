@@ -254,6 +254,12 @@ class SwitcherController extends Controller
         } else {
             $published = false;
         }
+        $returnGroups = $request->input('return_groups', '0');
+        if ($returnGroups == '1') {
+            $returnGroups = true;
+        } else {
+            $returnGroups = false;
+        }
 
         $sortKeys = $request->input('sort_keys');
         $sortKeys = empty($sortKeys) ? null : explode(',', $sortKeys);
@@ -351,6 +357,7 @@ class SwitcherController extends Controller
             sortKeys: $sortKeys,
             pageSize: $pageSize,
             pageNum: $pageNum,
+            returnGroups: $returnGroups,
         );
 
         // This code to calculate the formats fields is really inefficient, but necessary because

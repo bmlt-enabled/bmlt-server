@@ -84,10 +84,22 @@ class MeetingResource extends JsonResource
             'root_server_uri' => $this->getRootServerUri($request),
             'format_shared_id_list' => $this->getFormatSharedIdList(),
             'root_server_id' => $this->getRootServerId(),
+            'group_id' => $this->getGroupId(),
+            'is_group' => $this->getIsGroup()
         ];
         $requestedLangEnum = $request->cookie('lang', config('app.locale'));
         // data table keys
-        $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
+        $meetingData =  collect($this->groupData->reduce(function ($carry, $item) use ($requestedLangEnum) {
+            if (!isset($carry[0][$item->key])) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            }
+            return $carry;
+        }, [[], []])[0])->toBase()
+            ->merge($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
             if (!isset($carry[0][$item->key])) {
                 $carry[0][$item->key] = $item->data_string;
                 $carry[1][$item->key] = $item->lang_enum;
@@ -114,7 +126,12 @@ class MeetingResource extends JsonResource
 
             $meeting[$meetingDataTemplate->key] = $meetingData->get($meetingDataTemplate->key, '') ?? '';
         }
-
+        // Could be expensive.  Maybe we want to control when this is done....
+        if ($this->getIsGroup()) {
+            $meeting['groupMembers'] = [];
+            foreach($this->groupMembers->toResourceCollection(MeetingResource::class) as $member)
+                $meeting['groupMembers'][] = $member->toArray($request);
+        }
         return $meeting;
     }
 
@@ -264,6 +281,20 @@ class MeetingResource extends JsonResource
         return $this->when(
             !self::$hasDataFieldKeys || self::$dataFieldKeys->has('lang_enum'),
             $this->lang_enum ?? ''
+        );
+    }
+    private function getGroupId()
+    {
+        return $this->when(
+            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('group_id'),
+            $this->group_id ?? ''
+        );
+    }
+    private function getIsGroup()
+    {
+        return $this->when(
+            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('is_group'),
+            $this->is_group ?? 0
         );
     }
     private function getLongitude()
