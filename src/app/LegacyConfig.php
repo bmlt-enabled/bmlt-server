@@ -57,6 +57,15 @@ class LegacyConfig
         if (file_exists($legacyConfigFile)) {
             defined('BMLT_EXEC') or define('BMLT_EXEC', 1);
             require($legacyConfigFile);
+        } else {
+            die('<h1>Configuration Problem</h1>
+              <p>The file <code>auto-config.inc.php</code> seems to be missing.</p>
+              <p>If this is a brand new BMLT server installation, please see the installation instructions. The latest version
+              of the instructions is available at
+              <a href="https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/README.md">
+                https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/README.md</a>.
+              For other versions, get a copy of the BMLT server source code from github, check out the version you want,
+              and look in the file <code>installation/README.md</code>.</p>');
         }
 
         $config = [];
