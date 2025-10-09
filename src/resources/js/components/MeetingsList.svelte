@@ -7,7 +7,7 @@
   import { convertTo12Hour, is24hrTime, isCommaSeparatedNumbers } from '../lib/utils';
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
-  import type { Meeting, ServiceBody, Format } from 'bmlt-server-client';
+  import type { Meeting, ServiceBody, Format } from '../lib/bmlt-server-client';
   import MeetingEditModal from './MeetingEditModal.svelte';
   import { spinner } from '../stores/spinner';
   import RootServerApi from '../lib/ServerApi';

@@ -264,6 +264,7 @@ export const ruTranslations = {
   tabsBasic: 'Basic',
   tabsChanges: 'Changes',
   tabsLocation: 'Location',
+    tabsMeetingTimes: 'Meeting Times',
   tabsOther: 'Other',
   technicalDetails: 'Технические детали',
   time: 'Time',

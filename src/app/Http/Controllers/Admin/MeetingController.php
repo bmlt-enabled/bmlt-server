@@ -189,6 +189,13 @@ class MeetingController extends ResourceController
                 'worldId' => 'nullable|string|max:30',
                 'name' => 'required|string|max:128',
                 'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone],
+                'membersOfGroup' => 'sometimes|nullable|array',
+                'membersOfGroup.*.id_bigint' => 'nullable|int|exists:comdef_meetings_main,id_bigint',
+                'membersOfGroup.*.day' => 'required|int|between:0,6',
+                'membersOfGroup.*.startTime' => 'required|date_format:H:i',
+                'membersOfGroup.*.duration' => 'required|date_format:H:i',
+                'membersOfGroup.*.formatIds' => 'present|array',
+                'membersOfGroup.*.formatIds.*' => ['int', 'exists:comdef_formats,shared_id_bigint', Rule::notIn([$this->getVirtualFormatId(), $this->getTemporarilyClosedFormatId(), $this->getHybridFormatId()])],
             ], $this->getDataFieldValidators($skipVenueTypeLocationValidation))
         ));
     }
@@ -272,7 +279,16 @@ class MeetingController extends ResourceController
             'worldid_mixed' => $validated['worldId'] ?? null,
             'meeting_name' => $validated['name'],
         ];
-
+        $values['membersOfGroup'] = [];
+        foreach($validated['membersOfGroup'] ?? [] as $member) {
+            $member['venueType'] = $validated['venueType'];
+            $values['membersOfGroup'][] = [
+                'weekday_tinyint' => $member['day'],
+                'start_time' => \DateTime::createFromFormat('H:i', $member['startTime'])->format('H:i:s'),
+                'duration_time' => \DateTime::createFromFormat('H:i', $member['duration'])->format('H:i:s'),
+                'formats' => $this->buildFormatsString(collect($member)),
+            ];
+        }
         $customFields = $this->getCustomFields();
 
         return collect($values)

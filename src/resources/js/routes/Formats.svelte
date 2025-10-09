@@ -11,7 +11,7 @@
   import RootServerApi from '../lib/ServerApi';
 
   import { onMount } from 'svelte';
-  import type { Format } from 'bmlt-server-client';
+  import type { Format } from '../lib/bmlt-server-client';
   import FormatForm from '../components/FormatForm.svelte';
 
   const reservedFormatKeys = ['HY', 'TC', 'VM'];

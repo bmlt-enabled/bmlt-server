@@ -210,6 +210,7 @@ export const deTranslations = {
   tabsBasic: 'Basic',
   tabsChanges: 'Änderungen',
   tabsLocation: 'Standort',
+  tabsMeetingTimes: 'Meeting Times',
   tabsOther: 'Andere',
   technicalDetails: 'Technische Details',
   time: 'Zeit',

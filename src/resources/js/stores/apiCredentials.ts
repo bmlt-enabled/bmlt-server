@@ -1,7 +1,7 @@
 import { get, writable } from 'svelte/store';
 import type { Subscriber, Writable, Unsubscriber } from 'svelte/store';
 
-import type { Token, User } from 'bmlt-server-client';
+import type { Token, User } from '../lib/bmlt-server-client';
 
 import { spinner } from './spinner';
 import RootServerApi from '../lib/ServerApi';

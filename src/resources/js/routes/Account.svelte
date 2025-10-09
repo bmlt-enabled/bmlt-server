@@ -12,7 +12,7 @@
   import RootServerApi from '../lib/ServerApi';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
-  import type { ServiceBody, User } from 'bmlt-server-client';
+  import type { ServiceBody, User } from '../lib/bmlt-server-client';
   import BasicAccordion from '../components/BasicAccordion.svelte';
 
   let userType = 'unknown';

@@ -43,8 +43,11 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="bus_lines", type="string", example="string"),
  *     @OA\Property(property="train_lines", type="string", example="string"),
  *     @OA\Property(property="comments", type="string", example="string"),
+ *     @OA\Property(property="membersOfGroup",type="array",
+ *        @OA\Items(type="object", example={"day": "0", "startTime":"19:00", "duration": "01:30", "formats": "[]"}),
+ *     ),
  *     @OA\Property(property="customFields", type="object", example={"key1": "value1", "key2": "value2"},
- *         @OA\AdditionalProperties(type="string")
+ *         @OA\AdditionalProperties(type="string"),
  *     ),
  * ),
  * @OA\Schema(schema="Meeting", required={"id", "serviceBodyId", "formatIds", "venueType", "temporarilyVirtual", "day", "startTime", "duration", "timeZone", "latitude", "longitude", "published", "email", "worldId", "name"},

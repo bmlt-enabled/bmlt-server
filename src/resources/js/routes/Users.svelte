@@ -11,7 +11,7 @@
   import RootServerApi from '../lib/ServerApi';
 
   import { onMount } from 'svelte';
-  import type { User } from 'bmlt-server-client';
+  import type { User } from '../lib/bmlt-server-client';
   import UserForm from '../components/UserForm.svelte';
 
   let isLoaded = $state(false);

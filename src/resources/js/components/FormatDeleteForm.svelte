@@ -5,7 +5,7 @@
   import * as yup from 'yup';
 
   import RootServerApi from '../lib/ServerApi';
-  import type { Format } from 'bmlt-server-client';
+  import type { Format } from '../lib/bmlt-server-client/';
   import { spinner } from '../stores/spinner';
   import { translations } from '../stores/localization';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Modal } from 'flowbite-svelte';
 
-  import type { Meeting } from 'bmlt-server-client';
+  import type { Meeting } from '../lib/bmlt-server-client';
   import MeetingDeleteForm from './MeetingDeleteForm.svelte';
 
   interface Props {

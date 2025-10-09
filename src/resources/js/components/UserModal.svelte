@@ -2,7 +2,7 @@
   import { Modal } from 'flowbite-svelte';
   import { get } from 'svelte/store';
 
-  import type { User } from 'bmlt-server-client';
+  import type { User } from '../lib/bmlt-server-client';
   import UserForm from './UserForm.svelte';
   import { isDirty } from '../lib/utils';
   import UnsavedChangesModal from './UnsavedChangesModal.svelte';

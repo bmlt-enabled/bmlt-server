@@ -264,6 +264,7 @@ export const faTranslations = {
   tabsBasic: 'پایه',
   tabsChanges: 'تغییرات',
   tabsLocation: 'مکان',
+  tabsMeetingTimes: 'Meeting Times',
   tabsOther: 'دیگر',
   technicalDetails: 'جزئیات فنی',
   time: 'زمان',

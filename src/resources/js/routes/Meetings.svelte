@@ -5,7 +5,7 @@
   import RootServerApi from '../lib/ServerApi';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
-  import type { Format, ServiceBody } from 'bmlt-server-client';
+  import type { Format, ServiceBody } from '../lib/bmlt-server-client';
   import MeetingsList from '../components/MeetingsList.svelte';
 
   let serviceBodies: ServiceBody[] = $state([]);

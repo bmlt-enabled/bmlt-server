@@ -84,8 +84,6 @@ class MeetingResource extends JsonResource
             'root_server_uri' => $this->getRootServerUri($request),
             'format_shared_id_list' => $this->getFormatSharedIdList(),
             'root_server_id' => $this->getRootServerId(),
-            'group_id' => $this->getGroupId(),
-            'is_group' => $this->getIsGroup()
         ];
         $requestedLangEnum = $request->cookie('lang', config('app.locale'));
         // data table keys
@@ -127,10 +125,17 @@ class MeetingResource extends JsonResource
             $meeting[$meetingDataTemplate->key] = $meetingData->get($meetingDataTemplate->key, '') ?? '';
         }
         // Could be expensive.  Maybe we want to control when this is done....
-        if ($this->getIsGroup()) {
-            $meeting['groupMembers'] = [];
+        if ($this->getIsGroup() && (!self::$hasDataFieldKeys || self::$dataFieldKeys->has('membersOfGroup'))) {
+            $meeting['membersOfGroup'] = [];
             foreach($this->groupMembers->toResourceCollection(MeetingResource::class) as $member)
-                $meeting['groupMembers'][] = $member->toArray($request);
+                $meeting['membersOfGroup'][] = [
+                    'id_bigint' => $member->getIdBigint(),
+                    'weekday_tinyint' => $member->getWeekdayTinyint(),
+                    'start_time' => $member->getStartTime(),
+                    'duration_time' => $member->getDurationTime(),
+                    'time_zone' => $this->getTimeZone(),
+                    'formats' => $this->getFormats(),
+                ];
         }
         return $meeting;
     }
@@ -281,13 +286,6 @@ class MeetingResource extends JsonResource
         return $this->when(
             !self::$hasDataFieldKeys || self::$dataFieldKeys->has('lang_enum'),
             $this->lang_enum ?? ''
-        );
-    }
-    private function getGroupId()
-    {
-        return $this->when(
-            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('group_id'),
-            $this->group_id ?? ''
         );
     }
     private function getIsGroup()
