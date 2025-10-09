@@ -14,16 +14,16 @@
 
   import { onMount } from 'svelte';
   import { spinner } from '../stores/spinner';
-  import type { MeetingChangeResource } from 'bmlt-server-client';
+  import type { MeetingChangeResource } from '../lib/bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
   import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
   import { Geocoder, createGoogleMapsLoader } from '../lib/geocoder';
-  import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
+  import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from '../lib/bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
-  import { TrashBinOutline } from 'flowbite-svelte-icons';
+  import { TrashBinOutline, UsersGroupSolid } from 'flowbite-svelte-icons';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -39,8 +39,12 @@
   const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
 
   const tabs = selectedMeeting
-    ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
-    : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
+    ? settings.groupMeetings
+      ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther, $translations.tabsChanges]
+      : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
+    : ( settings.groupMeetings
+        ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther]
+        : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]);
   const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -151,7 +155,8 @@
           ...Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
           ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
         }
-      : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, '']))
+      : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
+    meetingTimes: [],
   };
   let latitude = $state(initialValues.latitude);
   let longitude = $state(initialValues.longitude);
@@ -861,6 +866,7 @@
       {/if}
     </div>
   </div>
+  {#if globalSettings.groupMeetings}
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
@@ -890,6 +896,7 @@
       {/if}
     </div>
   </div>
+  {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
@@ -940,7 +947,6 @@
     {/if}
   </div>
 {/snippet}
-
 {#snippet locationTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
@@ -1150,7 +1156,8 @@
     </div>
   </div>
 {/snippet}
-
+{#snippet meetingTimesTabContent()}
+{/snippet}
 {#snippet otherTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
@@ -1284,7 +1291,7 @@
 {/snippet}
 
 <form use:form>
-  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]} />
+  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]} />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">

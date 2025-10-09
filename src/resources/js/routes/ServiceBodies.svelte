@@ -3,7 +3,7 @@
   import { TrashBinOutline } from 'flowbite-svelte-icons';
   import { onMount } from 'svelte';
 
-  import type { ServiceBody, User } from 'bmlt-server-client';
+  import type { ServiceBody, User } from '../lib/bmlt-server-client';
 
   import Nav from '../components/NavBar.svelte';
   import ServiceBodyDeleteModal from '../components/ServiceBodyDeleteModal.svelte';

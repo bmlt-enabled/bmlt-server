@@ -7,7 +7,7 @@
   import { spinner } from '../stores/spinner';
   import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
-  import type { User } from 'bmlt-server-client';
+  import type { User } from '../lib/bmlt-server-client';
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
 

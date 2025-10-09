@@ -96,6 +96,7 @@ class MeetingResource extends JsonResource
                 'email' => $this->email_contact ?: null,
                 'worldId' => $this->worldid_mixed ?: null,
                 'name' => $meetingData->get('meeting_name') ?: null,
+                'is_group' => $this->is_group ?? 0,
             ],
             self::$dataTemplates
                 ->reject(fn ($t, $_) => self::$customFields->contains($t->key))

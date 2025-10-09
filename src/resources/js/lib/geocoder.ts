@@ -1,4 +1,4 @@
-import type { MeetingPartialUpdate } from 'bmlt-server-client';
+import type { MeetingPartialUpdate } from '../lib/bmlt-server-client';
 import { spinner } from '../stores/spinner';
 import { Loader } from '@googlemaps/js-api-loader';
 

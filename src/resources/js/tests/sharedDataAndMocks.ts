@@ -36,7 +36,7 @@ import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { waitFor } from '@testing-library/svelte';
 
-import { ResponseError } from 'bmlt-server-client';
+import { ResponseError } from '../lib/bmlt-server-client';
 import type {
   Meeting,
   Format,
@@ -53,12 +53,12 @@ import type {
   UserCreate,
   UserPartialUpdate,
   UserUpdate
-} from 'bmlt-server-client';
+} from '../lib/bmlt-server-client';
 
 import ApiClientWrapper from '../lib/ServerApi';
 import { apiCredentials, authenticatedUser } from '../stores/apiCredentials';
 import App from '../App.svelte';
-import runtime from '../../../node_modules/bmlt-server-client/dist/runtime';
+import type { InitOverrideFunction } from  '../lib/bmlt-server-client';
 
 type UserEventInstance = ReturnType<typeof userEvent.setup>;
 
@@ -650,7 +650,7 @@ async function mockGetUser(params: { userId: number }): Promise<User> {
 
 // The value of initOverrides is not used in the mock, so tell the linter it's ok.
 // eslint-disable-next-line
-async function mockGetUsers(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<User[]> {
+async function mockGetUsers(initOverrides?: RequestInit | InitOverrideFunction): Promise<User[]> {
   if (mockSavedUserCreate || mockSavedUserUpdate || mockSavedUserPartialUpdate || mockDeletedUserId) {
     // If we want mockGetUsers to work after creating, deleting, or updating a user, we'd need to account for
     // the new/changed/deleted user when computing the result.  Right now none of the unit tests need this.

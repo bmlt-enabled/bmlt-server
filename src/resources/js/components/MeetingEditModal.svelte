@@ -2,7 +2,7 @@
   import { Modal } from 'flowbite-svelte';
   import { get } from 'svelte/store';
 
-  import type { Format, Meeting, ServiceBody } from 'bmlt-server-client';
+  import type { Format, Meeting, ServiceBody } from '../lib/bmlt-server-client';
   import MeetingEditForm from './MeetingEditForm.svelte';
   import { isDirty } from '../lib/utils';
   import UnsavedChangesModal from './UnsavedChangesModal.svelte';

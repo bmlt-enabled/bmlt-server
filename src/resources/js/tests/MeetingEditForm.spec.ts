@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import { describe, test } from 'vitest';
 import MeetingEditForm from '../components/MeetingEditForm.svelte';
 import { translations } from '../stores/localization';
-import type { Format, Meeting, ServiceBody } from 'bmlt-server-client';
+import type { Format, Meeting, ServiceBody } from '../lib/bmlt-server-client';
 import { allFormats, allServiceBodies, allMeetings, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
 const formats: Format[] = allFormats;

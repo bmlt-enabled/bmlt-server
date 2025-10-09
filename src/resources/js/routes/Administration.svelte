@@ -6,7 +6,7 @@
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
-  import type { Meeting, MeetingPartialUpdate } from 'bmlt-server-client';
+  import type { Meeting, MeetingPartialUpdate } from '../lib/bmlt-server-client';
 
   let files = $state<FileList | undefined>(undefined);
   let isLoading = $state(false);

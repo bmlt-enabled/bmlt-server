@@ -264,6 +264,7 @@ export const itTranslations = {
   tabsBasic: 'Basic',
   tabsChanges: 'Changes',
   tabsLocation: 'Location',
+    tabsMeetingTimes: 'Meeting Times',
   tabsOther: 'Other',
   technicalDetails: 'Dettagli tecnici',
   time: 'Time',

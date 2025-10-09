@@ -26,7 +26,7 @@ import {
   type UserPartialUpdate,
   type UserUpdate,
   type ValidationError
-} from 'bmlt-server-client';
+} from '../lib/bmlt-server-client/';
 import { errorModal } from '../stores/errorModal';
 
 class ApiClient extends RootServerApi {

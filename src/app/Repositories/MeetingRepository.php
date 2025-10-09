@@ -60,6 +60,9 @@ class MeetingRepository implements MeetingRepositoryInterface
         if ($eagerRootServers) {
             $eagerLoadRelations[] = 'rootServer';
         }
+        if ($returnGroups) {
+            $eagerLoadRelations[] = 'groupMembers';
+        }
 
         $meetings = Meeting::with($eagerLoadRelations);
 
@@ -645,9 +648,24 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
+        $members = $values['membersOfGroup'] ?? [];
+        $mainValues['is_group'] = isset($values['membersOfGroup']) && ($values['membersOfGroup'] !== null) ? 1 : 0;
+        $mainValues['group_id'] = null;
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $members) {
             $meeting = Meeting::create($mainValues);
+            if ($mainValues['is_group'] == 1) {
+                $meeting['membersOfGroup'] = [];
+                foreach ($members as $member) {
+                    $mainValues['start_time'] = $member['start_time'];
+                    $mainValues['weekday_tinyint'] = $member['weekday_tinyint'];
+                    $mainValues['duration_time'] = $member['duration_time'];
+                    $mainValues['formats'] = $member['formats'];
+                    $mainValues['is_group'] = 0;
+                    $mainValues['group_id'] = $meeting->id_bigint;
+                    Meeting::create($mainValues);
+                }
+            }
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
                 if (strlen($fieldValue) > 255) {
@@ -686,12 +704,27 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
-
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        $members = $values['membersOfGroup'] ?? [];
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $members) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
+                Meeting::query()->where('group_id', $id)->whereIn('id_bigint', array_column($members, 'id_bigint'));
+                foreach($members as $member) {
+                    $mainValues['start_time'] = $member['start_time'];
+                    $mainValues['weekday_tinyint'] = $member['weekday_tinyint'];
+                    $mainValues['duration_time'] = $member['duration_time'];
+                    $mainValues['formats'] = $member['formats'];
+                    $mainValues['is_group'] = 0;
+                    $mainValues['group_id'] = $id;
+                    if (!empty($member['id_bigint'])) {
+                        Meeting::query()->where('id_bigint', $member['id_bigint'])->update($mainValues);
+                    } else {
+                        Meeting::create($mainValues);
+                    }
+
+                }
                 MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getRequestedLanguage())->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
@@ -733,6 +766,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 $meeting->loadMissing(['data', 'longdata']);
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
+                Meeting::query()->where('group_id', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();
                 if (!legacy_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, null);

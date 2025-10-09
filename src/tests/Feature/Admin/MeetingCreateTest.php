@@ -124,6 +124,107 @@ class MeetingCreateTest extends TestCase
         }
     }
 
+    public function testStoreGroupWithMeetings()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $format = Format::query()->first();
+        $payload = $this->validPayload($area, [$format]);
+
+        $fieldNames = collect(Meeting::$mainFields)->merge(MeetingData::STOCK_FIELDS);
+
+        foreach ($fieldNames as $fieldName) {
+            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'root_server_id' || $fieldName == 'source_id') {
+                continue;
+            }
+
+            if ($fieldName == 'service_body_bigint') {
+                $payload['serviceBodyId'] = $area->id_bigint;
+            } elseif ($fieldName == 'venue_type') {
+                $payload['venueType'] = Meeting::VENUE_TYPE_HYBRID;
+            } elseif ($fieldName == 'weekday_tinyint') {
+                $payload['day'] = 6;
+            } elseif ($fieldName == 'start_time') {
+                $payload['startTime'] = '08:00';
+            } elseif ($fieldName == 'duration_time') {
+                $payload['duration'] = '01:30';
+            } elseif ($fieldName == 'published') {
+                $payload['published'] = false;
+            } elseif ($fieldName == 'email_contact') {
+                $payload['email'] = 'test2@test2.com';
+            } elseif ($fieldName == 'worldid_mixed') {
+                $payload['worldId'] = 'test worldid!';
+            } elseif ($fieldName == 'meeting_name') {
+                $payload['name'] = 'test meeting name';
+            } elseif ($fieldName == 'latitude') {
+                $payload['latitude'] = 45.0;
+            } elseif ($fieldName == 'longitude') {
+                $payload['longitude'] = 45.0;
+            } else {
+                $payload[$fieldName] = "$fieldName test test test";
+            }
+        }
+        $payload['membersOfGroup'] = [
+            [
+                'day' => 1,
+                'startTime' => '19:30',
+                'duration' => '01:00',
+                'formatIds' => [],
+            ],
+            [
+                'day' => 2,
+                'startTime' => '19:30',
+                'duration' => '01:00',
+                'formatIds' => ['4'],
+            ],
+        ];
+        $created = $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/meetings', $payload)
+            ->assertStatus(201)
+            ->json();
+        $id = $created['id'];
+        $data = Meeting::query()->where('id_bigint', $id)->get();
+
+        $data = $data->first();
+        $array = $data->toArray();
+        $fieldNames = array_keys($array);
+        foreach ($fieldNames as $fieldName) {
+            if ($fieldName == 'id_bigint' || $fieldName == 'formats' || $fieldName == 'time_zone' || $fieldName == 'lang_enum' || $fieldName == 'root_server_id' || $fieldName == 'source_id' || $fieldName == 'is_group') {
+                continue;
+            }
+            $inName = $fieldName;
+            if ($fieldName == 'service_body_bigint') {
+                $inName = 'serviceBodyId';
+            } elseif ($fieldName == 'venue_type') {
+                $inName = 'venueType';
+            } elseif ($fieldName == 'weekday_tinyint') {
+                $inName = 'day';
+            } elseif ($fieldName == 'start_time') {
+                $inName = 'startTime';
+                $payload[$inName] .= ':00';
+            } elseif ($fieldName == 'duration_time') {
+                $inName = 'duration';
+                $payload[$inName] .= ':00';
+            } elseif ($fieldName == 'email_contact') {
+                $inName  = 'email';
+            } elseif ($fieldName == 'worldid_mixed') {
+                $inName = 'worldId';
+            } elseif ($fieldName == 'meeting_name') {
+                $inName = 'name';
+            }
+
+            if (isset($payload[$inName])) {
+                $expectedValue = $payload[$inName];
+                $actualValue = $array[$fieldName];
+
+                $this->assertEquals($expectedValue, $actualValue);
+            }
+        }
+        $members = $data->groupMembers()->get()->toArray();
+        $this->assertNotNull($members);
+        $this->assertEquals(2, count($members));
+    }
     public function testStoreMeetingAllFieldsAllNulls()
     {
         $user = $this->createAdminUser();
