@@ -20,7 +20,6 @@ declare const settings: {
   regionBias: string;
   version: string;
   zipAutoGeocodingEnabled: false;
-  groupMeetings: true;
 };
 
 declare module 'localized-strings' {

@@ -55,6 +55,7 @@ class MeetingController extends ResourceController
             weekdaysInclude: $days,
             servicesInclude: $serviceBodyIds,
             searchString: $searchString,
+            returnGroups: true,
         );
 
         return MeetingResource::collection($meetings);
@@ -283,6 +284,7 @@ class MeetingController extends ResourceController
         foreach($validated['membersOfGroup'] ?? [] as $member) {
             $member['venueType'] = $validated['venueType'];
             $values['membersOfGroup'][] = [
+                'id_bigint' => $member['id_bigint'] ?? null,
                 'weekday_tinyint' => $member['day'],
                 'start_time' => \DateTime::createFromFormat('H:i', $member['startTime'])->format('H:i:s'),
                 'duration_time' => \DateTime::createFromFormat('H:i', $member['duration'])->format('H:i:s'),

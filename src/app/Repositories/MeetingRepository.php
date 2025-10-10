@@ -649,9 +649,24 @@ class MeetingRepository implements MeetingRepositoryInterface
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
         $members = $values['membersOfGroup'] ?? [];
-        $mainValues['is_group'] = isset($values['membersOfGroup']) && ($values['membersOfGroup'] !== null) ? 1 : 0;
+        $mainValues['is_group'] = (isset($values['membersOfGroup']) && ($values['membersOfGroup'] !== null)) ? 1 : 0;
         $mainValues['group_id'] = null;
-
+        if ($mainValues['is_group'] == 1) {
+            $day = 7;
+            $time = '24:00';
+            foreach ($values['membersOfGroup'] as $member) {
+                if ($member['weekday_tinyint'] < $day) {
+                    $day = $member['weekday_tinyint'];
+                    $time = $member['start_time'];
+                } elseif ($member['weekday_tinyint'] == $day && $member['start_time'] < $time) {
+                    $time = $member['start_time'];
+                }
+            }
+            if ($day <= 6) {
+                $mainValues['weekday_tinyint'] = $day;
+                $mainValues['start_time'] = $time;
+            }
+        }
         return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $members) {
             $meeting = Meeting::create($mainValues);
             if ($mainValues['is_group'] == 1) {
@@ -702,6 +717,24 @@ class MeetingRepository implements MeetingRepositoryInterface
     {
         $values = collect($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
+        $mainValues['is_group'] = (isset($values['membersOfGroup']) && ($values['membersOfGroup'] !== null)) ? 1 : 0;
+        $mainValues['group_id'] = null;
+        if ($mainValues['is_group'] == 1) {
+            $day = 7;
+            $time = '24:00';
+            foreach ($values['membersOfGroup'] as $member) {
+                if ($member['weekday_tinyint'] < $day) {
+                    $day = $member['weekday_tinyint'];
+                    $time = $member['start_time'];
+                } elseif ($member['weekday_tinyint'] == $day && $member['start_time'] < $time) {
+                    $time = $member['start_time'];
+                }
+            }
+            if ($day <= 6) {
+                $mainValues['weekday_tinyint'] = $day;
+                $mainValues['start_time'] = $time;
+            }
+        }
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
         $members = $values['membersOfGroup'] ?? [];
@@ -710,7 +743,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
-                Meeting::query()->where('group_id', $id)->whereIn('id_bigint', array_column($members, 'id_bigint'));
+                Meeting::query()->where('group_id', $id)->whereNotIn('id_bigint', array_column($members, 'id_bigint'))->delete();
                 foreach($members as $member) {
                     $mainValues['start_time'] = $member['start_time'];
                     $mainValues['weekday_tinyint'] = $member['weekday_tinyint'];
