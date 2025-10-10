@@ -130,7 +130,9 @@ class Meeting extends Model
         if (!is_null($this->group) && !is_null($this->group->formats) && !$this->group->formats == '') {
             $formatIds = array_merge($formatIds, explode(',', $this->group->formats));
         }
-        if (count($formatIds) === 0) return;
+        if (count($formatIds) === 0) {
+            return;
+        }
         $calculatedFormats = [];
         foreach ($formatIds as $formatId) {
             $format = $formatsById->get(intval($formatId));

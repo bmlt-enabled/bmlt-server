@@ -80,7 +80,7 @@ class MeetingResource extends JsonResource
             ->sort();
 
         $membersOfGroup = [];
-        foreach($this->groupMembers->toResourceCollection(MeetingResource::class) as $member) {
+        foreach ($this->groupMembers->toResourceCollection(MeetingResource::class) as $member) {
             $memberFormatIds = empty($member->formats) ? collect([]) : collect(explode(',', $member->formats))
                 ->map(fn ($id) => intval($id))
                 ->reject(fn ($id) => !self::$formatsById->has($id))
