@@ -70,10 +70,11 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meetings = $meetings->where('published', $published ? 1 : 0);
         }
         if (!is_null($returnGroups)) {
-            if ($returnGroups)
+            if ($returnGroups) {
                 $meetings = $meetings->whereNull('group_id');
-            else
+            } else {
                 $meetings = $meetings->where('is_group', 0);
+            }
         }
         if (!is_null($meetingIdsInclude)) {
             $meetings = $meetings->whereIn('id_bigint', $meetingIdsInclude);
@@ -146,7 +147,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                                           ->orWhere('formats', 'LIKE', "$formatId,%")
                                           ->orWhere('formats', 'LIKE', "%,$formatId,%")
                                           ->orWhere('formats', 'LIKE', "%,$formatId");
-                            });
+                                });
                         });
                     }
                 });
@@ -744,7 +745,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
                 Meeting::query()->where('group_id', $id)->whereNotIn('id_bigint', array_column($members, 'id_bigint'))->delete();
-                foreach($members as $member) {
+                foreach ($members as $member) {
                     $mainValues['start_time'] = $member['start_time'];
                     $mainValues['weekday_tinyint'] = $member['weekday_tinyint'];
                     $mainValues['duration_time'] = $member['duration_time'];
@@ -756,7 +757,6 @@ class MeetingRepository implements MeetingRepositoryInterface
                     } else {
                         Meeting::create($mainValues);
                     }
-
                 }
                 MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getRequestedLanguage())->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();

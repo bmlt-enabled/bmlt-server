@@ -98,15 +98,15 @@ class MeetingResource extends JsonResource
             return $carry;
         }, [[], []])[0])->toBase()
             ->merge($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
-            if (!isset($carry[0][$item->key])) {
-                $carry[0][$item->key] = $item->data_string;
-                $carry[1][$item->key] = $item->lang_enum;
-            } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
-                $carry[0][$item->key] = $item->data_string;
-                $carry[1][$item->key] = $item->lang_enum;
-            }
-            return $carry;
-        }, [[], []])[0])->toBase()
+                if (!isset($carry[0][$item->key])) {
+                    $carry[0][$item->key] = $item->data_string;
+                    $carry[1][$item->key] = $item->lang_enum;
+                } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
+                    $carry[0][$item->key] = $item->data_string;
+                    $carry[1][$item->key] = $item->lang_enum;
+                }
+                return $carry;
+            }, [[], []])[0])->toBase()
             ->merge(
                 $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key.'|'.$data->lang_enum => $data->data_blob])->toBase()
             );
@@ -127,7 +127,7 @@ class MeetingResource extends JsonResource
         // Could be expensive.  Maybe we want to control when this is done....
         if ($this->getIsGroup() && (!self::$hasDataFieldKeys || self::$dataFieldKeys->has('membersOfGroup'))) {
             $meeting['membersOfGroup'] = [];
-            foreach($this->groupMembers->toResourceCollection(MeetingResource::class) as $member)
+            foreach ($this->groupMembers->toResourceCollection(MeetingResource::class) as $member) {
                 $meeting['membersOfGroup'][] = [
                     'id_bigint' => $member->getIdBigint(),
                     'weekday_tinyint' => $member->getWeekdayTinyint(),
@@ -135,6 +135,7 @@ class MeetingResource extends JsonResource
                     'duration_time' => $member->getDurationTime(),
                     'formats' => $member->getFormats(),
                 ];
+            }
                 usort($meeting['membersOfGroup'], fn($a, $b) => $a['weekday_tinyint'] <=> $b['weekday_tinyint'] ?: $a['start_time'] <=> $b['start_time']);
         }
         return $meeting;

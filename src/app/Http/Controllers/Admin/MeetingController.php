@@ -281,7 +281,7 @@ class MeetingController extends ResourceController
             'meeting_name' => $validated['name'],
         ];
         $values['membersOfGroup'] = [];
-        foreach($validated['membersOfGroup'] ?? [] as $member) {
+        foreach ($validated['membersOfGroup'] ?? [] as $member) {
             $member['venueType'] = $validated['venueType'];
             $values['membersOfGroup'][] = [
                 'id_bigint' => $member['id_bigint'] ?? null,
