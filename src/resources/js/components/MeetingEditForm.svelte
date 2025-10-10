@@ -23,7 +23,7 @@
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from '../lib/bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
-  import { TrashBinOutline, UsersGroupSolid } from 'flowbite-svelte-icons';
+  import { TrashBinOutline, PlusOutline } from 'flowbite-svelte-icons';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -37,14 +37,16 @@
   let { selectedMeeting, serviceBodies, formats, onSaved, onDeleted }: Props = $props();
 
   const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
-
-  const tabs = selectedMeeting
-    ? settings.groupMeetings
+  let tabs = $state(selectedMeeting
+    ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
       ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther, $translations.tabsChanges]
       : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
-    : ( settings.groupMeetings
-        ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther]
-        : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]);
+    : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]);
+  let tabsSnippets = $state(selectedMeeting
+    ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
+      ? [basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]
+      : [basicTabContent, locationTabContent, otherTabContent, changesTabContent]
+    : [basicTabContent, locationTabContent, otherTabContent]);
   const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -113,6 +115,17 @@
     const [hours, minutes] = globalSettings.defaultDuration.split(':').map((part) => part.padStart(2, '0'));
     defaultDuration = hours + ':' + minutes;
   }
+  type GroupMember = { id_bigint?: number, day: number; startTime: string; duration: string; formatIds: [] };
+  let groupMembers: GroupMember[] = [];
+  if (selectedMeeting?.membersOfGroup && selectedMeeting.membersOfGroup.length > 0) {
+    groupMembers = (selectedMeeting.membersOfGroup as Array<{ id_bigint?: number, day?: number; startTime?: string; duration?: string; formats?: [] }>).map((member) => ({
+      id_bigint: member.id_bigint ?? undefined,
+      day: member.day ?? 0,
+      startTime: member.startTime ?? '12:00',
+      duration: member.duration ?? defaultDuration,
+      formatIds: member.formats ?? []
+    }));
+  }
   const initialValues = {
     serviceBodyId: selectedMeeting?.serviceBodyId ?? -1,
     formatIds: selectedMeeting?.formatIds ?? [],
@@ -156,12 +169,13 @@
           ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
         }
       : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
-    meetingTimes: [],
+    membersOfGroup: groupMembers,
   };
   let latitude = $state(initialValues.latitude);
   let longitude = $state(initialValues.longitude);
   let manualDrag = false;
   let formatIdsSelected = $state(initialValues.formatIds);
+  let membersOfGroup = $state(initialValues.membersOfGroup);
   let savedMeeting: Meeting;
   let changes: MeetingChangeResource[] = $state([]);
   let changesLoaded = $state(false);
@@ -770,7 +784,32 @@
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
+    membersOfGroup.forEach((member,i) => {setData('membersOfGroup.'+i+'.formatIds', member.formatIds)});
   });
+  function handleDeleteMember(i: number, setData: (d: any, v: any)=>void) {
+    membersOfGroup.splice(i, 1);
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function handleAdd() {
+    membersOfGroup.push({ day: 0, startTime: "12:00", duration: "01:30", formatIds:[] });
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function convertToGroup() {
+    tabs.splice(2, 0, $translations.tabsMeetingTimes);
+    tabsSnippets.splice(2, 0, meetingTimesTabContent);
+    membersOfGroup = [{ day: data.day, startTime: data.startTime, duration: data.duration, formatIds:[] }];
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function getDuration(i: number): string {
+    return membersOfGroup[i].duration ?? "01:00";
+  }
+  function setDuration(i: number, d: string, setData: (d: any, v: any)=>void) {
+    membersOfGroup[i].duration = d;
+    setData("membersOfGroup."+i+".duration", d);
+  }
+  function isGroup(): boolean {
+    return tabs.includes($translations.tabsMeetingTimes);
+  }
 </script>
 
 <svelte:head>
@@ -824,6 +863,16 @@
           <strong>Meeting ID:</strong>
           {selectedMeeting.id}
         </div>
+        {#if !isGroup()}
+          <Button
+            color="alternative"
+            onclick={(e: MouseEvent) => selectedMeeting && convertToGroup()}
+            class="text-red-600 dark:text-red-500"
+            aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          >
+            Convert to Group
+          </Button>
+        {/if}
         <Button
           color="alternative"
           onclick={(e: MouseEvent) => selectedMeeting && handleDelete(e, selectedMeeting)}
@@ -866,7 +915,7 @@
       {/if}
     </div>
   </div>
-  {#if globalSettings.groupMeetings}
+  {#if !isGroup()}
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
@@ -1157,6 +1206,52 @@
   </div>
 {/snippet}
 {#snippet meetingTimesTabContent()}
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2">
+        <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
+          <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
+        </Button>
+    </div>
+    {#each membersOfGroup as member, i}
+      <div class="grid gap-4 md:grid-cols-3">
+        {#if membersOfGroup[i]?.id_bigint}
+          <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
+        {/if}
+        <div class="w-full">
+          <Label for="day_{i}" class="mt-2 mb-2">{$translations.dayTitle}</Label>
+          <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
+        </div>
+        <div class="w-full">
+          <Label for="startTime_{i}" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
+          <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
+        </div>
+        <div class="w-full">
+          <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+          <DurationSelector initialDuration={getDuration(i)} updateDuration={(d)=>setDuration(i,d,setData)} />
+        </div>
+        <Button
+          color="alternative"
+          onclick={(e: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
+          class="text-red-600 dark:text-red-500"
+          aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+        >
+          <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
+        </Button>
+      </div>
+      <div class="md:col-span-2">
+        <Label for="formatIds_{i}" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
+        <MultiSelect id="formatIds_{i}" items={formatItems} name="membersOfGroup.{i}.formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={membersOfGroup[i].formatIds}>
+          {#snippet children({ item, clear })}
+            <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+              <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
+                {item.name}
+              </Badge>
+            </div>
+          {/snippet}
+        </MultiSelect>
+      </div>
+    {/each}
+  </div>
 {/snippet}
 {#snippet otherTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
@@ -1291,7 +1386,7 @@
 {/snippet}
 
 <form use:form>
-  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]} />
+  <BasicTabs {tabs} {errorTabs} tabsSnippets={tabsSnippets} />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">

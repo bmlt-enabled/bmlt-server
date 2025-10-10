@@ -133,9 +133,9 @@ class MeetingResource extends JsonResource
                     'weekday_tinyint' => $member->getWeekdayTinyint(),
                     'start_time' => $member->getStartTime(),
                     'duration_time' => $member->getDurationTime(),
-                    'time_zone' => $this->getTimeZone(),
-                    'formats' => $this->getFormats(),
+                    'formats' => $member->getFormats(),
                 ];
+                usort($meeting['membersOfGroup'], fn($a, $b) => $a['weekday_tinyint'] <=> $b['weekday_tinyint'] ?: $a['start_time'] <=> $b['start_time']);
         }
         return $meeting;
     }

@@ -57,7 +57,6 @@ class CatchAllController extends Controller
                 'regionBias' => legacy_config('region_bias'),
                 'version' => config('app.version'),
                 'zipAutoGeocodingEnabled' => legacy_config('zip_auto_geocoding_enabled'),
-                'groupMeetings' => legacy_config('group_meetings', false),
             ]);
         }
 

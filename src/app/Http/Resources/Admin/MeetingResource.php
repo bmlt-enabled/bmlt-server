@@ -79,6 +79,24 @@ class MeetingResource extends JsonResource
             ->reject(fn ($id) => !self::$formatsById->has($id))
             ->sort();
 
+        $membersOfGroup = [];
+        foreach($this->groupMembers->toResourceCollection(MeetingResource::class) as $member) {
+            $memberFormatIds = empty($member->formats) ? collect([]) : collect(explode(',', $member->formats))
+                ->map(fn ($id) => intval($id))
+                ->reject(fn ($id) => !self::$formatsById->has($id))
+                ->sort();
+            $membersOfGroup[] = [
+                'id_bigint' => $member->id_bigint,
+                'day' => $member->weekday_tinyint,
+                'startTime' => is_null($member->start_time) ? null : (\DateTime::createFromFormat('H:i:s', $member->start_time) ?: \DateTime::createFromFormat('H:i', $member->start_time))->format('H:i'),
+                'duration' => is_null($member->duration_time) ? null : (\DateTime::createFromFormat('H:i:s', $member->duration_time) ?: \DateTime::createFromFormat('H:i', $member->duration_time))->format('H:i'),
+                'formats' => $memberFormatIds,
+            ];
+            usort($membersOfGroup, fn($a, $b) => $a['day'] <=> $b['day'] ?: $a['startTime'] <=> $b['startTime']);
+        };
+        if (!empty($membersOfGroup)) {
+            $membersOfGroup = ['membersOfGroup' => $membersOfGroup];
+        }
         return array_merge(
             [
                 'id' => $this->id_bigint,
@@ -98,6 +116,7 @@ class MeetingResource extends JsonResource
                 'name' => $meetingData->get('meeting_name') ?: null,
                 'is_group' => $this->is_group ?? 0,
             ],
+            $membersOfGroup,
             self::$dataTemplates
                 ->reject(fn ($t, $_) => self::$customFields->contains($t->key))
                 ->mapWithKeys(fn ($t, $_) => [$t->key => $meetingData->get($t->key) ?: null])
