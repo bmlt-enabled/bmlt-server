@@ -335,15 +335,29 @@
         formatIds: yup.array().of(yup.number()),
         venueType: yup.number().oneOf(VALID_VENUE_TYPES).required(),
         temporarilyVirtual: yup.bool(),
-        day: yup.number().integer().min(0).max(6).required(),
+        day: yup.number().default(-1).integer().min(0).max(6).when('membersOfGroup', {
+          is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+          then: (schema) => schema.required($translations.dayErrorMessage),
+          otherwise: (schema) => schema.notRequired()
+        }),
         startTime: yup
           .string()
-          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-          .required(), // HH:mm
+          .default('')
+          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) => schema.required($translations.startTimeErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         duration: yup
           .string()
-          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-          .required(), // HH:mm
+          .default('')
+          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) => schema.required($translations.startTimeErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         timeZone: yup
           .string()
           .oneOf([...timeZones, ''], $translations.timeZoneInvalid)
@@ -787,6 +801,7 @@
     membersOfGroup.forEach((member,i) => {setData('membersOfGroup.'+i+'.formatIds', member.formatIds)});
   });
   function handleDeleteMember(i: number, setData: (d: any, v: any)=>void) {
+    if (membersOfGroup.length <= 1) return;
     membersOfGroup.splice(i, 1);
     setData('membersOfGroup', membersOfGroup);
   }
@@ -797,7 +812,7 @@
   function convertToGroup() {
     tabs.splice(2, 0, $translations.tabsMeetingTimes);
     tabsSnippets.splice(2, 0, meetingTimesTabContent);
-    membersOfGroup = [{ day: data.day, startTime: data.startTime, duration: data.duration, formatIds:[] }];
+    membersOfGroup = [{ day: $data?.day, startTime: $data?.startTime, duration: $data?.duration, formatIds:[] }];
     setData('membersOfGroup', membersOfGroup);
   }
   function getDuration(i: number): string {
@@ -868,7 +883,6 @@
             color="alternative"
             onclick={(e: MouseEvent) => selectedMeeting && convertToGroup()}
             class="text-red-600 dark:text-red-500"
-            aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
           >
             Convert to Group
           </Button>
@@ -883,6 +897,15 @@
           <span class="sr-only">{$translations.deleteMeeting}</span>
         </Button>
       </div>
+    {/if}
+    {#if !selectedMeeting && !isGroup()}
+      <Button
+        color="alternative"
+        onclick={(e: MouseEvent) => convertToGroup()}
+        class="text-red-600 dark:text-red-500"
+      >
+        Convert to Group
+      </Button>
     {/if}
   </div>
   <div class="grid gap-4 md:grid-cols-2">
@@ -1206,40 +1229,45 @@
   </div>
 {/snippet}
 {#snippet meetingTimesTabContent()}
-  <div class="grid gap-4 md:grid-cols-2">
-    <div class="md:col-span-2">
-        <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
-          <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
-        </Button>
-    </div>
-    {#each membersOfGroup as member, i}
-      <div class="grid gap-4 md:grid-cols-3">
-        {#if membersOfGroup[i]?.id_bigint}
-          <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
-        {/if}
-        <div class="w-full">
-          <Label for="day_{i}" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-          <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
+  <div class="md:col-span-2 mb-4">
+    <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
+      <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
+    </Button>
+  </div>
+  {#each membersOfGroup as member, i}
+    {#if membersOfGroup[i]?.id_bigint}
+      <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
+    {/if}
+    <div class="border-2 p-6 w-full mb-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+      <div class="flex w-full">
+      <div class="w-7/8 mb-4">
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="w-full">
+            <Label for="day_{i}" class="mb-2">{$translations.dayTitle}</Label>
+            <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
+          </div>
+          <div class="w-full">
+            <Label for="startTime_{i}" class="mb-2">{$translations.startTimeTitle}</Label>
+            <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
+          </div>
+          <div class="w-full">
+            <span class="mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+            <DurationSelector initialDuration={getDuration(i)} updateDuration={(d)=>setDuration(i,d,setData)} />
+          </div>
         </div>
-        <div class="w-full">
-          <Label for="startTime_{i}" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
-          <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
-        </div>
-        <div class="w-full">
-          <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-          <DurationSelector initialDuration={getDuration(i)} updateDuration={(d)=>setDuration(i,d,setData)} />
-        </div>
+      </div>
+      <div class="w-1/8">
         <Button
           color="alternative"
           onclick={(e: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
           class="text-red-600 dark:text-red-500"
-          aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
-        >
-          <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
+          style="float: inline-end;"
+          aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}          >
+            <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
         </Button>
-      </div>
+      </div></div>
       <div class="md:col-span-2">
-        <Label for="formatIds_{i}" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
+        <Label for="formatIds_{i}" class="mb-1">{$translations.formatsTitle}</Label>
         <MultiSelect id="formatIds_{i}" items={formatItems} name="membersOfGroup.{i}.formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={membersOfGroup[i].formatIds}>
           {#snippet children({ item, clear })}
             <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
@@ -1250,8 +1278,8 @@
           {/snippet}
         </MultiSelect>
       </div>
-    {/each}
-  </div>
+    </div>
+  {/each}
 {/snippet}
 {#snippet otherTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
