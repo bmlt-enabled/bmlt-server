@@ -46,13 +46,13 @@ class DatabaseMigrations
         return $next($request);
     }
 
-    private function migrationsShouldRun(): bool
+    public function migrationsShouldRun(): bool
     {
         if (!Schema::hasTable('migrations')) {
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2025_10_09_160510_add_serveradmin_if_needed.php')) {
+        if (!$this->migrationRepository->migrationExists('2025_10_09_160510_add_serveradmin_if_needed')) {
             return true;
         }
 
