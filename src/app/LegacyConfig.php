@@ -59,7 +59,7 @@ class LegacyConfig
             require($legacyConfigFile);
         } else {
             die('<h1>Configuration Problem</h1>
-              <p>The file <code>auto-config.inc.php</code> seems to be missing.</p>
+              <p>The file <code>auto-config.inc.php</code> was not found.</p>
               <p>If this is a brand new BMLT server installation, please see the installation instructions. The latest version
               of the instructions is available at
               <a href="https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/README.md">

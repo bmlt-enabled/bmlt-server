@@ -11,21 +11,15 @@ Set up an empty MySQL database, along with a MySQL user that has access to it.  
 
 ## Uploading the BMLT Server Zip File
 
-Get the latest version of the server from https://github.com/bmlt-enabled/bmlt-server/releases, and upload it to your web hosting provider's server. (The directions for this step in the older tutorial are also still valid.) For this part of the step, upload the zip file *without* unzipping it on your local machine. Then unzip it on your server. You should end up with a directory `main_server` under the directory that holds the files that show up on your website. Thus, if your web hosting server has a directory `public_html` for the files that show up on your website, put `main_server` in that directory, like this: `public_html/main_server`.
-
-In addition, unzip the file on your laptop or desktop machine -- you'll need to get a couple of files from it in the following steps. But don't try to upload the unzipped file -- that can result in problems with dropped files and such.
-
-## Initializing the MySQL Database
-
-This step is different from the old tutorial.
-
-In the unzipped version of the BMLT Server on your local machine, locate the directory `installation` and find the file `initial-database.sql` in that directory.  Import the contents of this file into the empty MySQL database that you set up in the first step.  (If you are using cPanel, find the `phpMyAdmin` tool under `Databases`, select your new database, and then click `Import`.)
+Get the latest version of the server from https://github.com/bmlt-enabled/bmlt-server/releases using the link labeled `bmlt-server.zip`, and upload it to your web hosting provider's server. (The directions for this step in the older tutorial are also still valid.) For this part of the step, upload `bmlt-server.zip` *without* unzipping it on your local machine. Then unzip it on your server. You should end up with a directory `main_server` under the directory that holds the files that show up on your website. Thus, if your web hosting server has a directory `public_html` for the files that show up on your website, put `main_server` in that directory, like this: `public_html/main_server`. (Again, don't try to upload the unzipped directory from your local machine -- that can result in problems with dropped files and such.)
 
 ## Adding the auto-config File
 
 This step is also different from the old tutorial.
 
-In the unzipped version of the BMLT Server, look again in the directory `installation` and find the file `initial-auto-config.txt`. Upload this file to your server, put it in the directory that holds your `main_server` directory, and rename it to `auto-config.inc.php`.  This file should have the permissions `-rw-r--r--` (`0644` in octal). This means that the owner of the file can read and write it, and the owning group and others can read it.
+Download the file `initial-auto-config.txt` from github at https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/initial-auto-config.txt.
+
+Upload this file to your server, put it in the directory that holds your `main_server` directory, and rename it to `auto-config.inc.php`.  This file should have the permissions `-rw-r--r--` (`0644` in octal). This means that the owner of the file can read and write it, and the owning group and others can read it.
 
 Note that the file `auto-config.inc.php` is not inside `main_server`, but rather at the same level. This is a little weird, but does have the advantage that you can upload a new version of the server easily without touching the `auto-config.inc.php` file.  So your directory structure should look something like this:
 ```

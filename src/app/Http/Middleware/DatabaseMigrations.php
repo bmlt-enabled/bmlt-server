@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2024_07_20_203802_fix_admin_user_owners')) {
+        if (!$this->migrationRepository->migrationExists('2025_10_09_160510_add_serveradmin_if_needed.php')) {
             return true;
         }
 
