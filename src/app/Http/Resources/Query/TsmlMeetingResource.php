@@ -94,7 +94,7 @@ class TsmlMeetingResource extends JsonResource
             'coordinates' =>  $this->venue_type == 2
                 ? null
                 : (($this->latitude && $this->longitude) ? "{$this->latitude},{$this->longitude}" : null),
-            'slug' => \Str::slug($allData['meeting_name']),
+            'slug' => \Str::slug($allData['meeting_name']) . '-' . $this->id_bigint,
             'updated' => $this->updated_at ?? null,
             'region' => $this->serviceBody->name_string ?? '',
             'regions' => [$this->serviceBody->name_string ?? ''],
