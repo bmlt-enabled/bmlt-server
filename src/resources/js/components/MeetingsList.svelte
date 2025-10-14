@@ -260,6 +260,12 @@
   $effect(() => {
     updateItemsPerPage();
   });
+  $effect(() => {
+    if (selectedDays || selectedTimes || selectedPublished) {
+      currentPosition = 0;
+      lastEditedMeetingId = null;
+    }
+  });
 </script>
 
 <TableSearch placeholder={$translations.filter} bind:this={tableSearchRef} hoverable={true} bind:inputValue={searchTerm} {divClass} {innerDivClass} {searchClass} {inputClass}>
@@ -413,7 +419,9 @@
             <ChevronLeftOutline size="xs" class="m-1.5" />
           </Button>
           {#each pagesToShow as pageNumber}
-            <Button onclick={() => goToPage(pageNumber)}>{pageNumber}</Button>
+            <Button onclick={() => goToPage(pageNumber)} color={pageNumber === currentPage ? 'primary' : 'alternative'}>
+              {pageNumber}
+            </Button>
           {/each}
           <Button onclick={loadNextPage} disabled={currentPosition + itemsPerPage >= filteredItems.length}>
             <ChevronRightOutline size="xs" class="m-1.5" />

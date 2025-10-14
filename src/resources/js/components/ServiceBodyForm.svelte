@@ -21,10 +21,10 @@
   let { selectedServiceBody, serviceBodies, users, onSaveSuccess }: Props = $props();
 
   const parentIdItems = [
-    ...[{ value: '-1', name: $translations.serviceBodiesNoParent ?? '' }],
+    ...[{ value: -1, name: $translations.serviceBodiesNoParent ?? '' }],
     ...serviceBodies
       .filter((sb) => selectedServiceBody?.id !== sb.id)
-      .map((sb) => ({ value: sb.id.toString(), name: sb.name }))
+      .map((sb) => ({ value: sb.id, name: sb.name }))
       .sort((a, b) => a.name.localeCompare(b.name))
   ];
   const userIdToUser = Object.fromEntries(users.map((u) => [u.id, u]));
@@ -171,7 +171,7 @@
     </div>
     <div class="md:col-span-2 {$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}">
       <Label for="adminUserId" class="mb-2">{$translations.adminTitle}</Label>
-      <Select id="adminUserId" items={adminUserItems} name="adminUserId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="adminUserId" items={adminUserItems} bind:value={$data.adminUserId} name="adminUserId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.adminUserId}
           {$errors.adminUserId}
@@ -180,7 +180,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.serviceBodyTypeTitle}</Label>
-      <Select id="type" items={typeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="type" items={typeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -189,7 +189,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="parentId" class="mb-2">{$translations.parentIdTitle}</Label>
-      <Select id="parentId" items={parentIdItems} name="parentId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="parentId" items={parentIdItems} name="parentId" bind:value={$data.parentId} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.parentId}
           {$errors.parentId}

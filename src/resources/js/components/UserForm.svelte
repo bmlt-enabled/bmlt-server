@@ -21,7 +21,7 @@
 
   const userOwnerItems = users
     .filter((u) => selectedUser?.id !== u.id)
-    .map((u) => ({ value: u.id.toString(), name: u.displayName }))
+    .map((u) => ({ value: u.id, name: u.displayName }))
     .sort((a, b) => a.name.localeCompare(b.name));
   const USER_TYPE_DEACTIVATED = 'deactivated';
   const USER_TYPE_OBSERVER = 'observer';
@@ -145,7 +145,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
-      <Select id="type" items={userTypeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="type" items={userTypeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -154,7 +154,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="ownerId" class="mb-2">{$translations.ownedByTitle}</Label>
-      <Select id="ownerId" items={userOwnerItems} name="ownerId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="ownerId" items={userOwnerItems} name="ownerId" bind:value={$data.ownerId} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.ownerId}
           {$errors.ownerId}
