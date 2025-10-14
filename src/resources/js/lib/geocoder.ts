@@ -1,14 +1,6 @@
 import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
-import { Loader } from '@googlemaps/js-api-loader';
-
-export function createGoogleMapsLoader(apiKey: string): Loader {
-  return new Loader({
-    apiKey,
-    version: 'beta',
-    libraries: ['places', 'marker']
-  });
-}
+import { initGoogleMaps, loadLibraries } from './googleMapsLoader';
 
 export type GeocodeResult = {
   lat: number;
@@ -149,8 +141,8 @@ export class Geocoder {
     }
 
     try {
-      const loader = createGoogleMapsLoader(settings.googleApiKey);
-      await loader.importLibrary('maps');
+      await initGoogleMaps(settings.googleApiKey);
+      await loadLibraries('geocoding');
       return true;
     } catch (loadError) {
       console.error('Failed to load Google Maps:', loadError);

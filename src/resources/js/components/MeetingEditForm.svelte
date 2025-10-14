@@ -19,7 +19,10 @@
   import { formIsDirty } from '../lib/utils';
   import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
-  import { Geocoder, createGoogleMapsLoader } from '../lib/geocoder';
+  import { Geocoder } from '../lib/geocoder';
+  import { initGoogleMaps } from '../lib/googleMapsLoader';
+  import { importLibrary } from '@googlemaps/js-api-loader';
+
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
@@ -610,9 +613,8 @@
     if (!mapElement) return;
 
     try {
-      const loader = createGoogleMapsLoader(globalSettings.googleApiKey);
-      const { Map } = await loader.importLibrary('maps');
-
+      await initGoogleMaps(globalSettings.googleApiKey);
+      const [{ Map }] = await Promise.all([importLibrary('maps'), importLibrary('marker')]);
       map = new Map(mapElement, {
         center: { lat: latitude, lng: longitude },
         zoom: Math.min(Number(globalSettings.centerZoom ?? 18), 15),
