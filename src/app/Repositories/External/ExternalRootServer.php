@@ -14,7 +14,7 @@ class ExternalRootServer extends ExternalObject
     {
         $this->id = $this->validateInt($values, 'id');
         $this->name = $this->validateString($values, 'name');
-        $this->url = $this->validateUrl($values, 'rootURL');
+        $this->url = $this->validateUrl($values, 'url');
     }
 
     public function isEqual(RootServer $rootServer): bool

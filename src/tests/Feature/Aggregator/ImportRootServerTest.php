@@ -17,7 +17,7 @@ class ImportRootServerTest extends TestCase
         return new ExternalRootServer([
             'id' => 1,
             'name' => 'test',
-            'rootURL' => 'https://blah.com/blah',
+            'url' => 'https://blah.com/blah',
         ]);
     }
 

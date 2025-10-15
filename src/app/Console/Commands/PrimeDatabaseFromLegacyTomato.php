@@ -68,7 +68,7 @@ class PrimeDatabaseFromLegacyTomato extends Command
                 ->map(fn ($o) => [
                     'id' => $o['source_id'],
                     'name' => $o['name'],
-                    'rootURL' => rtrim($o['root_server_url']) . '/',
+                    'url' => rtrim($o['root_server_url']) . '/',
                 ])
                 ->map(function ($rootServer) {
                     try {

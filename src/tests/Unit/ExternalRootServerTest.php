@@ -15,13 +15,13 @@ class ExternalRootServerTest extends TestCase
         return [
             'id' => 1,
             'name' => 'test',
-            'rootURL' => 'https://blah.com/blah',
+            'url' => 'https://blah.com/blah',
         ];
     }
 
     private function getModel(array $validValues): RootServer
     {
-        return new RootServer(['source_id' => $validValues['id'], 'name' => $validValues['name'], 'url' => $validValues['rootURL']]);
+        return new RootServer(['source_id' => $validValues['id'], 'name' => $validValues['name'], 'url' => $validValues['url']]);
     }
 
     public function testValid()
@@ -30,7 +30,7 @@ class ExternalRootServerTest extends TestCase
         $rootServer = new ExternalRootServer($values);
         $this->assertEquals($values['id'], $rootServer->id);
         $this->assertEquals($values['name'], $rootServer->name);
-        $this->assertEquals($values['rootURL'], $rootServer->url);
+        $this->assertEquals($values['url'], $rootServer->url);
     }
 
     public function testMissingId()
@@ -69,7 +69,7 @@ class ExternalRootServerTest extends TestCase
     {
         $this->expectException(InvalidRootServerException::class);
         $values = $this->validValues();
-        unset($values['rootURL']);
+        unset($values['url']);
         new ExternalRootServer($values);
     }
 
@@ -77,7 +77,7 @@ class ExternalRootServerTest extends TestCase
     {
         $this->expectException(InvalidRootServerException::class);
         $values = $this->validValues();
-        $values['rootURL'] = 'string';
+        $values['url'] = 'string';
         new ExternalRootServer($values);
     }
 
