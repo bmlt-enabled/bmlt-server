@@ -195,7 +195,9 @@ class SwitcherController extends Controller
 
         $searchString = $request->input('SearchString');
         $searchString = !is_null($searchString) ? trim($searchString) : null;
-        $searchString = strlen($searchString) > 2 || is_numeric($searchString) ? $searchString : null;
+        if (!is_null($searchString)) {
+            $searchString = strlen($searchString) > 2 || is_numeric($searchString) ? $searchString : null;
+        }
         $searchStringIsAddress = !is_null($searchString) && $request->input('StringSearchIsAnAddress') == '1';
         if (!is_null($searchString) && $searchStringIsAddress) {
             $googleApiKey = legacy_config('google_api_key');
