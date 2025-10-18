@@ -265,6 +265,15 @@
         }
       }
 
+      // These values will be ignored by the server, but set them to safe values to avoid validation errors
+      // I'd much prefer to delete these, as that is what the server expects, but I'd have to make the
+      // properties optional, and this seems like the more maintainable approach for now.
+      if (values.membersOfGroup && values.membersOfGroup.length > 0) {
+        values.day = 0;
+        values.startTime = '00:00';
+        values.duration = '01:00';
+      }
+
       if (selectedMeeting && saveAsCopy) {
         const copyData = {
           ...values,
@@ -335,18 +344,18 @@
         formatIds: yup.array().of(yup.number()),
         venueType: yup.number().oneOf(VALID_VENUE_TYPES).required(),
         temporarilyVirtual: yup.bool(),
-        day: yup.number().default(-1).integer().min(0).max(6).when('membersOfGroup', {
+        day: yup.number().default(-1).when('membersOfGroup', {
           is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
-          then: (schema) => schema.required($translations.dayErrorMessage),
+          then: (schema) => schema.integer().min(0).max(6).required($translations.dayErrorMessage),
           otherwise: (schema) => schema.notRequired()
         }),
         startTime: yup
           .string()
           .default('')
-          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
           .when('membersOfGroup', {
             is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
-            then: (schema) => schema.required($translations.startTimeErrorMessage),
+            then: (schema) => schema.matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+                                    .required($translations.startTimeErrorMessage),
             otherwise: (schema) => schema.notRequired()
           }),
         duration: yup
