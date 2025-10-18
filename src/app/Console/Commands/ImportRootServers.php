@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Http;
 
 class ImportRootServers extends Command
 {
-    protected $signature = 'aggregator:ImportRootServers {--list-url=https://raw.githubusercontent.com/bmlt-enabled/aggregator/main/rootServerList.json}';
+    protected $signature = 'aggregator:ImportRootServers {--list-url=https://raw.githubusercontent.com/bmlt-enabled/aggregator/main/serverList.json}';
 
     protected $description = 'Import root servers';
 
