@@ -263,6 +263,7 @@ export const enTranslations = {
   tabsBasic: 'Basic',
   tabsChanges: 'Changes',
   tabsLocation: 'Location',
+  tabsMeetingTimes: 'Meeting Times',
   tabsOther: 'Other',
   technicalDetails: 'Technical Details',
   time: 'Time',

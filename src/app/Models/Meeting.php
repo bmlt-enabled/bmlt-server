@@ -26,6 +26,8 @@ class Meeting extends Model
         'latitude',
         'published',
         'email_contact',
+        'is_group',
+        'group_id'
     ];
 
     public static $mainFields = [
@@ -81,7 +83,22 @@ class Meeting extends Model
     {
         return $this->hasMany(MeetingLongData::class, 'meetingid_bigint');
     }
-
+    public function group()
+    {
+        return $this->belongsTo(Meeting::class, 'group_id', 'id_bigint');
+    }
+    public function groupMembers()
+    {
+        return $this->hasMany(Meeting::class, 'group_id');
+    }
+    public function groupData()
+    {
+        return $this->hasMany(MeetingData::class, 'meetingid_bigint', 'group_id');
+    }
+    public function groupLongData()
+    {
+        return $this->hasMany(MeetingLongData::class, 'meetingid_bigint', 'group_id');
+    }
     private ?string $calculatedFormatKeys = null;
     private function setCalculatedFormatKeys(string $formatKeyStrings)
     {
@@ -106,12 +123,16 @@ class Meeting extends Model
 
     public function calculateFormatsFields(Collection $formatsById)
     {
-        if (is_null($this->formats) || $this->formats == '') {
+        $formatIds = [];
+        if (!is_null($this->formats) && !$this->formats == '') {
+            $formatIds = explode(',', $this->formats);
+        }
+        if (!is_null($this->group) && !is_null($this->group->formats) && !$this->group->formats == '') {
+            $formatIds = array_merge($formatIds, explode(',', $this->group->formats));
+        }
+        if (count($formatIds) === 0) {
             return;
         }
-
-        $formatIds = explode(',', $this->formats);
-
         $calculatedFormats = [];
         foreach ($formatIds as $formatId) {
             $format = $formatsById->get(intval($formatId));
