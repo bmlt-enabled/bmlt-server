@@ -209,6 +209,7 @@ export const deTranslations = {
   tabsBasic: 'Basic',
   tabsChanges: 'Änderungen',
   tabsLocation: 'Standort',
+  tabsMeetingTimes: 'Meeting Zeiten',
   tabsOther: 'Andere',
   technicalDetails: 'Technische Details',
   time: 'Zeit',
