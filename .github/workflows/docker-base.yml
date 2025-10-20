@@ -45,6 +45,7 @@ jobs:
             org.opencontainers.image.vendor=BMLT
             org.opencontainers.image.created={{date 'YYYY-MM-DDTHH:mm:ssZ'}}
             org.opencontainers.image.version=${{ matrix.php_version }}
+            org.opencontainers.image.revision=${{ github.sha }}
             php.version=${{ matrix.php_version }}
 
       - name: Build and push Base
