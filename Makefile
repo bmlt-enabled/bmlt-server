@@ -119,7 +119,7 @@ zip: $(ZIP_FILE) ## Builds zip file
 
 .PHONY: docker
 docker: zip ## Builds Docker Image
-	docker build --pull --build-arg PHP_VERSION=$(BASE_IMAGE_TAG) -f docker/$(DOCKERFILE) . -t $(IMAGE):$(TAG)
+	docker build --pull --build-arg PHP_VERSION=$(BASE_IMAGE_TAG) --label "org.opencontainers.image.revision=$(COMMIT)" --label "org.opencontainers.image.created=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" -f docker/$(DOCKERFILE) . -t $(IMAGE):$(TAG)
 
 .PHONY: docker-push
 docker-push: ## Pushes docker image to Dockerhub
@@ -169,7 +169,7 @@ phpstan:  ## PHP Larastan Code Analysis
 
 .PHONY: docker-publish-base
 docker-publish-base:  ## Builds Base Docker Image
-	docker buildx build --platform linux/amd64,linux/arm64/v8 -f docker/Dockerfile-base docker/ -t $(BASE_IMAGE):$(BASE_IMAGE_TAG) --push
+	docker buildx build --platform linux/amd64,linux/arm64/v8 --label "org.opencontainers.image.revision=$(COMMIT)" --label "org.opencontainers.image.created=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" -f docker/Dockerfile-base docker/ -t $(BASE_IMAGE):$(BASE_IMAGE_TAG) --push
 
 .PHONY: mysql
 mysql:  ## Runs mysql cli in mysql container
