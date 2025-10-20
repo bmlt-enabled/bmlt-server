@@ -84,16 +84,8 @@ class ImportRootServers extends Command
     {
         try {
             $url = $this->option('list-url');
-            $response = $this->httpGet($url);
-            $externalRootServers = collect($response)
-                ->map(function ($rootServer) {
-                    try {
-                        return new ExternalRootServer($rootServer);
-                    } catch (InvalidObjectException) {
-                        return null;
-                    }
-                })
-                ->reject(fn($e) => is_null($e));
+            $response = $this->httpGet($url, true);
+            $externalRootServers = collect($response)->map(fn ($rs) => new ExternalRootServer($rs));
             $rootServerRepository->import($externalRootServers);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
@@ -261,12 +253,16 @@ class ImportRootServers extends Command
         }
     }
 
-    private function httpGet(string $url): array
+    private function httpGet(string $url, bool $shouldLogResponse = false): array
     {
         sleep(self::$requestDelaySeconds);
 
         $headers = ['User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0 +aggregator'];
         $response = Http::withHeaders($headers)->retry(3, self::$retryDelaySeconds * 1000)->get($url);
+
+        if ($shouldLogResponse) {
+            $this->info("Response from $url: $response");
+        }
 
         if (!$response->ok()) {
             throw new \Exception("Got bad status code {$response->status()} from $url");
