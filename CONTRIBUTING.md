@@ -86,6 +86,47 @@ You should now be able to set breakpoints, launch this debug configuration, and 
 
 This works exactly as described in the [vitest documentation](https://v0.vitest.dev/guide/debugging.html). Set any breakpoints, launch a new JavaScript Debug Terminal, and run `npm run test`.
 
+## Developing with the TypeScript Client
+
+When developing Admin API features alongside the TypeScript client, you can use [npm link](https://docs.npmjs.com/cli/v11/commands/npm-link/) to work with both repositories locally without publishing to npm.
+
+### Prerequisites
+Clone the BMLT TypeScript client repository:
+```bash
+git clone https://github.com/bmlt-enabled/bmlt-server-typescript-client.git
+```
+
+### One-time Setup
+1. Link the TypeScript client globally:
+```bash
+cd /path/to/bmlt-server-typescript-client
+npm link
+```
+
+2. Link the client in the BMLT server frontend:
+```bash
+cd /path/to/bmlt-server/src
+npm link bmlt-server-typescript-client
+```
+
+### Development Workflow
+After making API changes, regenerate the TypeScript client:
+
+1. Generate updated OpenAPI documentation:
+```bash
+cd /path/to/bmlt-server
+make generate-api-json
+```
+
+2. Regenerate the TypeScript client:
+```bash
+cd /path/to/bmlt-server-typescript-client
+rm openapi.json
+make generate
+```
+
+This allows you to develop the API without changing your configs or imports.
+
 ## Some useful `make` commands
 
 - `make help`  Describe all of the make commands.
