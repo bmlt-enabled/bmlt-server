@@ -40,16 +40,20 @@
   let { selectedMeeting, serviceBodies, formats, onSaved, onDeleted }: Props = $props();
 
   const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
-  let tabs = $state(selectedMeeting
-    ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
-      ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther, $translations.tabsChanges]
-      : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
-    : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]);
-  let tabsSnippets = $state(selectedMeeting
-    ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
-      ? [basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]
-      : [basicTabContent, locationTabContent, otherTabContent, changesTabContent]
-    : [basicTabContent, locationTabContent, otherTabContent]);
+  let tabs = $state(
+    selectedMeeting
+      ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
+        ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther, $translations.tabsChanges]
+        : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
+      : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]
+  );
+  let tabsSnippets = $state(
+    selectedMeeting
+      ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
+        ? [basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]
+        : [basicTabContent, locationTabContent, otherTabContent, changesTabContent]
+      : [basicTabContent, locationTabContent, otherTabContent]
+  );
   const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -118,10 +122,10 @@
     const [hours, minutes] = globalSettings.defaultDuration.split(':').map((part) => part.padStart(2, '0'));
     defaultDuration = hours + ':' + minutes;
   }
-  type GroupMember = { id_bigint?: number, day: number; startTime: string; duration: string; formatIds: [] };
+  type GroupMember = { id_bigint?: number; day: number; startTime: string; duration: string; formatIds: [] };
   let groupMembers: GroupMember[] = [];
   if (selectedMeeting?.membersOfGroup && selectedMeeting.membersOfGroup.length > 0) {
-    groupMembers = (selectedMeeting.membersOfGroup as Array<{ id_bigint?: number, day?: number; startTime?: string; duration?: string; formats?: [] }>).map((member) => ({
+    groupMembers = (selectedMeeting.membersOfGroup as Array<{ id_bigint?: number; day?: number; startTime?: string; duration?: string; formats?: [] }>).map((member) => ({
       id_bigint: member.id_bigint ?? undefined,
       day: member.day ?? 0,
       startTime: member.startTime ?? '12:00',
@@ -172,7 +176,7 @@
           ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
         }
       : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
-    membersOfGroup: groupMembers,
+    membersOfGroup: groupMembers
   };
   let latitude = $state(initialValues.latitude);
   let longitude = $state(initialValues.longitude);
@@ -347,18 +351,23 @@
         formatIds: yup.array().of(yup.number()),
         venueType: yup.number().oneOf(VALID_VENUE_TYPES).required(),
         temporarilyVirtual: yup.bool(),
-        day: yup.number().default(-1).when('membersOfGroup', {
-          is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
-          then: (schema) => schema.integer().min(0).max(6).required($translations.dayErrorMessage),
-          otherwise: (schema) => schema.notRequired()
-        }),
+        day: yup
+          .number()
+          .default(-1)
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) => schema.integer().min(0).max(6).required($translations.dayErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         startTime: yup
           .string()
           .default('')
           .when('membersOfGroup', {
             is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
-            then: (schema) => schema.matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
-                                    .required($translations.startTimeErrorMessage),
+            then: (schema) =>
+              schema
+                .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+                .required($translations.startTimeErrorMessage),
             otherwise: (schema) => schema.notRequired()
           }),
         duration: yup
@@ -809,29 +818,31 @@
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
-    membersOfGroup.forEach((member,i) => {setData('membersOfGroup.'+i+'.formatIds', member.formatIds)});
+    membersOfGroup.forEach((member, i) => {
+      setData('membersOfGroup.' + i + '.formatIds', member.formatIds);
+    });
   });
-  function handleDeleteMember(i: number, setData: (d: any, v: any)=>void) {
+  function handleDeleteMember(i: number, setData: (d: any, v: any) => void) {
     if (membersOfGroup.length <= 1) return;
     membersOfGroup.splice(i, 1);
     setData('membersOfGroup', membersOfGroup);
   }
   function handleAdd() {
-    membersOfGroup.push({ day: 0, startTime: "12:00", duration: "01:30", formatIds:[] });
+    membersOfGroup.push({ day: 0, startTime: '12:00', duration: '01:30', formatIds: [] });
     setData('membersOfGroup', membersOfGroup);
   }
   function convertToGroup() {
     tabs.splice(2, 0, $translations.tabsMeetingTimes);
     tabsSnippets.splice(2, 0, meetingTimesTabContent);
-    membersOfGroup = [{ day: $data?.day, startTime: $data?.startTime, duration: $data?.duration, formatIds:[] }];
+    membersOfGroup = [{ day: $data?.day, startTime: $data?.startTime, duration: $data?.duration, formatIds: [] }];
     setData('membersOfGroup', membersOfGroup);
   }
   function getDuration(i: number): string {
-    return membersOfGroup[i].duration ?? "01:00";
+    return membersOfGroup[i].duration ?? '01:00';
   }
-  function setDuration(i: number, d: string, setData: (d: any, v: any)=>void) {
+  function setDuration(i: number, d: string, setData: (d: any, v: any) => void) {
     membersOfGroup[i].duration = d;
-    setData("membersOfGroup."+i+".duration", d);
+    setData('membersOfGroup.' + i + '.duration', d);
   }
   function isGroup(): boolean {
     return tabs.includes($translations.tabsMeetingTimes);
@@ -890,13 +901,7 @@
           {selectedMeeting.id}
         </div>
         {#if !isGroup()}
-          <Button
-            color="alternative"
-            onclick={(e: MouseEvent) => selectedMeeting && convertToGroup()}
-            class="text-red-600 dark:text-red-500"
-          >
-            Convert to Group
-          </Button>
+          <Button color="alternative" onclick={(e: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
         {/if}
         <Button
           color="alternative"
@@ -910,13 +915,7 @@
       </div>
     {/if}
     {#if !selectedMeeting && !isGroup()}
-      <Button
-        color="alternative"
-        onclick={(e: MouseEvent) => convertToGroup()}
-        class="text-red-600 dark:text-red-500"
-      >
-        Convert to Group
-      </Button>
+      <Button color="alternative" onclick={(e: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
     {/if}
   </div>
   <div class="grid gap-4 md:grid-cols-2">
@@ -950,35 +949,35 @@
     </div>
   </div>
   {#if !isGroup()}
-  <div class="grid gap-4 md:grid-cols-3">
-    <div class="w-full">
-      <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
-      {#if $errors.day}
-        <Helper class="mt-2" color="red">
-          {$errors.day}
-        </Helper>
-      {/if}
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="w-full">
+        <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
+        <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
+        {#if $errors.day}
+          <Helper class="mt-2" color="red">
+            {$errors.day}
+          </Helper>
+        {/if}
+      </div>
+      <div class="w-full">
+        <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
+        <Input type="time" id="startTime" name="startTime" />
+        {#if $errors.startTime}
+          <Helper class="mt-2" color="red">
+            {$errors.startTime}
+          </Helper>
+        {/if}
+      </div>
+      <div class="w-full">
+        <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+        <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
+        {#if $errors.duration}
+          <Helper class="mt-2" color="red">
+            {$errors.duration}
+          </Helper>
+        {/if}
+      </div>
     </div>
-    <div class="w-full">
-      <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
-      <Input type="time" id="startTime" name="startTime" />
-      {#if $errors.startTime}
-        <Helper class="mt-2" color="red">
-          {$errors.startTime}
-        </Helper>
-      {/if}
-    </div>
-    <div class="w-full">
-      <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
-      {#if $errors.duration}
-        <Helper class="mt-2" color="red">
-          {$errors.duration}
-        </Helper>
-      {/if}
-    </div>
-  </div>
   {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
@@ -1240,7 +1239,7 @@
   </div>
 {/snippet}
 {#snippet meetingTimesTabContent()}
-  <div class="md:col-span-2 mb-4">
+  <div class="mb-4 md:col-span-2">
     <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
       <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
     </Button>
@@ -1249,34 +1248,36 @@
     {#if membersOfGroup[i]?.id_bigint}
       <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
     {/if}
-    <div class="border-2 p-6 w-full mb-4 rounded-lg bg-gray-50 dark:bg-gray-700">
+    <div class="mb-4 w-full rounded-lg border-2 bg-gray-50 p-6 dark:bg-gray-700">
       <div class="flex w-full">
-      <div class="w-7/8 mb-4">
-        <div class="grid gap-4 md:grid-cols-3">
-          <div class="w-full">
-            <Label for="day_{i}" class="mb-2">{$translations.dayTitle}</Label>
-            <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
-          </div>
-          <div class="w-full">
-            <Label for="startTime_{i}" class="mb-2">{$translations.startTimeTitle}</Label>
-            <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
-          </div>
-          <div class="w-full">
-            <span class="mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-            <DurationSelector initialDuration={getDuration(i)} updateDuration={(d)=>setDuration(i,d,setData)} />
+        <div class="mb-4 w-7/8">
+          <div class="grid gap-4 md:grid-cols-3">
+            <div class="w-full">
+              <Label for="day_{i}" class="mb-2">{$translations.dayTitle}</Label>
+              <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
+            </div>
+            <div class="w-full">
+              <Label for="startTime_{i}" class="mb-2">{$translations.startTimeTitle}</Label>
+              <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
+            </div>
+            <div class="w-full">
+              <span class="mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+              <DurationSelector initialDuration={getDuration(i)} updateDuration={(d) => setDuration(i, d, setData)} />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="w-1/8">
-        <Button
-          color="alternative"
-          onclick={(e: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
-          class="text-red-600 dark:text-red-500"
-          style="float: inline-end;"
-          aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}          >
+        <div class="w-1/8">
+          <Button
+            color="alternative"
+            onclick={(e: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
+            class="text-red-600 dark:text-red-500"
+            style="float: inline-end;"
+            aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          >
             <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
-        </Button>
-      </div></div>
+          </Button>
+        </div>
+      </div>
       <div class="md:col-span-2">
         <Label for="formatIds_{i}" class="mb-1">{$translations.formatsTitle}</Label>
         <MultiSelect id="formatIds_{i}" items={formatItems} name="membersOfGroup.{i}.formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={membersOfGroup[i].formatIds}>
@@ -1425,7 +1426,7 @@
 {/snippet}
 
 <form use:form>
-  <BasicTabs {tabs} {errorTabs} tabsSnippets={tabsSnippets} />
+  <BasicTabs {tabs} {errorTabs} {tabsSnippets} />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
