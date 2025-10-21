@@ -7,6 +7,7 @@ use App\Models\Change;
 use App\Models\RootServer;
 use App\Models\ServiceBody;
 use App\Repositories\External\ExternalServiceBody;
+use App\Repositories\Import\ServiceBodyImportResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -235,14 +236,15 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
         }
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $rootServerId, Collection $externalObjects): ServiceBodyImportResult
     {
+        $result = new ServiceBodyImportResult();
         $rootServer = RootServer::query()->where('id', $rootServerId)->firstOrFail();
         $ignoreServiceBodyIds = collect(config('aggregator.ignore_service_bodies'))->get($rootServer->source_id, []);
         $externalObjects = $externalObjects->reject(fn ($ex) => in_array($ex->id, $ignoreServiceBodyIds));
 
         $sourceIds = $externalObjects->map(fn (ExternalServiceBody $ex) => $ex->id);
-        ServiceBody::query()
+        $result->numDeleted = ServiceBody::query()
             ->where('root_server_id', $rootServerId)
             ->whereNotIn('source_id', $sourceIds)
             ->delete();
@@ -258,11 +260,13 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             if (is_null($db)) {
                 $values = $this->externalServiceBodyToValuesArray($rootServerId, $external);
                 $bySourceId->put($external->id, $this->create($values));
+                $result->numCreated++;
             } else if (!$external->isEqual($db)) {
                 $values = $this->externalServiceBodyToValuesArray($rootServerId, $external);
                 $this->update($db->id_bigint, $values);
                 $db->refresh();
                 $bySourceId->put($external->id, $db);
+                $result->numUpdated++;
             }
         }
 
@@ -276,6 +280,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
                 if ($db->sb_owner !== 0) {
                     $db->sb_owner = 0;
                     $db->save();
+                    $result->numReassigned++;
                 }
                 continue;
             }
@@ -287,8 +292,11 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             if ($db->sb_owner != $parent->id_bigint) {
                 $db->sb_owner = $parent->id_bigint;
                 $db->save();
+                $result->numReassigned++;
             }
         }
+
+        return $result;
     }
 
     private function castExternal($obj): ExternalServiceBody

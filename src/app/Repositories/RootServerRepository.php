@@ -8,6 +8,7 @@ use App\Models\MeetingData;
 use App\Models\MeetingLongData;
 use App\Models\RootServer;
 use App\Repositories\External\ExternalRootServer;
+use App\Repositories\Import\RootServerImportResult;
 use Illuminate\Support\Collection;
 
 class RootServerRepository implements RootServerRepositoryInterface
@@ -49,13 +50,14 @@ class RootServerRepository implements RootServerRepositoryInterface
         return false;
     }
 
-    public function import(Collection $externalObjects): void
+    public function import(Collection $externalObjects): RootServerImportResult
     {
+        $result = new RootServerImportResult();
         $ignoreRootServerUrls = config('aggregator.ignore_root_servers');
         $externalObjects = $externalObjects->reject(fn (ExternalRootServer $ex) => in_array($ex->url, $ignoreRootServerUrls));
 
         $sourceIds = $externalObjects->map(fn (ExternalRootServer $ex) => $ex->id);
-        RootServer::query()->whereNotIn('source_id', $sourceIds)->delete();
+        $result->numDeleted = RootServer::query()->whereNotIn('source_id', $sourceIds)->delete();
 
         // TODO test these
         MeetingData::query()
@@ -75,10 +77,14 @@ class RootServerRepository implements RootServerRepositoryInterface
             $values = ['source_id' => $externalRoot->id, 'name' => $externalRoot->name, 'url' => $externalRoot->url];
             if (is_null($dbRoot)) {
                 $this->create($values);
+                $result->numCreated++;
             } else if (!$externalRoot->isEqual($dbRoot)) {
                 $this->update($dbRoot->id, $values);
+                $result->numUpdated++;
             }
         }
+
+        return $result;
     }
 
     private function castExternalRootServer($obj): ExternalRootServer

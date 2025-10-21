@@ -3,6 +3,7 @@
 namespace App\Interfaces;
 
 use App\Models\Format;
+use App\Repositories\Import\FormatImportResult;
 use Illuminate\Support\Collection;
 
 interface FormatRepositoryInterface
@@ -25,5 +26,5 @@ interface FormatRepositoryInterface
     public function create(array $sharedFormatsValues): Format;
     public function update(int $sharedId, array $sharedFormatsValues): bool;
     public function delete(int $sharedId): bool;
-    public function import(int $rootServerId, Collection $externalObjects): void;
+    public function import(int $rootServerId, Collection $externalObjects): FormatImportResult;
 }

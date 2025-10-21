@@ -7,6 +7,7 @@ use App\Models\Change;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Repositories\External\ExternalFormat;
+use App\Repositories\Import\FormatImportResult;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -229,11 +230,13 @@ class FormatRepository implements FormatRepositoryInterface
         ]);
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $rootServerId, Collection $externalObjects): FormatImportResult
     {
+        $result = new FormatImportResult();
+
         // deleted formats
         $sourceIds = $externalObjects->pluck('id');
-        Format::query()
+        $result->numDeleted = Format::query()
             ->where('root_server_id', $rootServerId)
             ->whereNotIn('source_id', $sourceIds)
             ->delete();
@@ -242,7 +245,7 @@ class FormatRepository implements FormatRepositoryInterface
         foreach ($bySourceIdByLanguage as $sourceId => $byLanguage) {
             // deleted languages
             $languages = $byLanguage->keys();
-            Format::query()
+            $result->numDeleted += Format::query()
                 ->where('root_server_id', $rootServerId)
                 ->where('source_id', $sourceId)
                 ->whereNotIn('lang_enum', $languages)
@@ -258,6 +261,7 @@ class FormatRepository implements FormatRepositoryInterface
             if ($existingFormats->isEmpty()) {
                 $values = $this->externalFormatToValuesArray($rootServerId, $sourceId, $externalFormats);
                 $this->create($values);
+                $result->numCreated++;
             } else {
                 $isDirty = $existingFormats->count() != $externalFormats->count();
                 if (!$isDirty) {
@@ -274,9 +278,12 @@ class FormatRepository implements FormatRepositoryInterface
                     $sharedId = $existingFormats->first()->shared_id_bigint;
                     $values = $this->externalFormatToValuesArray($rootServerId, $sourceId, $externalFormats);
                     $this->update($sharedId, $values);
+                    $result->numUpdated++;
                 }
             }
         }
+
+        return $result;
     }
 
     private function externalFormatToValuesArray(int $rootServerId, int $sourceId, Collection $externalFormats): array
