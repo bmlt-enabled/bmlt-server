@@ -60,6 +60,7 @@ export const esTranslations = {
   accountSettingsTitle: 'Account Settings',
   accountTitle: 'Account',
   accountTypeTitle: 'Account Type',
+  acknowledgeTranslation: 'Interpretar los datos de la reunión como específicos del idioma seleccionado.',
   addFormat: 'Add Format',
   addMeeting: 'Add Meeting',
   addServiceBody: 'Add Service Body',

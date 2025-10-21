@@ -60,6 +60,7 @@ export const faTranslations = {
   accountSettingsTitle: 'تنظیمات حساب',
   accountTitle: 'حساب',
   accountTypeTitle: 'نوع حساب',
+  acknowledgeTranslation: 'داده های جلسه باید به عنوان مختص زبان انتخاب شده تفسیر شوند',
   addFormat: 'افزودن فرمت',
   addMeeting: 'افزودن جلسه',
   addServiceBody: 'افزودن بدنه خدماتی',
