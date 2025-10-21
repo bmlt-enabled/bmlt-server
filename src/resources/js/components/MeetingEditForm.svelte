@@ -901,7 +901,7 @@
           {selectedMeeting.id}
         </div>
         {#if !isGroup()}
-          <Button color="alternative" onclick={(e: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
+          <Button color="alternative" onclick={($_: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
         {/if}
         <Button
           color="alternative"
@@ -915,7 +915,7 @@
       </div>
     {/if}
     {#if !selectedMeeting && !isGroup()}
-      <Button color="alternative" onclick={(e: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
+      <Button color="alternative" onclick={($_: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
     {/if}
   </div>
   <div class="grid gap-4 md:grid-cols-2">
@@ -1244,7 +1244,7 @@
       <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
     </Button>
   </div>
-  {#each membersOfGroup as member, i}
+  {#each membersOfGroup as $_, i}
     {#if membersOfGroup[i]?.id_bigint}
       <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
     {/if}
@@ -1269,7 +1269,7 @@
         <div class="w-1/8">
           <Button
             color="alternative"
-            onclick={(e: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
+            onclick={($_: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
             class="text-red-600 dark:text-red-500"
             style="float: inline-end;"
             aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}

@@ -755,7 +755,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         Meeting::create($mainValues);
                     }
                 }
-                MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getRequestedLanguage())->delete();
+                MeetingData::query()->where('meetingid_bigint', $id)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
                     $t = $dataTemplates->get($fieldName);
