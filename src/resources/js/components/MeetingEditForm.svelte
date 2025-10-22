@@ -26,7 +26,7 @@
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
-  import { TrashBinOutline } from 'flowbite-svelte-icons';
+  import { TrashBinOutline, PlusOutline } from 'flowbite-svelte-icons';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -40,10 +40,20 @@
   let { selectedMeeting, serviceBodies, formats, onSaved, onDeleted }: Props = $props();
 
   const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
-
-  const tabs = selectedMeeting
-    ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
-    : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
+  let tabs = $state(
+    selectedMeeting
+      ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
+        ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsMeetingTimes, $translations.tabsOther, $translations.tabsChanges]
+        : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
+      : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther]
+  );
+  let tabsSnippets = $state(
+    selectedMeeting
+      ? selectedMeeting.membersOfGroup && selectedMeeting.membersOfGroup.length > 0
+        ? [basicTabContent, locationTabContent, meetingTimesTabContent, otherTabContent, changesTabContent]
+        : [basicTabContent, locationTabContent, otherTabContent, changesTabContent]
+      : [basicTabContent, locationTabContent, otherTabContent]
+  );
   const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -112,6 +122,17 @@
     const [hours, minutes] = globalSettings.defaultDuration.split(':').map((part) => part.padStart(2, '0'));
     defaultDuration = hours + ':' + minutes;
   }
+  type GroupMember = { id_bigint?: number; day: number; startTime: string; duration: string; formatIds: [] };
+  let groupMembers: GroupMember[] = [];
+  if (selectedMeeting?.membersOfGroup && selectedMeeting.membersOfGroup.length > 0) {
+    groupMembers = (selectedMeeting.membersOfGroup as Array<{ id_bigint?: number; day?: number; startTime?: string; duration?: string; formats?: [] }>).map((member) => ({
+      id_bigint: member.id_bigint ?? undefined,
+      day: member.day ?? 0,
+      startTime: member.startTime ?? '12:00',
+      duration: member.duration ?? defaultDuration,
+      formatIds: member.formats ?? []
+    }));
+  }
   const initialValues = {
     serviceBodyId: selectedMeeting?.serviceBodyId ?? -1,
     formatIds: selectedMeeting?.formatIds ?? [],
@@ -154,12 +175,14 @@
           ...Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
           ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
         }
-      : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, '']))
+      : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
+    membersOfGroup: groupMembers
   };
   let latitude = $state(initialValues.latitude);
   let longitude = $state(initialValues.longitude);
   let manualDrag = false;
   let formatIdsSelected = $state(initialValues.formatIds);
+  let membersOfGroup = $state(initialValues.membersOfGroup);
   let savedMeeting: Meeting;
   let changes: MeetingChangeResource[] = $state([]);
   let changesLoaded = $state(false);
@@ -249,6 +272,15 @@
         }
       }
 
+      // These values will be ignored by the server, but set them to safe values to avoid validation errors
+      // I'd much prefer to delete these, as that is what the server expects, but I'd have to make the
+      // properties optional, and this seems like the more maintainable approach for now.
+      if (values.membersOfGroup && values.membersOfGroup.length > 0) {
+        values.day = 0;
+        values.startTime = '00:00';
+        values.duration = '01:00';
+      }
+
       if (selectedMeeting && saveAsCopy) {
         const copyData = {
           ...values,
@@ -319,15 +351,34 @@
         formatIds: yup.array().of(yup.number()),
         venueType: yup.number().oneOf(VALID_VENUE_TYPES).required(),
         temporarilyVirtual: yup.bool(),
-        day: yup.number().integer().min(0).max(6).required(),
+        day: yup
+          .number()
+          .default(-1)
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) => schema.integer().min(0).max(6).required($translations.dayErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         startTime: yup
           .string()
-          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-          .required(), // HH:mm
+          .default('')
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) =>
+              schema
+                .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+                .required($translations.startTimeErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         duration: yup
           .string()
-          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-          .required(), // HH:mm
+          .default('')
+          .matches(/^([0-1]\d|2[0-3]):([0-5]\d)$/) // HH:mm
+          .when('membersOfGroup', {
+            is: (membersOfGroup: GroupMember[]) => !membersOfGroup || membersOfGroup.length === 0,
+            then: (schema) => schema.required($translations.startTimeErrorMessage),
+            otherwise: (schema) => schema.notRequired()
+          }),
         timeZone: yup
           .string()
           .oneOf([...timeZones, ''], $translations.timeZoneInvalid)
@@ -767,7 +818,33 @@
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
+    setData('membersOfGroup', membersOfGroup);
   });
+  function handleDeleteMember(i: number, setData: (d: any, v: any) => void) {
+    if (membersOfGroup.length <= 1) return;
+    membersOfGroup.splice(i, 1);
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function handleAdd() {
+    membersOfGroup.push({ day: 0, startTime: '12:00', duration: '01:30', formatIds: [] });
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function convertToGroup() {
+    tabs.splice(2, 0, $translations.tabsMeetingTimes);
+    tabsSnippets.splice(2, 0, meetingTimesTabContent);
+    membersOfGroup = [{ day: $data?.day, startTime: $data?.startTime, duration: $data?.duration, formatIds: [] }];
+    setData('membersOfGroup', membersOfGroup);
+  }
+  function getDuration(i: number): string {
+    return membersOfGroup[i].duration ?? '01:00';
+  }
+  function setDuration(i: number, d: string, setData: (d: any, v: any) => void) {
+    membersOfGroup[i].duration = d;
+    setData('membersOfGroup.' + i + '.duration', d);
+  }
+  function isGroup(): boolean {
+    return tabs.includes($translations.tabsMeetingTimes);
+  }
 </script>
 
 <svelte:head>
@@ -821,6 +898,9 @@
           <strong>Meeting ID:</strong>
           {selectedMeeting.id}
         </div>
+        {#if !isGroup()}
+          <Button color="alternative" onclick={(_: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
+        {/if}
         <Button
           color="alternative"
           onclick={(e: MouseEvent) => selectedMeeting && handleDelete(e, selectedMeeting)}
@@ -831,6 +911,9 @@
           <span class="sr-only">{$translations.deleteMeeting}</span>
         </Button>
       </div>
+    {/if}
+    {#if !selectedMeeting && !isGroup()}
+      <Button color="alternative" onclick={(_: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
     {/if}
   </div>
   <div class="grid gap-4 md:grid-cols-2">
@@ -863,35 +946,37 @@
       {/if}
     </div>
   </div>
-  <div class="grid gap-4 md:grid-cols-3">
-    <div class="w-full">
-      <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} class="rounded-lg dark:bg-gray-600" />
-      {#if $errors.day}
-        <Helper class="mt-2" color="red">
-          {$errors.day}
-        </Helper>
-      {/if}
+  {#if !isGroup()}
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="w-full">
+        <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
+        <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} class="rounded-lg dark:bg-gray-600" />
+        {#if $errors.day}
+          <Helper class="mt-2" color="red">
+            {$errors.day}
+          </Helper>
+        {/if}
+      </div>
+      <div class="w-full">
+        <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
+        <Input type="time" id="startTime" name="startTime" />
+        {#if $errors.startTime}
+          <Helper class="mt-2" color="red">
+            {$errors.startTime}
+          </Helper>
+        {/if}
+      </div>
+      <div class="w-full">
+        <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+        <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
+        {#if $errors.duration}
+          <Helper class="mt-2" color="red">
+            {$errors.duration}
+          </Helper>
+        {/if}
+      </div>
     </div>
-    <div class="w-full">
-      <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
-      <Input type="time" id="startTime" name="startTime" />
-      {#if $errors.startTime}
-        <Helper class="mt-2" color="red">
-          {$errors.startTime}
-        </Helper>
-      {/if}
-    </div>
-    <div class="w-full">
-      <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
-      {#if $errors.duration}
-        <Helper class="mt-2" color="red">
-          {$errors.duration}
-        </Helper>
-      {/if}
-    </div>
-  </div>
+  {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
@@ -942,7 +1027,6 @@
     {/if}
   </div>
 {/snippet}
-
 {#snippet locationTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
@@ -1152,7 +1236,61 @@
     </div>
   </div>
 {/snippet}
-
+{#snippet meetingTimesTabContent()}
+  <div class="mb-4 md:col-span-2">
+    <Button onclick={() => handleAdd()} aria-label={$translations.addMeeting}>
+      <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
+    </Button>
+  </div>
+  {#each membersOfGroup as _, i}
+    {#if membersOfGroup[i]?.id_bigint}
+      <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
+    {/if}
+    <div class="mb-4 w-full rounded-lg border-2 bg-gray-50 p-6 dark:bg-gray-700">
+      <div class="flex w-full">
+        <div class="mb-4 w-7/8">
+          <div class="grid gap-4 md:grid-cols-3">
+            <div class="w-full">
+              <Label for="day_{i}" class="mb-2">{$translations.dayTitle}</Label>
+              <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" bind:value={$data.membersOfGroup[i].day} class="rounded-lg dark:bg-gray-600" />
+            </div>
+            <div class="w-full">
+              <Label for="startTime_{i}" class="mb-2">{$translations.startTimeTitle}</Label>
+              <Input type="time" id="startTime_{i}" name="membersOfGroup.{i}.startTime" />
+            </div>
+            <div class="w-full">
+              <span class="mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
+              <DurationSelector initialDuration={getDuration(i)} updateDuration={(d) => setDuration(i, d, setData)} />
+            </div>
+          </div>
+        </div>
+        <div class="w-1/8">
+          <Button
+            color="alternative"
+            onclick={(_: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
+            class="text-red-600 dark:text-red-500"
+            style="float: inline-end;"
+            aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          >
+            <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
+          </Button>
+        </div>
+      </div>
+      <div class="md:col-span-2">
+        <Label for="formatIds_{i}" class="mb-1">{$translations.formatsTitle}</Label>
+        <MultiSelect id="formatIds_{i}" items={formatItems} name="membersOfGroup.{i}.formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={membersOfGroup[i].formatIds}>
+          {#snippet children({ item, clear })}
+            <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
+              <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
+                {item.name}
+              </Badge>
+            </div>
+          {/snippet}
+        </MultiSelect>
+      </div>
+    </div>
+  {/each}
+{/snippet}
 {#snippet otherTabContent()}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
@@ -1286,7 +1424,7 @@
 {/snippet}
 
 <form use:form>
-  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]} />
+  <BasicTabs {tabs} {errorTabs} {tabsSnippets} />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">

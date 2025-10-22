@@ -96,7 +96,20 @@ class MeetingResource extends JsonResource
 
             $meeting[$meetingDataTemplate->key] = $meetingData->get($meetingDataTemplate->key, '') ?? '';
         }
-
+        // Could be expensive.  Maybe we want to control when this is done....
+        if ($this->getIsGroup() && (!self::$hasDataFieldKeys || self::$dataFieldKeys->has('membersOfGroup'))) {
+            $meeting['membersOfGroup'] = [];
+            foreach ($this->groupMembers->toResourceCollection(MeetingResource::class) as $member) {
+                $meeting['membersOfGroup'][] = [
+                    'id_bigint' => $member->getIdBigint(),
+                    'weekday_tinyint' => $member->getWeekdayTinyint(),
+                    'start_time' => $member->getStartTime(),
+                    'duration_time' => $member->getDurationTime(),
+                    'formats' => $member->getFormats(),
+                ];
+            }
+                usort($meeting['membersOfGroup'], fn($a, $b) => $a['weekday_tinyint'] <=> $b['weekday_tinyint'] ?: $a['start_time'] <=> $b['start_time']);
+        }
         return $meeting;
     }
 
@@ -246,6 +259,13 @@ class MeetingResource extends JsonResource
         return $this->when(
             !self::$hasDataFieldKeys || self::$dataFieldKeys->has('lang_enum'),
             $this->lang_enum ?? ''
+        );
+    }
+    private function getIsGroup()
+    {
+        return $this->when(
+            !self::$hasDataFieldKeys || self::$dataFieldKeys->has('is_group'),
+            $this->is_group ?? 0
         );
     }
     private function getLongitude()
