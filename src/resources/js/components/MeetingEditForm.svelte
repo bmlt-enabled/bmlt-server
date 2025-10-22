@@ -818,9 +818,7 @@
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
-    membersOfGroup.forEach((member, i) => {
-      setData('membersOfGroup.' + i + '.formatIds', member.formatIds);
-    });
+    setData('membersOfGroup', membersOfGroup);
   });
   function handleDeleteMember(i: number, setData: (d: any, v: any) => void) {
     if (membersOfGroup.length <= 1) return;
@@ -901,7 +899,7 @@
           {selectedMeeting.id}
         </div>
         {#if !isGroup()}
-          <Button color="alternative" onclick={(_$: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
+          <Button color="alternative" onclick={(_: MouseEvent) => selectedMeeting && convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
         {/if}
         <Button
           color="alternative"
@@ -915,7 +913,7 @@
       </div>
     {/if}
     {#if !selectedMeeting && !isGroup()}
-      <Button color="alternative" onclick={(_$: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
+      <Button color="alternative" onclick={(_: MouseEvent) => convertToGroup()} class="text-red-600 dark:text-red-500">Convert to Group</Button>
     {/if}
   </div>
   <div class="grid gap-4 md:grid-cols-2">
@@ -932,7 +930,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
+      <Select id="timeZone" name="timeZone" bind:value={$data.timeZone} class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
         {#each timeZoneGroups as continent}
           <optgroup label={continent.name}>
             {#each continent.values as timezone}
@@ -952,7 +950,7 @@
     <div class="grid gap-4 md:grid-cols-3">
       <div class="w-full">
         <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-        <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
+        <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} class="rounded-lg dark:bg-gray-600" />
         {#if $errors.day}
           <Helper class="mt-2" color="red">
             {$errors.day}
@@ -982,7 +980,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
-      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="rounded-lg dark:bg-gray-600" />
+      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} class="rounded-lg dark:bg-gray-600" />
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
           {$errors.serviceBodyId}
@@ -1033,7 +1031,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" class="rounded-lg dark:bg-gray-600" />
+      <Select id="venueType" items={venueTypeItems} name="venueType" bind:value={$data.venueType} class="rounded-lg dark:bg-gray-600" />
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -1160,7 +1158,7 @@
     <div class="w-full">
       <Label for="locationSubProvince" class="mt-2 mb-2">{$translations.countySubProvinceTitle}</Label>
       {#if countiesAndSubProvincesChoices.length > 0}
-        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" class="rounded-lg dark:bg-gray-600" />
+        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" bind:value={$data.locationSubProvince} class="rounded-lg dark:bg-gray-600" />
       {:else}
         <Input type="text" id="locationSubProvince" name="locationSubProvince" />
       {/if}
@@ -1175,7 +1173,7 @@
     <div class="w-full">
       <Label for="locationProvince" class="mt-2 mb-2">{$translations.stateTitle}</Label>
       {#if statesAndProvincesChoices.length > 0}
-        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" class="rounded-lg dark:bg-gray-600" />
+        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" bind:value={$data.locationProvince} class="rounded-lg dark:bg-gray-600" />
       {:else}
         <Input type="text" id="locationProvince" name="locationProvince" />
       {/if}
@@ -1244,7 +1242,7 @@
       <PlusOutline class="mr-2 h-3.5 w-3.5" />{$translations.addMeeting}
     </Button>
   </div>
-  {#each membersOfGroup as _$, i}
+  {#each membersOfGroup as _, i}
     {#if membersOfGroup[i]?.id_bigint}
       <Input type="hidden" name="membersOfGroup.{i}.id_bigint" />
     {/if}
@@ -1254,7 +1252,7 @@
           <div class="grid gap-4 md:grid-cols-3">
             <div class="w-full">
               <Label for="day_{i}" class="mb-2">{$translations.dayTitle}</Label>
-              <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" class="rounded-lg dark:bg-gray-600" />
+              <Select id="day_{i}" items={weekdayChoices} name="membersOfGroup.{i}.day" bind:value={$data.membersOfGroup[i].day} class="rounded-lg dark:bg-gray-600" />
             </div>
             <div class="w-full">
               <Label for="startTime_{i}" class="mb-2">{$translations.startTimeTitle}</Label>
@@ -1269,7 +1267,7 @@
         <div class="w-1/8">
           <Button
             color="alternative"
-            onclick={(_$: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
+            onclick={(_: MouseEvent) => selectedMeeting && handleDeleteMember(i, setData)}
             class="text-red-600 dark:text-red-500"
             style="float: inline-end;"
             aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
