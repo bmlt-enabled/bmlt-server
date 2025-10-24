@@ -8,6 +8,7 @@ use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
 use App\Repositories\External\ExternalMeeting;
+use App\Repositories\Import\MeetingImportResult;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -819,15 +820,16 @@ class MeetingRepository implements MeetingRepositoryInterface
         ]);
     }
 
-    public function import(int $rootServerId, Collection $externalObjects): void
+    public function import(int $rootServerId, Collection $externalObjects): MeetingImportResult
     {
+        $result = new MeetingImportResult();
         $sourceIds = $externalObjects->map(fn (ExternalMeeting $ex) => $ex->id);
         $meetingIds = Meeting::query()
             ->where('root_server_id', $rootServerId)
             ->whereNotIn('source_id', $sourceIds)
             ->pluck('id_bigint');
 
-        Meeting::query()->whereIn('id_bigint', $meetingIds)->delete();
+        $result->numDeleted = Meeting::query()->whereIn('id_bigint', $meetingIds)->delete();
         MeetingData::query()->whereIn('meetingid_bigint', $meetingIds)->delete();
         MeetingLongData::query()->whereIn('meetingid_bigint', $meetingIds)->delete();
 
@@ -852,6 +854,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             if (is_null($serviceBodyId)) {
                 if (!is_null($db)) {
                     $db->delete();
+                    $result->numOrphaned++;
                 }
                 continue;
             }
@@ -859,11 +862,15 @@ class MeetingRepository implements MeetingRepositoryInterface
             if (is_null($db)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
                 $this->create($values);
+                $result->numCreated++;
             } else if (!$external->isEqual($db, $serviceBodyIdToSourceIdMap, $formatSharedIdToSourceIdMap)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
                 $this->update($db->id_bigint, $values);
+                $result->numUpdated++;
             }
         }
+
+        return $result;
     }
 
     private function castExternal($obj): ExternalMeeting

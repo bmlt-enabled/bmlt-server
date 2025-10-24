@@ -3,6 +3,7 @@
 namespace App\Interfaces;
 
 use App\Models\ServiceBody;
+use App\Repositories\Import\ServiceBodyImportResult;
 use Illuminate\Support\Collection;
 
 interface ServiceBodyRepositoryInterface
@@ -23,5 +24,5 @@ interface ServiceBodyRepositoryInterface
     public function getChildren(array $parents): array;
     public function getParents(array $children): array;
     public function removeUser(int $userId);
-    public function import(int $rootServerId, Collection $externalObjects): void;
+    public function import(int $rootServerId, Collection $externalObjects): ServiceBodyImportResult;
 }

@@ -19,6 +19,9 @@ use App\Repositories\External\ExternalMeeting;
 use App\Repositories\External\ExternalRootServer;
 use App\Repositories\External\ExternalServiceBody;
 use App\Repositories\External\InvalidObjectException;
+use App\Repositories\Import\FormatImportResult;
+use App\Repositories\Import\MeetingImportResult;
+use App\Repositories\Import\ServiceBodyImportResult;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Builder;
@@ -86,11 +89,14 @@ class ImportRootServers extends Command
             $url = $this->option('list-url');
             $response = $this->httpGet($url, true);
             $externalRootServers = collect($response)->map(fn ($rs) => new ExternalRootServer($rs));
-            $rootServerRepository->import($externalRootServers);
+            $result = $rootServerRepository->import($externalRootServers);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             throw $e;
         }
+        $this->info("created $result->numCreated");
+        $this->info("updated $result->numUpdated");
+        $this->info("deleted $result->numDeleted");
     }
 
     private function importRootServer(
@@ -102,9 +108,24 @@ class ImportRootServers extends Command
     ): void {
         $this->info("importing root server $rootServer->id:$rootServer->url");
         $this->importServerInfo($rootServer, $rootServerRepository);
-        $this->importServiceBodies($rootServer, $serviceBodyRepository);
-        $this->importFormats($rootServer, $formatRepository);
-        $this->importMeetings($rootServer, $meetingRepository);
+
+        $serviceBodiesResult = $this->importServiceBodies($rootServer, $serviceBodyRepository);
+        $this->info("  created $serviceBodiesResult->numCreated");
+        $this->info("  updated $serviceBodiesResult->numUpdated");
+        $this->info("  reassigned $serviceBodiesResult->numReassigned");
+        $this->info("  deleted $serviceBodiesResult->numDeleted");
+
+        $formatsResult = $this->importFormats($rootServer, $formatRepository);
+        $this->info("  created $formatsResult->numCreated");
+        $this->info("  updated $formatsResult->numUpdated");
+        $this->info("  deleted $formatsResult->numDeleted");
+
+        $meetingsResult = $this->importMeetings($rootServer, $meetingRepository);
+        $this->info("  created $meetingsResult->numCreated");
+        $this->info("  updated $meetingsResult->numUpdated");
+        $this->info("  deleted $meetingsResult->numDeleted");
+        $this->info("  orphaned and deleted $meetingsResult->numOrphaned");
+
         $this->updateStatistics($rootServer);
         $rootServerRepository->update($rootServer->id, ['last_successful_import' => Carbon::now()]);
     }
@@ -118,7 +139,7 @@ class ImportRootServers extends Command
         $rootServer->refresh();
     }
 
-    private function importServiceBodies(RootServer $rootServer, ServiceBodyRepositoryInterface $serviceBodyRepository)
+    private function importServiceBodies(RootServer $rootServer, ServiceBodyRepositoryInterface $serviceBodyRepository): ServiceBodyImportResult
     {
         $this->info('importing service bodies');
         $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetServiceBodies';
@@ -133,10 +154,10 @@ class ImportRootServers extends Command
                 }
             })
             ->reject(fn($e) => is_null($e));
-        $serviceBodyRepository->import($rootServer->id, $externalServiceBodies);
+        return $serviceBodyRepository->import($rootServer->id, $externalServiceBodies);
     }
 
-    private function importFormats(RootServer $rootServer, FormatRepositoryInterface $formatRepository)
+    private function importFormats(RootServer $rootServer, FormatRepositoryInterface $formatRepository): FormatImportResult
     {
         $this->info('importing formats');
         $serverInfo = json_decode($rootServer->server_info);
@@ -145,7 +166,7 @@ class ImportRootServers extends Command
         $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetFormats';
         $externalFormats = collect([]);
         foreach ($languages as $language) {
-            $this->info("importing formats:$language");
+            $this->info("  retrieving $language");
             $response = $this->httpGet($url . "&lang_enum=$language");
             $externalFormats = $externalFormats->concat(
                 collect($response)
@@ -162,10 +183,10 @@ class ImportRootServers extends Command
             );
         }
 
-        $formatRepository->import($rootServer->id, $externalFormats);
+        return $formatRepository->import($rootServer->id, $externalFormats);
     }
 
-    private function importMeetings(RootServer $rootServer, MeetingRepositoryInterface $meetingRepository)
+    private function importMeetings(RootServer $rootServer, MeetingRepositoryInterface $meetingRepository): MeetingImportResult
     {
         $this->info('importing meetings');
         $url = rtrim($rootServer->url, '/') . '/client_interface/json/?switcher=GetSearchResults';
@@ -180,7 +201,7 @@ class ImportRootServers extends Command
                 }
             })
             ->reject(fn($e) => is_null($e));
-        $meetingRepository->import($rootServer->id, $externalMeetings);
+        return $meetingRepository->import($rootServer->id, $externalMeetings);
     }
 
     private function updateStatistics(RootServer $rootServer)
@@ -261,7 +282,7 @@ class ImportRootServers extends Command
         $response = Http::withHeaders($headers)->retry(3, self::$retryDelaySeconds * 1000)->get($url);
 
         if ($shouldLogResponse) {
-            $this->info("Response from $url: $response");
+            $this->info("response from $url: $response");
         }
 
         if (!$response->ok()) {

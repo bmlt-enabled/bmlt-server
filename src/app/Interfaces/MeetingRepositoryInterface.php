@@ -3,6 +3,7 @@
 namespace App\Interfaces;
 
 use App\Models\Meeting;
+use App\Repositories\Import\MeetingImportResult;
 use Illuminate\Support\Collection;
 
 interface MeetingRepositoryInterface
@@ -51,5 +52,5 @@ interface MeetingRepositoryInterface
     public function create(array $values): Meeting;
     public function update(int $id, array $values): bool;
     public function delete(int $id): bool;
-    public function import(int $rootServerId, Collection $externalObjects): void;
+    public function import(int $rootServerId, Collection $externalObjects): MeetingImportResult;
 }
