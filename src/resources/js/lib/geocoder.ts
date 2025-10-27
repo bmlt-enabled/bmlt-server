@@ -1,6 +1,8 @@
 import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
 import { initGoogleMaps, loadLibraries } from './googleMapsLoader';
+import { errorModal } from '../stores/errorModal';
+import { translations } from '../stores/localization';
 
 export type GeocodeResult = {
   lat: number;
@@ -22,10 +24,6 @@ function removeCountySuffix(county: string): string {
   return county.endsWith(COUNTY_SUFFIX) ? county.slice(0, -COUNTY_SUFFIX.length) : county;
 }
 
-function logError(message: string, error?: unknown): void {
-  console.error(message, error);
-}
-
 function promisifyGeocode(geocoder: google.maps.Geocoder, address: string): Promise<GeocodeResponse> {
   return new Promise<GeocodeResponse>((resolve) => {
     geocoder.geocode({ address }, (results, status) => {
@@ -33,6 +31,16 @@ function promisifyGeocode(geocoder: google.maps.Geocoder, address: string): Prom
     });
   });
 }
+
+(window as any).gm_authFailure = () => {
+  settings.googleApiKeyIsBad = true;
+  console.error('Google Maps authentication failed - detected in gm_authFailure callback');
+  errorModal.show({
+    title: translations.getString('googleKeyProblemTitle'),
+    message: translations.getString('googleKeyProblemDescription'),
+    timestamp: new Date()
+  });
+};
 
 export class Geocoder {
   private readonly address: string;
@@ -56,6 +64,11 @@ export class Geocoder {
   }
 
   private async geocodeWithGoogle(): Promise<GeocodeResult | string> {
+    if (settings.googleApiKeyIsBad) {
+      const e = translations.getString('googleGeocodingFailed');
+      console.error(e);
+      return e;
+    }
     const geocoder = new google.maps.Geocoder();
     const { results, status } = await promisifyGeocode(geocoder, this.address);
 
@@ -80,8 +93,9 @@ export class Geocoder {
         zipCode
       };
     } else {
-      logError('Google Geocoding failed:', status);
-      return `Google Geocoding failed: ${status}`;
+      const e = translations.getString('googleGeocodingFailed') + ': ' + status;
+      console.error(e);
+      return e;
     }
   }
 
@@ -108,8 +122,9 @@ export class Geocoder {
 
       return { lat, lng: lon, county, zipCode };
     } else {
-      logError('Nominatim Geocoding failed: No results found');
-      return 'Nominatim Geocoding failed: No results found';
+      const e = translations.getString('nominatimGeocodingFailed');
+      console.error(e);
+      return e;
     }
   }
 
@@ -124,8 +139,9 @@ export class Geocoder {
       const shouldUseGoogle = await this.ensureGoogleMapsReady();
       return shouldUseGoogle ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
     } catch (error) {
-      console.error('Geocoding error:', error);
-      return 'Geocoding failed. Please try again.';
+      const e = translations.getString('geocodingFailed') + ': ' + error;
+      console.error(e);
+      return e;
     } finally {
       spinner.hide();
     }

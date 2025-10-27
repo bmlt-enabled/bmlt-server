@@ -78,6 +78,7 @@
 
   let map: google.maps.Map | L.Map | null = $state(null);
   let mapElement: HTMLElement | undefined = $state();
+  let mapError = $state<string | null>(null);
   let marker: google.maps.marker.AdvancedMarkerElement | L.Marker | null = $state(null);
   let geocodingError: string | null = $state(null);
   let isPublishedChecked = $state(true);
@@ -614,6 +615,11 @@
   async function createGoogleMap() {
     if (!mapElement) return;
 
+    if (globalSettings.googleApiKeyIsBad) {
+      mapError = $translations.googleKeyProblemDescription;
+      return;
+    }
+
     try {
       await initGoogleMaps(globalSettings.googleApiKey);
       const [{ Map }] = await Promise.all([importLibrary('maps'), importLibrary('marker')]);
@@ -654,7 +660,7 @@
   });
 
   async function createAdvancedGoogleMarker() {
-    if (!map || !isGoogleMap(map)) return;
+    if (globalSettings.googleApiKeyIsBad || !map || !isGoogleMap(map)) return;
 
     try {
       const position = { lat: latitude, lng: longitude };
@@ -985,7 +991,14 @@
             }
           }}
         >
-          <div id="locationMap" bind:this={mapElement} class="h-[300px]"></div>
+          <div id="locationMap" bind:this={mapElement} class="h-[300px]">
+            {#if mapError}
+              <div class="map-error">
+                <strong>{$translations.googleKeyProblemTitle}</strong><br />
+                {mapError}
+              </div>
+            {/if}
+          </div>
         </MapAccordion>
       </div>
     </div>
@@ -1354,5 +1367,17 @@
       background-color: rgb(17, 24, 39) !important; /* gray-900 */
       color: rgb(209, 213, 219) !important; /* gray-300 */
     }
+  }
+
+  .map-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #e0e0e0;
+    color: #666;
+    text-align: center;
+    padding: 20px;
   }
 </style>

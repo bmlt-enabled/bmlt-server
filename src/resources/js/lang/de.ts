@@ -84,6 +84,10 @@ export const deTranslations = {
   formatTypeCode_OPEN_OR_CLOSED: 'Teilnahme von Nichtsüchtigen (offen, geschlossen)',
   formatTypeTitle: 'Formattyp',
   formatValidationError: 'Fehler: Dieses Format ist geschützt und kann nicht gelöscht werden.',
+  geocodingFailed: 'Geocoding fehler',
+  googleGeocodingFailed: 'Google-geocoding fehler',
+  googleKeyProblemDescription: 'Der Google Maps API-Schlüssel ist ungültig oder nicht korrekt konfiguriert. Bitte aktualisier deine API-Schlüsseleinstellungen.',
+  googleKeyProblemTitle: 'Google Maps API-Schlüsselproblem',
   helplineTitle: 'Helpline',
   hideDetails: 'Details ausblenden',
   homeTitle: 'Startseite',
@@ -161,6 +165,7 @@ export const deTranslations = {
   neighborhoodTitle: 'Nachbarschaft',
   noFormatTranslationsError: 'Es ist mindestens eine Übersetzung erforderlich.',
   noLogsFound: 'No logs found',
+  nominatimGeocodingFailed: 'Nominatim-geocoding fehler: keine Ergebnisse gefunden',
   none: '- Keine -',
   noServiceBodiesTitle: 'Es wurden keine Service-Bodies gefunden, die dieser Benutzer bearbeiten kann',
   notedAsDeleted: 'Noted as deleted', // TODO: Translate
