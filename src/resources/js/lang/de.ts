@@ -93,6 +93,7 @@ export const deTranslations = {
   keyIsReserved: 'Schlüssel ist reserviert -- bitte verwende etwas anderes',
   keyTitle: 'Schlüssel',
   languageSelectTitle: 'Sprache auswählen',
+  lastActiveTitle: 'Last Active',
   latitudeTitle: 'Breitengrad',
   loadFile: 'Load file', // TODO: translate
   loading: 'geladen ...',

@@ -133,6 +133,14 @@
 </script>
 
 <form use:form>
+  {#if selectedUser?.lastActiveAt}
+    <div class="mb-4 text-sm">
+      <span class="font-medium">{$translations.lastActiveTitle}:</span>
+      <span class="ml-2 text-gray-600 dark:text-gray-400">
+        {new Date(selectedUser.lastActiveAt).toLocaleString()}
+      </span>
+    </div>
+  {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="displayName" class="mb-2">{$translations.nameTitle}</Label>

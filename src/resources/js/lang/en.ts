@@ -148,6 +148,7 @@ export const enTranslations = {
   keyIsReserved: 'key is reserved  -- please use something else',
   keyTitle: 'Key',
   languageSelectTitle: 'Select Language',
+  lastActiveTitle: 'Last Active',
   latitudeTitle: 'Latitude',
   loadFile: 'Load file',
   loading: 'loading ...',
