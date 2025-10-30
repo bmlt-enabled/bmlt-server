@@ -149,7 +149,7 @@ coverage-serve:  ## Serves HTML Coverage Report
 
 .PHONY: generate-api-json
 generate-api-json: ## Generates Open API JSON
-	$(LINT_PREFIX) php artisan l5-swagger:generate
+	$(TEST_PREFIX) php artisan l5-swagger:generate
 
 .PHONY: lint
 lint:  ## PHP Lint
