@@ -133,11 +133,11 @@
 </script>
 
 <form use:form>
-  {#if selectedUser?.lastActiveAt}
+  {#if selectedUser?.lastLoginAt}
     <div class="mb-4 text-sm">
-      <span class="font-medium">{$translations.lastActiveTitle}:</span>
+      <span class="font-medium">{$translations.lastLoginTitle}:</span>
       <span class="ml-2 text-gray-600 dark:text-gray-400">
-        {new Date(selectedUser.lastActiveAt).toLocaleString()}
+        {new Date(selectedUser.lastLoginAt).toLocaleString()}
       </span>
     </div>
   {/if}

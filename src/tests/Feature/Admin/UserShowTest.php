@@ -122,55 +122,53 @@ class UserShowTest extends TestCase
     {
         $authUser = $this->createAdminUser();
         $token = $authUser->createToken('test')->plainTextToken;
-
-        $userWithoutTokens = $this->createServiceBodyAdminUser();
-        $userWithoutTokens->tokens()->delete();
+        $userWithoutAccess = $this->createServiceBodyAdminUser();
 
         $data = $this->withHeader('Authorization', "Bearer $token")
-            ->get("/api/v1/users/$userWithoutTokens->id_bigint")
+            ->get("/api/v1/users/$userWithoutAccess->id_bigint")
             ->assertStatus(200)
             ->json();
 
-        $this->assertNull($data['lastActiveAt']);
+        $this->assertNull($data['lastLoginAt']);
     }
 
     public function testShowUserLastAccessAtWithToken()
     {
-        $user = $this->createAdminUser();
-        $token = $user->createToken('test')->plainTextToken;
+        $authUser = $this->createAdminUser();
+        $token = $authUser->createToken('test')->plainTextToken;
 
-        $personalAccessToken = $user->tokens()->first();
-        $lastActiveAt = now()->subHours(2);
-        $personalAccessToken->forceFill(['last_used_at' => $lastActiveAt])->save();
+        $user = $this->createServiceBodyAdminUser();
+        $lastLoginAt = \Carbon\Carbon::parse('2025-06-15 10:00:00', 'UTC');
+        $user->last_access_datetime = $lastLoginAt;
+        $user->save();
 
         $data = $this->withHeader('Authorization', "Bearer $token")
             ->get("/api/v1/users/$user->id_bigint")
             ->assertStatus(200)
             ->json();
 
-        $this->assertIsString($data['lastActiveAt']);
-        $personalAccessToken->refresh();
-        $this->assertEquals($personalAccessToken->last_used_at->toJSON(), $data['lastActiveAt']);
+        $this->assertIsString($data['lastLoginAt']);
+        $user->refresh();
+        $this->assertEquals($user->last_access_datetime->toJSON(), $data['lastLoginAt']);
     }
 
     public function testShowUserLastAccessAtWithMultipleTokens()
     {
-        $user = $this->createAdminUser();
-        $token = $user->createToken('test')->plainTextToken;
+        $authUser = $this->createAdminUser();
+        $token = $authUser->createToken('test')->plainTextToken;
 
-        $olderToken = $user->createToken('older');
-        $olderToken->accessToken->forceFill(['last_used_at' => now()->subDays(5)])->save();
-
-        $newerToken = $user->createToken('newer');
-        $newerToken->accessToken->forceFill(['last_used_at' => now()->subHours(1)])->save();
+        $user = $this->createServiceBodyAdminUser();
+        $mostRecentAccess = \Carbon\Carbon::parse('2025-06-15 14:30:00', 'UTC');
+        $user->last_access_datetime = $mostRecentAccess;
+        $user->save();
 
         $data = $this->withHeader('Authorization', "Bearer $token")
             ->get("/api/v1/users/$user->id_bigint")
             ->assertStatus(200)
             ->json();
 
-        $this->assertIsString($data['lastActiveAt']);
-        $expectedMostRecent = $user->tokens()->orderByDesc('last_used_at')->first()->last_used_at;
-        $this->assertEquals($expectedMostRecent->toJSON(), $data['lastActiveAt']);
+        $this->assertIsString($data['lastLoginAt']);
+        $user->refresh();
+        $this->assertEquals($user->last_access_datetime->toJSON(), $data['lastLoginAt']);
     }
 }

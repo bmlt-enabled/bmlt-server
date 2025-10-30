@@ -2929,7 +2929,7 @@
                                 "type": "integer",
                                 "example": "0"
                             },
-                            "lastActiveAt": {
+                            "lastLoginAt": {
                                 "type": "string",
                                 "format": "date-time",
                                 "example": "2019-05-02T05:05:00.000000Z",
