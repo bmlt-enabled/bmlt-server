@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'description' => $this->description_string,
             'email' => $this->email_address_string,
             'ownerId' => $this->owner_id_bigint == -1 ? null : $this->owner_id_bigint,
+            'lastAccess' => $this->tokens()->orderByDesc('last_used_at')->first()?->last_used_at,
         ];
     }
 }
