@@ -13,7 +13,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  * ),
  * @OA\Schema(schema="User", required={"id", "username", "type", "displayName", "description", "email", "ownerId"},
  *     @OA\Property(property="id", type="integer", example="0"),
- *     @OA\Property(property="lastAccess", type="string", format="date-time", nullable=true, example="2019-05-02T05:05:00.000000Z"),
+ *     @OA\Property(property="lastActiveAt", type="string", format="date-time", nullable=true, example="2019-05-02T05:05:00.000000Z"),
  *     allOf={ @OA\Schema(ref="#/components/schemas/UserBase") }
  * ),
  * @OA\Schema(schema="UserCreate", required={"username", "password", "type", "displayName"},

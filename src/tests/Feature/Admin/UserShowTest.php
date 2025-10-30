@@ -118,7 +118,7 @@ class UserShowTest extends TestCase
         $this->assertEquals($user->owner_id_bigint, $data['ownerId']);
     }
 
-    public function testShowUserLastAccessNull()
+    public function testShowUserLastAccessAtNull()
     {
         $authUser = $this->createAdminUser();
         $token = $authUser->createToken('test')->plainTextToken;
@@ -131,29 +131,29 @@ class UserShowTest extends TestCase
             ->assertStatus(200)
             ->json();
 
-        $this->assertNull($data['lastAccess']);
+        $this->assertNull($data['lastActiveAt']);
     }
 
-    public function testShowUserLastAccessWithToken()
+    public function testShowUserLastAccessAtWithToken()
     {
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
 
         $personalAccessToken = $user->tokens()->first();
-        $lastUsedAt = now()->subHours(2);
-        $personalAccessToken->forceFill(['last_used_at' => $lastUsedAt])->save();
+        $lastActiveAt = now()->subHours(2);
+        $personalAccessToken->forceFill(['last_used_at' => $lastActiveAt])->save();
 
         $data = $this->withHeader('Authorization', "Bearer $token")
             ->get("/api/v1/users/$user->id_bigint")
             ->assertStatus(200)
             ->json();
 
-        $this->assertIsString($data['lastAccess']);
+        $this->assertIsString($data['lastActiveAt']);
         $personalAccessToken->refresh();
-        $this->assertEquals($personalAccessToken->last_used_at->toJSON(), $data['lastAccess']);
+        $this->assertEquals($personalAccessToken->last_used_at->toJSON(), $data['lastActiveAt']);
     }
 
-    public function testShowUserLastAccessWithMultipleTokens()
+    public function testShowUserLastAccessAtWithMultipleTokens()
     {
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
@@ -169,8 +169,8 @@ class UserShowTest extends TestCase
             ->assertStatus(200)
             ->json();
 
-        $this->assertIsString($data['lastAccess']);
+        $this->assertIsString($data['lastActiveAt']);
         $expectedMostRecent = $user->tokens()->orderByDesc('last_used_at')->first()->last_used_at;
-        $this->assertEquals($expectedMostRecent->toJSON(), $data['lastAccess']);
+        $this->assertEquals($expectedMostRecent->toJSON(), $data['lastActiveAt']);
     }
 }
