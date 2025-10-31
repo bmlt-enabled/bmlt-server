@@ -69,6 +69,7 @@ export const ruTranslations = {
   adminTitle: 'Admin',
   anteMeridiem: 'AM',
   applyChangesTitle: 'Apply Changes',
+  automaticallyCalculatedOnSave: 'Automatically calculated on save',
   boroughTitle: 'Borough/City Subsection',
   busLinesTitle: 'Bus Lines',
   by: 'by',
