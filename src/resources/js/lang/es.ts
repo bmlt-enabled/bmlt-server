@@ -148,7 +148,7 @@ export const esTranslations = {
   keyIsReserved: 'key is reserved  -- please use something else',
   keyTitle: 'Key',
   languageSelectTitle: 'Select Language',
-  lastActiveTitle: 'Last Active',
+  lastLoginTitle: 'Last Login',
   latitudeTitle: 'Latitude',
   loadFile: 'Load file',
   loading: 'loading ...',

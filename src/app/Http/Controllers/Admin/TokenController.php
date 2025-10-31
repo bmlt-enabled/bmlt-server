@@ -75,8 +75,13 @@ class TokenController extends Controller
         $expiresAt = 60 * config('sanctum.expiration', 0);
         $expiresAt += time();
 
+        $token = $user->createToken(Str::random(20));
+
+        $user->last_access_datetime = $token->accessToken->created_at;
+        $user->save();
+
         return [
-            'access_token' => $user->createToken(Str::random(20))->plainTextToken,
+            'access_token' => $token->plainTextToken,
             'expires_at' => $expiresAt,
             'token_type' => 'bearer',
             'user_id' => $user->id_bigint,

@@ -50,6 +50,10 @@ class User extends Model implements AuthenticatableContract
     public $timestamps = false;
     protected $fillable = self::FIELDS;
 
+    protected $casts = [
+        'last_access_datetime' => 'datetime',
+    ];
+
     public function getAuthPassword()
     {
         return $this->password_string;

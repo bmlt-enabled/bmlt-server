@@ -148,7 +148,7 @@ export const faTranslations = {
   keyIsReserved: 'کلید محفوظ است - لطفا از چیز دیگری استفاده کنید',
   keyTitle: 'کلید',
   languageSelectTitle: 'انتخاب زبان',
-  lastActiveTitle: 'Last Active',
+  lastLoginTitle: 'Last Login',
   latitudeTitle: 'عرض جغرافیایی',
   loadFile: 'بارگیری پرونده',
   loading: 'بارگیری ...',
