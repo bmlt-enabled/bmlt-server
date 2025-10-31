@@ -79,3 +79,15 @@ if [ "$ENABLE_LANGUAGE_SELECTOR" == "false" ]; then
 else
     echo "\$g_enable_language_selector = true;" >> /var/www/html/auto-config.inc.php
 fi
+
+if [ "$COUNTY_AUTO_GEOCODING_ENABLED" == "true" ]; then
+    echo "\$county_auto_geocoding_enabled = true;" >> /var/www/html/auto-config.inc.php
+else
+    echo "\$county_auto_geocoding_enabled = false;" >> /var/www/html/auto-config.inc.php
+fi
+
+if [ "$ZIP_AUTO_GEOCODING_ENABLED" == "true" ]; then
+    echo "\$zip_auto_geocoding_enabled = true;" >> /var/www/html/auto-config.inc.php
+else
+    echo "\$zip_auto_geocoding_enabled = false;" >> /var/www/html/auto-config.inc.php
+fi

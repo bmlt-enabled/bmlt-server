@@ -69,6 +69,7 @@ export const faTranslations = {
   adminTitle: 'ادمین',
   anteMeridiem: 'ق.ظ',
   applyChangesTitle: 'ذخیره تغییرات',
+  automaticallyCalculatedOnSave: 'Automatically calculated on save',
   boroughTitle: 'بخش منطقه/شهر',
   busLinesTitle: 'خطوط اتوبوس',
   by: 'بوسیله',

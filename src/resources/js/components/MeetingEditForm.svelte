@@ -2,7 +2,7 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
-  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
+  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Tooltip } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -1074,9 +1074,19 @@
     <div class="w-full">
       <Label for="locationSubProvince" class="mt-2 mb-2">{$translations.countySubProvinceTitle}</Label>
       {#if countiesAndSubProvincesChoices.length > 0}
-        <Select id="locationSubProvince" items={countiesAndSubProvincesChoices} name="locationSubProvince" bind:value={$data.locationSubProvince} class="rounded-lg dark:bg-gray-600" />
+        <Select
+          id="locationSubProvince"
+          items={countiesAndSubProvincesChoices}
+          name="locationSubProvince"
+          bind:value={$data.locationSubProvince}
+          class="rounded-lg dark:bg-gray-600"
+          disabled={globalSettings.countyAutoGeocodingEnabled}
+        />
       {:else}
-        <Input type="text" id="locationSubProvince" name="locationSubProvince" />
+        <Input type="text" id="locationSubProvince" name="locationSubProvince" disabled={globalSettings.countyAutoGeocodingEnabled} />
+      {/if}
+      {#if globalSettings.countyAutoGeocodingEnabled}
+        <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
       {#if $errors.locationSubProvince}
         <Helper class="mt-2" color="red">
@@ -1101,7 +1111,10 @@
     </div>
     <div class="w-full">
       <Label for="locationPostalCode1" class="mt-2 mb-2">{$translations.zipCodeTitle}</Label>
-      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" />
+      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={globalSettings.zipAutoGeocodingEnabled} />
+      {#if globalSettings.zipAutoGeocodingEnabled}
+        <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
+      {/if}
       {#if $errors.locationPostalCode1}
         <Helper class="mt-2" color="red">
           {$errors.locationPostalCode1}

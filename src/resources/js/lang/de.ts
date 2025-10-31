@@ -14,6 +14,7 @@ export const deTranslations = {
   adminTitle: 'Admin',
   anteMeridiem: 'AM',
   applyChangesTitle: 'Änderung anwenden',
+  automaticallyCalculatedOnSave: 'Automatically calculated on save',
   boroughTitle: 'Stadtviertel', // TODO: check this - English is Borough/City Subsection
   busLinesTitle: 'Buslinien',
   by: 'von',
