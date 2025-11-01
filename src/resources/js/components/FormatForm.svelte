@@ -254,7 +254,7 @@
       {#each allLanguages as lang (lang)}
         <BasicAccordion header={mappings[lang]} open={$translations.getLanguage() === lang} label={'Toggle accordion ' + lang}>
           <div>
-            <Label for="{lang}_key" class="mb-2" aria-label="{lang} key">{getLabel('keyTitle', lang)}</Label>
+            <Label for="{lang}_key" class="mb-2 text-gray-200 dark:text-white" aria-label="{lang} key">{getLabel('keyTitle', lang)}</Label>
             <Input type="text" id="{lang}_key" name="{lang}_key" disabled={isReservedKey(lang)} />
             <Helper class="mb-2" color="red">
               {#if $errors[lang + '_key']}
@@ -263,7 +263,7 @@
             </Helper>
           </div>
           <div>
-            <Label for="{lang}_name" class="mb-2" aria-label="{lang} name">{getLabel('nameTitle', lang)}</Label>
+            <Label for="{lang}_name" class="mb-2 text-gray-200 dark:text-white" aria-label="{lang} name">{getLabel('nameTitle', lang)}</Label>
             <Input type="text" id="{lang}_name" name="{lang}_name" />
             <Helper class="mb-2" color="red">
               {#if $errors[lang + '_name']}
@@ -272,7 +272,7 @@
             </Helper>
           </div>
           <div>
-            <Label for="{lang}_description" class="mb-2" aria-label="{lang} description">{getLabel('descriptionTitle', lang)}</Label>
+            <Label for="{lang}_description" class="mb-2 text-gray-200 dark:text-white" aria-label="{lang} description">{getLabel('descriptionTitle', lang)}</Label>
             <Input type="text" id="{lang}_description" name="{lang}_description" />
             <Helper class="mb-2" color="red">
               {#if $errors[lang + '_description']}
