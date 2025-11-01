@@ -13,6 +13,7 @@ declare const settings: {
   defaultLanguage: string;
   distanceUnits: string;
   googleApiKey: string;
+  googleApiKeyIsBad: boolean;
   isLanguageSelectorEnabled: boolean;
   languageMapping: Record<string, string>;
   meetingStatesAndProvinces: string[];
