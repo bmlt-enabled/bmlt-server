@@ -241,7 +241,7 @@
           if (!errors.value?.timeZone) {
             errors.set({
               ...errors.value,
-              timeZone: error instanceof Error ? error.message : $translations.timeZoneGeocodeError
+              timeZone: $translations.timeZoneGeocodeError
             });
           }
           spinner.hide();
@@ -311,7 +311,9 @@
     },
     onSuccess: () => {
       spinner.hide();
-      onSaved(savedMeeting);
+      if (savedMeeting) {
+        onSaved(savedMeeting);
+      }
     },
     extend: validator({
       schema: yup.object({

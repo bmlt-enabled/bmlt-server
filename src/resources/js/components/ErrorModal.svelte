@@ -1,19 +1,13 @@
 <script lang="ts">
   import { Modal, Button, P, Heading, Badge, Textarea } from 'flowbite-svelte';
-  import { ExclamationCircleSolid, CloseOutline, ChevronDownOutline, ChevronUpOutline } from 'flowbite-svelte-icons';
+  import { ExclamationCircleSolid, CloseOutline } from 'flowbite-svelte-icons';
   import { translations } from '../stores/localization';
   import { errorModal } from '../stores/errorModal';
 
-  let showDetails = $state(false);
   let open = $derived(!!$errorModal);
 
   function handleClose() {
     errorModal.hide();
-    showDetails = false;
-  }
-
-  function toggleDetails() {
-    showDetails = !showDetails;
   }
 
   function formatTimestamp(timestamp: Date): string {
@@ -34,7 +28,6 @@ ${$translations.time}: ${formatTimestamp($errorModal.timestamp)}`;
 {#if $errorModal}
   <Modal bind:open size="lg" class="border-4 border-red-500" dismissable={false}>
     <div class="space-y-4">
-      <!-- Header -->
       <div class="mb-4 flex items-center gap-3">
         <ExclamationCircleSolid class="h-6 w-6 text-red-500" />
         <Heading tag="h3" class="text-red-700">{$translations.error}</Heading>
@@ -50,20 +43,13 @@ ${$translations.time}: ${formatTimestamp($errorModal.timestamp)}`;
       </div>
 
       {#if $errorModal.details}
-        <Button color="light" size="sm" onclick={toggleDetails} class="flex items-center gap-2">
-          {showDetails ? ChevronUpOutline : ChevronDownOutline}
-          {showDetails ? $translations.hideDetails : $translations.showDetails}
-        </Button>
-
-        {#if showDetails}
-          <div class="rounded-lg border bg-gray-50 p-3">
-            <P class="mb-2 text-xs text-gray-600">{$translations.technicalDetails}:</P>
-            <Textarea value={$errorModal.details} readonly rows={6} class="font-mono text-xs" />
-            <Button color="light" size="xs" onclick={copyToClipboard} class="mt-2">
-              {$translations.copyToClipboard}
-            </Button>
-          </div>
-        {/if}
+        <div class="rounded-lg border bg-gray-50 p-3">
+          <P class="mb-2 text-xs text-gray-600">{$translations.technicalDetails}:</P>
+          <Textarea value={$errorModal.details} readonly rows={6} class="font-mono text-xs" />
+          <Button color="light" size="xs" onclick={copyToClipboard} class="mt-2">
+            {$translations.copyToClipboard}
+          </Button>
+        </div>
       {/if}
 
       <div class="flex justify-end pt-4">

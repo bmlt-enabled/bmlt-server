@@ -67,10 +67,11 @@ describe('ErrorModal component', () => {
       expect(screen.getByText('Server Error')).toBeInTheDocument();
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
       expect(screen.getByText(/Occurred at/)).toBeInTheDocument();
+      // Details should now be visible by default
+      expect(screen.getByText(/Technical Details/)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(/Stack trace/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Copy to Clipboard/i })).toBeInTheDocument();
     });
-    const toggleButtons = screen.getAllByRole('button');
-    const detailsButton = toggleButtons.find((button) => button.textContent?.includes('Show Details'));
-    expect(detailsButton).toBeTruthy();
   });
 
   test('does not show details section when no details are provided', async () => {
@@ -87,9 +88,8 @@ describe('ErrorModal component', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    expect(screen.queryByText('Show Details')).not.toBeInTheDocument();
-    expect(screen.queryByText('Hide Details')).not.toBeInTheDocument();
     expect(screen.queryByText('Technical Details')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Copy to Clipboard/i })).not.toBeInTheDocument();
   });
 
   test('shows close button when modal is displayed', async () => {
@@ -105,6 +105,23 @@ describe('ErrorModal component', () => {
     await waitFor(() => {
       expect(screen.getByText('Error')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Close/i })).toBeInTheDocument();
+    });
+  });
+
+  test('handles copy to clipboard when details are present', async () => {
+    const testError: ErrorDetails = {
+      title: 'Error with Details',
+      message: 'Has details',
+      details: 'Some technical details here',
+      timestamp: new Date('2024-01-01T12:00:00Z')
+    };
+
+    render(ErrorModal);
+    errorModal.show(testError);
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Copy to Clipboard/i })).toBeInTheDocument();
     });
   });
 
