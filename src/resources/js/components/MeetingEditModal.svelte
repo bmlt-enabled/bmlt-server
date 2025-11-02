@@ -43,7 +43,8 @@
     showConfirmModal = false;
   }
 
-  function handleModalClose() {
+  function handleModalCancel(event: Event) {
+    event.preventDefault();
     handleClose();
   }
 </script>
@@ -51,9 +52,9 @@
 <Modal
   bind:open={showModal}
   size="md"
-  onclose={handleModalClose}
+  oncancel={handleModalCancel}
   outsideclose={true}
-  bodyClass="p-4 md:p-5 space-y-4 flex-1 overflow-y-auto overscroll-contain min-h-[85vh] max-h-[85vh] md:min-h-[95vh] md:max-h-[95vh]"
+  classes={{ body: 'p-4 md:p-5 space-y-4 flex-1 overflow-y-auto overscroll-contain min-h-[85vh] max-h-[85vh] md:min-h-[95vh] md:max-h-[95vh]' }}
   class="max-h-[85vh] min-h-[85vh] md:max-h-[95vh] md:min-h-[95vh]"
 >
   <div class="p-2">
