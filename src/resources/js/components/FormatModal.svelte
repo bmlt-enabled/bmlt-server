@@ -42,6 +42,11 @@
     showConfirmModal = false;
   }
 
+  function handleModalCancel(event: Event) {
+    event.preventDefault();
+    handleClose();
+  }
+
   function handleOutsideClick(event: MouseEvent) {
     const modalContent = document.querySelector('.modal-content');
     const closeModalButton = document.querySelector('[aria-label*="Close"]');
@@ -59,7 +64,7 @@
   });
 </script>
 
-<Modal bind:open={showModal} size="sm" onclose={handleClose} outsideclose={true} class="modal-content">
+<Modal bind:open={showModal} size="sm" oncancel={handleModalCancel} outsideclose={true} class="modal-content">
   <div class="p-4">
     <FormatForm {selectedFormat} {reservedFormatKeys} {onSaveSuccess} />
   </div>
