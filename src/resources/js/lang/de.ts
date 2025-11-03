@@ -163,6 +163,7 @@ export const deTranslations = {
   nawsFormat_Y: 'Junge Menschen',
   nawsFormatTitle: 'NAWS Format',
   neighborhoodTitle: 'Nachbarschaft',
+  noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Es ist mindestens eine Übersetzung erforderlich.',
   noLogsFound: 'No logs found',
   nominatimGeocodingFailed: 'Nominatim-geocoding fehler: keine Ergebnisse gefunden',

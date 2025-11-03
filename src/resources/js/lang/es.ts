@@ -217,6 +217,7 @@ export const esTranslations = {
   nawsFormat_Y: 'Jóvenes',
   nawsFormatTitle: 'Formato Servicios Mundiales de NA',
   neighborhoodTitle: 'Barrio/vecindario',
+  noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Se requiere por lo menos una traducción',
   noLogsFound: 'Los registros no se encuentran',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',

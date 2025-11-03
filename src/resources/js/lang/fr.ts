@@ -217,6 +217,7 @@ export const frTranslations = {
   nawsFormat_Y: 'Jeunes',
   nawsFormatTitle: 'Format NAWS',
   neighborhoodTitle: 'Quartier',
+  noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Au moins une traduction est requise.',
   noLogsFound: 'Aucun journal trouvé',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
