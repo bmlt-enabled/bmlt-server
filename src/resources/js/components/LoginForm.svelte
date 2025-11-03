@@ -17,8 +17,7 @@
 
   let { apiCredentials, authenticated }: Props = $props();
 
-  const globalSettings = settings;
-  const languageOptions = Object.entries(globalSettings.languageMapping).map((lang) => ({ value: lang[0], name: lang[1] }));
+  const languageOptions = Object.entries(settings.languageMapping).map((lang) => ({ value: lang[0], name: lang[1] }));
   let selectedLanguage = $state(translations.getLanguage());
   let errorMessage: string | undefined = $state();
 
@@ -62,13 +61,13 @@
 </script>
 
 <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:min-h-screen lg:py-0">
-  {#if globalSettings.bmltTitle}
+  {#if settings.bmltTitle}
     <div class="my-4 pt-1 text-center text-4xl font-bold text-black dark:text-white">
-      {globalSettings.bmltTitle}
+      {settings.bmltTitle}
     </div>
   {/if}
   <div class="mb-6 flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
-    {$translations.serverTitle} ({globalSettings.version})
+    {$translations.serverTitle} ({settings.version})
   </div>
   <div class="w-full rounded-lg bg-white shadow sm:max-w-md md:mt-0 xl:p-0 dark:border dark:border-gray-700 dark:bg-gray-800">
     <div class="m-8">
@@ -91,7 +90,7 @@
             {/if}
           </Helper>
         </div>
-        {#if globalSettings.isLanguageSelectorEnabled}
+        {#if settings.isLanguageSelectorEnabled}
           <div class="mb-4">
             <Label for="languageSelection" class="mb-2">{$translations.languageSelectTitle}</Label>
             <Select id="languageSelection" items={languageOptions} bind:value={selectedLanguage} onchange={() => translations.setLanguage(selectedLanguage)} />
@@ -109,9 +108,9 @@
     </div>
   </div>
   <DarkMode />
-  {#if globalSettings.bmltNotice}
+  {#if settings.bmltNotice}
     <div class="mt-4 mb-4 px-6 pt-4 pb-4 text-center text-3xl font-bold text-yellow-600 dark:text-yellow-400">
-      {globalSettings.bmltNotice}
+      {settings.bmltNotice}
     </div>
   {/if}
 </div>

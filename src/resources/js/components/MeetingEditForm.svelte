@@ -45,7 +45,6 @@
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
   const CHANGES_TAB_INDEX = 3;
-  const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
@@ -89,13 +88,13 @@
     value: index,
     name: day
   }));
-  const statesAndProvincesChoices = globalSettings.meetingStatesAndProvinces
+  const statesAndProvincesChoices = settings.meetingStatesAndProvinces
     .map((state) => ({
       value: state,
       name: state
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
-  const countiesAndSubProvincesChoices = globalSettings.meetingCountiesAndSubProvinces
+  const countiesAndSubProvincesChoices = settings.meetingCountiesAndSubProvinces
     .map((county) => ({
       value: county,
       name: county
@@ -107,11 +106,11 @@
     { value: VENUE_TYPE_HYBRID, name: 'Hybrid' }
   ];
 
-  const defaultLatLng = { lat: Number(globalSettings.centerLatitude ?? -79.793701171875), lng: Number(globalSettings.centerLongitude ?? 36.065752051707) };
+  const defaultLatLng = { lat: Number(settings.centerLatitude ?? -79.793701171875), lng: Number(settings.centerLongitude ?? 36.065752051707) };
   let defaultDuration = '01:00';
   // older autoconfig files store the default duration including seconds -- remove the seconds if needed for compatibility
-  if (globalSettings.defaultDuration) {
-    const [hours, minutes] = globalSettings.defaultDuration.split(':').map((part) => part.padStart(2, '0'));
+  if (settings.defaultDuration) {
+    const [hours, minutes] = settings.defaultDuration.split(':').map((part) => part.padStart(2, '0'));
     defaultDuration = hours + ':' + minutes;
   }
   const initialValues = {
@@ -153,10 +152,10 @@
     comments: selectedMeeting?.comments ?? '',
     customFields: selectedMeeting?.customFields
       ? {
-          ...Object.fromEntries(globalSettings.customFields.map((field) => [field.name, ''])),
+          ...Object.fromEntries(settings.customFields.map((field) => [field.name, ''])),
           ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
         }
-      : Object.fromEntries(globalSettings.customFields.map((field) => [field.name, '']))
+      : Object.fromEntries(settings.customFields.map((field) => [field.name, '']))
   };
   let latitude = $state(initialValues.latitude);
   let longitude = $state(initialValues.longitude);
@@ -193,10 +192,10 @@
     if (geocodeResult) {
       values.latitude = geocodeResult.lat;
       values.longitude = geocodeResult.lng;
-      if (globalSettings.countyAutoGeocodingEnabled) {
+      if (settings.countyAutoGeocodingEnabled) {
         values.locationSubProvince = geocodeResult.county;
       }
-      if (globalSettings.zipAutoGeocodingEnabled) {
+      if (settings.zipAutoGeocodingEnabled) {
         values.locationPostalCode1 = geocodeResult.zipCode;
       }
     }
@@ -209,7 +208,7 @@
       const isNewMeeting = !selectedMeeting;
 
       if (shouldGeocode(initialValues, values, isNewMeeting)) {
-        if (globalSettings.autoGeocodingEnabled && !manualDrag) {
+        if (settings.autoGeocodingEnabled && !manualDrag) {
           await handleGeocoding(values);
         }
       }
@@ -539,7 +538,7 @@
 
     // Create the map only if not already initialized
     if (mapElement && !map) {
-      if (globalSettings.googleApiKey) {
+      if (settings.googleApiKey) {
         createGoogleMap();
       } else {
         createLeafletMap();
@@ -560,7 +559,7 @@
         map = null;
       }
 
-      const zoomLevel = Math.min(Number(globalSettings.centerZoom ?? 18), 15);
+      const zoomLevel = Math.min(Number(settings.centerZoom ?? 18), 15);
 
       const leafletMap = L.map(mapElement, {
         preferCanvas: true,
@@ -617,17 +616,17 @@
   async function createGoogleMap() {
     if (!mapElement) return;
 
-    if (globalSettings.googleApiKeyIsBad) {
+    if (settings.googleApiKeyIsBad) {
       mapError = $translations.googleKeyProblemDescription;
       return;
     }
 
     try {
-      await initGoogleMaps(globalSettings.googleApiKey);
+      await initGoogleMaps(settings.googleApiKey);
       const [{ Map }] = await Promise.all([importLibrary('maps'), importLibrary('marker')]);
       map = new Map(mapElement, {
         center: { lat: latitude, lng: longitude },
-        zoom: Math.min(Number(globalSettings.centerZoom ?? 18), 15),
+        zoom: Math.min(Number(settings.centerZoom ?? 18), 15),
         disableDefaultUI: false,
         mapTypeId: 'roadmap',
         gestureHandling: 'auto',
@@ -642,6 +641,10 @@
   }
 
   onMount(() => {
+    if (selectedMeeting) {
+      initializeMap();
+    }
+
     // Only initialize map if accordion is open
     if ($showMap) {
       setTimeout(initializeMap, 300);
@@ -662,7 +665,7 @@
   });
 
   async function createAdvancedGoogleMarker() {
-    if (globalSettings.googleApiKeyIsBad || !map || !isGoogleMap(map)) return;
+    if (settings.googleApiKeyIsBad || !map || !isGoogleMap(map)) return;
 
     try {
       const position = { lat: latitude, lng: longitude };
@@ -762,12 +765,6 @@
   }
 
   let errorTabs: string[] = $derived((hasBasicErrors($errors) ? [tabs[0]] : []).concat(hasLocationErrors($errors) ? [tabs[1]] : []).concat(hasOtherErrors($errors) ? [tabs[2]] : []));
-
-  $effect(() => {
-    if (selectedMeeting) {
-      initializeMap();
-    }
-  });
 
   $effect(() => {
     isDirty.set(formIsDirty(initialValues, $data));
@@ -1092,12 +1089,12 @@
           name="locationSubProvince"
           bind:value={$data.locationSubProvince}
           class="rounded-lg dark:bg-gray-600"
-          disabled={globalSettings.countyAutoGeocodingEnabled}
+          disabled={settings.countyAutoGeocodingEnabled}
         />
       {:else}
-        <Input type="text" id="locationSubProvince" name="locationSubProvince" disabled={globalSettings.countyAutoGeocodingEnabled} />
+        <Input type="text" id="locationSubProvince" name="locationSubProvince" disabled={settings.countyAutoGeocodingEnabled} />
       {/if}
-      {#if globalSettings.countyAutoGeocodingEnabled}
+      {#if settings.countyAutoGeocodingEnabled}
         <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
       {#if $errors.locationSubProvince}
@@ -1123,8 +1120,8 @@
     </div>
     <div class="w-full">
       <Label for="locationPostalCode1" class="mt-2 mb-2">{$translations.zipCodeTitle}</Label>
-      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={globalSettings.zipAutoGeocodingEnabled} />
-      {#if globalSettings.zipAutoGeocodingEnabled}
+      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={settings.zipAutoGeocodingEnabled} />
+      {#if settings.zipAutoGeocodingEnabled}
         <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
       {#if $errors.locationPostalCode1}
@@ -1268,7 +1265,7 @@
       {/if}
     </div>
   </div>
-  {#each globalSettings.customFields as { name, displayName }}
+  {#each settings.customFields as { name, displayName }}
     <div class="grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
         <Label for={name} class="mt-2 mb-2">{displayName}</Label>

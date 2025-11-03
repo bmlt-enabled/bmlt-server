@@ -6,8 +6,6 @@
   import { authenticatedUser } from '../stores/apiCredentials';
   import { translations } from '../stores/localization';
 
-  const globalSettings = settings;
-
   async function logout(event: Event) {
     event.preventDefault();
     await apiCredentials.logout();
@@ -20,7 +18,7 @@
     <DarkMode size="lg" class="inline-block hover:text-gray-900 dark:hover:text-white" />
   </div>
   <NavBrand href="#/">
-    <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">BMLT ({globalSettings.version})</span>
+    <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">BMLT ({settings.version})</span>
   </NavBrand>
   <NavUl>
     <NavLi href="#/">{$translations.homeTitle}</NavLi>
