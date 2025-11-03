@@ -974,9 +974,9 @@
                     map.invalidateSize();
                     if ('setView' in map) {
                       map.setView([latitude, longitude]);
-                    } else if (isGoogleMap(map)) {
-                      (map as google.maps.Map).setCenter({ lat: latitude, lng: longitude });
                     }
+                  } else if (isGoogleMap(map)) {
+                    map.setCenter({ lat: latitude, lng: longitude });
                   }
                 } else {
                   initializeMap();
@@ -1337,7 +1337,7 @@
       {/if}
       {#if selectedMeeting}
         <div class="mb-4">
-          <Checkbox name="saveAsCopy" checked={saveAsCopy} onchange={(e) => (saveAsCopy = (e.target as HTMLInputElement).checked)}>
+          <Checkbox name="saveAsCopy" checked={saveAsCopy} onchange={(e) => (saveAsCopy = e.currentTarget.checked)}>
             {$translations.saveAsCopyCheckbox}
           </Checkbox>
         </div>
@@ -1354,7 +1354,9 @@
     </div>
   </div>
 </form>
-<MeetingDeleteModal bind:showDeleteModal meetingToDelete={meetingToDelete as Meeting} {onDeleted} />
+{#if meetingToDelete}
+  <MeetingDeleteModal bind:showDeleteModal {meetingToDelete} {onDeleted} />
+{/if}
 
 <style>
   :global(.hide-close-button button[aria-label='Close']) {
