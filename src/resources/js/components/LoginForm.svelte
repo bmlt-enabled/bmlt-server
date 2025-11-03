@@ -63,7 +63,7 @@
 
 <div class="mx-auto flex flex-col items-center justify-center px-6 py-8 md:min-h-screen lg:py-0">
   {#if globalSettings.bmltTitle}
-    <div class="my-4 pt-1 text-4xl font-bold text-black dark:text-white">
+    <div class="my-4 pt-1 text-center text-4xl font-bold text-black dark:text-white">
       {globalSettings.bmltTitle}
     </div>
   {/if}
