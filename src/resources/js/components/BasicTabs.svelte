@@ -9,6 +9,7 @@
     inactiveClasses?: string;
     activeClasses?: string;
     activeTab?: number;
+    onTabChange?: (index: number) => void;
   }
 
   let {
@@ -17,11 +18,15 @@
     tabsSnippets,
     inactiveClasses = 'p-4 text-primary-600 bg-gray-100 rounded-t-lg dark:bg-gray-700 dark:text-gray-200 px-3.5 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm relative',
     activeClasses = 'p-4 text-gray-500 bg-white rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white px-3.5 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm relative',
-    activeTab = 0
+    activeTab = 0,
+    onTabChange
   }: Props = $props();
 
   function setActiveTab(index: number) {
     activeTab = index;
+    if (onTabChange) {
+      onTabChange(index);
+    }
   }
 </script>
 

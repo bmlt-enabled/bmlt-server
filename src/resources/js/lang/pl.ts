@@ -217,6 +217,7 @@ export const plTranslations = {
   nawsFormat_Y: 'Young People',
   nawsFormatTitle: 'NAWS Format',
   neighborhoodTitle: 'Neighborhood',
+  noChangesFound: 'No changes found',
   noFormatTranslationsError: 'At least one translation is required.',
   noLogsFound: 'No logs found',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',

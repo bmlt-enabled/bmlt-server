@@ -217,6 +217,7 @@ export const faTranslations = {
   nawsFormat_Y: 'Young People',
   nawsFormatTitle: 'فرمت NAWS',
   neighborhoodTitle: 'محله',
+  noChangesFound: 'No changes found',
   noFormatTranslationsError: 'حداقل یک ترجمه لازم است.',
   noLogsFound: 'هیچ گزارشی یافت نشد',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',

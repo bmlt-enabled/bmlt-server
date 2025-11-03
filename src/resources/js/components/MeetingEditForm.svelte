@@ -2,7 +2,7 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
-  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Tooltip } from 'flowbite-svelte';
+  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Spinner, Tooltip } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -44,6 +44,7 @@
   const tabs = selectedMeeting
     ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
+  const CHANGES_TAB_INDEX = 3;
   const globalSettings = settings;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
@@ -163,7 +164,8 @@
   let formatIdsSelected = $state(initialValues.formatIds);
   let savedMeeting: Meeting;
   let changes: MeetingChangeResource[] = $state([]);
-  let changesLoaded = $state(false);
+  let changesLoadedForMeetingId: number | null = $state(null);
+  let changesLoading = $state(false);
   let saveAsCopy = $state(false);
 
   function shouldGeocode(initialValues: MeetingPartialUpdate, values: MeetingPartialUpdate, isNewMeeting: boolean) {
@@ -696,13 +698,13 @@
 
   async function getChanges(meetingId: number): Promise<void> {
     try {
-      spinner.show();
+      changesLoading = true;
       changes = await RootServerApi.getMeetingChanges(meetingId);
-      changesLoaded = true;
+      changesLoadedForMeetingId = meetingId;
     } catch (error: any) {
       await RootServerApi.handleErrors(error);
     } finally {
-      spinner.hide();
+      changesLoading = false;
     }
   }
 
@@ -764,9 +766,6 @@
   $effect(() => {
     if (selectedMeeting) {
       initializeMap();
-      if (!changesLoaded) {
-        getChanges(selectedMeeting.id);
-      }
     }
   });
 
@@ -1285,7 +1284,9 @@
 {/snippet}
 
 {#snippet changesTabContent()}
-  {#if changesLoaded && changes.length > 0}
+  {#if changesLoading}
+    <div class="text-center"><Spinner /></div>
+  {:else if changesLoadedForMeetingId && changes.length > 0}
     <div class="space-y-3">
       {#each changes as { dateString, details, userName }}
         <div class="rounded-lg bg-gray-100 p-3 shadow-sm dark:bg-gray-800">
@@ -1308,11 +1309,22 @@
         </div>
       {/each}
     </div>
+  {:else if changesLoadedForMeetingId && changes.length === 0}
+    <div class="py-8 text-center text-gray-500 dark:text-gray-400">{$translations.noChangesFound}</div>
   {/if}
 {/snippet}
 
 <form use:form>
-  <BasicTabs {tabs} {errorTabs} tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]} />
+  <BasicTabs
+    {tabs}
+    {errorTabs}
+    tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]}
+    onTabChange={(index) => {
+      if (selectedMeeting && index === CHANGES_TAB_INDEX && changesLoadedForMeetingId !== selectedMeeting.id) {
+        getChanges(selectedMeeting.id);
+      }
+    }}
+  />
   <Hr class="my-8" />
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
