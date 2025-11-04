@@ -434,4 +434,6 @@
   {/snippet}
 </TableSearch>
 
-<MeetingEditModal bind:showModal {selectedMeeting} {serviceBodies} {formats} {onSaved} onClosed={closeModal} {onDeleted} />
+{#if showModal}
+  <MeetingEditModal bind:showModal {selectedMeeting} {serviceBodies} {formats} {onSaved} onClosed={closeModal} {onDeleted} />
+{/if}

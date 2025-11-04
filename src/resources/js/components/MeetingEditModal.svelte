@@ -19,8 +19,7 @@
 
   let { showModal = $bindable(), selectedMeeting, formats, serviceBodies, onSaved, onClosed, onDeleted }: Props = $props();
   let showConfirmModal = $state(false);
-  let forceClose = false;
-
+  let forceClose = $state(false);
   function handleClose() {
     if (get(isDirty) && !forceClose) {
       showModal = true;

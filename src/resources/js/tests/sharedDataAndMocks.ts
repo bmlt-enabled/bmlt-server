@@ -57,6 +57,7 @@ import type {
 
 import ApiClientWrapper from '../lib/ServerApi';
 import { apiCredentials, authenticatedUser } from '../stores/apiCredentials';
+import { isDirty } from '../lib/utils';
 import App from '../App.svelte';
 import runtime from '../../../node_modules/bmlt-server-client/dist/runtime';
 
@@ -1029,11 +1030,13 @@ export function sharedBeforeEach() {
   mockDeletedMeetingId = null;
 
   badUser = false;
+
+  isDirty.set(false);
 }
 
 export async function sharedAfterEach() {
   // clean up - don't leave in a logged in state (will be a no-op if we aren't logged in at this point)
-  replace('/');
+  await replace('/');
   await apiCredentials.logout();
 }
 

@@ -173,4 +173,30 @@ describe('MeetingEditForm Component', () => {
 
   // this test stopped working with Svelte 5 -- I put an equivalent test in Meetings.spec.ts instead
   //   'test Validation errors are displayed with invalid data'
+
+  test('test Form should remain dirty after map marker drag and accordion collapse', async () => {
+    render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    const applyChangesButton = screen.getByText(translations.getString('applyChangesTitle'));
+    expect(applyChangesButton).toBeDisabled();
+
+    // Simulate updating latitude/longitude directly (as if map marker was dragged)
+    const latitudeInput = screen.getByLabelText(translations.getString('latitudeTitle')) as HTMLInputElement;
+    const longitudeInput = screen.getByLabelText(translations.getString('longitudeTitle')) as HTMLInputElement;
+
+    const originalLat = latitudeInput.value;
+    const originalLng = longitudeInput.value;
+    const newLat = String(Number(originalLat) + 0.001);
+    const newLng = String(Number(originalLng) + 0.001);
+
+    await fireEvent.input(latitudeInput, { target: { value: newLat } });
+    await fireEvent.input(longitudeInput, { target: { value: newLng } });
+
+    await waitFor(() => {
+      expect(applyChangesButton).not.toBeDisabled();
+    });
+
+    // Verify that the form is still dirty (button should remain enabled)
+    expect(applyChangesButton).not.toBeDisabled();
+  });
 });

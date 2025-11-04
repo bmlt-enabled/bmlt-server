@@ -161,7 +161,9 @@
   {/if}
 </div>
 
-<FormatModal bind:showModal {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} onClose={closeModal} />
+{#if showModal}
+  <FormatModal bind:showModal {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} onClose={closeModal} />
+{/if}
 {#if deleteFormat}
   <FormatDeleteModal bind:showDeleteModal {deleteFormat} formatName={deleteFormat ? getFormatName(deleteFormat) : ''} onDeleteSuccess={onDeleted} />
 {/if}
