@@ -1,4 +1,4 @@
-## 4.0.0 (UNRELEASED)
+## 4.0.0 (November 4, 2025)
 * Added new user interface implemented in Svelte.  This includes a brand-new UI code base and various improvements. It is mostly backward compatible, except as noted here:
   - Dropped support for the installer wizard -- see `installation/README.md` for new directions.
   - Deprecated the auto-config parameter `$default_minute_interval` (now just set to 5 minutes).
