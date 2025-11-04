@@ -2,6 +2,9 @@
 * Added new user interface implemented in Svelte.  This includes a brand-new UI code base and various improvements. It is mostly backward compatible, except as noted here:
   - Dropped support for the installer wizard -- see `installation/README.md` for new directions.
   - Deprecated the auto-config parameter `$default_minute_interval` (now just set to 5 minutes).
+* The new UI is mobile-friendly and includes dark mode support.
+* Added newly rewritten semantic workshop.
+* Added new `$bmlt_notice` setting for `auto-config.inc.php` to display custom notices on the login screen. Example: `$bmlt_notice = 'We've upgraded the BMLT to 4.0.0 with a new interface! Please report any issues to bmlt@example.org';`
 * Fixed a bug that prevented the NAWS Export from working with newer versions of MySQL.
 
 ## 3.1.2 (May 2, 2025)

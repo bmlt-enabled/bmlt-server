@@ -1000,7 +1000,10 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="longitude" class="mt-2 mb-2">{$translations.longitudeTitle}</Label>
-      <Input type="text" id="longitude" name="longitude" bind:value={longitude} required />
+      <Input type="text" id="longitude" name="longitude" bind:value={longitude} disabled={settings.autoGeocodingEnabled} required />
+      {#if settings.autoGeocodingEnabled}
+        <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
+      {/if}
       {#if $errors.longitude}
         <Helper class="mt-2" color="red">
           {$errors.longitude}
@@ -1009,7 +1012,10 @@
     </div>
     <div class="w-full">
       <Label for="latitude" class="mt-2 mb-2">{$translations.latitudeTitle}</Label>
-      <Input type="text" id="latitude" name="latitude" bind:value={latitude} required />
+      <Input type="text" id="latitude" name="latitude" bind:value={latitude} disabled={settings.autoGeocodingEnabled} required />
+      {#if settings.autoGeocodingEnabled}
+        <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
+      {/if}
       {#if $errors.latitude}
         <Helper class="mt-2" color="red">
           {$errors.latitude}
