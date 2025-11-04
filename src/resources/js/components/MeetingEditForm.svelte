@@ -767,7 +767,9 @@
   let errorTabs: string[] = $derived((hasBasicErrors($errors) ? [tabs[0]] : []).concat(hasLocationErrors($errors) ? [tabs[1]] : []).concat(hasOtherErrors($errors) ? [tabs[2]] : []));
 
   $effect(() => {
-    globalIsDirty.set(formIsDirty(initialValues, $data));
+    const dirty = formIsDirty(initialValues, $data);
+    globalIsDirty.set(dirty);
+    isDirty.set(dirty);
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
