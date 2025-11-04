@@ -16,7 +16,7 @@
   import { spinner } from '../stores/spinner';
   import type { MeetingChangeResource } from 'bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
-  import { formIsDirty } from '../lib/utils';
+  import { formIsDirty, isDirty as globalIsDirty } from '../lib/utils';
   import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
   import { Geocoder } from '../lib/geocoder';
@@ -767,7 +767,7 @@
   let errorTabs: string[] = $derived((hasBasicErrors($errors) ? [tabs[0]] : []).concat(hasLocationErrors($errors) ? [tabs[1]] : []).concat(hasOtherErrors($errors) ? [tabs[2]] : []));
 
   $effect(() => {
-    isDirty.set(formIsDirty(initialValues, $data));
+    globalIsDirty.set(formIsDirty(initialValues, $data));
   });
   $effect(() => {
     setData('formatIds', formatIdsSelected);
