@@ -138,7 +138,9 @@
   {/if}
 </div>
 
-<UserModal bind:showModal {users} {selectedUser} onSaveSuccess={onSaved} onClose={closeModal} />
+{#if showModal}
+  <UserModal bind:showModal {users} {selectedUser} onSaveSuccess={onSaved} onClose={closeModal} />
+{/if}
 {#if deleteUser}
   <UserDeleteModal bind:showDeleteModal {deleteUser} onDeleteSuccess={onDeleted} />
 {/if}

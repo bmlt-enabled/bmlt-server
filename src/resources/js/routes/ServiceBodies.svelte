@@ -172,7 +172,9 @@
   {/if}
 </div>
 
-<ServiceBodyModal bind:showModal {serviceBodies} {selectedServiceBody} {users} onSaveSuccess={onSaved} onClose={closeModal} />
+{#if showModal}
+  <ServiceBodyModal bind:showModal {serviceBodies} {selectedServiceBody} {users} onSaveSuccess={onSaved} onClose={closeModal} />
+{/if}
 {#if deleteServiceBody}
   <ServiceBodyDeleteModal bind:showDeleteModal {deleteServiceBody} onDeleteSuccess={onDeleted} />
 {/if}
