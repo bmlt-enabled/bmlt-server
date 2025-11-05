@@ -2291,6 +2291,7 @@ class GetSearchResultsTest extends TestCase
             'location_postal_code_1' => '91324',
             'location_nation' => 'USA',
             'location_info' => 'Test notes',
+            'comments' => 'Test comments',
         ]);
 
         $response = $this->get("/client_interface/tsml/?switcher=GetSearchResults");
@@ -2328,8 +2329,10 @@ class GetSearchResultsTest extends TestCase
         $this->assertArrayHasKey('regions', $meetingData);
         $this->assertContains('Test Area', $meetingData['regions']);
         $this->assertArrayHasKey('types', $meetingData);
+        $this->assertArrayHasKey('location_notes', $meetingData);
+        $this->assertEquals('Test notes', $meetingData['location_notes']);
         $this->assertArrayHasKey('notes', $meetingData);
-        $this->assertEquals('Test notes', $meetingData['notes']);
+        $this->assertEquals('Test comments', $meetingData['notes']);
         $this->assertArrayHasKey('coordinates', $meetingData);
         $this->assertEquals('34.2359759,-118.5635721', $meetingData['coordinates']);
         $this->assertArrayHasKey('slug', $meetingData);

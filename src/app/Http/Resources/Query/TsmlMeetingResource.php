@@ -90,7 +90,8 @@ class TsmlMeetingResource extends JsonResource
                 ->filter()
                 ->values()
                 ->toArray(),
-            'notes' => $allData['location_info'] ?? '',
+            'location_notes' => $allData['location_info'] ?? '',
+            'notes' => $allData['comments'] ?? '',
             'coordinates' =>  $this->venue_type == 2
                 ? null
                 : (($this->latitude && $this->longitude) ? "{$this->latitude},{$this->longitude}" : null),
