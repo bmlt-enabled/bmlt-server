@@ -1372,7 +1372,7 @@
   }
 
   /* Target disabled format menu items (headers) */
-  :global(#formatIds [class*='opacity-50']) {
+  :global(#formatIds div[class*='opacity-50']) {
     font-weight: bold !important;
     font-size: 0.925rem !important;
     background-color: rgb(243, 244, 246) !important; /* gray-100 */
@@ -1380,7 +1380,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :global(#formatIds [class*='opacity-50']) {
+    :global(#formatIds div[class*='opacity-50']) {
       background-color: rgb(17, 24, 39) !important; /* gray-900 */
       color: rgb(209, 213, 219) !important; /* gray-300 */
     }
