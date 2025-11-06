@@ -1,4 +1,4 @@
-## 4.0.1 (UNRELEASED)
+## 4.0.1 (November 5, 2025)
 * Fixed longitude/latitude fields to be read-only when auto-geocoding is enabled
 
 ## 4.0.0 (November 4, 2025)
