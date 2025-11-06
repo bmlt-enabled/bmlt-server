@@ -67,7 +67,7 @@ class UserPermissionsTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->get('/api/v1/users')
             ->assertStatus(200)
-            ->assertJsonCount(3);
+            ->assertJsonCount(4); // 3 test users + 1 default serveradmin from migration
     }
 
     // show

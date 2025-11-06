@@ -57,7 +57,12 @@ class LegacyConfig
         if (file_exists($legacyConfigFile)) {
             defined('BMLT_EXEC') or define('BMLT_EXEC', 1);
             require($legacyConfigFile);
-        } else {
+        } elseif (!is_null(config('app.env')) && config('app.env') != 'testing') {
+            // When under PHPUnit, config('app.env') is set to 'testing', so we skip the check.
+            // Running different codepaths under test is an anti-pattern, and is pretty much always a bad
+            // idea. In this case, the block below should only get hit when running a production
+            // web server without the legacy auto-config.inc.php file. There is probably a better
+            // way, but I haven't thought of one yet.
             die('<h1>Configuration Problem</h1>
               <p>The file <code>auto-config.inc.php</code> was not found.</p>
               <p>If this is a brand new BMLT server installation, please see the installation instructions. The latest version

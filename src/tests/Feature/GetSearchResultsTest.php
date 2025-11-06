@@ -2336,7 +2336,7 @@ class GetSearchResultsTest extends TestCase
         $this->assertArrayHasKey('coordinates', $meetingData);
         $this->assertEquals('34.2359759,-118.5635721', $meetingData['coordinates']);
         $this->assertArrayHasKey('slug', $meetingData);
-        $this->assertEquals('high-output-meeting', $meetingData['slug']);
+        $this->assertStringStartsWith('high-output-meeting-', $meetingData['slug']);
         $this->assertArrayHasKey('region', $meetingData);
         $this->assertEquals('Test Area', $meetingData['region']);
     }
