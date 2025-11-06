@@ -1,3 +1,6 @@
+## 4.0.2 (UNRELEASED)
+* Added Italian translations.
+
 ## 4.0.1 (November 5, 2025)
 * Fixed longitude/latitude fields to be read-only when auto-geocoding is enabled
 
