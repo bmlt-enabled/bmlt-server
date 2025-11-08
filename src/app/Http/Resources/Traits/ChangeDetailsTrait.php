@@ -23,7 +23,7 @@ trait ChangeDetailsTrait
         'comdef_change_type_rollback' => 'rolled_back',
     ];
 
-    public function getChangeDetails(bool $asArray = false): string|array
+    public function getChangeDetails(bool $asArray = false, bool $ignoreVisibility = false): string|array
     {
         $objectType = self::$objectClassToStrMap[$this->object_class_string];
         $changeType = self::$changeTypeToStrMap[$this->change_type_enum];
@@ -69,12 +69,12 @@ trait ChangeDetailsTrait
             $beforeValue = $beforeValues->get($key);
             $afterValue = $afterValues->get($key);
             if (is_array($afterValue)) {
-                $isVisible = $afterValue['visibility'] !== 1;
+                $isVisible = $ignoreVisibility || $afterValue['visibility'] !== 1;
                 $fieldPrompt = $afterValue['field_prompt'] ?? $fieldName;
                 $afterValue = $afterValue['data_string'] ?? null;
             }
             if (is_array($beforeValue)) {
-                if ($isVisible) {
+                if ($isVisible && !$ignoreVisibility) {
                     $isVisible = $beforeValue['visibility'] !== 1;
                 }
                 if ($fieldPrompt == $key) {
