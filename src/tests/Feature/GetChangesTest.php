@@ -153,7 +153,7 @@ class GetChangesTest extends TestCase
             ->toArray();
     }
 
-    private function createServiceBody($name, $sbOwner = 0)
+    private function createServiceBody($name, $sbOwner = 0, $principalUser = null)
     {
         return ServiceBody::create([
             'sb_owner' => $sbOwner,
@@ -164,13 +164,14 @@ class GetChangesTest extends TestCase
             'kml_file_uri_string' => '',
             'worldid_mixed' => '',
             'sb_meeting_email' => '',
+            'principal_user_bigint' => $principalUser,
         ]);
     }
 
-    public function createUser()
+    public function createUser($userLevel = User::USER_LEVEL_SERVICE_BODY_ADMIN)
     {
         return User::create([
-            'user_level_tinyint' => User::USER_LEVEL_SERVICE_BODY_ADMIN,
+            'user_level_tinyint' => $userLevel,
             'name_string' => 'test',
             'description_string' => '',
             'email_address_string' => '',
@@ -179,7 +180,7 @@ class GetChangesTest extends TestCase
         ]);
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(int $sharedId, string $keyString, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
         return Format::create([
             'shared_id_bigint' => $sharedId,
@@ -887,8 +888,8 @@ class GetChangesTest extends TestCase
                         'meeting_exists' => '1',
                         'details' => "$prompt was changed.",
                         'json_data' => [
-                            'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge($beforeValues)->toArray(),
-                            'after' => collect($this->getMainValuesPublicArray($change->afterMeeting, $afterValues))->merge($afterValues)->toArray(),
+                            'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge([$fieldName => '********'])->toArray(),
+                            'after' => collect($this->getMainValuesPublicArray($change->afterMeeting, $afterValues))->merge([$fieldName => '********'])->toArray(),
                         ],
                     ]
                 ]);
@@ -931,8 +932,8 @@ class GetChangesTest extends TestCase
                         'meeting_exists' => '1',
                         'details' => "$prompt was changed.",
                         'json_data' => [
-                            'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge($beforeValues)->toArray(),
-                            'after' => collect($this->getMainValuesPublicArray($change->afterMeeting, $afterValues))->merge($afterValues)->toArray(),
+                            'before' => $this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues),
+                            'after' => collect($this->getMainValuesPublicArray($change->afterMeeting, $afterValues))->merge([$fieldName => '********'])->toArray(),
                         ],
                     ]
                 ]);
@@ -975,8 +976,8 @@ class GetChangesTest extends TestCase
                         'meeting_exists' => '1',
                         'details' => "$prompt was changed from \"before\" to \"\".",
                         'json_data' => [
-                            'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge($beforeValues)->toArray(),
-                            'after' => collect($this->getMainValuesPublicArray($change->afterMeeting, $afterValues))->merge($afterValues)->toArray(),
+                            'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge([$fieldName => '********'])->toArray(),
+                            'after' => $this->getMainValuesPublicArray($change->afterMeeting, $afterValues),
                         ],
                     ]
                 ]);
@@ -1082,5 +1083,141 @@ class GetChangesTest extends TestCase
         $this->get("/client_interface/json/?switcher=GetChanges&service_body_id=$sb3->id_bigint")
             ->assertStatus(200)
             ->assertJsonCount(1);
+    }
+
+    public function testContactFieldsMaskedWhenUnauthenticated()
+    {
+        $user = $this->createUser();
+        $afterValues = [
+            'contact_name_1' => 'John Doe',
+            'contact_phone_1' => '555-1234',
+            'contact_email_1' => 'john@example.com',
+            'contact_name_2' => 'Jane Smith',
+            'contact_phone_2' => '555-5678',
+            'contact_email_2' => 'jane@example.com',
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange(null, $afterValues, $user);
+
+        $response = $this->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        // Contact fields should be masked with 8 asterisks for unauthenticated users
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_name_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_phone_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_email_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_name_2']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_phone_2']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_email_2']);
+        // Non-contact fields should not be masked
+        $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
+    }
+
+    public function testContactFieldsVisibleWhenAuthenticatedAsAdmin()
+    {
+        $user = $this->createUser(User::USER_LEVEL_ADMIN);
+
+        $afterValues = [
+            'contact_name_1' => 'John Doe',
+            'contact_phone_1' => '555-1234',
+            'contact_email_1' => 'john@example.com',
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange(null, $afterValues, $user);
+
+        $response = $this->actingAs($user)->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertEquals('John Doe', $response[0]['json_data']['after']['contact_name_1']);
+        $this->assertEquals('555-1234', $response[0]['json_data']['after']['contact_phone_1']);
+        $this->assertEquals('john@example.com', $response[0]['json_data']['after']['contact_email_1']);
+        $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
+    }
+
+    public function testContactFieldsVisibleForServiceBodyAdmin()
+    {
+        $user = $this->createUser(User::USER_LEVEL_SERVICE_BODY_ADMIN);
+
+        $serviceBody = $this->createServiceBody('Test Service Body', 0, $user->id_bigint);
+
+        $afterValues = [
+            'service_body_bigint' => strval($serviceBody->id_bigint),
+            'contact_name_1' => 'John Doe',
+            'contact_phone_1' => '555-1234',
+            'contact_email_1' => 'john@example.com',
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange(null, $afterValues, $user);
+
+        $response = $this->actingAs($user)->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertEquals('John Doe', $response[0]['json_data']['after']['contact_name_1']);
+        $this->assertEquals('555-1234', $response[0]['json_data']['after']['contact_phone_1']);
+        $this->assertEquals('john@example.com', $response[0]['json_data']['after']['contact_email_1']);
+    }
+
+    public function testContactFieldsMaskedForDifferentServiceBody()
+    {
+        $user = $this->createUser(User::USER_LEVEL_SERVICE_BODY_ADMIN);
+
+        $this->createServiceBody('Service Body 1', 0, $user->id_bigint);
+        $serviceBody2 = $this->createServiceBody('Service Body 2');
+
+        $afterValues = [
+            'service_body_bigint' => strval($serviceBody2->id_bigint),
+            'contact_name_1' => 'John Doe',
+            'contact_phone_1' => '555-1234',
+            'contact_email_1' => 'john@example.com',
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange(null, $afterValues, $user);
+
+        $response = $this->actingAs($user)->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_name_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_phone_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['contact_email_1']);
+    }
+
+    public function testEmptyContactFieldsNotMasked()
+    {
+        $user = $this->createUser();
+        $afterValues = [
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange(null, $afterValues, $user);
+
+        $response = $this->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertArrayNotHasKey('contact_name_1', $response[0]['json_data']['after']);
+        $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
+    }
+
+    public function testContactFieldsMaskedInBeforeObjectOnDelete()
+    {
+        $user = $this->createUser();
+        $beforeValues = [
+            'contact_name_1' => 'John Doe',
+            'contact_phone_1' => '555-1234',
+            'contact_email_1' => 'john@example.com',
+            'meeting_name' => 'Test Meeting'
+        ];
+        $this->createChange($beforeValues, null, $user);
+
+        $response = $this->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertEquals('********', $response[0]['json_data']['before']['contact_name_1']);
+        $this->assertEquals('********', $response[0]['json_data']['before']['contact_phone_1']);
+        $this->assertEquals('********', $response[0]['json_data']['before']['contact_email_1']);
     }
 }

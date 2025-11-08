@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Query;
 
 use App\Http\Resources\JsonResource;
+use App\Models\User;
 use App\Repositories\FormatRepository;
 use App\Repositories\ServiceBodyRepository;
 use App\Http\Resources\Traits\ChangeDetailsTrait;
@@ -14,6 +15,9 @@ class MeetingChangeResource extends JsonResource
     private static bool $isRequestInitialized = false;
     private static Collection $allFormats;
     private static Collection $allServiceBodies;
+    private static ?Collection $serviceBodyPermissions = null;
+    private static bool $userIsAuthenticated = false;
+    private static bool $userIsAdmin = false;
 
     private bool $isBeforeObjectLoaded = false;
     private ?array $cachedBeforeObject;
@@ -39,6 +43,9 @@ class MeetingChangeResource extends JsonResource
     public static function resetStaticVariables()
     {
         self::$isRequestInitialized = false;
+        self::$serviceBodyPermissions = null;
+        self::$userIsAuthenticated = false;
+        self::$userIsAdmin = false;
     }
 
     public function toArray($request)
@@ -65,13 +72,26 @@ class MeetingChangeResource extends JsonResource
         ];
     }
 
-    private function initializeRequest()
+    private function initializeRequest($request)
     {
         $formatRepository = new FormatRepository();
         self::$allFormats = $formatRepository->search(showAll: true)->groupBy(['shared_id_bigint', 'lang_enum'], preserveKeys: true);
 
         $serviceBodyRepository = new ServiceBodyRepository();
         self::$allServiceBodies = $serviceBodyRepository->search()->mapWithKeys(fn ($sb) => [$sb->id_bigint => $sb]);
+
+        // Permissions
+        $user = $request->user();
+        if (!is_null($user) && $user->user_level_tinyint != User::USER_LEVEL_DEACTIVATED) {
+            self::$userIsAuthenticated = true;
+            if ($user->user_level_tinyint == User::USER_LEVEL_ADMIN) {
+                self::$userIsAdmin = true;
+            } else {
+                self::$serviceBodyPermissions = $serviceBodyRepository
+                    ->getAssignedServiceBodyIds($user->id_bigint)
+                    ->mapWithKeys(fn ($sbId, $_) => [$sbId => null]);
+            }
+        }
     }
 
     private function getJsonDataArray(): array
@@ -94,6 +114,7 @@ class MeetingChangeResource extends JsonResource
     private function convertObjectToArray($meetingObject): array
     {
         $ret = collect([]);
+        $serviceBodyBigint = null;
 
         $mainValues = $meetingObject['main_table_values'] ?? null;
         if ($mainValues) {
@@ -166,6 +187,8 @@ class MeetingChangeResource extends JsonResource
         }
 
         $dataTableValues = $meetingObject['data_table_values'] ?? [];
+        $userHasPermission = self::$userIsAuthenticated && (self::$userIsAdmin || self::$serviceBodyPermissions?->has($serviceBodyBigint));
+        
         foreach ($dataTableValues as $data) {
             if (isset($data['key']) && $data['key'] == 'root_server_uri') {
                 continue;
@@ -173,7 +196,13 @@ class MeetingChangeResource extends JsonResource
             if (!isset($data['data_string'])) {
                 continue;
             }
-            $ret->put($data['key'], $data['data_string']);
+            
+            // Check visibility field - if visibility is 1 (protected) and user doesn't have permission, mask with asterisks
+            if (isset($data['visibility']) && $data['visibility'] == 1 && !$userHasPermission && !empty($data['data_string'])) {
+                $ret->put($data['key'], '********');
+            } else {
+                $ret->put($data['key'], $data['data_string']);
+            }
         }
 
         return $ret->toArray();
