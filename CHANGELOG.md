@@ -1,5 +1,7 @@
 ## 4.0.2 (UNRELEASED)
 * Added Italian translations.
+* Updated German translations.
+* Fix favicon.
 * Mask visibility=1 fields with asterisks in GetChanges json_data for unauthorized users.
 
 ## 4.0.1 (November 5, 2025)
