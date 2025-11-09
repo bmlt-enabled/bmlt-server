@@ -60,7 +60,7 @@
     worldId: selectedServiceBody?.worldId ?? ''
   };
 
-  let assignedUserIdsSelected: number[] = $state(selectedServiceBody?.assignedUserIds ?? []);
+  let assignedUserIdsSelected: number[] = $state((selectedServiceBody?.assignedUserIds ?? []).filter((userId) => userId in userIdToUser));
   let savedServiceBody: ServiceBody;
 
   const { data, errors, form, setData } = createForm({
