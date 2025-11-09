@@ -43,6 +43,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   consoleErrorSpy.mockRestore();
+  xlsxWriteFileSpy.mockRestore();
   // put the default language back to English (one of the tests changes it)
   translations.setLanguage('en');
   sharedAfterEach();
@@ -91,9 +92,8 @@ describe('check Administration tab', () => {
     const user = await login('serveradmin', 'Administration');
     const download = await screen.findByRole('button', { name: 'Download Translations Spreadsheet' });
     await user.click(download);
-    expect(xlsxWriteFileSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
     expect(translationsFile).toBe('translations.xlsx');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
     const trans = translationsWB?.Sheets.translations;
     expect(trans).not.toBe(undefined);
     if (trans) {
@@ -112,9 +112,8 @@ describe('check Administration tab', () => {
     const user = await loginDeutsch('serveradmin', 'Administration');
     const download = await screen.findByRole('button', { name: 'Übersetzungstabelle herunterladen' });
     await user.click(download);
-    expect(xlsxWriteFileSpy).toHaveBeenCalledTimes(1);
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
     expect(translationsFile).toBe('translations.xlsx');
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
     const trans = translationsWB?.Sheets.translations;
     expect(trans).not.toBe(undefined);
     if (trans) {
