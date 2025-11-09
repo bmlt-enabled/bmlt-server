@@ -29,10 +29,10 @@ describe('language selection tests', () => {
     await userEvent.selectOptions(select_lang, ['Deutsch']);
     // login screen should now be in German, including the Language Selection menu title
     expect(screen.getByRole('combobox', { name: 'Sprache auswählen' })).toBeEnabled();
-    await user.type(screen.getByRole('textbox', { name: 'Benutzername' }), 'serveradmin');
-    await user.type(screen.getByLabelText('Passwort'), 'serveradmin-password');
-    expect(screen.getByRole('textbox', { name: 'Benutzername' })).toHaveDisplayValue('serveradmin');
-    expect(screen.getByLabelText('Passwort')).toHaveDisplayValue('serveradmin-password');
+    await user.type(screen.getByRole('textbox', { name: "Nom d'utilisateur" }), 'serveradmin');
+    await user.type(screen.getByLabelText('Mot de passe'), 'serveradmin-password');
+    expect(screen.getByRole('textbox', { name: "Nom d'utilisateur" })).toHaveDisplayValue('serveradmin');
+    expect(screen.getByLabelText('Mot de passe')).toHaveDisplayValue('serveradmin-password');
     await user.click(screen.getByRole('button', { name: 'Anmelden' }));
     // after a successful login, we should see 'Willkommen Server Administrator' and the navbar
     expect(screen.getByText('Willkommen Server Administrator')).toBeInTheDocument();
@@ -53,10 +53,10 @@ describe('language selection tests', () => {
     translations.setLanguage('de');
     const user = userEvent.setup();
     render(App);
-    await user.type(await screen.findByRole('textbox', { name: 'Benutzername' }), 'serveradmin');
-    await user.type(await screen.findByLabelText('Passwort'), 'schlechtes-passwort');
+    await user.type(await screen.findByRole('textbox', { name: "Nom d'utilisateur" }), 'serveradmin');
+    await user.type(await screen.findByLabelText('Mot de passe'), 'schlechtes-Mot de passe');
     await user.click(await screen.findByRole('button', { name: 'Anmelden' }));
-    await screen.findByText('Ungültiger Benutzername oder Passwort.');
+    await screen.findByText('Nom d’utilisateur ou mot de passe incorrect.');
   });
 
   test('test isLanguageSelectorEnabled == false', async () => {

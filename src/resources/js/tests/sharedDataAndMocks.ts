@@ -1066,8 +1066,8 @@ export async function loginDeutsch(username: string, tab: string | null = null):
   render(App);
   const select_lang: HTMLSelectElement = await screen.findByRole('combobox', { name: 'Select Language' });
   await userEvent.selectOptions(select_lang, ['Deutsch']);
-  await user.type(await screen.findByRole('textbox', { name: 'Benutzername' }), username);
-  await user.type(await screen.findByLabelText('Passwort'), findPassword(username));
+  await user.type(await screen.findByRole('textbox', { name: "Nom d'utilisateur" }), username);
+  await user.type(await screen.findByLabelText('Mot de passe'), findPassword(username));
   await user.click(await screen.findByRole('button', { name: 'Anmelden' }));
   if (tab) {
     await waitFor(
