@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BMLT Root Server</title>
+    <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <title>BMLT Server</title>
     <script>
         const settings = {
             apiBaseUrl: '{{ $baseUrl }}',
