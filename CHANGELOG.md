@@ -3,7 +3,7 @@
 * Updated German translations.
 * Fix favicon.
 * Mask visibility=1 fields with asterisks in GetChanges json_data for unauthorized users.
-* Fixed an issue where a service body could not be edited if one of its meeting editor users was deleted in a previous version. 
+* Fixed an issue where a service body couldn't be edited if one of its meeting editor users had been deleted.
 
 ## 4.0.1 (November 5, 2025)
 * Fixed longitude/latitude fields to be read-only when auto-geocoding is enabled
