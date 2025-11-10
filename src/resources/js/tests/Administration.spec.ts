@@ -42,8 +42,9 @@ beforeEach(() => {
   sharedBeforeEach();
 });
 afterEach(() => {
-  consoleErrorSpy.mockRestore();
+  xlsxWriteFileSpy.mockReset();
   xlsxWriteFileSpy.mockRestore();
+  consoleErrorSpy.mockRestore();
   // put the default language back to English (one of the tests changes it)
   translations.setLanguage('en');
   sharedAfterEach();
@@ -87,15 +88,16 @@ describe('check Administration tab', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to download Laravel log:', 'Response Error');
   });
 
-  // TODO: re-enable these tests.  Something is wrong with how mocking the writeFileXLSX function, so these are temporarily disabled.
-
-  test.skip('check download translations spreadsheet for English', async () => {
+  test('check download translations spreadsheet for English', async () => {
     laravelLogMissing.missing = false;
     const user = await login('serveradmin', 'Administration');
     const download = await screen.findByRole('button', { name: 'Download Translations Spreadsheet' });
     await user.click(download);
-    expect(translationsFile).toBe('translations.xlsx');
+    await vi.waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalledTimes(1);
+    });
     expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
+    expect(translationsFile).toBe('translations.xlsx');
     const trans = translationsWB?.Sheets.translations;
     expect(trans).not.toBe(undefined);
     if (trans) {
@@ -109,13 +111,16 @@ describe('check Administration tab', () => {
     }
   });
 
-  test.skip('check download translations spreadsheet for German', async () => {
+  test('check download translations spreadsheet for German', async () => {
     laravelLogMissing.missing = false;
     const user = await loginDeutsch('serveradmin', 'Administration');
     const download = await screen.findByRole('button', { name: 'Übersetzungstabelle herunterladen' });
     await user.click(download);
-    expect(translationsFile).toBe('translations.xlsx');
+    await vi.waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalledTimes(1);
+    });
     expect(consoleErrorSpy).toHaveBeenCalledTimes(0);
+    expect(translationsFile).toBe('translations.xlsx');
     const trans = translationsWB?.Sheets.translations;
     expect(trans).not.toBe(undefined);
     if (trans) {
