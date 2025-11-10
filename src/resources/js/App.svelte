@@ -54,11 +54,28 @@
   }
 
   function requiresAuthenticationAdmin(): boolean {
-    return requiresAuthentication() && ($authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin');
+    if (!requiresAuthentication()) {
+      return false;
+    }
+    // If $authenticatedUser is null, the user data is still being fetched from the API.
+    // Allow the route to load temporarily, this guard will be re-evaluated reactively once the user loads.
+    // The route components themselves also verify $authenticatedUser before rendering admin-only content.
+    if (!$authenticatedUser) {
+      return true;
+    }
+    return $authenticatedUser.type === 'admin' || $authenticatedUser.type === 'serviceBodyAdmin';
   }
 
   function requiresAuthenticationServerAdmin(): boolean {
-    return requiresAuthentication() && $authenticatedUser?.type === 'admin';
+    if (!requiresAuthentication()) {
+      return false;
+    }
+    // If $authenticatedUser is null, the user data is still being fetched from the API.
+    // Allow the route to load temporarily, this guard will be re-evaluated reactively once the user loads.
+    if (!$authenticatedUser) {
+      return true;
+    }
+    return $authenticatedUser.type === 'admin';
   }
 
   function conditionsFailed(event: ConditionsFailedEvent) {
