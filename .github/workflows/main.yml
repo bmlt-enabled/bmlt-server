@@ -37,10 +37,10 @@ jobs:
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
-        uses: shivammathur/setup-php@2.35.4
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2.8.8
+          tools: composer:v2.8.12
 
       - name: make composer 🎼
         run: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: Send coverage data to codecov.io 📀
         if: matrix.db == 'latest' && matrix.php == '8.4'
-        uses: codecov/codecov-action@v5.5.0
+        uses: codecov/codecov-action@v5
         with:
           files: src/coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -69,10 +69,10 @@ jobs:
       - name: checkout 🛒
         uses: actions/checkout@v5
 
-      - name: node 20 ❇️
-        uses: actions/setup-node@v4.4.0
+      - name: node 22 ❇️
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
 
       - name: make npm ♦️
         run: |
@@ -98,23 +98,23 @@ jobs:
       contents: write
     steps:
       - name: Checkout 🛒
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: php 8.2 🐘
         id: setup-php
-        uses: shivammathur/setup-php@2.35.4
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: composer:v2.8.8
+          tools: composer:v2.8.12
 
       - name: make composer 🎼
         run: |
           make composer
 
-      - name: setup node 20 ❇️
-        uses: actions/setup-node@v4.4.0
+      - name: setup node 22 ❇️
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 22
 
       - name: make frontend 🐥
         run: |
@@ -137,7 +137,7 @@ jobs:
           make zip
 
       - name: Configure S3 AWS Credentials 🪪
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-s3-artifact
           role-session-name: gh-actions
@@ -149,7 +149,7 @@ jobs:
 
       - name: Configure AWS Credentials 🪪
         if: contains(github.ref_name, 'main') || contains(github.ref_name, 'unstable')
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-tf-bmlt-rs
           role-session-name: gh-actions-bmlt
@@ -182,7 +182,7 @@ jobs:
           echo "RELEASE_TYPE=${RELEASE_TYPE}" >> $GITHUB_ENV
 
       - name: Create Release 🎉
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1
         if: github.ref_type == 'tag'
         with:
           artifacts: "build/bmlt-server.zip"
@@ -208,7 +208,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Configure AWS Credentials 🪪
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-tf-bmlt-rs
           role-session-name: gh-actions-bmlt
