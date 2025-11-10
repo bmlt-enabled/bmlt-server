@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2025_10_09_160510_add_serveradmin_if_needed')) {
+        if (!$this->migrationRepository->migrationExists('2025_11_10_014000_remove_nonexistent_assigned_users_from_service_bodies')) {
             return true;
         }
 
