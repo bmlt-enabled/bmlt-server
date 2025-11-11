@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2025_11_10_014000_remove_nonexistent_assigned_users_from_service_bodies')) {
+        if (!$this->migrationRepository->migrationExists('2025_11_11_174719_trim_user_whitespace')) {
             return true;
         }
 
