@@ -1,4 +1,4 @@
-## 4.0.2 (UNRELEASED)
+## 4.0.2 (November 11, 2025)
 * Added Italian translations.
 * Updated German translations.
 * Fix favicon.
