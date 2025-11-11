@@ -5,12 +5,13 @@
 * Mask visibility=1 fields with asterisks in GetChanges json_data for unauthorized users.
 * Fixed an issue where a service body couldn't be edited if one of its meeting editor users had been deleted.
 * Fixed admin routes failing to load when accessed via direct URL or bookmark.
+* Added database migrations to trim user fields whitespace and to remove nonexistent users from service body assignments.
 
 ## 4.0.1 (November 5, 2025)
 * Fixed longitude/latitude fields to be read-only when auto-geocoding is enabled
 
 ## 4.0.0 (November 4, 2025)
-* Added new user interface implemented in Svelte.  This includes a brand-new UI code base and various improvements. It is mostly backward compatible, except as noted here:
+* Added new user interface implemented in Svelte. This includes a brand-new UI code base and various improvements, including support for mobile devices and dark mode. It is mostly backward compatible, except as noted here:
   - Dropped support for the installer wizard -- see `installation/README.md` for new directions.
   - Deprecated the auto-config parameter `$default_minute_interval` (now just set to 5 minutes).
 * The new UI is mobile-friendly and includes dark mode support.
