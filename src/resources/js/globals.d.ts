@@ -17,6 +17,7 @@ declare global {
     googleApiKeyIsBad: boolean;
     isLanguageSelectorEnabled: boolean;
     languageMapping: Record<string, string>;
+    formatLangNames: Record<string, string>;
     meetingStatesAndProvinces: string[];
     meetingCountiesAndSubProvinces: string[];
     regionBias: string;

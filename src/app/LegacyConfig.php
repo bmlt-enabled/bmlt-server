@@ -135,6 +135,7 @@ class LegacyConfig
         $config['include_service_body_email_in_semantic'] = $g_include_service_body_email_in_semantic ?? false;
         $config['bmlt_title'] = $bmlt_title ?? '';
         $config['bmlt_notice'] = $bmlt_notice ?? '';
+        $config['format_lang_names'] = $format_lang_names ?? [];
 
         self::$config = $config;
         self::$configLoaded = true;

@@ -22,6 +22,9 @@ global.settings = {
     de: 'Deutsch',
     fr: 'Français'
   },
+  formatLangNames: {
+    is: 'Icelandic'
+  },
   meetingStatesAndProvinces: [],
   meetingCountiesAndSubProvinces: [],
   regionBias: 'us',

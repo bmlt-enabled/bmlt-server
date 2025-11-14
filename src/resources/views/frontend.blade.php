@@ -23,6 +23,7 @@
             googleApiKey: '{{ $googleApiKey }}',
             isLanguageSelectorEnabled: {{ $isLanguageSelectorEnabled ? 'true' : 'false' }},
             languageMapping: {{!! collect($languageMapping)->map(fn ($langName, $langAbbrev) => "$langAbbrev: '$langName'")->join(', ') !!}},
+            formatLangNames: {{!! collect($formatLangNames)->map(fn ($langName, $langAbbrev) => "$langAbbrev: '$langName'")->join(', ') !!}},
             meetingStatesAndProvinces: {!! json_encode(legacy_config('meeting_states_and_provinces', [])) !!},
             meetingCountiesAndSubProvinces: {!! json_encode(legacy_config('meeting_counties_and_sub_provinces', [])) !!},
             regionBias: '{{ $regionBias }}',
