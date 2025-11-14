@@ -8,7 +8,10 @@
     # If we don't turn this off, apache will issue a 301 redirect if a directory exists at %{REQUEST_FILENAME}
     DirectorySlash Off
 
-    # If it matches a file, show the file... otherwise kick it back to index.php
-    RewriteCond %{REQUEST_FILENAME} !-f
+    # If this file exists, just pass through to the file...
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule (.+) - [L,PT]
+
+    # ...otherwise kick it back to index.php
     RewriteRule ^ ../index.php [L]
 </IfModule>

@@ -1,3 +1,6 @@
+## 4.0.3 (UNRELEASED)
+* Fixed an issue that prevented the UI from loading on servers with a `RewriteOptions inherit` configuration.
+
 ## 4.0.2 (November 11, 2025)
 * Added Italian translations.
 * Updated German translations.
