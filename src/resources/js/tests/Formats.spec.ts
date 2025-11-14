@@ -97,14 +97,14 @@ describe('check content in Formats tab', () => {
     expect(toggle_fr.ariaExpanded).toBe('false');
   });
 
-  test('check format language japanese appears in accordion', async () => {
+  test('check format language Icelandic appears in accordion', async () => {
     const user = await login('serveradmin', 'Formats');
     await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
-    const toggle_jp = await screen.findByRole('button', { name: /toggle accordion jp/i });
-    expect(toggle_jp).toBeInTheDocument();
-    expect(toggle_jp.ariaExpanded).toBe('false');
-    const jp_key = (await screen.findByRole('textbox', { name: 'jp key' })) as HTMLInputElement;
-    expect(jp_key.value).toBe('');
+    const toggle_is = await screen.findByRole('button', { name: /toggle accordion is/i });
+    expect(toggle_is).toBeInTheDocument();
+    expect(toggle_is.ariaExpanded).toBe('false');
+    const is_key = (await screen.findByRole('textbox', { name: 'is key' })) as HTMLInputElement;
+    expect(is_key.value).toBe('');
   });
 
   test('delete a format', async () => {

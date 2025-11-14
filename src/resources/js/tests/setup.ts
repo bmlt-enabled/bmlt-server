@@ -23,7 +23,7 @@ global.settings = {
     fr: 'Français'
   },
   formatLangNames: {
-    jp: 'Japanese'
+    is: 'Icelandic'
   },
   meetingStatesAndProvinces: [],
   meetingCountiesAndSubProvinces: [],
