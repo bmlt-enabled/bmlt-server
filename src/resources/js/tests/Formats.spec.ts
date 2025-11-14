@@ -97,6 +97,16 @@ describe('check content in Formats tab', () => {
     expect(toggle_fr.ariaExpanded).toBe('false');
   });
 
+  test('check format language japanese appears in accordion', async () => {
+    const user = await login('serveradmin', 'Formats');
+    await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
+    const toggle_ja = await screen.findByRole('button', { name: /toggle accordion ja/i });
+    expect(toggle_ja).toBeInTheDocument();
+    expect(toggle_ja.ariaExpanded).toBe('false');
+    const ja_key = (await screen.findByRole('textbox', { name: 'ja key' })) as HTMLInputElement;
+    expect(ja_key.value).toBe('');
+  });
+
   test('delete a format', async () => {
     const user = await login('serveradmin', 'Formats');
     await user.click(await screen.findByRole('button', { name: 'Delete Format (B) Beginners' }));

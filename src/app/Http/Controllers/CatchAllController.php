@@ -52,6 +52,7 @@ class CatchAllController extends Controller
                 'googleApiKey' => legacy_config('google_api_key', ''),
                 'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
                 'languageMapping' => self::getLanguageMapping(),
+                'formatLangNames' => legacy_config('format_lang_names', []),
                 'meetingStatesAndProvinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
                 'meetingCountiesAndSubProvinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
                 'regionBias' => legacy_config('region_bias'),

@@ -19,8 +19,11 @@
 
   let { selectedFormat, reservedFormatKeys, onSaveSuccess }: Props = $props();
 
-  const mappings = settings.languageMapping;
-  const allLanguages: string[] = Object.getOwnPropertyNames(mappings);
+  const mappings = {
+    ...settings.languageMapping,
+    ...settings.formatLangNames
+  };
+  const allLanguages: string[] = Object.keys(mappings).sort();
 
   const initialValues: any = $state({ worldId: '', type: '' });
   if (selectedFormat && selectedFormat.worldId) {
