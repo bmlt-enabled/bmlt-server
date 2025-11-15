@@ -10,9 +10,10 @@
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
 
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import type { User } from 'bmlt-server-client';
   import UserForm from '../components/UserForm.svelte';
+  import { usersState } from '../stores/usersState';
 
   let isLoaded = $state(false);
   let users: User[] = $state([]);
@@ -86,7 +87,27 @@
     showModal = false;
   }
 
-  onMount(getUsers);
+  onMount(() => {
+    // Restore state from store if it exists
+    const storedState = $usersState;
+    if (storedState.users.length > 0) {
+      users = storedState.users;
+      searchTerm = storedState.searchTerm;
+      lastEditedUserId = storedState.lastEditedUserId;
+      isLoaded = true;
+    } else {
+      getUsers();
+    }
+  });
+
+  onDestroy(() => {
+    // Save current state to store when component unmounts
+    usersState.set({
+      users,
+      searchTerm,
+      lastEditedUserId
+    });
+  });
 </script>
 
 <Nav />

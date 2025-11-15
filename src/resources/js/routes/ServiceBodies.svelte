@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, P, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, TableSearch } from 'flowbite-svelte';
   import { TrashBinOutline } from 'flowbite-svelte-icons';
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   import type { ServiceBody, User } from 'bmlt-server-client';
 
@@ -13,6 +13,7 @@
   import { authenticatedUser } from '../stores/apiCredentials';
   import { translations } from '../stores/localization';
   import { spinner } from '../stores/spinner';
+  import { serviceBodiesState } from '../stores/serviceBodiesState';
 
   let usersLoaded = $state(false);
   let serviceBodiesLoaded = $state(false);
@@ -106,8 +107,29 @@
   }
 
   onMount(() => {
-    getUsers();
-    getServiceBodies();
+    // Restore state from store if it exists
+    const storedState = $serviceBodiesState;
+    if (storedState.serviceBodies.length > 0 && storedState.users.length > 0) {
+      serviceBodies = storedState.serviceBodies;
+      users = storedState.users;
+      searchTerm = storedState.searchTerm;
+      lastEditedServiceBodyId = storedState.lastEditedServiceBodyId;
+      usersLoaded = true;
+      serviceBodiesLoaded = true;
+    } else {
+      getUsers();
+      getServiceBodies();
+    }
+  });
+
+  onDestroy(() => {
+    // Save current state to store when component unmounts
+    serviceBodiesState.set({
+      serviceBodies,
+      users,
+      searchTerm,
+      lastEditedServiceBodyId
+    });
   });
 
   $effect(() => {

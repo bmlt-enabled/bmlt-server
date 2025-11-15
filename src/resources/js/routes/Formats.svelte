@@ -10,9 +10,10 @@
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
 
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import type { Format } from 'bmlt-server-client';
   import FormatForm from '../components/FormatForm.svelte';
+  import { formatsState } from '../stores/formatsState';
 
   const reservedFormatKeys = ['HY', 'TC', 'VM'];
 
@@ -111,7 +112,27 @@
     }
   }
 
-  onMount(getFormats);
+  onMount(() => {
+    // Restore state from store if it exists
+    const storedState = $formatsState;
+    if (storedState.formats.length > 0) {
+      formats = storedState.formats;
+      searchTerm = storedState.searchTerm;
+      lastEditedFormatId = storedState.lastEditedFormatId;
+      isLoaded = true;
+    } else {
+      getFormats();
+    }
+  });
+
+  onDestroy(() => {
+    // Save current state to store when component unmounts
+    formatsState.set({
+      formats,
+      searchTerm,
+      lastEditedFormatId
+    });
+  });
   // In the HTML below, we can assume that the authenticatedUser is the admin -- if not, just show a blank page.
   // Formats won't appear in the nav bar, but somebody could get to this page directly.  (There isn't any private
   // information on the formats page, and the server wouldn't let them save, so this wouldn't be a big deal however.)

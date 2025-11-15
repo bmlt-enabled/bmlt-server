@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import type { SvelteComponent } from 'svelte';
   import { Button, ButtonGroup, Checkbox, Dropdown, Indicator, Label, Select, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, TableSearch } from 'flowbite-svelte';
   import { ChevronDownOutline, ChevronLeftOutline, ChevronRightOutline, ChevronUpOutline, FilterSolid, PlusOutline } from 'flowbite-svelte-icons';
@@ -12,6 +12,7 @@
   import { spinner } from '../stores/spinner';
   import RootServerApi from '../lib/ServerApi';
   import ServiceBodiesTree from './ServiceBodiesTree.svelte';
+  import { meetingsState } from '../stores/meetingsState';
 
   interface Props {
     serviceBodies: ServiceBody[];
@@ -169,7 +170,7 @@
     }
   }
 
-  function updateItemsPerPage() {
+  function handleItemsPerPageChange() {
     currentPosition = 0; // Reset to first page when itemsPerPage changes
     lastEditedMeetingId = null;
   }
@@ -232,6 +233,8 @@
     } else {
       selectedDays = weekdayChoices.map((day) => day.value);
     }
+    currentPosition = 0;
+    lastEditedMeetingId = null;
   }
 
   function handleEnterKey(event: KeyboardEvent) {
@@ -241,13 +244,32 @@
   }
 
   onMount(() => {
+    // Restore state from store if it exists
+    const storedState = $meetingsState;
+    if (storedState.meetings.length > 0) {
+      meetings = storedState.meetings;
+      searchTerm = storedState.searchTerm;
+      selectedServiceBodies = storedState.selectedServiceBodies.length > 0 ? storedState.selectedServiceBodies : serviceBodies.map((sb) => sb.id.toString());
+      selectedDays = storedState.selectedDays.length > 0 ? storedState.selectedDays : weekdayChoices.map((day) => day.value);
+      selectedTimes = storedState.selectedTimes;
+      selectedPublished = storedState.selectedPublished;
+      currentPosition = storedState.currentPosition;
+      itemsPerPage = storedState.itemsPerPage;
+      sortColumn = storedState.sortColumn;
+      sortDirection = storedState.sortDirection;
+      lastEditedMeetingId = storedState.lastEditedMeetingId;
+      meetingIds = storedState.meetingIds;
+    } else if (serviceBodies.length === 1) {
+      // Initialize selectedServiceBodies for single service body case
+      selectedServiceBodies = serviceBodies.map((sb) => sb.id.toString());
+      searchMeetings();
+    }
+
     const searchInputElement = tableSearchRef?.shadowRoot?.getElementById('table-search') || (document.getElementById('table-search') as HTMLInputElement | null);
     if (searchInputElement) {
       searchInputElement.addEventListener('keydown', handleEnterKey);
     }
-    if (serviceBodies.length === 1) {
-      searchMeetings();
-    }
+
     return () => {
       if (searchInputElement) {
         searchInputElement.removeEventListener('keydown', handleEnterKey);
@@ -255,19 +277,27 @@
     };
   });
 
+  onDestroy(() => {
+    // Save current state to store when component unmounts
+    meetingsState.set({
+      meetings,
+      searchTerm,
+      selectedServiceBodies,
+      selectedDays,
+      selectedTimes,
+      selectedPublished,
+      currentPosition,
+      itemsPerPage,
+      sortColumn,
+      sortDirection,
+      lastEditedMeetingId,
+      meetingIds
+    });
+  });
+
   const currentPageItems = $derived(filteredItems.slice(currentPosition, currentPosition + itemsPerPage));
 
   const isAllDaysSelected = $derived(selectedDays.length === weekdayChoices.length);
-
-  $effect(() => {
-    updateItemsPerPage();
-  });
-  $effect(() => {
-    if (selectedDays || selectedTimes || selectedPublished) {
-      currentPosition = 0;
-      lastEditedMeetingId = null;
-    }
-  });
 </script>
 
 <TableSearch placeholder={$translations.filter} bind:this={tableSearchRef} hoverable={true} bind:inputValue={searchTerm} classes={tableSearchClasses}>
@@ -296,7 +326,16 @@
         <Button onclick={toggleAllDays} size="xs" color="primary" class="w-full">
           {isAllDaysSelected ? $translations.unselectAllDays : $translations.selectAllDays}
         </Button>
-        <Checkbox name="weekdays" choices={weekdayChoices} bind:group={selectedDays} class="justify-between" />
+        <Checkbox
+          name="weekdays"
+          choices={weekdayChoices}
+          bind:group={selectedDays}
+          onchange={() => {
+            currentPosition = 0;
+            lastEditedMeetingId = null;
+          }}
+          class="justify-between"
+        />
       </Dropdown>
       <Button color="alternative" class="relative">
         {$translations.published}
@@ -306,7 +345,16 @@
         <FilterSolid class="ml-2 h-3 w-3 " />
       </Button>
       <Dropdown class="w-48 space-y-2 divide-y-0 p-3 text-sm">
-        <Checkbox name="times" choices={publishedChoices} bind:group={selectedPublished} class="ms-2" />
+        <Checkbox
+          name="times"
+          choices={publishedChoices}
+          bind:group={selectedPublished}
+          onchange={() => {
+            currentPosition = 0;
+            lastEditedMeetingId = null;
+          }}
+          class="ms-2"
+        />
       </Dropdown>
       <Button color="alternative" class="relative">
         {$translations.time}
@@ -317,7 +365,16 @@
       </Button>
       <Dropdown class="w-48 space-y-2 divide-y-0 p-3 text-sm">
         <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.chooseStartTime}</h6>
-        <Checkbox name="times" choices={timeChoices} bind:group={selectedTimes} class="ms-2" />
+        <Checkbox
+          name="times"
+          choices={timeChoices}
+          bind:group={selectedTimes}
+          onchange={() => {
+            currentPosition = 0;
+            lastEditedMeetingId = null;
+          }}
+          class="ms-2"
+        />
       </Dropdown>
       <Button onclick={searchMeetings}>{$translations.search}</Button>
       {#if $authenticatedUser?.type === 'admin' || $authenticatedUser?.type === 'serviceBodyAdmin'}
@@ -413,7 +470,7 @@
           <span class="mx-2 text-gray-500 dark:text-gray-400">/</span>
           <span class="ml-4 flex items-center space-x-1">
             <Label for="itemsPerPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">{$translations.meetingsPerPage}</Label>
-            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} name="itemsPerPage" class="w-20 rounded-lg dark:bg-gray-600" />
+            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} onchange={handleItemsPerPageChange} name="itemsPerPage" class="w-20 rounded-lg dark:bg-gray-600" />
           </span>
         </span>
         <ButtonGroup>
