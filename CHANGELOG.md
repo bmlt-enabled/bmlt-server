@@ -1,6 +1,7 @@
 ## 4.0.3 (UNRELEASED)
 * Fixed an issue that prevented the UI from loading on servers with a `RewriteOptions inherit` configuration.
 * Fixed `$format_lang_names` setting to work with the new UI.
+* Fixed a geocoding issue -- if the county and/or zip code is automatically computed by the geocoder, we don't want to feed old and possibly incorrect values to the geocoder if the user edits an address.
 
 ## 4.0.2 (November 11, 2025)
 * Added Italian translations.

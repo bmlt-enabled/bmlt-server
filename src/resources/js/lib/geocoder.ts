@@ -55,8 +55,11 @@ export class Geocoder {
       meeting.locationCitySubsection,
       meeting.locationMunicipality,
       meeting.locationProvince,
-      meeting.locationSubProvince,
-      meeting.locationPostalCode1,
+      // Omit county (stored as locationSubProvince) or zip (stored as locationPostalCode1) if these are computed automatically by the geocoder.
+      // This is an issue if we are updating an address -- the meeting object will have their previously computed values, since the user can't
+      // update them.  We don't want to feed these old and perhaps incorrect values to the geocoder.
+      settings.countyAutoGeocodingEnabled ? undefined : meeting.locationSubProvince,
+      settings.zipAutoGeocodingEnabled ? undefined : meeting.locationPostalCode1,
       meeting.locationNation
     ]
       .filter(Boolean)
