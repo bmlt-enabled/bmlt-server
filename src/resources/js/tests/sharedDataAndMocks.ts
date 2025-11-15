@@ -1038,6 +1038,17 @@ export async function sharedAfterEach() {
   // clean up - don't leave in a logged in state (will be a no-op if we aren't logged in at this point)
   await replace('/');
   await apiCredentials.logout();
+
+  // Reset all stores to prevent data leakage between tests
+  const { meetingsState } = await import('../stores/meetingsState');
+  const { formatsState } = await import('../stores/formatsState');
+  const { serviceBodiesState } = await import('../stores/serviceBodiesState');
+  const { usersState } = await import('../stores/usersState');
+
+  meetingsState.reset();
+  formatsState.reset();
+  serviceBodiesState.reset();
+  usersState.reset();
 }
 
 // utility function to log in as a specific user, and optionally open the provided tab

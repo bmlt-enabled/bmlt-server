@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   import Nav from '../components/NavBar.svelte';
   import RootServerApi from '../lib/ServerApi';
@@ -7,6 +7,8 @@
   import { spinner } from '../stores/spinner';
   import type { Format, ServiceBody } from 'bmlt-server-client';
   import MeetingsList from '../components/MeetingsList.svelte';
+  import { serviceBodiesState } from '../stores/serviceBodiesState';
+  import { formatsState } from '../stores/formatsState';
 
   let serviceBodies: ServiceBody[] = $state([]);
   let formats: Format[] = $state([]);
@@ -39,8 +41,41 @@
   }
 
   onMount(() => {
-    getFormats();
-    getServiceBodies();
+    // Restore service bodies from store if available
+    const storedServiceBodiesState = $serviceBodiesState;
+    if (storedServiceBodiesState.serviceBodies.length > 0) {
+      serviceBodies = storedServiceBodiesState.serviceBodies;
+      serviceBodiesLoaded = true;
+    } else {
+      getServiceBodies();
+    }
+
+    // Restore formats from store if available
+    const storedFormatsState = $formatsState;
+    if (storedFormatsState.formats.length > 0) {
+      formats = storedFormatsState.formats;
+      formatsLoaded = true;
+    } else {
+      getFormats();
+    }
+  });
+
+  onDestroy(() => {
+    // Save service bodies to store when component unmounts
+    if (serviceBodies.length > 0) {
+      serviceBodiesState.update((state) => ({
+        ...state,
+        serviceBodies
+      }));
+    }
+
+    // Save formats to store when component unmounts
+    if (formats.length > 0) {
+      formatsState.update((state) => ({
+        ...state,
+        formats
+      }));
+    }
   });
 </script>
 
