@@ -98,6 +98,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 </svelte:head>
 
-<Router {routes} onconditionsFailed={conditionsFailed} />
+<Router {routes} restoreScrollState={true} onconditionsFailed={conditionsFailed} />
 <SpinnerModal />
 <ErrorModal />

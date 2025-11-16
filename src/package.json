@@ -63,7 +63,7 @@
         "leaflet": "^1.9.4",
         "localized-strings": "^2.0.3",
         "pbf": "^4.0.1",
-        "svelte-spa-router": "github:pjaudiomv/svelte-spa-router",
+        "svelte-spa-router": "github:pjaudiomv/svelte-spa-router#ad110296d3d1942d0680acd6f6babb49408fc915",
         "yup": "^1.7.1",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
