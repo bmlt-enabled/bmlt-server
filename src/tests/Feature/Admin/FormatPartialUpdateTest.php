@@ -362,13 +362,13 @@ class FormatPartialUpdateTest extends TestCase
         // it can't have duplicate translations
         $data['translations'] = [
             [
-                'key' => 'O',
+                'key' => 'Ovalid',
                 'name' => 'Open',
                 'description' => 'Meeting is open to non-addicts.',
                 'language' => 'en',
             ],
             [
-                'key' => 'O',
+                'key' => 'Ovalid',
                 'name' => 'Open',
                 'description' => 'Meeting is open to non-addicts.',
                 'language' => 'en',
@@ -383,6 +383,82 @@ class FormatPartialUpdateTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->patch("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
             ->assertStatus(204);
+    }
+
+    public function testPartialUpdateFormatValidateChangeReservedKey()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+
+        // the VM, TC, and HY format keys cannot be updated for english
+        $formats = Format::query()->where('lang_enum', 'en')->whereIn('key_string', ['VM', 'TC', 'HY'])->get();
+        $this->assertCount(3, $formats);
+        foreach ($formats as $format) {
+            $data['translations'] = [[
+                'key' => $format->key_string . '2',
+                'name' => $format->name_string,
+                'description' => $format->description_string,
+                'language' => $format->lang_enum
+            ]];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->patch("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(422);
+        }
+
+        // but they can be changed for other languages
+        $formats = Format::query()->where('lang_enum', 'es')->whereIn('key_string', ['VM', 'TC', 'HY'])->get();
+        $this->assertCount(3, $formats);
+        foreach ($formats as $format) {
+            $data['translations'] = [[
+                'key' => $format->key_string . '2',
+                'name' => $format->name_string,
+                'description' => $format->description_string,
+                'language' => $format->lang_enum
+            ]];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->patch("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(204);
+        }
+    }
+
+    public function testPartialUpdateFormatValidateFormatUseReservedKey()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $reservedKeys = ['VM', 'HY', 'TC'];
+
+        // a format can't have a new english translation added with a reserved key
+        foreach ($reservedKeys as $key) {
+            $format = Format::query()->where('lang_enum', 'en')->where('key_string', 'O')->firstOrFail();
+            $format->delete();
+            $data['translations'] = [[
+                'key' => $key,
+                'name' => 'Open',
+                'description' => 'Meeting is open to non-addicts.',
+                'language' => 'en',
+            ]];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->patch("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(422);
+            $format->save();
+        }
+
+        // but a non-english one can
+        Format::query()->where('lang_enum', 'es')->whereIn('key_string', $reservedKeys)->delete();
+        foreach ($reservedKeys as $key) {
+            $format = Format::query()->where('lang_enum', 'es')->where('shared_id_bigint', $format->shared_id_bigint)->firstOrFail();
+            $format->delete();
+            $data['translations'] = [[
+                'key' => $key,
+                'name' => 'Open',
+                'description' => 'Meeting is open to non-addicts.',
+                'language' => 'other',
+            ]];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->patch("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(204);
+            $format->save();
+        }
     }
 
     public function testPartialUpdateFormatValidateKey()
@@ -412,18 +488,16 @@ class FormatPartialUpdateTest extends TestCase
             ->patch("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
             ->assertStatus(422);
 
-        // it can't be a reserved format key
-        foreach (['VM', 'TC', 'HY'] as $key) {
-            $data['translations'] = [[
-                'key' => $key,
-                'name' => 'Open',
-                'description' => 'Meeting is open to non-addicts.',
-                'language' => 'en',
-            ]];
-            $this->withHeader('Authorization', "Bearer $token")
-                ->patch("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
-                ->assertStatus(422);
-        }
+        // it can't have the same key as another format for the same language
+        $data['translations'] = [[
+            'key' => 'O',
+            'name' => 'valid',
+            'description' => 'valid',
+            'language' => 'en',
+        ]];
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
+            ->assertStatus(422);
 
         // it can't be longer than 10
         $data['translations'] = [[
@@ -456,7 +530,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it is required
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
         ]];
@@ -466,7 +540,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can't be empty
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => '',
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
@@ -477,7 +551,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can't be longer than 255
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => str_repeat('t', 256),
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
@@ -488,7 +562,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can be 255
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => str_repeat('t', 255),
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
@@ -506,7 +580,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it is required
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => 'Open',
             'language' => 'en',
         ]];
@@ -516,7 +590,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can't be empty
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => 'Open',
             'description' => '',
             'language' => 'en',
@@ -527,7 +601,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can't be longer than 255
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => 'Open',
             'description' => str_repeat('t', 256),
             'language' => 'en',
@@ -538,7 +612,7 @@ class FormatPartialUpdateTest extends TestCase
 
         // it can be 255
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => 'Open',
             'description' => str_repeat('t', 255),
             'language' => 'en',
