@@ -16,7 +16,7 @@ class FormatCreateTest extends TestCase
             'worldId' => 'test',
             'type' => FormatTypeConsts::TYPE_OPEN_CLOSED,
             'translations' => [[
-                'key' => 'O',
+                'key' => 'O2',
                 'name' => 'Open',
                 'description' => 'Meeting is open to non-addicts.',
                 'language' => 'en',
@@ -102,9 +102,11 @@ class FormatCreateTest extends TestCase
 
         // it can be than 30 characters
         $data['worldId'] = str_repeat('t', 30);
-        $this->withHeader('Authorization', "Bearer $token")
+        $id = $this->withHeader('Authorization', "Bearer $token")
             ->post('/api/v1/formats', $data)
-            ->assertStatus(201);
+            ->assertStatus(201)
+            ->json()['id'];
+        Format::query()->where('shared_id_bigint', $id)->delete();
 
         // it can be null
         $data['worldId'] = null;
@@ -128,9 +130,10 @@ class FormatCreateTest extends TestCase
         // it can be a valid value
         foreach (array_keys(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP) as $validType) {
             $data['type'] = $validType;
-            $this->withHeader('Authorization', "Bearer $token")
+            $id = $this->withHeader('Authorization', "Bearer $token")
                 ->post('/api/v1/formats', $data)
-                ->assertStatus(201);
+                ->assertStatus(201)->json()['id'];
+            Format::query()->where('shared_id_bigint', $id)->delete();
         }
 
         // it can be null
@@ -185,7 +188,7 @@ class FormatCreateTest extends TestCase
 
         // it can be non-empty
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'O2',
             'name' => 'Open',
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
@@ -219,15 +222,24 @@ class FormatCreateTest extends TestCase
             ->post('/api/v1/formats', $data)
             ->assertStatus(422);
 
-        // it can't be a reserved format key
+        // the english translation can't be a reserved format key
         foreach (['VM', 'TC', 'HY'] as $key) {
             $data['translations'][0]['key'] = $key;
+            $data['translations'][0]['language'] = 'en';
             $this->withHeader('Authorization', "Bearer $token")
                 ->post('/api/v1/formats', $data)
                 ->assertStatus(422);
         }
 
+        // it can't have the same key as an existing format in the same language
+        $existingFormat = Format::query()->where('lang_enum', 'en')->first();
+        $data['translations'][0]['key'] = $existingFormat->key_string;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/formats', $data)
+            ->assertStatus(422);
+
         // it can't be longer than 10
+        $data = $this->validPayload();
         $data['translations'][0]['key'] = str_repeat('t', 11);
         $this->withHeader('Authorization', "Bearer $token")
             ->post('/api/v1/formats', $data)
@@ -235,9 +247,20 @@ class FormatCreateTest extends TestCase
 
         // it can be 10
         $data['translations'][0]['key'] = str_repeat('t', 10);
-        $this->withHeader('Authorization', "Bearer $token")
+        $id = $this->withHeader('Authorization', "Bearer $token")
             ->post('/api/v1/formats', $data)
-            ->assertStatus(201);
+            ->assertStatus(201)->json()['id'];
+        Format::query()->where('shared_id_bigint', $id)->delete();
+
+        // it can be these keys if not english
+        foreach (['VM', 'TC', 'HY'] as $key) {
+            $data['translations'][0]['key'] = $key;
+            $data['translations'][0]['language'] = 'blah';
+            $id = $this->withHeader('Authorization', "Bearer $token")
+                ->post('/api/v1/formats', $data)
+                ->assertStatus(201)->json()['id'];
+            Format::query()->where('shared_id_bigint', $id)->delete();
+        }
     }
 
     public function testCreateFormatValidateName()

@@ -7,6 +7,7 @@ use App\Http\Responses\JsonResponse;
 use App\Interfaces\FormatRepositoryInterface;
 use App\Models\Format;
 use App\Models\FormatType;
+use App\Rules\FormatTranslationKey;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -21,19 +22,16 @@ class FormatController extends ResourceController
         $this->authorizeResource(Format::class);
     }
 
-
     public function index(Request $request)
     {
         $formats = $this->formatRepository->getAsTranslations();
         return FormatResource::collection($formats);
     }
 
-
     public function show(Format $format)
     {
         return new FormatResource($format);
     }
-
 
     public function store(Request $request)
     {
@@ -45,7 +43,7 @@ class FormatController extends ResourceController
 
     public function update(Request $request, Format $format)
     {
-        $validated = $this->validateInputs($request);
+        $validated = $this->validateInputs($request, $format->shared_id_bigint);
         $sharedFormatsValues = $this->buildValuesArray($validated);
         $this->formatRepository->update($format->shared_id_bigint, $sharedFormatsValues);
         return response()->noContent();
@@ -74,12 +72,11 @@ class FormatController extends ResourceController
                 ->toArray()
         );
 
-        $validated = $this->validateInputs($request);
+        $validated = $this->validateInputs($request, $format->shared_id_bigint);
         $sharedFormatsValues = $this->buildValuesArray($validated);
         $this->formatRepository->update($format->shared_id_bigint, $sharedFormatsValues);
         return response()->noContent();
     }
-
 
     public function destroy(Request $request, Format $format)
     {
@@ -100,7 +97,7 @@ class FormatController extends ResourceController
         return response()->noContent();
     }
 
-    private function validateInputs(Request $request)
+    private function validateInputs(Request $request, int $formatId = null): Collection
     {
         return collect($request->validate([
             'worldId' => 'nullable|string|max:30',
@@ -116,7 +113,7 @@ class FormatController extends ResourceController
                     }
                 }
             ],
-            'translations.*.key' => ['required', 'string', 'max:10', Rule::notIn(['VM', 'HY', 'TC'])],
+            'translations.*.key' => ['required', 'string', 'max:10', new FormatTranslationKey($this->formatRepository, $formatId)],
             'translations.*.name' => 'required|string|max:255',
             'translations.*.description' => 'required|string|max:255',
             'translations.*.language' => 'required|string|max:7',

@@ -295,13 +295,13 @@ class FormatUpdateTest extends TestCase
         // it can't have duplicate translations
         $data['translations'] = [
             [
-                'key' => 'O',
+                'key' => 'Oduplicate',
                 'name' => 'Open',
                 'description' => 'Meeting is open to non-addicts.',
                 'language' => 'en',
             ],
             [
-                'key' => 'O',
+                'key' => 'Oduplicate',
                 'name' => 'Open',
                 'description' => 'Meeting is open to non-addicts.',
                 'language' => 'en',
@@ -313,7 +313,7 @@ class FormatUpdateTest extends TestCase
 
         // it can be non-empty
         $data['translations'] = [[
-            'key' => 'O',
+            'key' => 'Ovalid',
             'name' => 'Open',
             'description' => 'Meeting is open to non-addicts.',
             'language' => 'en',
@@ -347,14 +347,6 @@ class FormatUpdateTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->put("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
             ->assertStatus(422);
-
-        // it can't be a reserved format key
-        foreach (['VM', 'TC', 'HY'] as $key) {
-            $data['translations'][0]['key'] = $key;
-            $this->withHeader('Authorization', "Bearer $token")
-                ->put("/api/v1/formats/{$formats[0]->shared_id_bigint}", $data)
-                ->assertStatus(422);
-        }
 
         // it can't be longer than 10
         $data['translations'][0]['key'] = str_repeat('t', 11);
