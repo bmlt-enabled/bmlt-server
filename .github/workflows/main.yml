@@ -120,10 +120,6 @@ jobs:
         run: |
           make frontend
 
-      - name: make crouton 🍞
-        run: |
-          make crouton
-
       - name: Write .env with APP_VERSION and COMMIT_SHA 🧃
         shell: bash
         run: |
