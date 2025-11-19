@@ -36,5 +36,4 @@ $include_every_admin_on_emails = FALSE; // If this is TRUE (or 1), then any emai
 $time_format = 'g:i A'; // The PHP date() format for the times displayed.
 $change_date_format = 'g:i A, n/j/Y'; // The PHP date() format for times/dates displayed in the change records.
 $admin_session_name = 'BMLT_Admin'; // This is merely the 'tag' used to identify the BMLT admin session.
-$g_enable_semantic_admin = TRUE;
 $default_minute_interval = 5; // This sets the minutes interval for Start Time and Duration.

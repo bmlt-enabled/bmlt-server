@@ -108,7 +108,6 @@ class LegacyConfig
         $config['default_duration_time'] = $default_duration_time ?? '01:00:00';
         $config['region_bias'] = $region_bias ?? 'us';
         $config['distance_units'] = $comdef_distance_units ?? 'mi';
-        $config['enable_semantic_admin'] = isset($g_enable_semantic_admin) && $g_enable_semantic_admin;
         $config['enable_email_contact'] = isset($g_enable_email_contact) && $g_enable_email_contact;
         $config['include_service_body_admin_on_emails'] = isset($include_service_body_admin_on_emails) && $include_service_body_admin_on_emails;
         $config['change_depth_for_meetings'] = $change_depth_for_meetings ?? 0;
@@ -126,7 +125,6 @@ class LegacyConfig
         $config['auto_geocoding_enabled'] = isset($auto_geocoding_enabled) ? boolval($auto_geocoding_enabled) : true;
         $config['county_auto_geocoding_enabled'] = isset($county_auto_geocoding_enabled) ? boolval($county_auto_geocoding_enabled) : false;
         $config['zip_auto_geocoding_enabled'] = isset($zip_auto_geocoding_enabled) ? boolval($zip_auto_geocoding_enabled) : false;
-        $config['new_ui_enabled'] = $new_ui_enabled ?? true;
         // If default_closed_status is TRUE, meetings that don't explicitly have an OPEN or CLOSED format are assumed CLOSED for the NAWS export.
         $config['default_closed_status'] = $g_defaultClosedStatus ?? true;
         $config['enable_language_selector'] = $g_enable_language_selector ?? false;
