@@ -21,18 +21,26 @@
   let { serviceBodies, selectedValues = $bindable([]) }: Props = $props();
 
   const treeMap: Record<string, TreeNode> = {};
-  let trees = $derived.by(() => convertServiceBodiesToTreeNodes(serviceBodies));
+  const expansionState: Record<string, boolean> = {};
+  let updateCounter = $state(0);
+  let trees = $derived.by(() => {
+    void updateCounter; // Track to force re-derivation
+    const newTrees = convertServiceBodiesToTreeNodes(serviceBodies);
+    syncCheckedState(newTrees, selectedValues);
+    return newTrees;
+  });
 
   function convertServiceBodiesToTreeNodes(serviceBodies: ServiceBody[]): TreeNode[] {
     const nodeMap: Record<number, TreeNode> = {};
     const roots: TreeNode[] = [];
 
     serviceBodies.forEach((sb) => {
+      const value = sb.id.toString();
       nodeMap[sb.id] = {
         label: sb.name,
-        value: sb.id.toString(),
-        checked: selectedValues.includes(sb.id.toString()),
-        expanded: true,
+        value,
+        checked: false, // Will be set by syncCheckedState
+        expanded: expansionState[value] ?? true,
         children: []
       };
     });
@@ -47,6 +55,22 @@
     });
 
     return roots;
+  }
+
+  function syncCheckedState(trees: TreeNode[], selectedIds: string[]): void {
+    const selectedSet = new Set(selectedIds);
+
+    function updateNode(node: TreeNode): void {
+      node.checked = selectedSet.has(node.value);
+      if (node.children) {
+        node.children.forEach(updateNode);
+        const hasChecked = node.children.some((c) => c.checked || c.indeterminate);
+        const hasUnchecked = node.children.some((c) => !c.checked);
+        node.indeterminate = hasChecked && hasUnchecked;
+      }
+    }
+
+    trees.forEach(updateNode);
   }
 
   function rebuildChildren(node: TreeNode, checkAsParent = true) {
@@ -136,16 +160,34 @@
     return !!node.checked && (!node.children || node.children.every(isNodeFullySelected));
   }
   let isAllSelected = $derived.by(() => trees.every((node) => isNodeFullySelected(node)));
+
+  function handleExpansionToggle(node: TreeNode) {
+    node.expanded = !node.expanded;
+    expansionState[node.value] = node.expanded;
+    updateCounter++;
+  }
 </script>
 
 <div class="mb-4">
-  <Button onclick={toggleAll} size="xs" color="primary" class="w-full">
+  <Button onclick={toggleAll} size="xs" color="primary" class="w-full" onmousedown={(e: MouseEvent) => e.preventDefault()}>
     {isAllSelected ? $translations.unselectAllServiceBodies : $translations.selectAllServiceBodies}
   </Button>
 </div>
 
-<div>
+<div
+  onmousedown={(e: MouseEvent) => e.preventDefault()}
+  onclick={(e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }}
+  onkeydown={(e: KeyboardEvent) => {
+    e.stopPropagation();
+  }}
+  role="tree"
+  aria-label="Service bodies tree"
+  tabindex="0"
+>
   {#each trees as tree (tree)}
-    <Node {tree} toggle={rebuildTree} />
+    <Node {tree} toggle={rebuildTree} onExpansionToggle={handleExpansionToggle} />
   {/each}
 </div>
