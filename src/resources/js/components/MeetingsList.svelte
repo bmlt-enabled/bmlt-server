@@ -310,7 +310,7 @@
             <Indicator color="red" size="sm" placement="top-right" />
           {/if}
         </Button>
-        <Dropdown class="top-full z-50 w-90 space-y-2 divide-y-0 p-3 text-sm" isOpen={dropdownOpen}>
+        <Dropdown class="top-full z-50 w-90 space-y-2 divide-y-0 p-3 text-sm" bind:isOpen={dropdownOpen}>
           <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">{$translations.searchByServiceBody}</h6>
           <ServiceBodiesTree {serviceBodies} bind:selectedValues={selectedServiceBodies} />
         </Dropdown>

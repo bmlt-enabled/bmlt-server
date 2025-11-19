@@ -14,17 +14,17 @@
   interface Props {
     toggle: (e: CustomEvent<{ node: TreeNode }>, checkAsParent?: boolean) => void;
     tree: TreeNode;
+    onExpansionToggle?: (node: TreeNode) => void;
   }
 
-  let { toggle, tree = $bindable() }: Props = $props();
+  let { toggle, tree, onExpansionToggle }: Props = $props();
 
   if (tree.expanded === undefined) {
     tree.expanded = false;
   }
 
   const toggleExpansion = () => {
-    const newTree = { ...tree, expanded: !tree.expanded };
-    tree = newTree;
+    onExpansionToggle?.(tree);
   };
 
   const toggleCheck = () => {
@@ -47,13 +47,13 @@
         ></button>
       {/if}
       <Checkbox id={tree.value} data-label={tree.label} checked={tree.checked} indeterminate={tree.indeterminate} onclick={toggleCheck} />
-      <Label for={tree.value} class="ml-2">{tree.label}</Label>
+      <Label class="ml-2 cursor-pointer" onclick={toggleCheck}>{tree.label}</Label>
     </div>
     {#if tree.children && tree.children.length > 0 && tree.expanded}
       <ul>
         {#each tree.children as child (child.value)}
           <li>
-            <ServiceBodiesTreeNode tree={child} {toggle} />
+            <ServiceBodiesTreeNode tree={child} {toggle} {onExpansionToggle} />
           </li>
         {/each}
       </ul>

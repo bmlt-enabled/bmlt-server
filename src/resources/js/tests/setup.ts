@@ -42,3 +42,5 @@ global.window.matchMedia = vi.fn().mockImplementation((query) => ({
   removeEventListener: vi.fn(),
   dispatchEvent: vi.fn()
 }));
+
+global.window.scrollTo = vi.fn();
