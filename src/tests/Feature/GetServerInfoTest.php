@@ -167,19 +167,6 @@ class GetServerInfoTest extends TestCase
             ->assertJsonFragment(['google_api_key' => 'blah']);
     }
 
-    public function testMeetingTimeZonesEnabled()
-    {
-        LegacyConfig::set('meeting_time_zones_enabled', true);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['meeting_time_zones_enabled' => '1']);
-
-        LegacyConfig::set('meeting_time_zones_enabled', false);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['meeting_time_zones_enabled' => '0']);
-    }
-
     public function testCenterLongitude()
     {
         LegacyConfig::remove('search_spec_map_center_longitude');

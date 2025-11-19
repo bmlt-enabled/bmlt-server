@@ -560,7 +560,6 @@ class SwitcherController extends Controller
             'google_api_key' => legacy_config('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
             'dbVersion' => $this->migrationRepository->getLastMigration()['migration'],
             'dbPrefix' => legacy_config('db_prefix'),
-            'meeting_time_zones_enabled' => legacy_config('meeting_time_zones_enabled') ? '1' : '0',
             'phpVersion' => phpversion(),
             'auto_geocoding_enabled' => legacy_config('auto_geocoding_enabled'),
             'county_auto_geocoding_enabled' => legacy_config('county_auto_geocoding_enabled'),
