@@ -66,7 +66,28 @@ $(FRONTEND): $(NODE_MODULES)
 $(ZIP_FILE): $(VENDOR_AUTOLOAD) $(FRONTEND) $(SEMANTIC_HTML) $(TIMEZONE_ASSETS)
 	mkdir -p build
 	cp -r src build/main_server
-	cd build && zip -r $(shell basename $(ZIP_FILE)) main_server -x main_server/node_modules/\*
+	cd build && zip -r $(shell basename $(ZIP_FILE)) main_server \
+		-x main_server/.gitattributes \
+		-x main_server/.gitignore \
+		-x main_server/.nvmrc \
+		-x main_server/.phpcs.xml \
+		-x main_server/.phpstan.neon \
+		-x main_server/app.html \
+		-x main_server/composer.json \
+		-x main_server/composer.lock \
+		-x main_server/coverage.xml \
+		-x main_server/eslint.config.js \
+		-x main_server/node_modules/\* \
+		-x main_server/package.json \
+		-x main_server/package-lock.json \
+		-x main_server/phpunit.xml \
+		-x main_server/.phpunit.result.cache \
+		-x main_server/prettier.config.js \
+		-x main_server/resources/js/\* \
+		-x main_server/svelte.config.js \
+		-x main_server/tests/\* \
+		-x main_server/tsconfig.json \
+		-x main_server/vite.config.ts
 	rm -rf build/main_server
 
 .PHONY: composer
