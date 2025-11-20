@@ -8,16 +8,17 @@
   import { spinner } from '../stores/spinner';
   import RootServerApi from '../lib/ServerApi';
   import { formIsDirty } from '../lib/utils';
-  import type { Format } from 'bmlt-server-client';
+  import type { Format, FormatTranslation } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
 
   interface Props {
+    formats: Format[];
     selectedFormat: Format | null;
     reservedFormatKeys: string[];
     onSaveSuccess?: (format: Format) => void; // Callback function prop
   }
 
-  let { selectedFormat, reservedFormatKeys, onSaveSuccess }: Props = $props();
+  let { formats, selectedFormat, reservedFormatKeys, onSaveSuccess }: Props = $props();
 
   const mappings = {
     ...settings.languageMapping,
@@ -118,7 +119,7 @@
       changes are submitted -- this will raise an exception that gets caught.
   */
 
-  const selectedFormatTranslations = selectedFormat ? selectedFormat.translations : [];
+  const selectedFormatTranslations: FormatTranslation[] = selectedFormat ? selectedFormat.translations : [];
   for (const n of allLanguages) {
     const tr = selectedFormatTranslations.find((t) => t.language === n);
     initialValues[n + '_key'] = tr?.key ?? '';
@@ -155,7 +156,7 @@
   let savedFormat: Format;
   const { data, errors, form, isDirty } = createForm({
     initialValues: initialValues,
-    onSubmit: async (values) => {
+    onSubmit: async (values: any) => {
       spinner.show();
       const trs = [];
       for (const lang of allLanguages) {
@@ -173,7 +174,7 @@
         savedFormat = await RootServerApi.createFormat({ worldId: values.worldId, type: values.type, translations: trs });
       }
     },
-    onError: async (error) => {
+    onError: async (error: any) => {
       await RootServerApi.handleErrors(error as Error, {
         handleValidationError: (error) => {
           const errorObject: any = {};
@@ -185,18 +186,20 @@
               if (!$data[lang + '_key'] && ($data[lang + '_name'] || $data[lang + '_description'])) {
                 k.push($translations.keyIsRequired);
               }
-              // For English translations only: check that we're not trying to set the key of some other format to one of the
-              // reserved keys HY, TC, or VM.  If the format already exists and is one of HY, TC, or VM, it's OK to edit the
-              // name or description -- the condition includes a check to allow this.  (The key will be read-only.)
-              if (lang === 'en' && initialValues[lang + '_key'] !== $data[lang + '_key'] && reservedFormatKeys.includes($data[lang + '_key'])) {
-                k.push($translations.keyIsReserved);
+              // Check that the key isn't in use for a translation of another format. Note that this check also takes care of
+              // ensuring that other English translations don't use one of the reserved keys HY, TC, or VM.
+              for (const f of formats) {
+                if (f.id !== selectedFormat?.id) {
+                  const translationToCheck = f.translations.find((t: FormatTranslation) => t.language === lang);
+                  if (translationToCheck && translationToCheck.key === $data[lang + '_key']) {
+                    k.push($translations.keyAlreadyInUse);
+                  }
+                }
               }
-              // a translation is required for all languages for the reserved formats HY, TC, and VM -- it's an error
-              // if we're trying to delete one of these (just need to check the key, since if the key is there the name and
-              // description will be required)
-              if (reservedFormatKeys.includes(initialValues.en_key) && !$data[lang + '_key']) {
-                k.push($translations.formatTranslationIsRequired);
-              }
+              // A translation is required for English for the reserved formats HY, TC, and VM -- it would be an error if we tried to delete one of these.
+              // The server does check for this, but the UI won't let you delete one since editing the existing key for the English translation for
+              // HY, TC, and VM is disabled.  So we don't include a check here since this error can't arise (unless something went badly wrong with the
+              // code, but in that case we'll just let the server error suffice).
               errorObject[lang + '_key'] = k.join(' ');
               const n = error?.errors[lang + '_name'] ?? [];
               errorObject[lang + '_name'] = n.join(' ');
@@ -216,6 +219,8 @@
     extend: validator({ schema: yup.object(yupSchema), castValues: true })
   });
 
+  const errorStringArray = $derived(Object.values($errors).filter(Boolean));
+
   // This hack is required until https://github.com/themesberg/flowbite-svelte/issues/1395 is fixed.
   function disableButtonHack(event: MouseEvent) {
     if (!$isDirty) {
@@ -230,10 +235,10 @@
     return t ? t : $translations.getString(title, 'en');
   }
 
-  function isReservedKey(lang: string): boolean {
+  function keyIsReservedForLang(lang: string): boolean {
     if (lang === 'en') {
       const e = selectedFormatTranslations.find((t) => t.language === 'en');
-      return e !== undefined && reservedFormatKeys.includes(e.key);
+      return Boolean(e && reservedFormatKeys.includes(e.key));
     } else {
       return false;
     }
@@ -257,7 +262,7 @@
         <BasicAccordion header={mappings[lang]} open={$translations.getLanguage() === lang} label={'Toggle accordion ' + lang}>
           <div>
             <Label for="{lang}_key" class="mb-2 text-gray-900 dark:text-white" aria-label="{lang} key">{getLabel('keyTitle', lang)}</Label>
-            <Input type="text" id="{lang}_key" name="{lang}_key" disabled={isReservedKey(lang)} />
+            <Input type="text" id="{lang}_key" name="{lang}_key" disabled={keyIsReservedForLang(lang)} />
             <Helper class="mb-2" color="red">
               {#if $errors[lang + '_key']}
                 {$errors[lang + '_key']}
@@ -308,6 +313,14 @@
           {$translations.addFormat}
         {/if}
       </Button>
+      <Helper class="mt-4" color="red">
+        {#if errorStringArray.length}
+          {errorStringArray.length === 1 ? $translations.error : $translations.errors}
+          {#each errorStringArray as e}
+            {e}
+          {/each}
+        {/if}
+      </Helper>
     </div>
   </div>
 </form>

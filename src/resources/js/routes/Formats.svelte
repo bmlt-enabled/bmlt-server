@@ -26,7 +26,7 @@
   let deleteFormat: Format | null = $state(null);
   let lastEditedFormatId: number | null = $state(null);
 
-  let filteredFormats = $derived(
+  let filteredFormats: Format[] = $derived(
     [...formats].sort((f1, f2) => getFormatName(f1).localeCompare(getFormatName(f2))).filter((f) => getFormatName(f).toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1)
   );
 
@@ -176,14 +176,14 @@
       </TableSearch>
     {:else}
       <div class="p-2">
-        <FormatForm {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} />
+        <FormatForm {formats} {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} />
       </div>
     {/if}
   {/if}
 </div>
 
 {#if showModal}
-  <FormatModal bind:showModal {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} onClose={closeModal} />
+  <FormatModal bind:showModal {formats} {selectedFormat} {reservedFormatKeys} onSaveSuccess={onSaved} onClose={closeModal} />
 {/if}
 {#if deleteFormat}
   <FormatDeleteModal bind:showDeleteModal {deleteFormat} formatName={deleteFormat ? getFormatName(deleteFormat) : ''} onDeleteSuccess={onDeleted} />

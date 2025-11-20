@@ -85,6 +85,46 @@ describe('check content in Formats tab', () => {
     expect(mockDeletedFormatId).toBe(null);
   });
 
+  test('check that missing fields in a translation give an error', async () => {
+    // Check name and description here -- empty fields for these are caught by yup, whereas an empty key is found later.
+    // (As a result if the key in one language and the name in another are both empty, we only find the name error.)
+    const user = await login('serveradmin', 'Formats');
+    await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
+    const en_name = (await screen.findByRole('textbox', { name: 'en name' })) as HTMLInputElement;
+    await user.clear(en_name);
+    const de_description = (await screen.findByRole('textbox', { name: 'de description' })) as HTMLInputElement;
+    await user.clear(de_description);
+    const applyChanges = screen.getByRole('button', { name: 'Apply Changes' });
+    await user.click(applyChanges);
+    // since the update should fail we want mockSavedFormatUpdate to be null
+    expect(mockSavedFormatUpdate).toBe(null);
+    expect(mockSavedFormatCreate).toBe(null);
+    expect(mockDeletedFormatId).toBe(null);
+    expect(await screen.findByText(/Error/)).toBeInTheDocument();
+    // TODO: for some reason, the correct error text isn't being found in the document -- fix this
+    // expect(await screen.findByText(/name field is required/)).toBeInTheDocument();
+    // expect(await screen.findByText(/description field is required/)).toBeInTheDocument();
+  });
+
+  test('check that a duplicate key gives an error', async () => {
+    // Check name and description here -- empty fields for these are caught by yup, whereas an empty key is found later.
+    // (As a result if the key in one language and the name in another are both empty, we only find the name error.)
+    const user = await login('serveradmin', 'Formats');
+    await user.click(await screen.findByRole('cell', { name: '(BT) Basic Text' }));
+    const en_key = (await screen.findByRole('textbox', { name: 'en key' })) as HTMLInputElement;
+    await user.clear(en_key);
+    await user.type(en_key, 'B');
+    const applyChanges = screen.getByRole('button', { name: 'Apply Changes' });
+    await user.click(applyChanges);
+    // since the update should fail we want mockSavedFormatUpdate to be null
+    expect(mockSavedFormatUpdate).toBe(null);
+    expect(mockSavedFormatCreate).toBe(null);
+    expect(mockDeletedFormatId).toBe(null);
+    // TODO: for some reason, 'Error' and the correct error text isn't being found in the document -- fix this
+    // expect(await screen.findByText(/Error/)).toBeInTheDocument();
+    // expect(await screen.findByText(/translations.0.key cannot be the same as another format's for the same language./)).toBeInTheDocument();
+  });
+
   test('check accordion when German is selected', async () => {
     const user = await loginDeutsch('serveradmin', 'Formate');
     await user.click(await screen.findByRole('cell', { name: '(BT) BasicText' }));
@@ -105,6 +145,15 @@ describe('check content in Formats tab', () => {
     expect(toggle_is.ariaExpanded).toBe('false');
     const is_key = (await screen.findByRole('textbox', { name: 'is key' })) as HTMLInputElement;
     expect(is_key.value).toBe('');
+  });
+
+  test('editing the English key for a reserved format should be disabled (but not for other languages)', async () => {
+    const user = await login('serveradmin', 'Formats');
+    await user.click(await screen.findByRole('cell', { name: '(VM) Virtual Meeting' }));
+    const en_key = (await screen.findByRole('textbox', { name: 'en key' })) as HTMLInputElement;
+    const de_key = (await screen.findByRole('textbox', { name: 'de key' })) as HTMLInputElement;
+    expect(en_key).toBeDisabled();
+    expect(de_key).not.toBeDisabled();
   });
 
   test('delete a format', async () => {

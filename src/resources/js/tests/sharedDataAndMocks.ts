@@ -619,6 +619,23 @@ function formatInUse(id: number): boolean {
   return false;
 }
 
+function duplicateFormatKey(formatId: number, formatUpdate: FormatUpdate) {
+  for (let i = 0; i < formatUpdate.translations.length; i++) {
+    const updatedtr = formatUpdate.translations[i];
+    for (let j = 0; j < allFormats.length; j++) {
+      if (allFormats[j].id !== formatId) {
+        for (let k = 0; k < allFormats[j].translations.length; k++) {
+          const tr = allFormats[j].translations[k];
+          if (tr.key === updatedtr.key && tr.language === updatedtr.language) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 // define a mock authToken that expires 24 hours from now
 // to trigger a call to authRefresh, set the token to expire in 1 hour instead
 function generateMockAuthToken(userId: number): Token {
@@ -834,11 +851,28 @@ async function mockCreateFormat({ formatCreate: format }: { formatCreate: Format
   };
 }
 
-async function mockUpdateFormat({ formatId: _, formatUpdate: format }: { formatId: number; formatUpdate: FormatUpdate }): Promise<void> {
-  if (format.translations.length === 0) {
+async function mockUpdateFormat({ formatId: formatId, formatUpdate: formatUpdate }: { formatId: number; formatUpdate: FormatUpdate }): Promise<void> {
+  if (formatUpdate.translations.length === 0) {
     throw new ResponseError(makeResponse('The translations field is required.', 422, 'Unprocessable Content'), 'Response returned an error code');
   }
-  mockSavedFormatUpdate = format;
+  if (duplicateFormatKey(formatId, formatUpdate)) {
+    // the exact error message is correct only for one duplicate key, but this is adequate for our unit tests
+    throw new ResponseError(makeResponse("translations.0.key cannot be the same as another format's for the same language.", 422, 'Unprocessable Content'), 'Response returned an error code');
+  }
+  for (let i = 0; i < formatUpdate.translations.length; i++) {
+    const t = formatUpdate.translations[i];
+    // similarly .... the exact error message is correct only for one missing field in only one translation, but it's adequate for our unit tests
+    if (!t.key) {
+      throw new ResponseError(makeResponse('The translations.0.key field is required.', 422, 'Unprocessable Content'), 'Response returned an error code');
+    }
+    if (!t.name) {
+      throw new ResponseError(makeResponse('The translations.0.name field is required.', 422, 'Unprocessable Content'), 'Response returned an error code');
+    }
+    if (!t.description) {
+      throw new ResponseError(makeResponse('The translations.0.description field is required.', 422, 'Unprocessable Content'), 'Response returned an error code');
+    }
+  }
+  mockSavedFormatUpdate = formatUpdate;
 }
 
 async function mockDeleteFormat({ formatId: id }: { formatId: number }): Promise<void> {
