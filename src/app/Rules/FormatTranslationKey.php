@@ -3,7 +3,6 @@
 namespace App\Rules;
 
 use App\Interfaces\FormatRepositoryInterface;
-use App\Models\Format;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
