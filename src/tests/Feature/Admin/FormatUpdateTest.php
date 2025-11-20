@@ -323,6 +323,48 @@ class FormatUpdateTest extends TestCase
             ->assertStatus(204);
     }
 
+    public function testUpdateFormatValidateTranslationsReservedEnglishRequired()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $formats = Format::query()
+            ->where('lang_enum', 'en')
+            ->whereIn('key_string', ['VM', 'TC', 'HY'])
+            ->get();
+
+        foreach ($formats as $format) {
+            // the english translation cannot be deleted
+            $data['translations'] = [[
+                'key' => $format->key_string,
+                'name' => $format->name_string,
+                'description' => $format->description_string,
+                'language' => 'es',
+            ]];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->put("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(422);
+
+            // but it can be included
+            $data['translations'] = [
+                [
+                    'key' => $format->key_string,
+                    'name' => $format->name_string,
+                    'description' => $format->description_string,
+                    'language' => 'en',
+                ],
+                [
+                    'key' => $format->key_string,
+                    'name' => $format->name_string,
+                    'description' => $format->description_string,
+                    'language' => 'es',
+                ]
+            ];
+            $this->withHeader('Authorization', "Bearer $token")
+                ->put("/api/v1/formats/{$format->shared_id_bigint}", $data)
+                ->assertStatus(204);
+        }
+    }
+
     public function testUpdateFormatValidateKey()
     {
         $user = $this->createAdminUser();

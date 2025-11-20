@@ -409,12 +409,20 @@ class FormatPartialUpdateTest extends TestCase
         $formats = Format::query()->where('lang_enum', 'es')->whereIn('key_string', ['VM', 'TC', 'HY'])->get();
         $this->assertCount(3, $formats);
         foreach ($formats as $format) {
-            $data['translations'] = [[
-                'key' => $format->key_string . '2',
-                'name' => $format->name_string,
-                'description' => $format->description_string,
-                'language' => $format->lang_enum
-            ]];
+            $data['translations'] = [
+                [
+                    'key' => $format->key_string,
+                    'name' => 'english name',
+                    'description' => 'english description',
+                    'language' => 'en'
+                ],
+                [
+                    'key' => $format->key_string . '2',
+                    'name' => $format->name_string,
+                    'description' => $format->description_string,
+                    'language' => $format->lang_enum
+                ]
+            ];
             $this->withHeader('Authorization', "Bearer $token")
                 ->patch("/api/v1/formats/{$format->shared_id_bigint}", $data)
                 ->assertStatus(204);

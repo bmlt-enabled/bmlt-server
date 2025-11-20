@@ -8,6 +8,7 @@ use App\Interfaces\FormatRepositoryInterface;
 use App\Models\Format;
 use App\Models\FormatType;
 use App\Rules\FormatTranslationKey;
+use App\Rules\FormatTranslations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -111,7 +112,8 @@ class FormatController extends ResourceController
                             $fail(':attribute may have only one translation per language.');
                         }
                     }
-                }
+                },
+                new FormatTranslations($this->formatRepository, $formatId)
             ],
             'translations.*.key' => ['required', 'string', 'max:10', new FormatTranslationKey($this->formatRepository, $formatId)],
             'translations.*.name' => 'required|string|max:255',
