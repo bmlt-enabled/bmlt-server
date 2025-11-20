@@ -1189,7 +1189,7 @@ class MeetingCreateTest extends TestCase
 
     public function testStoreMeetingCheckLangEnum()
     {
-        Config::set('app.locale', 'es');
+        \App\Models\Setting::where('name', 'language')->update(['value' => json_encode('es')]);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);

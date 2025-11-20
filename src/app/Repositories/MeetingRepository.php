@@ -401,7 +401,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         // The stock fields are all english, but we want to account for the possibility that someone added a new/translated
         // field in their server's native language, so we get those first.
-        $langEnum = App::currentLocale();
+        $langEnum = legacy_config('language') ?: App::currentLocale();
         $fields = MeetingData::query()
             ->where('meetingid_bigint', 0)
             ->where('lang_enum', $langEnum)
@@ -529,7 +529,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getDataTemplates(): Collection
     {
-        $serverLanguage = App::currentLocale();
+        $serverLanguage = legacy_config('language') ?: App::currentLocale();
         $fallbackLanguage = config('fallback_locale');
         $dataTemplates = MeetingData::query()->where('meetingid_bigint', 0)->get();
 
@@ -621,7 +621,7 @@ class MeetingRepository implements MeetingRepositoryInterface
     public function create(array $values): Meeting
     {
         $values = collect($values);
-        $values->put('lang_enum', App::currentLocale());
+        $values->put('lang_enum', legacy_config('language') ?: App::currentLocale());
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));

@@ -60,13 +60,18 @@ export const faTranslations = {
   accountSettingsTitle: 'تنظیمات حساب',
   accountTitle: 'حساب',
   accountTypeTitle: 'نوع حساب',
+  addCountiesOrSubProvincesWhereMeetingsAreHeld: 'Add counties or sub-provinces where meetings are held', // TODO: Translate
+  addCountySubProvince: 'Add county/sub-province (e.g., Berkshire, Dukes)',
   addFormat: 'افزودن فرمت',
   addMeeting: 'افزودن جلسه',
   addServiceBody: 'افزودن بدنه خدماتی',
+  addStateProvince: 'Add state/province (e.g., NY, MA)',
+  addStatesOrProvincesWhereMeetingsAreHeld: 'Add states or provinces where meetings are held',
   addUser: 'افزودن کاربر',
   administrationTitle: 'اداره',
   administratorTitle: 'مدیر',
   adminTitle: 'ادمین',
+  advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'ق.ظ',
   applyChangesTitle: 'ذخیره تغییرات',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
@@ -74,6 +79,7 @@ export const faTranslations = {
   busLinesTitle: 'خطوط اتوبوس',
   by: 'بوسیله',
   cancel: 'لغو',
+  changeHistoryDepth: 'Change History Depth', // TODO: Translate
   chooseStartTime: 'انتخاب زمان شروع',
   cityTownTitle: 'شهر/شهر',
   clearFormTitle: 'پاک کردن فرم',
@@ -105,6 +111,10 @@ export const faTranslations = {
   dayTitle: 'ایام هفته',
   deactivatedTitle: 'غیرفعال',
   deactivatedUserTitle: 'کاربر غیرفعال',
+  defaultClosedStatus: 'Default Closed Status (for NAWS export)', // TODO: Translate
+  defaultLanguage: 'Default Language',
+  defaultMeetingDuration: 'Default Meeting Duration',
+  defaultSortKey: 'Default Sort Key',
   delete: 'حذف کردن',
   deleteFormat: 'حذف فرمت',
   deleteMeeting: 'حذف جلسه',
@@ -112,6 +122,7 @@ export const faTranslations = {
   deleteUser: 'حذف کاربر',
   descriptionTitle: 'توضیحات',
   details: 'جزئیات (شماره ردیف یا شناسه جلسه)',
+  distanceUnits: 'Distance Units', // TODO: Translate
   downloading: 'در حال دانلود ...',
   downloadLaravelLog: 'دانلود ورود به سیستم Laravel',
   downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
@@ -121,6 +132,10 @@ export const faTranslations = {
   editFormat: 'ویرایش فرمت',
   editUser: 'ویرایش کاربر',
   emailTitle: 'ایمیل',
+  enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
+  enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
+  enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'خطا',
   errorDownloading: 'Error Downloading',
   errors: 'خطاها',
@@ -129,6 +144,9 @@ export const faTranslations = {
   filter: 'فیلتر',
   formatDeleteConflictError: 'خطا: این فرمت قابل حذف نیست زیرا هنوز با جلسات همراه است.',
   formatId: 'شناسه فرمت',
+  formatLangNames: 'Format Language Names (Advanced)', // TODO: Translate
+  formatLangNamesHelperText:
+    'Specify custom language names for format translations not included in the server. This is an advanced feature—consider requesting official translations instead. Example: ga → Gaelic', // TODO: Translate
   formatsTitle: 'فرمت ها',
   formatTypeCode_ALERT: 'Format should be especially prominent (Clean requirement, etc.)',
   formatTypeCode_COMMON_NEEDS_OR_RESTRICTION: 'Common Needs and Restrictions (Mens Meeting, LGTBQ, No Children, etc.)',
@@ -139,19 +157,23 @@ export const faTranslations = {
   formatTypeCode_OPEN_OR_CLOSED: 'Attendance by non-addicts (Open, Closed)',
   formatTypeTitle: 'نوع فرمت',
   formatValidationError: 'خطا: این قالب فرمت می شود و نمی توان حذف شد.',
+  generalSettings: 'General Settings', // TODO: Translate
   geocodingFailed: 'Geocoding failed',
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
+  googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
   helplineTitle: 'راهنمای تماس تلفنی',
   hideDetails: 'مخفی کردن جزئیات',
   homeTitle: 'خانه',
   hoursTitle: 'ساعت',
   idTitle: 'شناسه',
+  includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
   invalidUsernameOrPassword: 'نام کاربری یا رمز عبور نامعتبر است.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'کلید لازم است',
   keyTitle: 'کلید',
+  kilometers: 'Kilometers', // TODO: Translate
   languageSelectTitle: 'انتخاب زبان',
   lastLoginTitle: 'Last Login',
   latitudeTitle: 'عرض جغرافیایی',
@@ -165,15 +187,22 @@ export const faTranslations = {
   logout: 'ورود به سیستم',
   longitudeTitle: 'طول جغرافیایی',
   malformedRows: 'ردیف های ناقص',
+  mapCenterLocation: 'Map Center Location', // TODO: Translate
+  mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'جلسه',
+  meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'زبانه ها با یک یا چند خطای:',
   meetingIsPublishedTitle: 'جلسه منتشر شد',
   meetingListEditorsTitle: 'ویرایشگرهای لیست جلسه',
   meetings: 'جلسات',
+  meetingSettings: 'Meeting Settings', // TODO: Translate
   meetingsPerPage: 'جلسات در هر صفحه',
+  meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'جلسات',
   meetingUnpublishedNote: 'توجه: انتشار جلسه نشانگر بسته شدن موقت است. اگر این جلسه به طور دائم بسته شده است ، لطفاً آن را حذف کنید.',
+  miles: 'Miles', // TODO: Translate
   minutesTitle: 'دقیقه',
+  myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'نام',
   nationTitle: 'ملیت',
   nawsFormat_BEG: 'Beginner/Newcomer',
@@ -226,10 +255,13 @@ export const faTranslations = {
   noServiceBodiesTitle: 'هیچ بدنه خدماتی نیست که این کاربر بتواند ویرایش کند',
   notedAsDeleted: 'به عنوان حذف شده یادداشت شد',
   notFound: 'یافت نشد',
+  noticeMessageDisplayedToUsers: 'Notice message displayed to users', // TODO: Translate
   noTranslationAvailable: 'ترجمه ای موجود نیست', // TODO: check this translation
   noUpdateNeeded: 'نیازی به آپدیت نیست',
   noUsersTitle: 'کاربری دیگری یافت نشد که این کاربر بتواند ویرایش کند',
   noWhitespaceInKey: 'فضای خالی در کلید مجاز نیست',
+  numberOfMeetingsForAutoSearch: 'Number of Meetings for Auto Search', // TODO: Translate
+  numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'ناظر بدنه خدماتی',
   occurredAt: 'رخ داده در',
   ownedByTitle: 'متعلق به',
@@ -241,9 +273,11 @@ export const faTranslations = {
   postMeridiem: 'ب.ظ',
   processingFile: 'پردازش پرونده ...',
   published: 'منتشر شده',
+  regionBias: 'Region Bias', // TODO: Translate
   saveAsCopy: 'ذخیره به عنوان کپی',
   saveAsCopyCheckbox: 'این جلسه را به عنوان کپی ذخیره کنید (جلسه جدید ایجاد می‌کند)',
   saveAsNewMeeting: 'به عنوان جلسه جدید ذخیره کنید',
+  saveSettings: 'Save Settings', // TODO: Translate
   saving: 'در حال ذخیره...',
   search: 'جستجو',
   searchByDay: 'جستجو براساس روز',
@@ -253,7 +287,9 @@ export const faTranslations = {
   selectAllDays: 'انتخاب همه روزها',
   selectAllServiceBodies: 'انتخاب تمام نهادهای خدماتی',
   serverAdministratorTitle: 'مدیر سرور اصلی',
+  serverNotice: 'Server Notice', // TODO: Translate
   serverTitle: 'سرور BMLT',
+  serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'بدون والد(سطح بالا)',
   serviceBodiesTitle: 'بدنه خدماتی',
   serviceBodiesWithEditableMeetings: 'این کاربر می تواند جلسات را در این بدنه خدماتی ویرایش کند:',
@@ -302,5 +338,7 @@ export const faTranslations = {
   welcome: 'خوش آمدید',
   worldIdTitle: 'کد کمیته جهانی',
   youHaveUnsavedChanges: 'شما تغییرات دخیره نشده ای داشته اید. آیا واقعاً می خواهید ببندید؟',
-  zipCodeTitle: 'کد پستی/کد پستی'
+  yourGoogleMapsApiKey: 'Your Google Maps API Key',
+  zipCodeTitle: 'کد پستی/کد پستی',
+  zoomLevel: 'Zoom Level' // TODO: Translate
 };

@@ -38,15 +38,21 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => legacy_config('db_host', '0.0.0.0'),
+            'host' => env('DB_HOST') ?? legacy_config('db_host', '0.0.0.0'),
             'port' => env('DB_PORT', '3306'),
-            'database' => legacy_config('db_database'),
-            'username' => legacy_config('db_username'),
-            'password' => legacy_config('db_password'),
+            'database' => env('DB_DATABASE') ?? legacy_config('db_database'),
+            'username' => env('DB_USERNAME') ?? legacy_config('db_username'),
+            'password' => env('DB_PASSWORD') ?? legacy_config('db_password'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => legacy_config('db_prefix') ? legacy_config('db_prefix') . '_' : 'test_',
+            'prefix' => (function () {
+                $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
+                if ($prefix) {
+                    return $prefix . '_';
+                }
+                return env('APP_ENV') === 'testing' ? 'test_' : '';
+            })(),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => 'InnoDB',
@@ -58,15 +64,21 @@ return [
         'test' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => legacy_config('db_host', '0.0.0.0'),
+            'host' => env('DB_HOST') ?? legacy_config('db_host', '0.0.0.0'),
             'port' => env('DB_PORT', '3306'),
-            'database' => legacy_config('db_database', 'rootserver'),
-            'username' => legacy_config('db_username', 'root'),
-            'password' => legacy_config('db_password', 'rootserver'),
+            'database' => env('DB_DATABASE') ?? legacy_config('db_database', 'rootserver'),
+            'username' => env('DB_USERNAME') ?? legacy_config('db_username', 'root'),
+            'password' => env('DB_PASSWORD') ?? legacy_config('db_password', 'rootserver'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => legacy_config('db_prefix') ? legacy_config('db_prefix') . '_' : 'test_',
+            'prefix' => (function () {
+                $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
+                if ($prefix) {
+                    return $prefix . '_';
+                }
+                return env('APP_ENV') === 'testing' ? 'test_' : '';
+            })(),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => 'InnoDB',
