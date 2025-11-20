@@ -316,6 +316,15 @@ class ApiClientWrapper {
     return this.api.getLaravelLog();
   }
 
+  async getSettings(): Promise<Record<string, any>> {
+    return this.api.getSettings();
+  }
+
+  async updateSettings(settings: Record<string, any>): Promise<void> {
+    const params = { settingsUpdate: settings };
+    return this.api.updateSettings(params);
+  }
+
   async handleErrors(error: Error, overrideErrorHandlers?: ErrorHandlers): Promise<void> {
     const handleAuthenticationError = overrideErrorHandlers?.handleAuthenticationError ?? this.defaultAuthenticationErrorHandler;
     const handleAuthorizationError = overrideErrorHandlers?.handleAuthorizationError ?? this.defaultAuthorizationErrorHandler;

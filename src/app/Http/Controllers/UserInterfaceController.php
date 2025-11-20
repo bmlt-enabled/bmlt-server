@@ -9,10 +9,6 @@ use App\Interfaces\MeetingRepositoryInterface;
 
 class UserInterfaceController extends Controller
 {
-    private static array $allowedLegacyPathEndings = [
-        '/client_interface/html/index.php',
-    ];
-
     public function all(Request $request): Response
     {
         return self::handle($request);
@@ -42,8 +38,8 @@ class UserInterfaceController extends Controller
             'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
             'languageMapping' => self::getLanguageMapping(),
             'formatLangNames' => legacy_config('format_lang_names', []),
-            'meetingStatesAndProvinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
-            'meetingCountiesAndSubProvinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
+            'meetingStatesAndProvinces' => legacy_config('meeting_states_and_provinces', []),
+            'meetingCountiesAndSubProvinces' => legacy_config('meeting_counties_and_sub_provinces', []),
             'regionBias' => legacy_config('region_bias'),
             'version' => config('app.version'),
             'zipAutoGeocodingEnabled' => legacy_config('zip_auto_geocoding_enabled'),
