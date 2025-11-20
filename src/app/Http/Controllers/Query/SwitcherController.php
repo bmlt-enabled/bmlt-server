@@ -357,7 +357,7 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
-        $langEnum = $request->input('lang_enum', config('app.locale'));
+        $langEnum = $request->input('lang_enum', legacy_config('language') ?: config('app.locale'));
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
@@ -416,7 +416,7 @@ class SwitcherController extends Controller
         $formatsExclude = collect($formatIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
         $formatsExclude = count($formatsExclude) ? $formatsExclude : null;
 
-        $langEnums = $request->input('lang_enum', config('app.locale'));
+        $langEnums = $request->input('lang_enum', legacy_config('language') ?: config('app.locale'));
         if (!is_array($langEnums)) {
             $langEnums = [$langEnums];
         }
@@ -543,7 +543,7 @@ class SwitcherController extends Controller
             'version' => config('app.version'),
             'versionInt' => strval((intval($versionArray[0]) * 1000000) + (intval($versionArray[1]) * 1000) + intval(strstr($versionArray[2], '-', true) ?: $versionArray[2])),
             'langs' => collect(scandir(base_path('lang')))->reject(fn ($dir) => str_starts_with($dir, '.'))->sort()->join(','),
-            'nativeLang' => config('app.locale'),
+            'nativeLang' => legacy_config('language') ?: config('app.locale'),
             'centerLongitude' => strval(legacy_config('search_spec_map_center_longitude')),
             'centerLatitude' => strval(legacy_config('search_spec_map_center_latitude')),
             'centerZoom' => strval(legacy_config('search_spec_map_center_zoom')),
@@ -552,8 +552,6 @@ class SwitcherController extends Controller
             'charSet' => 'UTF-8',
             'distanceUnits' => legacy_config('distance_units'),
             'semanticAdmin' => '1', // Yap uses this flag to determine legacy auth so we must keep it.
-            'emailEnabled' => legacy_config('enable_email_contact') ? '1' : '0',
-            'emailIncludesServiceBodies' => legacy_config('include_service_body_admin_on_emails') ? '1' : '0',
             'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
             'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
             'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),

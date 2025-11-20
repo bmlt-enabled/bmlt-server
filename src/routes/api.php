@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SwaggerController;
 use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,4 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/servicebodies/{serviceBody}', [ServiceBodyController::class, 'partialUpdate']);
     Route::apiResource('users', UserController::class);
     Route::patch('/users/{user}', [UserController::class, 'partialUpdate']);
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::put('/settings', [SettingController::class, 'update']);
 });

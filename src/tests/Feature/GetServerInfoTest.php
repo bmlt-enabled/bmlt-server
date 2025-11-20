@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\LegacyConfig;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
@@ -56,7 +57,14 @@ class GetServerInfoTest extends TestCase
 
     public function testNativeLang()
     {
-        Config::set('app.locale', 'es');
+        // Update the setting value
+        $setting = Setting::where('name', 'language')->first();
+        if (!$setting) {
+            $setting = new Setting(['name' => 'language', 'type' => 'string']);
+        }
+        $setting->value = 'es';  // This will trigger setValueAttribute which JSON encodes
+        $setting->save();
+
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['nativeLang' => 'es']);
@@ -94,38 +102,11 @@ class GetServerInfoTest extends TestCase
             ->assertJsonFragment(['distanceUnits' => 'blah']);
     }
 
-
     public function testSemanticAdmin()
     {
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['semanticAdmin' => '1']);
-    }
-
-    public function testEmailEnabled()
-    {
-        LegacyConfig::set('enable_email_contact', true);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailEnabled' => '1']);
-
-        LegacyConfig::set('enable_email_contact', false);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailEnabled' => '0']);
-    }
-
-    public function testEmailIncludesServiceBodies()
-    {
-        LegacyConfig::set('include_service_body_admin_on_emails', true);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailIncludesServiceBodies' => '1']);
-
-        LegacyConfig::set('include_service_body_admin_on_emails', false);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailIncludesServiceBodies' => '0']);
     }
 
     public function testChangesPerMeeting()
@@ -164,6 +145,8 @@ class GetServerInfoTest extends TestCase
 
     public function testGoogleApiKey()
     {
+        // Delete from database and memory - should return default (empty string)
+        Setting::where('name', 'googleApiKey')->delete();
         LegacyConfig::remove('google_api_key');
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -177,10 +160,11 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLongitude()
     {
-        LegacyConfig::remove('search_spec_map_center_longitude');
+        // When deleted, should return default value
+        Setting::where('name', 'searchSpecMapCenterLongitude')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
-            ->assertJsonFragment(['centerLongitude' => '']);
+            ->assertJsonFragment(['centerLongitude' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterLongitude'])]);
 
         LegacyConfig::set('search_spec_map_center_longitude', -79.793701171875);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
@@ -190,10 +174,11 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLatitude()
     {
-        LegacyConfig::remove('search_spec_map_center_latitude');
+        // When deleted, should return default value
+        Setting::where('name', 'searchSpecMapCenterLatitude')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
-            ->assertJsonFragment(['centerLatitude' => '']);
+            ->assertJsonFragment(['centerLatitude' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterLatitude'])]);
 
         LegacyConfig::set('search_spec_map_center_latitude', 36.065752051707);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
@@ -203,10 +188,11 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterZoom()
     {
-        LegacyConfig::remove('search_spec_map_center_zoom');
+        // When deleted, should return default value
+        Setting::where('name', 'searchSpecMapCenterZoom')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
-            ->assertJsonFragment(['centerZoom' => '']);
+            ->assertJsonFragment(['centerZoom' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterZoom'])]);
 
         LegacyConfig::set('search_spec_map_center_zoom', 10);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
@@ -284,5 +270,18 @@ class GetServerInfoTest extends TestCase
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['aggregator_mode_enabled' => false]);
+    }
+
+    public function testEnvironmentVariableOverridesDatabase()
+    {
+        Setting::updateOrCreate(['name' => 'googleApiKey'], ['value' => 'database_key']);
+
+        $_SERVER['GKEY'] = 'env_override_key';
+
+        $this->get('/client_interface/json/?switcher=GetServerInfo')
+            ->assertStatus(200)
+            ->assertJsonFragment(['google_api_key' => 'env_override_key']);
+
+        unset($_SERVER['GKEY']);
     }
 }

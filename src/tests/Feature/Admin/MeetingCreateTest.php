@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\MeetingResource;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\Setting;
 use App\Repositories\FormatRepository;
 use App\Repositories\MeetingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -1189,7 +1190,7 @@ class MeetingCreateTest extends TestCase
 
     public function testStoreMeetingCheckLangEnum()
     {
-        Config::set('app.locale', 'es');
+        Setting::where('name', 'language')->update(['value' => json_encode('es')]);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);

@@ -60,13 +60,18 @@ export const esTranslations = {
   accountSettingsTitle: 'Ajustes de la cuenta',
   accountTitle: 'Cuenta',
   accountTypeTitle: 'Tipo de cuenta',
+  addCountiesOrSubProvincesWhereMeetingsAreHeld: 'Add counties or sub-provinces where meetings are held', // TODO: Translate
+  addCountySubProvince: 'Add county/sub-province (e.g., Berkshire, Dukes)',
   addFormat: 'Añadir formato',
   addMeeting: 'Añadir grupo',
   addServiceBody: 'Añadir organismo de servicio',
+  addStateProvince: 'Add state/province (e.g., NY, MA)',
+  addStatesOrProvincesWhereMeetingsAreHeld: 'Add states or provinces where meetings are held',
   addUser: 'Añadir usuario',
   administrationTitle: 'Administración',
   administratorTitle: 'Administrador',
   adminTitle: 'Administrador',
+  advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
   applyChangesTitle: 'Aplicar cambios',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
@@ -74,6 +79,7 @@ export const esTranslations = {
   busLinesTitle: 'Líneas de autobuses',
   by: 'por',
   cancel: 'Cancelar',
+  changeHistoryDepth: 'Change History Depth', // TODO: Translate
   chooseStartTime: 'Escoger hora de comienzo',
   cityTownTitle: 'Ciudad/Pueblo',
   clearFormTitle: 'Borrar formulario',
@@ -105,6 +111,10 @@ export const esTranslations = {
   dayTitle: 'Día de la semana',
   deactivatedTitle: 'Desactivado',
   deactivatedUserTitle: 'Usuario desactivado',
+  defaultClosedStatus: 'Default Closed Status (for NAWS export)', // TODO: Translate
+  defaultLanguage: 'Default Language',
+  defaultMeetingDuration: 'Default Meeting Duration',
+  defaultSortKey: 'Default Sort Key',
   delete: 'Borrar',
   deleteFormat: 'Borrar formato',
   deleteMeeting: 'Borrar grupo',
@@ -112,6 +122,7 @@ export const esTranslations = {
   deleteUser: 'Borrar usuario',
   descriptionTitle: 'Descripción',
   details: 'Detalles (fila o número de identificación del grupo)',
+  distanceUnits: 'Distance Units', // TODO: Translate
   downloading: 'Descargando…',
   downloadLaravelLog: 'Descargar el registro de Laravel',
   downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
@@ -121,6 +132,10 @@ export const esTranslations = {
   editFormat: 'Editar formato',
   editUser: 'Editar usuario',
   emailTitle: 'Correo',
+  enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
+  enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
+  enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Error',
   errorDownloading: 'Error al descargar',
   errors: 'Errores',
@@ -129,6 +144,9 @@ export const esTranslations = {
   filter: 'Filtro',
   formatDeleteConflictError: 'Error: El formato no pudo borrarse porque está asociado con algún grupo',
   formatId: 'Número de identificación del formato',
+  formatLangNames: 'Format Language Names (Advanced)', // TODO: Translate
+  formatLangNamesHelperText:
+    'Specify custom language names for format translations not included in the server. This is an advanced feature—consider requesting official translations instead. Example: ga → Gaelic', // TODO: Translate
   formatsTitle: 'Formatos',
   formatTypeCode_ALERT: 'El formato debe ser especialmente destacado (requisito de tiempo en recuperación, etc.).',
   formatTypeCode_COMMON_NEEDS_OR_RESTRICTION: 'Necesidades y restricciones comunes (reuniones de hombres, LGTBQ, prohibición de niños, etc.)',
@@ -139,19 +157,23 @@ export const esTranslations = {
   formatTypeCode_OPEN_OR_CLOSED: 'Asistencia de los no-adictos (Grupo abierto, cerrado)',
   formatTypeTitle: 'Tipo de formato',
   formatValidationError: 'Error: Este formato está protegido y no puede borrarse.',
+  generalSettings: 'General Settings', // TODO: Translate
   geocodingFailed: 'Geocoding failed',
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
+  googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
   helplineTitle: 'Línea de ayuda',
   hideDetails: 'Ocultar detalles',
   homeTitle: 'Hogar',
   hoursTitle: 'Horas',
   idTitle: 'Identificación',
+  includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
   invalidUsernameOrPassword: 'Nombre de usuario o contraseña inválidos',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'Coloque una clave',
   keyTitle: 'Clave',
+  kilometers: 'Kilometers', // TODO: Translate
   languageSelectTitle: 'Escoger idioma',
   lastLoginTitle: 'Last Login',
   latitudeTitle: 'Latitud',
@@ -165,15 +187,22 @@ export const esTranslations = {
   logout: 'Cerrar sesión',
   longitudeTitle: 'Longitud',
   malformedRows: 'Filas malformadas',
+  mapCenterLocation: 'Map Center Location', // TODO: Translate
+  mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'grupo',
+  meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Pestañas con uno o más errores:',
   meetingIsPublishedTitle: 'El grupo está publicado',
   meetingListEditorsTitle: 'Editores de la lista de grupos',
   meetings: 'grupos',
+  meetingSettings: 'Meeting Settings', // TODO: Translate
   meetingsPerPage: 'Grupos por página',
+  meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Grupos',
   meetingUnpublishedNote: 'Nota: Cancelar la publicación de este grupo indica un cierre temporal. Si este grupo se ha cerrado de forma permanente, elimínela.',
+  miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
+  myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nombre',
   nationTitle: 'Nación',
   nawsFormat_BEG: 'Recién llegado',
@@ -226,10 +255,13 @@ export const esTranslations = {
   noServiceBodiesTitle: 'No se encuentran organismos de servicio que el usuario pueda editar',
   notedAsDeleted: 'Anotado como borrado',
   notFound: 'No encontrado',
+  noticeMessageDisplayedToUsers: 'Notice message displayed to users', // TODO: Translate
   noTranslationAvailable: 'No hay traducción disponible',
   noUpdateNeeded: 'No se requiere actualización',
   noUsersTitle: 'No se encuentra a otros usuarios que el presente usuario pueda editar',
   noWhitespaceInKey: 'No se permiten espacios en blanco en la clave',
+  numberOfMeetingsForAutoSearch: 'Number of Meetings for Auto Search', // TODO: Translate
+  numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'Observador del organismo de servicio',
   occurredAt: 'Ocurrió en',
   ownedByTitle: 'Propiedad de',
@@ -241,9 +273,11 @@ export const esTranslations = {
   postMeridiem: 'PM',
   processingFile: 'Procesando archivo…',
   published: 'Publicado',
+  regionBias: 'Region Bias', // TODO: Translate
   saveAsCopy: 'Guardar como copia',
   saveAsCopyCheckbox: 'Guardar esta reunión como copia (crea una nueva reunión)',
   saveAsNewMeeting: 'Guardar como nueva reunión',
+  saveSettings: 'Save Settings', // TODO: Translate
   saving: 'Guardando...',
   search: 'Buscar',
   searchByDay: 'Buscar por día',
@@ -253,7 +287,9 @@ export const esTranslations = {
   selectAllDays: 'Seleccionar todos los días',
   selectAllServiceBodies: 'Seleccionar todas las áreas de servicio',
   serverAdministratorTitle: 'Administrador principal del servidor',
+  serverNotice: 'Server Notice', // TODO: Translate
   serverTitle: 'Servidor de BMLT',
+  serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Sin padre (nivel superior)',
   serviceBodiesTitle: 'Áreas de servicio',
   serviceBodiesWithEditableMeetings: 'Este usuario puede editar reuniones en los siguientes organismos de servicio',
@@ -302,5 +338,7 @@ export const esTranslations = {
   welcome: 'Bienvenido/a',
   worldIdTitle: 'Código del comité mundial',
   youHaveUnsavedChanges: 'Tiene cambios no guardados. ¿De verdad quiere cerrar?',
-  zipCodeTitle: 'Código postal'
+  yourGoogleMapsApiKey: 'Your Google Maps API Key',
+  zipCodeTitle: 'Código postal',
+  zoomLevel: 'Zoom Level' // TODO: Translate
 };
