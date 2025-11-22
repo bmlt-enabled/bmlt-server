@@ -4,6 +4,7 @@
 * Fixed a geocoding issue -- if the county and/or zip code is automatically computed by the geocoder, we don't want to feed old and possibly incorrect values to the geocoder if the user edits an address.
 * Fixed problems with format key validation -- server now checks for duplicate keys correctly, and disallows changes to the English keys for the reserved formats HY, TC, and VM.
 * Added Portuguese translations.
+* Strip legacy `#@-@#` separator from custom field values in UI display.
 
 ## 4.0.2 (November 11, 2025)
 * Added Italian translations.

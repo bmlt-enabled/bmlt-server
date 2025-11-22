@@ -16,7 +16,7 @@
   import { spinner } from '../stores/spinner';
   import type { MeetingChangeResource } from 'bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
-  import { formIsDirty, isDirty as globalIsDirty } from '../lib/utils';
+  import { formIsDirty, isDirty as globalIsDirty, stripLegacyFieldSeparator } from '../lib/utils';
   import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
   import { tzFind } from '../lib/timeZone/find';
   import { Geocoder } from '../lib/geocoder';
@@ -147,13 +147,13 @@
     contactPhone2: selectedMeeting?.contactPhone2 ?? '',
     contactEmail1: selectedMeeting?.contactEmail1 ?? '',
     contactEmail2: selectedMeeting?.contactEmail2 ?? '',
-    busLines: selectedMeeting?.busLines ?? '',
-    trainLines: selectedMeeting?.trainLines ?? '',
+    busLines: stripLegacyFieldSeparator(selectedMeeting?.busLines),
+    trainLines: stripLegacyFieldSeparator(selectedMeeting?.trainLines),
     comments: selectedMeeting?.comments ?? '',
     customFields: selectedMeeting?.customFields
       ? {
           ...Object.fromEntries(settings.customFields.map((field) => [field.name, ''])),
-          ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, value ?? '']))
+          ...Object.fromEntries(Object.entries(selectedMeeting.customFields).map(([key, value]) => [key, stripLegacyFieldSeparator(value)]))
         }
       : Object.fromEntries(settings.customFields.map((field) => [field.name, '']))
   };

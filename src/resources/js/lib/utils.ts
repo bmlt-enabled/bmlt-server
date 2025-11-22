@@ -61,3 +61,19 @@ export function isCommaSeparatedNumbers(str: string): boolean {
   const regex: RegExp = /^(\d+)(,\d+)*$/;
   return regex.test(str);
 }
+
+/**
+ * Strips legacy BMLT v2 field separator from custom field values.
+ * "Display Name#@-@#Value" -> "Value"
+ */
+export function stripLegacyFieldSeparator(value: string | null | undefined): string {
+  if (!value) return '';
+
+  const separator = '#@-@#';
+  if (value.includes(separator)) {
+    const parts = value.split(separator);
+    return parts[1]?.trim() || value;
+  }
+
+  return value;
+}
