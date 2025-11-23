@@ -1,3 +1,9 @@
+## 4.1.0 (UNRELEASED)
+* Settings Management UI:
+  * All server settings (except database credentials) are now fully configurable through the 
+  Admin UI's Settings page. Settings are stored in the database and can also be managed via the Admin API (/api/v1/settings).
+  * A migration was added to automatically seed settings from legacy `auto-config.inc.php` file on upgrade.
+
 ## 4.0.3 (UNRELEASED)
 * Fixed an issue that prevented the UI from loading on servers with a `RewriteOptions inherit` configuration.
 * Fixed `$format_lang_names` setting to work with the new UI.

@@ -551,8 +551,6 @@ class SwitcherController extends Controller
             'regionBias' => legacy_config('region_bias'),
             'charSet' => 'UTF-8',
             'distanceUnits' => legacy_config('distance_units'),
-            'emailEnabled' => legacy_config('enable_email_contact') ? '1' : '0',
-            'emailIncludesServiceBodies' => legacy_config('include_service_body_admin_on_emails') ? '1' : '0',
             'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
             'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
             'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),

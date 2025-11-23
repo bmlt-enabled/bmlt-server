@@ -45,7 +45,7 @@ ${$translations.time}: ${formatTimestamp($errorModal.timestamp)}`;
       {#if $errorModal.details}
         <div class="rounded-lg border bg-gray-50 p-3">
           <P class="mb-2 text-xs text-gray-600">{$translations.technicalDetails}:</P>
-          <Textarea value={$errorModal.details} readonly rows={6} class="font-mono text-xs" />
+          <Textarea value={$errorModal.details} readonly rows={6} class="w-full font-mono text-xs" />
           <Button color="light" size="xs" onclick={copyToClipboard} class="mt-2">
             {$translations.copyToClipboard}
           </Button>
