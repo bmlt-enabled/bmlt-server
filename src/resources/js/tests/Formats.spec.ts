@@ -100,8 +100,8 @@ describe('check content in Formats tab', () => {
     expect(mockSavedFormatUpdate).toBe(null);
     expect(mockSavedFormatCreate).toBe(null);
     expect(mockDeletedFormatId).toBe(null);
-    expect(await screen.findByText(/Error/)).toBeInTheDocument();
-    // TODO: for some reason, the correct error text isn't being found in the document -- fix this
+    expect(await screen.findByText(/Errors/)).toBeInTheDocument(); // plural, since there is more than 1 error
+    // TODO: fix and uncomment these two lines -- for some reason, the correct error text isn't being found in the document
     // expect(await screen.findByText(/name field is required/)).toBeInTheDocument();
     // expect(await screen.findByText(/description field is required/)).toBeInTheDocument();
   });
@@ -120,7 +120,7 @@ describe('check content in Formats tab', () => {
     expect(mockSavedFormatUpdate).toBe(null);
     expect(mockSavedFormatCreate).toBe(null);
     expect(mockDeletedFormatId).toBe(null);
-    // TODO: for some reason, 'Error' and the correct error text isn't being found in the document -- fix this
+    // TODO: fix and uncomment these two lines -- for some reason, 'Error' and the correct error text isn't being found in the document
     // expect(await screen.findByText(/Error/)).toBeInTheDocument();
     // expect(await screen.findByText(/translations.0.key cannot be the same as another format's for the same language./)).toBeInTheDocument();
   });
