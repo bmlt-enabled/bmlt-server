@@ -9,13 +9,14 @@
 
   interface Props {
     showModal: boolean;
+    formats: Format[];
     selectedFormat: Format | null;
     reservedFormatKeys: string[];
     onSaveSuccess?: (format: Format) => void; // Callback function prop
     onClose?: () => void; // Callback function prop
   }
 
-  let { showModal = $bindable(), selectedFormat, reservedFormatKeys, onSaveSuccess, onClose }: Props = $props();
+  let { showModal = $bindable(), formats, selectedFormat, reservedFormatKeys, onSaveSuccess, onClose }: Props = $props();
 
   let showConfirmModal = $state(false);
   let forceClose = false;
@@ -66,7 +67,7 @@
 
 <Modal bind:open={showModal} size="sm" oncancel={handleModalCancel} outsideclose={true} class="modal-content">
   <div class="p-4">
-    <FormatForm {selectedFormat} {reservedFormatKeys} {onSaveSuccess} />
+    <FormatForm {formats} {selectedFormat} {reservedFormatKeys} {onSaveSuccess} />
   </div>
 </Modal>
 
