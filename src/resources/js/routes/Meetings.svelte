@@ -84,6 +84,14 @@
 <div class="mx-auto max-w-6xl p-2">
   <h2 class="mb-4 text-center text-xl font-semibold dark:text-white">{$translations.meetingsTitle}</h2>
   {#if serviceBodiesLoaded && formatsLoaded}
-    <MeetingsList {serviceBodies} {formats} />
+    {#if serviceBodies.length === 0}
+      <div class="flex items-center justify-center p-8">
+        <div class="text-center">
+          <p class="text-gray-500 dark:text-gray-400">{$translations.noServiceBodiesAssigned}</p>
+        </div>
+      </div>
+    {:else}
+      <MeetingsList {serviceBodies} {formats} />
+    {/if}
   {/if}
 </div>

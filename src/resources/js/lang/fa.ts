@@ -221,6 +221,7 @@ export const faTranslations = {
   noLogsFound: 'هیچ گزارشی یافت نشد',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: '- هیچ کدام -',
+  noServiceBodiesAssigned: 'You are not assigned to any service bodies. Please contact your administrator.', // TODO: translate
   noServiceBodiesTitle: 'هیچ بدنه خدماتی نیست که این کاربر بتواند ویرایش کند',
   notedAsDeleted: 'به عنوان حذف شده یادداشت شد',
   notFound: 'یافت نشد',

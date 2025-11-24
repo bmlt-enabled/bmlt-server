@@ -167,6 +167,7 @@ export const deTranslations = {
   noLogsFound: 'Keine Log-Einträge gefunden',
   nominatimGeocodingFailed: 'Nominatim-geocoding Fehler: keine Ergebnisse gefunden',
   none: '- Keine -',
+  noServiceBodiesAssigned: 'You are not assigned to any service bodies. Please contact your administrator.', // TODO: translate
   noServiceBodiesTitle: 'Es wurden keine Service-Bodies gefunden, die dieser Benutzer bearbeiten kann',
   notedAsDeleted: 'Noted as deleted', // TODO: Translate
   notFound: 'Not found', // TODO: Translate

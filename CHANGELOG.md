@@ -1,3 +1,6 @@
+## 4.0.4 (UNRELEASED)
+*  Show helpful message when no service bodies assigned. Don't allow creation of meetings.
+
 ## 4.0.3 (November 23, 2025)
 * Fixed an issue that prevented the UI from loading on servers with a `RewriteOptions inherit` configuration.
 * Fixed `$format_lang_names` setting to work with the new UI.

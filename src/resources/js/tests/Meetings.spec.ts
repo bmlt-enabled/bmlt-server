@@ -1,6 +1,7 @@
-import { beforeAll, beforeEach, describe, test } from 'vitest';
+import { beforeAll, beforeEach, describe, test, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/svelte';
 import { login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
+import ApiClientWrapper from '../lib/ServerApi';
 
 beforeAll(sharedBeforeAll);
 beforeEach(sharedBeforeEach);
@@ -52,6 +53,56 @@ describe('check content in Meetings tab when logged in as various users', () => 
         const emailError = screen.getByText('email must be a valid email');
         expect(nameError).toBeInTheDocument();
         expect(emailError).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+  }, 15000);
+
+  test('check empty state when user has no service bodies', async () => {
+    await login('serveradmin', 'Meetings');
+    vi.spyOn(ApiClientWrapper.api, 'getServiceBodies').mockResolvedValue([]);
+    const user = await import('@testing-library/user-event').then((m) => m.default.setup());
+    await user.click(await screen.findByRole('link', { name: 'Home' }));
+    await user.click(await screen.findByRole('link', { name: 'Meetings' }));
+
+    await waitFor(
+      async () => {
+        const emptyMessage = await screen.findByText('You are not assigned to any service bodies. Please contact your administrator.');
+        expect(emptyMessage).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Search' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Add Meeting' })).not.toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+  }, 15000);
+
+  test('check service body field is disabled text input when user has exactly one service body', async () => {
+    const user = await login('serveradmin', 'Meetings');
+    const singleServiceBody = { id: 999, name: 'Only Service Body', adminUserId: 1, type: 'AS', parentId: null, assignedUserIds: [], email: '', description: '', url: '', helpline: '', worldId: '' };
+    vi.spyOn(ApiClientWrapper.api, 'getServiceBodies').mockResolvedValue([singleServiceBody]);
+
+    await user.click(await screen.findByRole('link', { name: 'Home' }));
+    await user.click(await screen.findByRole('link', { name: 'Meetings' }));
+
+    const addMeetingButton = await screen.findByRole('button', { name: 'Add Meeting' });
+    await user.click(addMeetingButton);
+
+    await waitFor(
+      async () => {
+        const serviceBodyLabel = screen.getByText('Service Body');
+        expect(serviceBodyLabel).toBeInTheDocument();
+
+        // Look for disabled text input showing the service body name
+        const textInputs = document.querySelectorAll('input[type="text"]');
+        const serviceBodyTextInput = Array.from(textInputs).find((input) => (input as HTMLInputElement).value === 'Only Service Body') as HTMLInputElement;
+        expect(serviceBodyTextInput).toBeInTheDocument();
+        expect(serviceBodyTextInput.disabled).toBe(true);
+
+        // Verify hidden input with the service body ID bound to form data
+        const hiddenInput = document.getElementById('serviceBodyId') as HTMLInputElement;
+        expect(hiddenInput).toBeInTheDocument();
+        expect(hiddenInput.type).toBe('hidden');
+        expect(hiddenInput.value).toBe('999');
       },
       { timeout: 10000 }
     );
