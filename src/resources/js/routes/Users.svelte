@@ -4,6 +4,7 @@
   import Nav from '../components/NavBar.svelte';
   import UserModal from '../components/UserModal.svelte';
   import UserDeleteModal from '../components/UserDeleteModal.svelte';
+  import DownloadSpreadsheet from '../components/DownloadSpreadsheet.svelte';
 
   import { authenticatedUser } from '../stores/apiCredentials';
   import { spinner } from '../stores/spinner';
@@ -29,6 +30,17 @@
       .sort((u1, u2) => u1.displayName.localeCompare(u2.displayName))
       .filter((u) => u.id !== $authenticatedUser?.id)
       .filter((u) => u.displayName.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1)
+  );
+
+  let csvData = $derived(
+    filteredUsers.map((user) => ({
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      email: user.email,
+      type: user.type,
+      ownerId: user.ownerId
+    }))
   );
 
   async function getUsers(): Promise<void> {
@@ -122,7 +134,10 @@
             {#if $authenticatedUser?.type === 'admin'}
               <div class="flex">
                 <div class="mt-2.5 grow">Name</div>
-                <div><Button onclick={() => handleAdd()} class="whitespace-nowrap" aria-label={$translations.addUser}>{$translations.addUser}</Button></div>
+                <div class="flex gap-2">
+                  <DownloadSpreadsheet data={csvData} filename="users" />
+                  <Button onclick={() => handleAdd()} class="whitespace-nowrap" aria-label={$translations.addUser}>{$translations.addUser}</Button>
+                </div>
               </div>
             {:else}
               {$translations.nameTitle}

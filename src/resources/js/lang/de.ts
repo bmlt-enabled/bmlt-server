@@ -59,6 +59,7 @@ export const deTranslations = {
   details: 'Details (row number or meeting ID)', // TODO: translate
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
+  downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
   downloadTranslationsForCurrentLanguage: 'Download Übersetzung der beim Login ausgewählten Sprache',
   downloadTranslationsSpreadsheet: 'Übersetzungstabelle herunterladen',
   durationTitle: 'Dauer',

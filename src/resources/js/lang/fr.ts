@@ -114,6 +114,7 @@ export const frTranslations = {
   details: 'Détails (numéro de ligne ou identifiant de réunion)',
   downloading: 'Téléchargement...',
   downloadLaravelLog: 'Télécharger le journal Laravel',
+  downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
   downloadTranslationsForCurrentLanguage: 'Télécharger les traductions pour la langue sélectionnée lors de la connexion',
   downloadTranslationsSpreadsheet: 'Télécharger la feuille de calcul des traductions',
   durationTitle: 'Durée',

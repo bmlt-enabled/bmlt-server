@@ -114,6 +114,7 @@ export const itTranslations = {
   details: 'Dettagli (numero di riga o ID riunione)',
   downloading: 'Download in corso..',
   downloadLaravelLog: 'Scarica registro Laravel',
+  downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
   downloadTranslationsForCurrentLanguage: "Scarica le traduzioni per la lingua selezionata al momento dell'accesso",
   downloadTranslationsSpreadsheet: 'Scarica il foglio di calcolo delle traduzioni',
   durationTitle: 'Durata',

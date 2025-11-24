@@ -114,6 +114,7 @@ export const ptTranslations = {
   details: 'Detalhes (número da linha ou ID da reunião)',
   downloading: 'Baixando…',
   downloadLaravelLog: 'Baixando log do Laravel',
+  downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
   downloadTranslationsForCurrentLanguage: 'Baixar traduções para o idioma selecionado no login',
   downloadTranslationsSpreadsheet: 'Baixar planilha de Traduções',
   durationTitle: 'Duração',

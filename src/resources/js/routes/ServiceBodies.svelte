@@ -9,6 +9,7 @@
   import ServiceBodyDeleteModal from '../components/ServiceBodyDeleteModal.svelte';
   import ServiceBodyForm from '../components/ServiceBodyForm.svelte';
   import ServiceBodyModal from '../components/ServiceBodyModal.svelte';
+  import DownloadSpreadsheet from '../components/DownloadSpreadsheet.svelte';
   import RootServerApi from '../lib/ServerApi';
   import { authenticatedUser } from '../stores/apiCredentials';
   import { translations } from '../stores/localization';
@@ -142,6 +143,21 @@
                   ($authenticatedUser?.type === 'admin' || isAdminForServiceBody($authenticatedUser.id, s)));
       }
   });
+
+  let csvData = $derived(
+    filteredServiceBodies.map((sb) => ({
+      id: sb.id,
+      name: sb.name,
+      description: sb.description,
+      type: sb.type,
+      adminUserId: sb.adminUserId,
+      parentId: sb.parentId,
+      worldId: sb.worldId,
+      url: sb.url,
+      helpline: sb.helpline,
+      email: sb.email
+    }))
+  );
 </script>
 
 <Nav />
@@ -156,7 +172,8 @@
             {#if $authenticatedUser?.type === 'admin'}
               <div class="flex">
                 <div class="mt-2.5 grow">Name</div>
-                <div>
+                <div class="flex gap-2">
+                  <DownloadSpreadsheet data={csvData} filename="service_bodies" />
                   <Button onclick={() => handleAdd()} class="whitespace-nowrap" aria-label={$translations.addServiceBody}>{$translations.addServiceBody}</Button>
                 </div>
               </div>
