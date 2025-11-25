@@ -198,7 +198,7 @@
     </div>
     <div class="md:col-span-2">
       <Label for="assignedUserIds" class="mb-2">{$translations.meetingListEditorsTitle}</Label>
-      <MultiSelect id="assignedUserIds" items={userItems} name="assignedUserIds" class="bg-gray-50 dark:bg-gray-600" bind:value={assignedUserIdsSelected}>
+      <MultiSelect id="assignedUserIds" items={userItems} name="assignedUserIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={assignedUserIdsSelected}>
         {#snippet children({ item, clear })}
           <Badge rounded color={badgeColor(String(item.value))} dismissable params={{ duration: 100 }} onclose={clear}>
             {item.name}
@@ -268,3 +268,9 @@
     </div>
   </div>
 </form>
+
+<style>
+  :global(.hide-close-button button[aria-label='Close']) {
+    display: none !important;
+  }
+</style>
