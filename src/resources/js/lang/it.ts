@@ -221,6 +221,7 @@ export const itTranslations = {
   noLogsFound: 'Nessun registro trovato',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: 'Nessuno',
+  noServiceBodiesAssigned: 'You are not assigned to any service bodies. Please contact your administrator.', // TODO: translate
   noServiceBodiesTitle: 'Nessun ente di servizio trovato che questo utente possa modificare',
   notedAsDeleted: 'Contrassegnato come eliminato',
   notFound: 'Non trovato',

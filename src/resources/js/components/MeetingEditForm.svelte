@@ -114,7 +114,7 @@
     defaultDuration = hours + ':' + minutes;
   }
   const initialValues = {
-    serviceBodyId: selectedMeeting?.serviceBodyId ?? -1,
+    serviceBodyId: selectedMeeting?.serviceBodyId ?? (serviceBodies.length === 1 ? serviceBodies[0].id : -1),
     formatIds: selectedMeeting?.formatIds ?? [],
     venueType: selectedMeeting?.venueType ?? VENUE_TYPE_IN_PERSON,
     temporarilyVirtual: selectedMeeting?.temporarilyVirtual ?? false,
@@ -901,7 +901,12 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
-      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} class="rounded-lg dark:bg-gray-600" />
+      {#if serviceBodies.length === 1}
+        <Input type="text" value={serviceBodies[0].name} disabled />
+        <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} />
+      {:else}
+        <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} class="rounded-lg dark:bg-gray-600" />
+      {/if}
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
           {$errors.serviceBodyId}

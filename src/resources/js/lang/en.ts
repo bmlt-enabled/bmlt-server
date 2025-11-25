@@ -221,6 +221,7 @@ export const enTranslations = {
   noLogsFound: 'No logs found',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: '- None -',
+  noServiceBodiesAssigned: 'You are not assigned to any service bodies. Please contact your administrator.',
   noServiceBodiesTitle: 'No service bodies found that this user can edit',
   notedAsDeleted: 'Noted as deleted',
   notFound: 'Not found',
