@@ -49,15 +49,31 @@ class UserController extends ResourceController
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'username' => 'required|string|max:255|unique:comdef_users,login_string',
-            'password' => ['required', Password::min(12)],
-            'type' => ['required', Rule::in(array_values(User::USER_LEVEL_TO_USER_TYPE_MAP))],
-            'displayName' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1024',
-            'email' => 'nullable|email',
-            'ownerId' => 'nullable|present|int|exists:comdef_users,id_bigint',
-        ]);
+        $requestUser = $request->user();
+        
+        // Service body admins can only create observer and serviceBodyAdmin users
+        // and must set themselves as owner
+        if ($requestUser->isServiceBodyAdmin()) {
+            $validated = $request->validate([
+                'username' => 'required|string|max:255|unique:comdef_users,login_string',
+                'password' => ['required', Password::min(12)],
+                'type' => ['required', Rule::in([User::USER_TYPE_OBSERVER, User::USER_TYPE_SERVICE_BODY_ADMIN])],
+                'displayName' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1024',
+                'email' => 'nullable|email',
+                'ownerId' => ['required', 'int', Rule::in([$requestUser->id_bigint])],
+            ]);
+        } else {
+            $validated = $request->validate([
+                'username' => 'required|string|max:255|unique:comdef_users,login_string',
+                'password' => ['required', Password::min(12)],
+                'type' => ['required', Rule::in(array_values(User::USER_LEVEL_TO_USER_TYPE_MAP))],
+                'displayName' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1024',
+                'email' => 'nullable|email',
+                'ownerId' => 'nullable|present|int|exists:comdef_users,id_bigint',
+            ]);
+        }
 
         $ownerId = $validated['ownerId'];
         if ($ownerId && $this->userRepository->getById($ownerId)?->isAdmin()) {

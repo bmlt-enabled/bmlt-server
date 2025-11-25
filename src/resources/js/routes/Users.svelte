@@ -11,7 +11,7 @@
   import RootServerApi from '../lib/ServerApi';
 
   import { onMount, onDestroy } from 'svelte';
-  import type { User } from 'bmlt-server-client';
+  import type { User, ServiceBody } from 'bmlt-server-client';
   import UserForm from '../components/UserForm.svelte';
   import { usersState } from '../stores/usersState';
 
@@ -23,6 +23,7 @@
   let selectedUser: User | null = $state(null);
   let deleteUser: User | null = $state(null);
   let lastEditedUserId: number | null = $state(null);
+  let canCreateUsers = $state(false);
 
   let filteredUsers = $derived(
     [...users]
@@ -36,6 +37,15 @@
       spinner.show();
       users = await RootServerApi.getUsers();
       lastEditedUserId = null;
+
+      // Check if service body admin can create users (must be admin of at least one service body)
+      if ($authenticatedUser?.type === 'serviceBodyAdmin') {
+        const serviceBodies = await RootServerApi.getServiceBodies();
+        canCreateUsers = serviceBodies.some((sb: ServiceBody) => sb.adminUserId === $authenticatedUser?.id);
+      } else if ($authenticatedUser?.type === 'admin') {
+        canCreateUsers = true;
+      }
+
       isLoaded = true;
     } catch (error: any) {
       await RootServerApi.handleErrors(error);
@@ -119,7 +129,7 @@
       <TableSearch placeholder={$translations.searchByName} hoverable={true} bind:inputValue={searchTerm}>
         <TableHead>
           <TableHeadCell colspan={$authenticatedUser?.type === 'admin' ? 2 : 1}>
-            {#if $authenticatedUser?.type === 'admin'}
+            {#if canCreateUsers}
               <div class="flex">
                 <div class="mt-2.5 grow">Name</div>
                 <div><Button onclick={() => handleAdd()} class="whitespace-nowrap" aria-label={$translations.addUser}>{$translations.addUser}</Button></div>
@@ -149,7 +159,7 @@
           {/each}
         </TableBody>
       </TableSearch>
-    {:else if $authenticatedUser?.type === 'admin'}
+    {:else if canCreateUsers}
       <div class="p-2">
         <UserForm {users} {selectedUser} onSaveSuccess={onSaved} />
       </div>

@@ -190,10 +190,21 @@ class UserPermissionsTest extends TestCase
     public function testStoreAsServiceBodyAdmin()
     {
         $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
         $token = $user->createToken('test')->plainTextToken;
         $this->withHeader('Authorization', "Bearer $token")
             ->post("/api/v1/users")
-            ->assertStatus(403);
+            ->assertStatus(422); // now allowed, but will fail validation without proper data
+    }
+
+    public function testStoreAsServiceBodyAdminWithoutAdminRights()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        // Service body admin user exists but is not the principal_user_bigint of any service body
+        $token = $user->createToken('test')->plainTextToken;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post("/api/v1/users")
+            ->assertStatus(403); // forbidden - not an admin of any service body
     }
 
     public function testStoreAsAdmin()

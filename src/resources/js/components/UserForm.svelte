@@ -26,14 +26,24 @@
   const USER_TYPE_DEACTIVATED = 'deactivated';
   const USER_TYPE_OBSERVER = 'observer';
   const USER_TYPE_SERVICE_BODY_ADMIN = 'serviceBodyAdmin';
-  const userTypeItems = [
-    { value: USER_TYPE_DEACTIVATED, name: 'Deactivated' },
-    { value: USER_TYPE_OBSERVER, name: 'Observer' },
-    { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' }
-  ];
+  const USER_TYPE_ADMIN = 'admin';
+
+  // Admin users see all user types, service body admins see only observer and serviceBodyAdmin
+  const userTypeItems =
+    $authenticatedUser?.type === 'admin'
+      ? [
+          { value: USER_TYPE_DEACTIVATED, name: 'Deactivated' },
+          { value: USER_TYPE_OBSERVER, name: 'Observer' },
+          { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' },
+          { value: USER_TYPE_ADMIN, name: 'Administrator' }
+        ]
+      : [
+          { value: USER_TYPE_OBSERVER, name: 'Observer' },
+          { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' }
+        ];
   const initialValues = {
-    type: selectedUser?.type ?? USER_TYPE_SERVICE_BODY_ADMIN,
-    ownerId: selectedUser?.ownerId ?? ($authenticatedUser?.type === 'admin' ? $authenticatedUser.id : -1),
+    type: selectedUser?.type ?? USER_TYPE_OBSERVER,
+    ownerId: selectedUser?.ownerId ?? $authenticatedUser?.id ?? -1,
     email: selectedUser?.email ?? '',
     displayName: selectedUser?.displayName ?? '',
     username: selectedUser?.username ?? '',
@@ -151,9 +161,9 @@
         {/if}
       </Helper>
     </div>
-    <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
+    <div class={$authenticatedUser?.type === 'observer' || $authenticatedUser?.type === 'deactivated' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
-      <Select id="type" items={userTypeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="type" items={userTypeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -162,7 +172,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="ownerId" class="mb-2">{$translations.ownedByTitle}</Label>
-      <Select id="ownerId" items={userOwnerItems} name="ownerId" bind:value={$data.ownerId} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="ownerId" items={userOwnerItems} name="ownerId" bind:value={$data.ownerId} class="rounded-lg dark:bg-gray-600" />
       <Helper class="mt-2" color="red">
         {#if $errors.ownerId}
           {$errors.ownerId}

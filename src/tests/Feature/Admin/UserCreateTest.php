@@ -333,4 +333,82 @@ class UserCreateTest extends TestCase
             ->post('/api/v1/users', $data)
             ->assertStatus(201);
     }
+
+    // Service Body Admin Tests
+    public function testStoreAsServiceBodyAdminWithObserverType()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
+        $token = $user->createToken('test')->plainTextToken;
+        $data = $this->validPayload('sbadmin_user1');
+        $data['type'] = User::USER_TYPE_OBSERVER;
+        $data['ownerId'] = $user->id_bigint;
+
+        $response = $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/users', $data)
+            ->assertStatus(201)
+            ->assertJsonFragment(['username' => $data['username']])
+            ->assertJsonFragment(['type' => User::USER_TYPE_OBSERVER])
+            ->assertJsonFragment(['ownerId' => $user->id_bigint]);
+    }
+
+    public function testStoreAsServiceBodyAdminWithServiceBodyAdminType()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
+        $token = $user->createToken('test')->plainTextToken;
+        $data = $this->validPayload('sbadmin_user2');
+        $data['type'] = User::USER_TYPE_SERVICE_BODY_ADMIN;
+        $data['ownerId'] = $user->id_bigint;
+
+        $response = $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/users', $data)
+            ->assertStatus(201)
+            ->assertJsonFragment(['username' => $data['username']])
+            ->assertJsonFragment(['type' => User::USER_TYPE_SERVICE_BODY_ADMIN])
+            ->assertJsonFragment(['ownerId' => $user->id_bigint]);
+    }
+
+    public function testStoreAsServiceBodyAdminWithAdminTypeFails()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
+        $token = $user->createToken('test')->plainTextToken;
+        $data = $this->validPayload('sbadmin_user3');
+        $data['type'] = User::USER_TYPE_ADMIN;
+        $data['ownerId'] = $user->id_bigint;
+
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/users', $data)
+            ->assertStatus(422);
+    }
+
+    public function testStoreAsServiceBodyAdminWithNullOwnerIdFails()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
+        $token = $user->createToken('test')->plainTextToken;
+        $data = $this->validPayload('sbadmin_user4');
+        $data['type'] = User::USER_TYPE_OBSERVER;
+        $data['ownerId'] = null;
+
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/users', $data)
+            ->assertStatus(422);
+    }
+
+    public function testStoreAsServiceBodyAdminWithDifferentOwnerIdFails()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $this->createZone('Zone', 'Zone Description', null, null, null, null, $user->id_bigint);
+        $token = $user->createToken('test')->plainTextToken;
+        $user2 = $this->createAdminUser();
+        $data = $this->validPayload('sbadmin_user5');
+        $data['type'] = User::USER_TYPE_OBSERVER;
+        $data['ownerId'] = $user2->id_bigint;
+
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/users', $data)
+            ->assertStatus(422);
+    }
 }
