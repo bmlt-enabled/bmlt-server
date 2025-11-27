@@ -1,5 +1,6 @@
-## 4.0.4 (UNRELEASED)
-*  Show helpful message when no service bodies assigned. Don't allow creation of meetings.
+## 4.0.4 (November 26, 2025)
+* Modified the UI to hide the New Meeting button and show a helpful message when a user does not have editing privileges on any service bodies.
+* Fixed an issue that prevented users from logging in to Yap servers that use this BMLT server.
 
 ## 4.0.3 (November 23, 2025)
 * Fixed an issue that prevented the UI from loading on servers with a `RewriteOptions inherit` configuration.

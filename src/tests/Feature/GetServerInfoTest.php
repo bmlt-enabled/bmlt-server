@@ -94,6 +94,14 @@ class GetServerInfoTest extends TestCase
             ->assertJsonFragment(['distanceUnits' => 'blah']);
     }
 
+
+    public function testSemanticAdmin()
+    {
+        $this->get('/client_interface/json/?switcher=GetServerInfo')
+            ->assertStatus(200)
+            ->assertJsonFragment(['semanticAdmin' => '1']);
+    }
+
     public function testEmailEnabled()
     {
         LegacyConfig::set('enable_email_contact', true);
