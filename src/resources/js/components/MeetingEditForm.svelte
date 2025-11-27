@@ -157,8 +157,16 @@
         }
       : Object.fromEntries(settings.customFields.map((field) => [field.name, '']))
   };
-  let latitude = $state(initialValues.latitude);
-  let longitude = $state(initialValues.longitude);
+
+  function hasValidCoordinates(lat: number, lng: number): boolean {
+    return typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180 && lat !== 0 && lng !== 0;
+  }
+
+  const initialLat = hasValidCoordinates(initialValues.latitude, initialValues.longitude) ? initialValues.latitude : defaultLatLng.lat;
+  const initialLng = hasValidCoordinates(initialValues.latitude, initialValues.longitude) ? initialValues.longitude : defaultLatLng.lng;
+
+  let latitude = $state(initialLat);
+  let longitude = $state(initialLng);
   let manualDrag = false;
   let formatIdsSelected = $state(initialValues.formatIds);
   let savedMeeting: Meeting;
@@ -507,6 +515,13 @@
   let mapInitialized = $state(false);
 
   function initializeMap() {
+    if (!hasValidCoordinates(latitude, longitude)) {
+      latitude = defaultLatLng.lat;
+      longitude = defaultLatLng.lng;
+      setData('latitude', latitude);
+      setData('longitude', longitude);
+    }
+
     if (mapInitialized) {
       // If already initialized, just resize/recenter
       if (map) {
@@ -964,46 +979,44 @@
       {/if}
     </div>
   </div>
-  {#if selectedMeeting}
-    <div class="mt-4 grid gap-4 md:grid-cols-2">
-      <div class="md:col-span-2">
-        <MapAccordion
-          title={$translations.locationMapTitle}
-          onToggle={(isOpen) => {
-            showMap.set(isOpen);
+  <div class="mt-4 grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2">
+      <MapAccordion
+        title={$translations.locationMapTitle}
+        onToggle={(isOpen) => {
+          showMap.set(isOpen);
 
-            if (isOpen) {
-              // ensure map is initialized or refreshed
-              setTimeout(() => {
-                if (mapInitialized && map) {
-                  // If map already exists, just resize and recenter it
-                  if ('invalidateSize' in map) {
-                    map.invalidateSize();
-                    if ('setView' in map) {
-                      map.setView([latitude, longitude]);
-                    }
-                  } else if (isGoogleMap(map)) {
-                    map.setCenter({ lat: latitude, lng: longitude });
+          if (isOpen) {
+            // ensure map is initialized or refreshed
+            setTimeout(() => {
+              if (mapInitialized && map) {
+                // If map already exists, just resize and recenter it
+                if ('invalidateSize' in map) {
+                  map.invalidateSize();
+                  if ('setView' in map) {
+                    map.setView([latitude, longitude]);
                   }
-                } else {
-                  initializeMap();
+                } else if (isGoogleMap(map)) {
+                  map.setCenter({ lat: latitude, lng: longitude });
                 }
-              }, 200);
-            }
-          }}
-        >
-          <div id="locationMap" bind:this={mapElement} class="h-[300px]">
-            {#if mapError}
-              <div class="map-error">
-                <strong>{$translations.googleKeyProblemTitle}</strong><br />
-                {mapError}
-              </div>
-            {/if}
-          </div>
-        </MapAccordion>
-      </div>
+              } else {
+                initializeMap();
+              }
+            }, 200);
+          }
+        }}
+      >
+        <div id="locationMap" bind:this={mapElement} class="h-[300px]">
+          {#if mapError}
+            <div class="map-error rounded bg-gray-100 p-4 text-center dark:bg-gray-800">
+              <strong>{$translations.googleKeyProblemTitle}</strong><br />
+              {mapError}
+            </div>
+          {/if}
+        </div>
+      </MapAccordion>
     </div>
-  {/if}
+  </div>
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="longitude" class="mt-2 mb-2">{$translations.longitudeTitle}</Label>
