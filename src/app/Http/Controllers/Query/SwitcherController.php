@@ -551,6 +551,7 @@ class SwitcherController extends Controller
             'regionBias' => legacy_config('region_bias'),
             'charSet' => 'UTF-8',
             'distanceUnits' => legacy_config('distance_units'),
+            'semanticAdmin' => '1', // Yap uses this flag to determine legacy auth so we must keep it.
             'emailEnabled' => legacy_config('enable_email_contact') ? '1' : '0',
             'emailIncludesServiceBodies' => legacy_config('include_service_body_admin_on_emails') ? '1' : '0',
             'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
