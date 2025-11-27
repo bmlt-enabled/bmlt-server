@@ -1,3 +1,6 @@
+## 4.0.5 (UNRELEASED)
+* Fix location map errors when auto geocoding is disabled.
+
 ## 4.0.4 (November 26, 2025)
 * Modified the UI to hide the New Meeting button and show a helpful message when a user does not have editing privileges on any service bodies.
 * Fixed an issue that prevented users from logging in to Yap servers that use this BMLT server.
