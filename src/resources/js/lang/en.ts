@@ -114,6 +114,7 @@ export const enTranslations = {
   details: 'Details (row number or meeting ID)',
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
+  downloadSpreadsheet: 'Download Spreadsheet',
   downloadTranslationsForCurrentLanguage: 'Download translations for the language selected at login',
   downloadTranslationsSpreadsheet: 'Download Translations Spreadsheet',
   durationTitle: 'Duration',

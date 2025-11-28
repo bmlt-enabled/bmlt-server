@@ -114,6 +114,7 @@ export const faTranslations = {
   details: 'جزئیات (شماره ردیف یا شناسه جلسه)',
   downloading: 'در حال دانلود ...',
   downloadLaravelLog: 'دانلود ورود به سیستم Laravel',
+  downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
   downloadTranslationsForCurrentLanguage: 'Download translations for the language selected at login',
   downloadTranslationsSpreadsheet: 'Download Translations Spreadsheet',
   durationTitle: 'مدت',

@@ -1,12 +1,34 @@
-import { beforeAll, beforeEach, describe, test } from 'vitest';
-import { screen } from '@testing-library/svelte';
+import { beforeAll, beforeEach, describe, expect, test, vi, type MockInstance } from 'vitest';
+import { screen, waitFor } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import { login, mockDeletedServiceBodyId, mockSavedServiceBodyCreate, mockSavedServiceBodyUpdate, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 import userEvent from '@testing-library/user-event';
+import * as XLSX from 'xlsx';
 
-beforeAll(sharedBeforeAll);
-beforeEach(sharedBeforeEach);
-afterEach(sharedAfterEach);
+let xlsxWriteFileSpy: MockInstance<typeof XLSX.writeFileXLSX>;
+let serviceBodiesWB: XLSX.WorkBook | null;
+let serviceBodiesFile: string;
+
+beforeAll(() => {
+  vi.mock('xlsx', { spy: true });
+  sharedBeforeAll();
+});
+
+beforeEach(() => {
+  serviceBodiesWB = null;
+  serviceBodiesFile = '';
+  xlsxWriteFileSpy = vi.spyOn(XLSX, 'writeFileXLSX').mockImplementation((wb, file) => {
+    serviceBodiesWB = wb;
+    serviceBodiesFile = file;
+  });
+  sharedBeforeEach();
+});
+
+afterEach(() => {
+  xlsxWriteFileSpy.mockReset();
+  xlsxWriteFileSpy.mockRestore();
+  sharedAfterEach();
+});
 
 describe('check content in Service Body tab when logged in as various users', () => {
   test('check layout when logged in as serveradmin', async () => {
@@ -276,5 +298,94 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     const buttons = await screen.findAllByRole('button', { name: 'Close' });
     await user.click(buttons[0]);
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
+  });
+});
+
+describe('Spreadsheet download functionality', () => {
+  test('Download Spreadsheet button is present when logged in as serveradmin', async () => {
+    await login('serveradmin', 'Service Bodies');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton).toBeEnabled();
+  });
+
+  test('Download Spreadsheet button triggers download when clicked', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    await user.click(downloadButton);
+
+    await waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalled();
+    });
+
+    const filename = serviceBodiesFile;
+    expect(filename).toMatch(/^service_bodies_\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}\.xlsx$/);
+  });
+
+  test('Download Spreadsheet contains correct service body data', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    await user.click(downloadButton);
+
+    await waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalled();
+    });
+
+    // Check workbook structure and content
+    expect(serviceBodiesWB).not.toBe(null);
+    const sheet = serviceBodiesWB?.Sheets.Sheet1;
+    expect(sheet).not.toBe(undefined);
+
+    if (sheet) {
+      // Check headers
+      expect(sheet['A1'].v).toBe('id');
+      expect(sheet['B1'].v).toBe('name');
+      expect(sheet['C1'].v).toBe('description');
+      expect(sheet['D1'].v).toBe('type');
+      expect(sheet['E1'].v).toBe('adminUserId');
+      expect(sheet['F1'].v).toBe('parentId');
+      expect(sheet['G1'].v).toBe('worldId');
+      expect(sheet['H1'].v).toBe('url');
+      expect(sheet['I1'].v).toBe('helpline');
+      expect(sheet['J1'].v).toBe('email');
+
+      // Check for some known service body data (from shared mocks)
+      const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
+      let foundBigRegion = false;
+      let foundRuralArea = false;
+
+      // Check rows (starting from row 2, since row 1 is headers)
+      for (let row = 2; row <= range.e.r + 1; row++) {
+        const name = sheet[`B${row}`]?.v;
+        const type = sheet[`D${row}`]?.v;
+        const email = sheet[`J${row}`]?.v;
+
+        if (name === 'Big Region' && email === 'big@bmlt.app') {
+          foundBigRegion = true;
+          expect(sheet[`C${row}`].v).toBe('Big Region Description'); // description
+          expect(type).toBe('RG'); // type
+        }
+
+        if (name === 'Rural Area' && email === 'rural@bmlt.app') {
+          foundRuralArea = true;
+          expect(sheet[`C${row}`].v).toBe('Rural Area Description'); // description
+          expect(type).toBe('AS'); // type
+          expect(sheet[`G${row}`].v).toBe('AS778'); // worldId
+          expect(sheet[`H${row}`].v).toBe('https://ruralarea.example.com'); // url
+          expect(sheet[`I${row}`].v).toBe('803-555-7247'); // helpline
+        }
+      }
+
+      expect(foundBigRegion).toBe(true);
+      expect(foundRuralArea).toBe(true);
+    }
+  });
+
+  test('Download Spreadsheet button is not present when logged in as non-admin', async () => {
+    await login('NorthernZone', 'Service Bodies');
+    const cells = await screen.findAllByRole('cell');
+    expect(cells.length).toBe(6);
+    const downloadButton = screen.queryByRole('button', { name: /Download Spreadsheet/i });
+    expect(downloadButton).not.toBeInTheDocument();
   });
 });

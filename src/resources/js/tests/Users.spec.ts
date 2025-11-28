@@ -1,13 +1,35 @@
-import { beforeAll, beforeEach, describe, test } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, test, vi, type MockInstance } from 'vitest';
 import { screen, waitFor } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
+import * as XLSX from 'xlsx';
 
 import { login, mockDeletedUserId, mockSavedUserCreate, mockSavedUserUpdate, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
-beforeAll(sharedBeforeAll);
-beforeEach(sharedBeforeEach);
-afterEach(sharedAfterEach);
+let xlsxWriteFileSpy: MockInstance<typeof XLSX.writeFileXLSX>;
+let usersWB: XLSX.WorkBook | null;
+let usersFile: string;
+
+beforeAll(() => {
+  vi.mock('xlsx', { spy: true });
+  sharedBeforeAll();
+});
+
+beforeEach(() => {
+  usersWB = null;
+  usersFile = '';
+  xlsxWriteFileSpy = vi.spyOn(XLSX, 'writeFileXLSX').mockImplementation((wb, file) => {
+    usersWB = wb;
+    usersFile = file;
+  });
+  sharedBeforeEach();
+});
+
+afterEach(() => {
+  xlsxWriteFileSpy.mockReset();
+  xlsxWriteFileSpy.mockRestore();
+  sharedAfterEach();
+});
 
 describe('check content in User tab when logged in as various users', () => {
   test('check layout when logged in as serveradmin', async () => {
@@ -274,4 +296,93 @@ describe('check editing, adding, and deleting users using the popup dialog boxes
     await user.click(await screen.findByRole('button', { name: 'Close' }));
     expect(screen.getByText('You have unsaved changes. Do you really want to close?')).toBeInTheDocument();
   });
+});
+
+describe('Spreadsheet download functionality', () => {
+  test('Download Spreadsheet button is present when logged in as serveradmin', async () => {
+    await login('serveradmin', 'Users');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    expect(downloadButton).toBeInTheDocument();
+    expect(downloadButton).toBeEnabled();
+  });
+
+  test('Download Spreadsheet button triggers download when clicked', async () => {
+    const user = await login('serveradmin', 'Users');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    await user.click(downloadButton);
+
+    // Wait for download to complete
+    await waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalled();
+    });
+
+    const filename = usersFile;
+    expect(filename).toMatch(/^users_\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}\.xlsx$/);
+  });
+
+  test('Download Spreadsheet contains correct user data', async () => {
+    const user = await login('serveradmin', 'Users');
+    const downloadButton = await screen.findByRole('button', { name: /Download Spreadsheet/i });
+    await user.click(downloadButton);
+
+    await waitFor(() => {
+      expect(xlsxWriteFileSpy).toHaveBeenCalled();
+    });
+
+    // Check workbook structure and content
+    expect(usersWB).not.toBe(null);
+    const sheet = usersWB?.Sheets.Sheet1;
+    expect(sheet).not.toBe(undefined);
+
+    if (sheet) {
+      // Check headers
+      expect(sheet['A1'].v).toBe('id');
+      expect(sheet['B1'].v).toBe('username');
+      expect(sheet['C1'].v).toBe('displayName');
+      expect(sheet['D1'].v).toBe('email');
+      expect(sheet['E1'].v).toBe('type');
+      expect(sheet['F1'].v).toBe('ownerId');
+
+      // Check for some known user data (from shared mocks)
+      // Big Region user should be in the spreadsheet
+      // Note: exact row depends on sort order, so we'll check that the data exists
+      const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
+      let foundBigRegion = false;
+      let foundSmallObserver = false;
+
+      // Check rows (starting from row 2, since row 1 is headers)
+      for (let row = 2; row <= range.e.r + 1; row++) {
+        const displayName = sheet[`C${row}`]?.v;
+        const email = sheet[`D${row}`]?.v;
+        const type = sheet[`E${row}`]?.v;
+
+        if (displayName === 'Big Region' && email === 'big@bmlt.app') {
+          foundBigRegion = true;
+          expect(sheet[`B${row}`].v).toBe('BigRegion'); // username
+          expect(type).toBe('serviceBodyAdmin');
+        }
+
+        if (displayName === 'Small Observer' && email === 'smallobserver@bmlt.app') {
+          foundSmallObserver = true;
+          expect(sheet[`B${row}`].v).toBe('SmallObserver'); // username
+          expect(type).toBe('observer');
+        }
+      }
+
+      expect(foundBigRegion).toBe(true);
+      expect(foundSmallObserver).toBe(true);
+    }
+  });
+
+  test('Download Spreadsheet button is not present when logged in as non-admin', async () => {
+    await login('NorthernZone', 'Users');
+    await waitFor(
+      async () => {
+        expect(screen.getByRole('heading', { name: 'Users', level: 2 })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+    const downloadButton = screen.queryByRole('button', { name: /Download Spreadsheet/i });
+    expect(downloadButton).not.toBeInTheDocument();
+  }, 15000);
 });
