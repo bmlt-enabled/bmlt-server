@@ -124,15 +124,17 @@ class FormatController extends ResourceController
 
     private function buildValuesArray(Collection $validated)
     {
-        return collect($validated['translations'])->map(function ($translation) use ($validated) {
-            return [
-                'format_type_enum' => isset($validated['type']) ? FormatType::getKeyFromApiEnum($validated['type']) : null,
-                'worldid_mixed' => $validated['worldId'] ?? null,
-                'lang_enum' => $translation['language'],
-                'key_string' => $translation['key'],
-                'name_string' => $translation['name'],
-                'description_string' => $translation['description'],
-            ];
-        })->toArray();
+        return collect([
+            'format_type_enum' => isset($validated['type']) ? FormatType::getKeyFromApiEnum($validated['type']) : null,
+            'worldid_mixed' => $validated['worldId'] ?? null,
+            'translations' => $validated['translations']->map(function ($translation) use ($validated) {
+                return [
+                    'lang_enum' => $translation['language'],
+                    'key_string' => $translation['key'],
+                    'name_string' => $translation['name'],
+                    'description_string' => $translation['description'],
+                ];
+            })->toArray()
+        ] )->toArray();
     }
 }

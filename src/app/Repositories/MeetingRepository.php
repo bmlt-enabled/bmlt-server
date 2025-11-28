@@ -53,7 +53,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         int $pageSize = null,
         int $pageNum = null,
     ): Collection {
-        $eagerLoadRelations = ['data', 'longdata'];
+        $eagerLoadRelations = ['data', 'longdata', 'formatIds'];
         if ($eagerServiceBodies) {
             $eagerLoadRelations[] = 'serviceBody';
         }
@@ -109,24 +109,16 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         if (!is_null($formatsInclude)) {
             if ($formatsComparisonOperator == 'AND') {
-                foreach ($formatsInclude as $formatId) {
-                    $meetings = $meetings->where(function (Builder $query) use ($formatId) {
-                        $query
-                            ->orWhere('formats', "$formatId")
-                            ->orWhere('formats', 'LIKE', "$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId");
+                foreach ($formatsInclude as $testId) {
+                    $meetings = $meetings->whereHas('formatIds', function (Builder $query) use ($testId) {
+                        $query->where('formatId', $testId);
                     });
                 }
             } else {
                 $meetings = $meetings->where(function (Builder $query) use ($formatsInclude) {
-                    foreach ($formatsInclude as $formatId) {
-                        $query->orWhere(function (Builder $query) use ($formatId) {
-                            $query
-                                ->orWhere('formats', "$formatId")
-                                ->orWhere('formats', 'LIKE', "$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId");
+                    foreach ($formatsInclude as $testId) {
+                        $query->orWhereHas('formatIds', function (Builder $query) use ($testId) {
+                            $query->orWhere('formatId', $testId);
                         });
                     }
                 });
@@ -134,12 +126,10 @@ class MeetingRepository implements MeetingRepositoryInterface
         }
 
         if (!is_null($formatsExclude)) {
-            foreach ($formatsExclude as $formatId) {
-                $meetings = $meetings
-                    ->whereNot('formats', "$formatId")
-                    ->whereNot('formats', 'LIKE', "$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId");
+            foreach ($formatsExclude as $testId) {
+                $meetings = $meetings->whereDoesntHave('formatIds', function (Builder $query) use ($testId) {
+                    $query->where('formatId', $testId);
+                });
             }
         }
 

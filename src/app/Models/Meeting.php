@@ -20,7 +20,6 @@ class Meeting extends Model
         'start_time',
         'duration_time',
         'time_zone',
-        'formats',
         'lang_enum',
         'longitude',
         'latitude',
@@ -37,7 +36,6 @@ class Meeting extends Model
         'start_time',
         'duration_time',
         'time_zone',
-        'formats',
         'lang_enum',
         'longitude',
         'latitude',
@@ -82,6 +80,27 @@ class Meeting extends Model
         return $this->hasMany(MeetingLongData::class, 'meetingid_bigint');
     }
 
+    public function formatIds()
+    {
+        return $this->hasMany(MeetingFormats::class, 'meeting_id', 'id_bigint');
+    }
+    /**
+     * Since we are not hydrating the Meeting model with format data directly,
+     * but rather returning 2 arrays (one of Meetings, one of Formats),
+     * we don't define a direct relationship here...but this is what it would look like.
+     *
+    public function formats()
+    {
+        return $this->belongsToMany(FormatMain::class, 'comdef_meeting_formats', 'meeting_id', 'format_id', 'id_bigint', 'shared_id_bigint');
+    }
+
+    public function translatedFormats(string $langEnum)
+    {
+        return $this->formats()->with(['translations' => function ($query) use ($langEnum) {
+            $query->where('lang_enum', $langEnum);
+        }]);
+    }
+    **/
     private ?string $calculatedFormatKeys = null;
     private function setCalculatedFormatKeys(string $formatKeyStrings)
     {
@@ -110,7 +129,7 @@ class Meeting extends Model
             return;
         }
 
-        $formatIds = explode(',', $this->formats);
+        $formatIds = $this->formatIds()->pluck('format_id')->toArray();
 
         $calculatedFormats = [];
         foreach ($formatIds as $formatId) {
