@@ -97,7 +97,7 @@ class FormatRepository implements FormatRepositoryInterface
 
         foreach ($meetings->pluck('formatIds') as $formatIds) {
             foreach ($formatIds as $formatId) {
-                $uniqueFormatIds[$formatId] = null;
+                $uniqueFormatIds[$formatId['format_id']] = null;
             }
         }
 

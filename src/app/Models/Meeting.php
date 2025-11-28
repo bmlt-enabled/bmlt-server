@@ -125,7 +125,7 @@ class Meeting extends Model
 
     public function calculateFormatsFields(Collection $formatsById)
     {
-        if (is_null($this->formats) || $this->formats == '') {
+        if (is_null($this->formatIds) || $this->formatIds->isEmpty()) {
             return;
         }
 
