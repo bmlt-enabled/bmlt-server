@@ -119,7 +119,7 @@ class FormatRepository implements FormatRepositoryInterface
                     $this->saveChange(null, $format);
                 }
             }
-            return $format;
+            return Format::query()->where('shared_id_bigint', $formatMain->shared_id_bigint)->first();
         });
     }
 

@@ -17,7 +17,8 @@ return new class extends Migration
            'select shared_id_bigint, root_server_id, source_id, worldid_mixed, format_type_enum from '.$prefix.'comdef_formats a '.
                 'inner join ( select min(id) min_id from '.$prefix.'comdef_formats group by shared_id_bigint ) b '.
                 'on a.id = b.min_id ;');
-        DB::statement('ALTER TABLE '.$prefix.'comdef_formats_main ADD PRIMARY KEY (shared_id_bigint)');
+        DB::statement('ALTER TABLE '.$prefix.'comdef_formats_main ADD PRIMARY KEY (shared_id_bigint);');
+        DB::statement('ALTER TABLE '.$prefix.'comdef_formats_main MODIFY shared_id_bigint bigint(20) unsigned NOT NULL AUTO_INCREMENT;');
         $next_auto = (DB::table('comdef_formats_main')->max('shared_id_bigint') ?? 0) + 1;
         DB::statement('ALTER TABLE '.$prefix.'comdef_formats_main AUTO_INCREMENT =  '.$next_auto.';');
         DB::statement('ALTER TABLE '.$prefix.'comdef_formats DROP COLUMN format_type_enum;');

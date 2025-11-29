@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class FormatMain extends Model
 {
     protected $table = 'comdef_formats_main';
+    protected $primaryKey = 'shared_id_bigint';
+    public $incrementing = true;
     public $timestamps = false;
     protected $fillable = [
         'root_server_id',
         'source_id',
-        'shared_id_bigint',
         'worldid_mixed',
         'format_type_enum',
     ];

@@ -19,4 +19,9 @@ class Format extends Model
         'description_string',
         'format_type_enum',
     ];
+    public function meetings()
+    {
+        $formatId = $this->attributes['shared_id_bigint'];
+        return MeetingFormats::query()->where('format_id', $formatId)->get();
+    }
 }
