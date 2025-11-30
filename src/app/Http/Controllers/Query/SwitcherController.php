@@ -355,8 +355,6 @@ class SwitcherController extends Controller
             pageNum: $pageNum,
         );
 
-        // This code to calculate the formats fields is really inefficient, but necessary because
-        // we don't have foreign keys between the meetings and formats tables.
         $langEnum = $request->input('lang_enum', config('app.locale'));
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,

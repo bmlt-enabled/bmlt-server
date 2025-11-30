@@ -19,6 +19,10 @@ class Format extends Model
         'description_string',
         'format_type_enum',
     ];
+    public function getRouteKeyName(): string
+    {
+        return 'shared_id_bigint';
+    }
     public function meetings()
     {
         $formatId = $this->attributes['shared_id_bigint'];
