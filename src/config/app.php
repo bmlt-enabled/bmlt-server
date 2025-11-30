@@ -28,7 +28,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => env('APP_VERSION', '4.0.5'),
+    'version' => env('APP_VERSION', '4.1.0'),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +106,8 @@ return [
     |
     */
 
-    'locale' => legacy_config('language', 'en'),
+    // TODO: Load from settings table once we resolve bootstrap ordering
+    'locale' => 'en', // legacy_config('language', 'en'),
 
     /*
     |--------------------------------------------------------------------------

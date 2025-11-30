@@ -20,7 +20,15 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
             value = "CT,MA,NH,NJ,NY,PA,VT"
           },
           {
+            name  = "ENABLE_LANGUAGE_SELECTOR",
+            value = "true"
+          },
+          {
             name  = "DB_DATABASE",
+            value = "rootserver"
+          },
+          {
+            name  = "DB_USERNAME",
             value = "rootserver"
           },
           {
@@ -42,7 +50,7 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
         ]
         links            = ["bmlt-db"]
         workingDirectory = "/tmp"
-        image            = "bmltenabled/bmlt-server:latest"
+        image            = "bmltenabled/bmlt-server:unstable"
         repositoryCredentials = {
           credentialsParameter = data.aws_secretsmanager_secret.docker.arn
         }
@@ -55,7 +63,7 @@ resource "aws_ecs_task_definition" "bmlt_unstable" {
           options = {
             awslogs-group         = aws_cloudwatch_log_group.bmlt_server.name
             awslogs-region        = "us-east-1"
-            awslogs-stream-prefix = "bmlt-server"
+            awslogs-stream-prefix = "bmlt-server-unstable"
           }
         }
         memoryReservation = 256

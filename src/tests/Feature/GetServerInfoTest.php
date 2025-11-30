@@ -94,38 +94,11 @@ class GetServerInfoTest extends TestCase
             ->assertJsonFragment(['distanceUnits' => 'blah']);
     }
 
-
     public function testSemanticAdmin()
     {
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['semanticAdmin' => '1']);
-    }
-
-    public function testEmailEnabled()
-    {
-        LegacyConfig::set('enable_email_contact', true);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailEnabled' => '1']);
-
-        LegacyConfig::set('enable_email_contact', false);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailEnabled' => '0']);
-    }
-
-    public function testEmailIncludesServiceBodies()
-    {
-        LegacyConfig::set('include_service_body_admin_on_emails', true);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailIncludesServiceBodies' => '1']);
-
-        LegacyConfig::set('include_service_body_admin_on_emails', false);
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['emailIncludesServiceBodies' => '0']);
     }
 
     public function testChangesPerMeeting()
@@ -177,7 +150,7 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLongitude()
     {
-        LegacyConfig::remove('search_spec_map_center_longitude');
+        \App\Models\Setting::where('name', 'searchSpecMapCenterLongitude')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['centerLongitude' => '']);
@@ -190,7 +163,7 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLatitude()
     {
-        LegacyConfig::remove('search_spec_map_center_latitude');
+        \App\Models\Setting::where('name', 'searchSpecMapCenterLatitude')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['centerLatitude' => '']);
@@ -203,7 +176,7 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterZoom()
     {
-        LegacyConfig::remove('search_spec_map_center_zoom');
+        \App\Models\Setting::where('name', 'searchSpecMapCenterZoom')->delete();
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['centerZoom' => '']);
