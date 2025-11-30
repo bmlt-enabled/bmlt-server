@@ -88,7 +88,7 @@ class FormatController extends ResourceController
             $this->formatRepository->getHybridFormat()->shared_id_bigint,
         ])]]);
 
-        if ($format->meetings()->exists()) {
+        if ($format->meetings()->first()) {
             return new JsonResponse([
                 'message' => 'You cannot delete a format while meetings are using it.'
             ], 409);
@@ -124,15 +124,18 @@ class FormatController extends ResourceController
 
     private function buildValuesArray(Collection $validated)
     {
-        return collect($validated['translations'])->map(function ($translation) use ($validated) {
-            return [
-                'format_type_enum' => isset($validated['type']) ? FormatType::getKeyFromApiEnum($validated['type']) : null,
-                'worldid_mixed' => $validated['worldId'] ?? null,
-                'lang_enum' => $translation['language'],
-                'key_string' => $translation['key'],
-                'name_string' => $translation['name'],
-                'description_string' => $translation['description'],
-            ];
-        })->toArray();
+        return collect([
+            'format_type_enum' => isset($validated['type']) ? FormatType::getKeyFromApiEnum($validated['type']) : null,
+            'worldid_mixed' => $validated['worldId'] ?? null,
+            'translations' => array_map(function ($translation)
+             {
+                return [
+                    'lang_enum' => $translation['language'],
+                    'key_string' => $translation['key'],
+                    'name_string' => $translation['name'],
+                    'description_string' => $translation['description'],
+                ];
+            }, $validated['translations']),
+        ] )->toArray();
     }
 }
