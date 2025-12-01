@@ -7,6 +7,7 @@ use App\Http\Responses\JsonResponse;
 use App\Interfaces\FormatRepositoryInterface;
 use App\Models\Format;
 use App\Models\FormatType;
+use App\Models\MeetingFormats;
 use App\Rules\FormatTranslationKey;
 use App\Rules\FormatTranslations;
 use Illuminate\Http\Request;
@@ -56,11 +57,11 @@ class FormatController extends ResourceController
             collect(['worldId', 'type', 'translations'])
                 ->mapWithKeys(function ($fieldName, $_) use ($request, $format) {
                     if ($fieldName == 'worldId') {
-                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->worldid_mixed];
+                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->main->worldid_mixed];
                     } elseif ($fieldName == 'type') {
-                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : (!is_null($format->format_type_enum) ? FormatType::getApiEnumFromKey($format->format_type_enum): null)];
+                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : (!is_null($format->main->format_type_enum) ? FormatType::getApiEnumFromKey($format->main->format_type_enum): null)];
                     } else {
-                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->translations->map(function ($translation) {
+                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->main->translations->map(function ($translation) {
                             return [
                                 'key' => $translation->key_string,
                                 'name' => $translation->name_string,
@@ -88,7 +89,7 @@ class FormatController extends ResourceController
             $this->formatRepository->getHybridFormat()->shared_id_bigint,
         ])]]);
 
-        if ($format->meetings()->first()) {
+        if (MeetingFormats::query()->where('format_id', $format->shared_id_bigint)->first()) {
             return new JsonResponse([
                 'message' => 'You cannot delete a format while meetings are using it.'
             ], 409);

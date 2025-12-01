@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Interfaces\FormatRepositoryInterface;
 use App\Models\Change;
-use App\Models\Format;
 use App\Models\FormatMain;
 use App\Models\FormatTranslation;
 use App\Models\Meeting;
@@ -139,7 +138,7 @@ class FormatRepository implements FormatRepositoryInterface
                 ->mapWithKeys(fn ($fmt, $_) => [$fmt->lang_enum => $fmt]);
 
             foreach ($oldFormats as $oldFormat) {
-                $isDeleted = collect($sharedFormatsValues)
+                $isDeleted = collect($sharedFormatsValues['translations'])
                     ->filter(fn ($values) => $values['lang_enum'] == $oldFormat->lang_enum)
                     ->isEmpty();
                 if ($isDeleted) {
@@ -169,21 +168,17 @@ class FormatRepository implements FormatRepositoryInterface
     public function delete(int $sharedId): bool
     {
         return DB::transaction(function () use ($sharedId) {
-            $formats = FormatMain::query()->where('shared_id_bigint', $sharedId)->get();
-            $translations = FormatTranslation::query()->where('shared_id_bigint', $sharedId)->get();
-            foreach ($translations as $translation) {
-                $translation->delete();
+            $format = FormatMain::query()->where('shared_id_bigint', $sharedId)->first();
+            if (is_null($format)) {
+                return false;
+            }
+            foreach ($format->translations as $translation) {
                 if (!legacy_config('aggregator_mode_enabled')) {
                     $this->saveChange($translation, null);
                 }
             }
-            if ($formats->isNotEmpty()) {
-                foreach ($formats as $format) {
-                    $format->delete();
-                }
-                return true;
-            }
-            return false;
+            $format->delete();
+            return true;
         });
     }
 
@@ -225,8 +220,10 @@ class FormatRepository implements FormatRepositoryInterface
     {
         return serialize([
             $format->shared_id_bigint,
+            $format->main->format_type_enum,
             $format->key_string,
             $format->icon_blob,
+            $format->main->worldid_mixed,
             $format->lang_enum,
             $format->name_string,
             $format->description_string,
