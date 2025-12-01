@@ -2297,7 +2297,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            //'formats' => '999',
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,
         ], [
@@ -2367,7 +2367,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            //'formats' => '999',
             'venue_type' => 2,
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,

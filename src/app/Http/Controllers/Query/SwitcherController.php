@@ -693,9 +693,9 @@ class SwitcherController extends Controller
             $meetings = $meetings->concat($deletedMeetings);
             $allFormats = $this->formatRepository->search(langEnums: [legacy_config('language')], showAll: true)
                 ->reject(fn ($fmt) => is_null($fmt->key_string) || empty(trim($fmt->key_string)));
-            $formatIdToWorldId = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->worldid_mixed]);
-            $formatIdToKeyString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->key_string]);
-            $formatIdToNameString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->name_string]);
+            $formatIdToWorldId = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->main->worldid_mixed]);
+            $formatIdToKeyString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->main->key_string]);
+            $formatIdToNameString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->main->name_string]);
             // $lastChanged is a dictionary whose keys are meeting IDs and whose values are the last time that meeting was changed
             $lastChanged = $this->changeRepository->getMeetingLastChangeTimes(serviceBodyId: $validated['sb_id'])->toArray();
 
