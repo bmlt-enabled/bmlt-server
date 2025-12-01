@@ -27,4 +27,16 @@ class FormatTranslation extends Model
     {
         return $this->belongsTo(RootServer::class, 'root_server_id');
     }
+    public function main()
+    {
+        return $this->belongsTo(FormatMain::class, 'shared_id_bigint', 'shared_id_bigint');
+    }
+    public function format_type_enum()
+    {
+        return $this->main()->first()->format_type_enum;
+    }
+    public function worldid_mixed()
+    {
+        return $this->main()->first()->worldid_mixed;
+    }
 }

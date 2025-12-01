@@ -4,7 +4,8 @@ namespace Tests\Feature;
 
 use App\Http\Resources\Query\MeetingChangeResource;
 use App\Models\Change;
-use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\ServiceBody;
@@ -180,16 +181,19 @@ class GetChangesTest extends TestCase
         ]);
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(string $keyString, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
-        return Format::create([
-            'shared_id_bigint' => $sharedId,
+        $main = FormatMain::create([
+            'worldid_mixed' => $worldId,
+            'format_type_enum' => $formatTypeEnum,
+        ]);
+        return FormatTranslation::create([
+            'shared_id_bigint' => $main->shared_id_bigint,
             'key_string' => $keyString,
             'name_string' => $keyString,
             'lang_enum' => $langEnum,
             'description_string' => $keyString,
-            'worldid_mixed' => $worldId,
-            'format_type_enum' => $formatTypeEnum,
+
         ]);
     }
 

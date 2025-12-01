@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\LegacyConfig;
-use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
+use App\Models\MeetingFormats;
 use App\Models\RootServer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -12,6 +14,7 @@ use Tests\TestCase;
 class GetFormatsTest extends TestCase
 {
     use RefreshDatabase;
+
 
     private function createRootServer(int $sourceId, string $name = 'test', string $url = 'https://test.com'): RootServer
     {
@@ -24,38 +27,46 @@ class GetFormatsTest extends TestCase
 
     private function createFormat1(string $langEnum = 'en')
     {
-        return $this->createFormat(1, 'O1', 'Open1', 'desc1', $langEnum, 'worldid');
+        return $this->createFormat('O1', 'Open1', 'desc1', $langEnum, 'worldid');
     }
 
     private function createFormat2(string $langEnum = 'en')
     {
-        return $this->createFormat(2, 'C2', 'Closed2', 'desc2', $langEnum, 'worldid');
+        return $this->createFormat('C2', 'Closed2', 'desc2', $langEnum, 'worldid');
     }
 
     private function createFormat3(string $langEnum = 'en')
     {
-        return $this->createFormat(3, 'C3', 'Closed3', 'desc3', $langEnum, 'worldid');
+        return $this->createFormat('C3', 'Closed3', 'desc3', $langEnum, 'worldid');
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
     {
-        return Format::create([
-            'shared_id_bigint' => $sharedId,
+        $main = FormatMain::create([
+            'worldid_mixed' => $worldId,
+            'format_type_enum' => $formatTypeEnum,
+        ]);
+        return FormatTranslation::create([
+            'shared_id_bigint' => $main->shared_id_bigint,
             'key_string' => $keyString,
             'name_string' => $nameString,
             'lang_enum' => $langEnum,
             'description_string' => $description,
-            'worldid_mixed' => $worldId,
-            'format_type_enum' => $formatTypeEnum,
         ]);
     }
 
     private function createMeeting(array $formatIds)
     {
-        return Meeting::create([
+        $meeting = Meeting::create([
             'service_body_bigint' => 1,
-            'formats' => implode(',', $formatIds),
         ]);
+        foreach ($formatIds as $formatId) {
+            MeetingFormats::create([
+                'meeting_id' => $meeting->id_bigint,
+                'format_id' => $formatId,
+            ]);
+        }
+        return $meeting;
     }
 
     private function allFormatsInArray($expectedItems, $array): bool
@@ -67,8 +78,8 @@ class GetFormatsTest extends TestCase
                 'description_string' => $item->description_string ?? '',
                 'lang' => $item->lang_enum,
                 'id' => (string)$item->shared_id_bigint,
-                'world_id' => $item->worldid_mixed ?? '',
-                'format_type_enum' => $item->format_type_enum ?? '',
+                'world_id' => $item->main->worldid_mixed ?? '',
+                'format_type_enum' => $item->main->format_type_enum ?? '',
                 'root_server_uri' => 'http://localhost',
             ], $array)) {
                 return false;
@@ -86,7 +97,7 @@ class GetFormatsTest extends TestCase
 
     public function testJsonp()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $response = $this->get('/client_interface/jsonp/?switcher=GetFormats&callback=asdf');
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'text/javascript; charset=UTF-8');
@@ -95,7 +106,7 @@ class GetFormatsTest extends TestCase
 
     public function testNone()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $this->createFormat1();
         $this->get('/client_interface/json/?switcher=GetFormats')
             ->assertStatus(200)
@@ -105,7 +116,7 @@ class GetFormatsTest extends TestCase
 
     public function testNoneShowAll()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $this->get('/client_interface/json/?switcher=GetFormats&show_all=1')
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'application/json')
@@ -114,7 +125,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneUsed()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createFormat2();
         $this->createFormat3();
@@ -130,7 +141,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleUsed()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $this->createFormat3();
@@ -147,7 +158,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneShowAll()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $response = $this->get('/client_interface/json/?switcher=GetFormats&show_all=1')
             ->assertStatus(200)
@@ -160,7 +171,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleShowAll()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -177,7 +188,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneKeyStrings()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -195,7 +206,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleKeyStrings()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -213,7 +224,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneLangEnum()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -231,7 +242,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleLangEnums()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -249,7 +260,7 @@ class GetFormatsTest extends TestCase
 
     public function testLangEnumAndKeyString()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2('it');
         $format3 = $this->createFormat3();
@@ -270,7 +281,7 @@ class GetFormatsTest extends TestCase
         LegacyConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format1->rootServer()->associate($rootServer);
         $format1->save();
@@ -289,7 +300,7 @@ class GetFormatsTest extends TestCase
         LegacyConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $format1->rootServer()->associate($rootServer);
         $format1->save();
@@ -308,7 +319,7 @@ class GetFormatsTest extends TestCase
     //
     public function testIncludeFormatIdsNone()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $badId = $format1->shared_id_bigint + 1;
@@ -320,7 +331,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeOne()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -333,7 +344,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeTwoWithArray()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -348,7 +359,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeTwoWithCommas()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -363,7 +374,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeOne()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -377,7 +388,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeTwoWithArray()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -393,7 +404,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeTwoWithCommas()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -412,7 +423,7 @@ class GetFormatsTest extends TestCase
     //
     public function testRootServerIdsWithAggregatorDisabled()
     {
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
         $format1->rootServer()->associate($rootServer1);
@@ -430,7 +441,7 @@ class GetFormatsTest extends TestCase
     {
         LegacyConfig::set('aggregator_mode_enabled', true);
 
-        Format::query()->delete();
+        FormatMain::query()->delete();
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
         $format1->rootServer()->associate($rootServer1);

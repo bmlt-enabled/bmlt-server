@@ -47,14 +47,6 @@ return new class extends Migration
             }
         });
         DB::statement('ALTER TABLE '.$prefix.'comdef_meetings_main DROP COLUMN formats;');
-
-        DB::statement(
-            'CREATE OR REPLACE VIEW '.$prefix.'comdef_formats AS '.
-                'SELECT main.shared_id_bigint, main.root_server_id, main.source_id, worldid_mixed, id, key_string, icon_blob, lang_enum, name_string, description_string '.
-                    'FROM '.$prefix.'comdef_formats_main main, '.$prefix.'comdef_formats_translations ft '.
-                    'WHERE main.shared_id_bigint = ft.shared_id_bigint;'
-        );
-
     }
 
     /**
@@ -62,6 +54,30 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('meeting_formats');
+        $prefix = DB::connection()->getTablePrefix();
+        Schema::dropIfExists('comdef_meeting_formats');
+        if (!Schema::hasTable('comdef_formats')) {
+            Schema::dropIfExists('comdef_formats');
+            DB::statement('create table '.$prefix.'comdef_formats '.
+                'SELECT id, main.shared_id_bigint, main.root_server_id, main.source_id, worldid_mixed, key_string, icon_blob, lang_enum, name_string, description_string '.
+                    'FROM '.$prefix.'comdef_formats_main main, '.$prefix.'comdef_formats_translations ft '.
+                    'WHERE main.shared_id_bigint = ft.shared_id_bigint;'
+            );
+            Schema::dropIfExists('meeting_formats_translations');
+            DB::table('comdef_meetings_main')->string('formats', 255)->nullable();
+            $meetings = DB::table('comdef_meetings_main')->select('id_bigint', 'formats')->get();
+            $meetings->each(function ($meeting) {
+                $formatIds = DB::table('comdef_meeting_formats')
+                    ->where('meeting_id', $meeting->id_bigint)
+                    ->pluck('format_id')
+                    ->toArray();
+                if (count($formatIds) > 0) {
+                    DB::table('comdef_meetings_main')
+                        ->where('id_bigint', $meeting->id_bigint)
+                        ->update(['formats' => implode(',', $formatIds)]);
+                }
+            });
+            Schema::dropIfExists('comdef_meeting_formats');
+        }
     }
 };

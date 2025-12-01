@@ -31,4 +31,8 @@ class FormatMain extends Model
     {
         return $this->hasMany(FormatTranslation::class, 'shared_id_bigint', 'shared_id_bigint');
     }
+    public function meetings()
+    {
+        return $this->belongsToMany(Meeting::class, 'comdef_meeting_formats', 'format_id', 'meeting_id');
+    }
 }

@@ -111,14 +111,14 @@ class MeetingRepository implements MeetingRepositoryInterface
             if ($formatsComparisonOperator == 'AND') {
                 foreach ($formatsInclude as $testId) {
                     $meetings = $meetings->whereHas('formatIds', function (Builder $query) use ($testId) {
-                        $query->where('formatId', $testId);
+                        $query->where('format_id', $testId);
                     });
                 }
             } else {
                 $meetings = $meetings->where(function (Builder $query) use ($formatsInclude) {
                     foreach ($formatsInclude as $testId) {
                         $query->orWhereHas('formatIds', function (Builder $query) use ($testId) {
-                            $query->orWhere('formatId', $testId);
+                            $query->where('format_id', $testId);
                         });
                     }
                 });
@@ -128,14 +128,14 @@ class MeetingRepository implements MeetingRepositoryInterface
         if (!is_null($formatsExclude)) {
             foreach ($formatsExclude as $testId) {
                 $meetings = $meetings->whereDoesntHave('formatIds', function (Builder $query) use ($testId) {
-                    $query->where('formatId', $testId);
+                    $query->where('format_id', $testId);
                 });
             }
         }
 
         if (!is_null($meetingKey) && !is_null($meetingKeyValue)) {
             if (in_array($meetingKey, Meeting::$mainFields)) {
-                if ($meetingKey == 'formats' || $meetingKey == 'latitude' || $meetingKey == 'longitude') {
+                if ($meetingKey == 'latitude' || $meetingKey == 'longitude') {
                     $meetings = $meetings->whereRaw('1 = 0');
                 } else {
                     $meetings = $meetings->where($meetingKey, $meetingKeyValue);
