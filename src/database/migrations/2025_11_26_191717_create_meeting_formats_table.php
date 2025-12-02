@@ -34,12 +34,16 @@ return new class extends Migration
             $table->index('format_id');
         });
         $meetings = DB::table('comdef_meetings_main')->select('id_bigint', 'formats')->get();
-        $meetings->each(function ($meeting) {
+        $validFormatIds = DB::table('comdef_formats_main')->select('shared_id_bigint')->pluck('shared_id_bigint')->toArray();
+        $meetings->each(function ($meeting) use ($validFormatIds) {
             if (empty($meeting->formats)) {
                 return;
             }
             $formatIds = array_unique(explode(',', $meeting->formats));
             foreach ($formatIds as $formatId) {
+                if (!in_array(intval($formatId), $validFormatIds)) {
+                    continue;
+                }
                 DB::table('comdef_meeting_formats')->insert([
                     'meeting_id' => $meeting->id_bigint,
                     'format_id' => (int)$formatId,
