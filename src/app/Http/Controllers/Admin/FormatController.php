@@ -128,8 +128,7 @@ class FormatController extends ResourceController
         return collect([
             'format_type_enum' => isset($validated['type']) ? FormatType::getKeyFromApiEnum($validated['type']) : null,
             'worldid_mixed' => $validated['worldId'] ?? null,
-            'translations' => array_map(function ($translation)
-             {
+            'translations' => array_map(function ($translation) {
                 return [
                     'lang_enum' => $translation['language'],
                     'key_string' => $translation['key'],
@@ -137,6 +136,6 @@ class FormatController extends ResourceController
                     'description_string' => $translation['description'],
                 ];
             }, $validated['translations']),
-        ] )->toArray();
+        ])->toArray();
     }
 }

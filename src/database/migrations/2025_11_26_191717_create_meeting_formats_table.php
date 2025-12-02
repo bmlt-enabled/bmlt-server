@@ -65,8 +65,7 @@ return new class extends Migration
             DB::statement('create table '.$prefix.'comdef_formats '.
                 'SELECT id, main.shared_id_bigint, main.root_server_id, main.source_id, worldid_mixed, key_string, icon_blob, lang_enum, name_string, description_string '.
                     'FROM '.$prefix.'comdef_formats_main main, '.$prefix.'comdef_formats_translations ft '.
-                    'WHERE main.shared_id_bigint = ft.shared_id_bigint;'
-            );
+                    'WHERE main.shared_id_bigint = ft.shared_id_bigint;');
             Schema::dropIfExists('meeting_formats_translations');
             DB::table('comdef_meetings_main')->string('formats', 255)->nullable();
             $meetings = DB::table('comdef_meetings_main')->select('id_bigint', 'formats')->get();

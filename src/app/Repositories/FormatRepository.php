@@ -105,7 +105,7 @@ class FormatRepository implements FormatRepositoryInterface
 
     public function create(array $sharedFormatsValues): FormatMain
     {
-        return DB::transaction(function() use ($sharedFormatsValues) {
+        return DB::transaction(function () use ($sharedFormatsValues) {
             $formatMainValues = [
                 'worldid_mixed' => $sharedFormatsValues['worldid_mixed'],
                 'format_type_enum' => $sharedFormatsValues['format_type_enum'],
