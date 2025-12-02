@@ -264,8 +264,8 @@ class FormatPartialUpdateTest extends TestCase
             $oldWorldId = $format->main->worldid_mixed;
             $oldType = $format->main->format_type_enum;
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($oldWorldId, $format->worldid_mixed);
-            $this->assertEquals($oldType, $format->format_type_enum);
+            $this->assertEquals($oldWorldId, $format->main->worldid_mixed);
+            $this->assertEquals($oldType, $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);

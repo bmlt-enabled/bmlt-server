@@ -6,6 +6,7 @@ use App\Http\Resources\Admin\MeetingResource;
 use App\Models\Change;
 use App\Models\Format;
 use App\Models\Meeting;
+use App\Models\MeetingFormats;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
 use App\Repositories\MeetingRepository;
@@ -25,7 +26,6 @@ class MeetingPartialUpdateTest extends TestCase
     protected function createMeeting(array $mainFields = [], array $dataFields = [], array $longDataFields = [], array $removeFieldKeys = [])
     {
         $mainFields = collect([
-            'formats' => '',
             'venue_type' => Meeting::VENUE_TYPE_IN_PERSON,
             'weekday_tinyint' => 0,
             'start_time' => '20:00:00',
@@ -184,7 +184,7 @@ class MeetingPartialUpdateTest extends TestCase
             ->patch("/api/v1/meetings/$meeting->id_bigint", $payload)
             ->assertStatus(204);
         $meeting->refresh();
-        $this->assertEquals(strval($format->shared_id_bigint), $meeting->formats);
+        $this->assertEquals(strval($format->shared_id_bigint), $meeting->formatIds->pluck('format_id')->join(','));
     }
 
     public function testPartialUpdateMeetingValidateServiceBodyId()

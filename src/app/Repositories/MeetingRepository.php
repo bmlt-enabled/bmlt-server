@@ -432,12 +432,13 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getFieldValues(string $fieldName, array $specificFormats = [], bool $allFormats = false): Collection
     {
-        if (in_array($fieldName, Meeting::$mainFields)) {
+        if (in_array($fieldName, Meeting::$mainFields) || $fieldName == 'formats') {
             $meetingIdsByValue = Meeting::query()
                 ->where('published', 1)
                 ->get()
                 ->mapToGroups(function ($meeting, $_) use ($fieldName, $specificFormats, $allFormats) {
-                    $value = $meeting->{$fieldName};
+                    $value = $fieldName == 'formats' ? $meeting->formatIds->pluck('format_id')->join(',')
+                        : $meeting->{$fieldName};
                     $value = $fieldName == 'worldid_mixed' && $value ? trim($value) : $value;
 
                     if ($fieldName == 'formats' && $specificFormats && $value) {
@@ -660,16 +661,17 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
+        $dataFormats = $values['formats'] ?? [];
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $dataFormats) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
                 MeetingFormats::query()->where('meeting_id', $id)->delete();
-                foreach ($values['formats'] ?? [] as $formatId) {
+                foreach ($dataFormats as $formatId) {
                     MeetingFormats::create([
-                        'meetingid_bigint' => $id,
+                        'meeting_id' => $id,
                         'format_id' => $formatId,
                     ]);
                 }
