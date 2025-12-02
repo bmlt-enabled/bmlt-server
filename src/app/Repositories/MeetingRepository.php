@@ -617,12 +617,13 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
+        $dataFormats = $values['formats'] ?? [];
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $dataFormats) {
             $meeting = Meeting::create($mainValues);
-            foreach ($values['formats'] ?? [] as $formatId) {
+            foreach ($dataFormats as $formatId) {
                 MeetingFormats::create([
-                    'meetingid_bigint' => $meeting->id_bigint,
+                    'meeting_id' => $meeting->id_bigint,
                     'format_id' => $formatId,
                 ]);
             }

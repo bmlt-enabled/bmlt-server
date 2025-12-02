@@ -41,7 +41,7 @@ return new class extends Migration
             }
             $formatIds = array_unique(explode(',', $meeting->formats));
             foreach ($formatIds as $formatId) {
-                if (!in_array(intval($formatId), $validFormatIds)) {
+                if (!is_numeric($formatId) || !in_array(intval($formatId), $validFormatIds)) {
                     continue;
                 }
                 DB::table('comdef_meeting_formats')->insert([

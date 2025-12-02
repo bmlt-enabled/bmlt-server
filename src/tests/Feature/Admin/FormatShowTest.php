@@ -77,7 +77,7 @@ class FormatShowTest extends TestCase
             ->json();
 
         $this->assertIsString($data['type']);
-        $this->assertEquals(FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->format_type_enum], $data['type']);
+        $this->assertEquals(FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->main->format_type_enum], $data['type']);
     }
 
     public function testShowFormatTypeNull()

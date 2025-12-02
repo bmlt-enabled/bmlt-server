@@ -330,9 +330,9 @@ class GetChangesTest extends TestCase
 
     public function testFormatsChanged()
     {
-        $format1 = $this->createFormat(101, 'X');
-        $format2 = $this->createFormat(102, 'A');
-        $format3 = $this->createFormat(103, 'B');
+        $format1 = $this->createFormat('X');
+        $format2 = $this->createFormat('A');
+        $format3 = $this->createFormat('B');
         $user = $this->createUser();
         $beforeValues = ['formats' => implode(',', [$format1->shared_id_bigint])];
         $afterValues = ['formats' => implode(',', [$format1->shared_id_bigint, $format2->shared_id_bigint, $format3->shared_id_bigint])];

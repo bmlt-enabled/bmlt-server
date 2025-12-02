@@ -463,9 +463,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertNotContains($virtualFormat->shared_id_bigint, $meeting->formatIds->pluck('format_id')->toArray());
+        $this->assertContains($hybridFormat->shared_id_bigint, $meeting->formatIds->pluck('format_id')->toArray());
+        $this->assertNotContains($temporarilyClosedFormat->shared_id_bigint, $meeting->formatIds->pluck('format_id')->toArray());
     }
 
     public function testStoreMeetingValidateServiceBodyId()
