@@ -6,6 +6,7 @@ use App\Interfaces\MeetingRepositoryInterface;
 use App\Models\Change;
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\MeetingFormats;
 use App\Models\MeetingLongData;
 use App\Repositories\External\ExternalMeeting;
 use App\Repositories\Import\MeetingImportResult;
@@ -618,6 +619,12 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
             $meeting = Meeting::create($mainValues);
+            foreach ($values['formats'] ?? [] as $formatId) {
+                MeetingFormats::create([
+                    'meetingid_bigint' => $meeting->id_bigint,
+                    'format_id' => $formatId,
+                ]);
+            }
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
                 if (strlen($fieldValue) > 255) {
@@ -659,6 +666,13 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
+                MeetingFormats::query()->where('meeting_id', $id)->delete();
+                foreach ($values['formats'] ?? [] as $formatId) {
+                    MeetingFormats::create([
+                        'meetingid_bigint' => $id,
+                        'format_id' => $formatId,
+                    ]);
+                }
                 MeetingData::query()->where('meetingid_bigint', $id)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
@@ -698,6 +712,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meeting = Meeting::find($id);
             if (!is_null($meeting)) {
                 $meeting->loadMissing(['data', 'longdata']);
+                MeetingFormats::query()->where('meeting_id', $meeting->id_bigint)->delete();
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();

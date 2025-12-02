@@ -45,7 +45,7 @@ class FormatDeleteTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $format = Format::query()->first();
-        $this->createMeeting(['formats' => "$format->shared_id_bigint,123"]);
+        $this->createMeeting(['formats' => "$format->shared_id_bigint,53"]);
 
         $this->withHeader('Authorization', "Bearer $token")
             ->delete("/api/v1/formats/$format->shared_id_bigint")
@@ -60,7 +60,7 @@ class FormatDeleteTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $format = Format::query()->first();
-        $this->createMeeting(['formats' => "123,$format->shared_id_bigint,7"]);
+        $this->createMeeting(['formats' => "53,$format->shared_id_bigint,7"]);
 
         $this->withHeader('Authorization', "Bearer $token")
             ->delete("/api/v1/formats/$format->shared_id_bigint")
@@ -75,7 +75,7 @@ class FormatDeleteTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $format = Format::query()->first();
-        $this->createMeeting(['formats' => "123,$format->shared_id_bigint"]);
+        $this->createMeeting(['formats' => "53,$format->shared_id_bigint"]);
 
         $this->withHeader('Authorization', "Bearer $token")
             ->delete("/api/v1/formats/$format->shared_id_bigint")

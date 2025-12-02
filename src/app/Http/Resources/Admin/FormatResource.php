@@ -17,12 +17,11 @@ class FormatResource extends JsonResource
 
     public function toArray($request)
     {
-        $main = FormatMain::query()->with('translations')->find($this->shared_id_bigint);
         return [
             'id' => $this->shared_id_bigint,
-            'worldId' => $this->worldid_mixed,
-            'type' => FormatType::getApiEnumFromKey($this->format_type_enum),
-            'translations' => $main->translations->map(function ($translation) {
+            'worldId' => $this->main->worldid_mixed,
+            'type' => FormatType::getApiEnumFromKey($this->main->format_type_enum),
+            'translations' => $this->main->translations->map(function ($translation) {
                 return [
                     'key' => $translation->key_string ?? '',
                     'name' => $translation->name_string ?? '',

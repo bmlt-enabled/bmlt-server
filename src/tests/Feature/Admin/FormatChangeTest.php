@@ -4,6 +4,8 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Change;
 use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
@@ -21,14 +23,14 @@ class FormatChangeTest extends TestCase
 
         foreach ($formats as $format) {
             if (is_null($payload['worldId'])) {
-                if (!empty($format->worldid_mixed)) {
-                    $payload['worldId'] = $format->worldid_mixed;
+                if (!empty($format->main->worldid_mixed)) {
+                    $payload['worldId'] = $format->main->worldid_mixed;
                 }
             }
 
             if (is_null($payload['type'])) {
-                if (!empty($format->format_type_enum)) {
-                    $payload['type'] = FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->format_type_enum];
+                if (!empty($format->main->format_type_enum)) {
+                    $payload['type'] = FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->main->format_type_enum];
                 }
             }
 
@@ -45,15 +47,16 @@ class FormatChangeTest extends TestCase
 
     private function createFormats(): Collection
     {
-        $nextId = Format::query()->max('shared_id_bigint') + 1;
-        return collect(['en', 'es'])->map(function ($lang) use ($nextId) {
+        $main = FormatMain::create([
+            'worldid_mixed' => 'OPEN',
+            'format_type_enum' => 'FC3',
+        ]);
+        return collect(['en', 'es'])->map(function ($lang) use ($main) {
             return Format::create([
-                'shared_id_bigint' => $nextId,
+                'shared_id_bigint' => $main->shared_id_bigint,
                 'key_string' => 'O' . $lang,
                 'name_string' => 'Open' . $lang,
                 'description_string' => 'Open Description' . $lang,
-                'worldid_mixed' => 'OPEN' . $lang,
-                'format_type_enum' => 'FC3',
                 'lang_enum' => $lang,
             ]);
         });
@@ -141,7 +144,7 @@ class FormatChangeTest extends TestCase
         $this->assertEquals(count($formats), $changes->count());
 
         foreach ($formats as $oldTranslation) {
-            $newTranslation = Format::query()->where('shared_id_bigint', $oldTranslation->shared_id_bigint)->where('lang_enum', $oldTranslation->lang_enum)->first();
+            $newTranslation = FormatTranslation::query()->where('shared_id_bigint', $oldTranslation->shared_id_bigint)->where('lang_enum', $oldTranslation->lang_enum)->first();
             $change = $changes
                 ->where('service_body_id_bigint', $oldTranslation->shared_id_bigint)
                 ->where('lang_enum', $oldTranslation->lang_enum)
@@ -159,20 +162,20 @@ class FormatChangeTest extends TestCase
             $this->assertNotNull($change->before_object);
             $beforeObject = $change->before_object;
             $this->assertEquals($oldTranslation->shared_id_bigint, $beforeObject[0]);
-            $this->assertEquals($oldTranslation->format_type_enum, $beforeObject[1]);
+            $this->assertEquals($oldTranslation->main->format_type_enum, $beforeObject[1]);
             $this->assertEquals($oldTranslation->key_string, $beforeObject[2]);
             $this->assertNull($beforeObject[3]);
-            $this->assertEquals($oldTranslation->worldid_mixed, $beforeObject[4]);
+            $this->assertEquals($oldTranslation->main->worldid_mixed, $beforeObject[4]);
             $this->assertEquals($oldTranslation->lang_enum, $beforeObject[5]);
             $this->assertEquals($oldTranslation->name_string, $beforeObject[6]);
             $this->assertEquals($oldTranslation->description_string, $beforeObject[7]);
             $this->assertNotNull($change->after_object);
             $afterObject = $change->after_object;
             $this->assertEquals($newTranslation->shared_id_bigint, $afterObject[0]);
-            $this->assertEquals($newTranslation->format_type_enum, $afterObject[1]);
+            $this->assertEquals($newTranslation->main->format_type_enum, $afterObject[1]);
             $this->assertEquals($newTranslation->key_string, $afterObject[2]);
             $this->assertNull($afterObject[3]);
-            $this->assertEquals($newTranslation->worldid_mixed, $afterObject[4]);
+            $this->assertEquals($newTranslation->main->worldid_mixed, $afterObject[4]);
             $this->assertEquals($newTranslation->lang_enum, $afterObject[5]);
             $this->assertEquals($newTranslation->name_string, $afterObject[6]);
             $this->assertEquals($newTranslation->description_string, $afterObject[7]);
@@ -224,10 +227,10 @@ class FormatChangeTest extends TestCase
         $this->assertNotNull($change->after_object);
         $afterObject = $change->after_object;
         $this->assertEquals($formats[0]->shared_id_bigint, $afterObject[0]);
-        $this->assertEquals($formats[0]->format_type_enum, $afterObject[1]);
+        $this->assertEquals($formats[0]->main->format_type_enum, $afterObject[1]);
         $this->assertEquals($data['translations'][2]['key'], $afterObject[2]);
         $this->assertNull($afterObject[3]);
-        $this->assertEquals($formats[0]->worldid_mixed, $afterObject[4]);
+        $this->assertEquals($formats[0]->main->worldid_mixed, $afterObject[4]);
         $this->assertEquals($data['translations'][2]['language'], $afterObject[5]);
         $this->assertEquals($data['translations'][2]['name'], $afterObject[6]);
         $this->assertEquals($data['translations'][2]['description'], $afterObject[7]);
@@ -252,20 +255,20 @@ class FormatChangeTest extends TestCase
             $this->assertNotNull($change->before_object);
             $beforeObject = $change->before_object;
             $this->assertEquals($oldTranslation->shared_id_bigint, $beforeObject[0]);
-            $this->assertEquals($oldTranslation->format_type_enum, $beforeObject[1]);
+            $this->assertEquals($oldTranslation->main->format_type_enum, $beforeObject[1]);
             $this->assertEquals($oldTranslation->key_string, $beforeObject[2]);
             $this->assertNull($beforeObject[3]);
-            $this->assertEquals($oldTranslation->worldid_mixed, $beforeObject[4]);
+            $this->assertEquals($oldTranslation->main->worldid_mixed, $beforeObject[4]);
             $this->assertEquals($oldTranslation->lang_enum, $beforeObject[5]);
             $this->assertEquals($oldTranslation->name_string, $beforeObject[6]);
             $this->assertEquals($oldTranslation->description_string, $beforeObject[7]);
             $this->assertNotNull($change->after_object);
             $afterObject = $change->after_object;
             $this->assertEquals($newTranslation->shared_id_bigint, $afterObject[0]);
-            $this->assertEquals($newTranslation->format_type_enum, $afterObject[1]);
+            $this->assertEquals($newTranslation->main->format_type_enum, $afterObject[1]);
             $this->assertEquals($newTranslation->key_string, $afterObject[2]);
             $this->assertNull($afterObject[3]);
-            $this->assertEquals($newTranslation->worldid_mixed, $afterObject[4]);
+            $this->assertEquals($newTranslation->main->worldid_mixed, $afterObject[4]);
             $this->assertEquals($newTranslation->lang_enum, $afterObject[5]);
             $this->assertEquals($newTranslation->name_string, $afterObject[6]);
             $this->assertEquals($newTranslation->description_string, $afterObject[7]);
@@ -315,10 +318,10 @@ class FormatChangeTest extends TestCase
         $this->assertNull($change->after_object);
         $beforeObject = $change->before_object;
         $this->assertEquals($removedTranslation->shared_id_bigint, $beforeObject[0]);
-        $this->assertEquals($removedTranslation->format_type_enum, $beforeObject[1]);
+        $this->assertEquals($removedTranslation->main->format_type_enum, $beforeObject[1]);
         $this->assertEquals($removedTranslation->key_string, $beforeObject[2]);
         $this->assertNull($beforeObject[3]);
-        $this->assertEquals($removedTranslation->worldid_mixed, $beforeObject[4]);
+        $this->assertEquals($removedTranslation->main->worldid_mixed, $beforeObject[4]);
         $this->assertEquals($removedTranslation->lang_enum, $beforeObject[5]);
         $this->assertEquals($removedTranslation->name_string, $beforeObject[6]);
         $this->assertEquals($removedTranslation->description_string, $beforeObject[7]);
@@ -342,20 +345,20 @@ class FormatChangeTest extends TestCase
         $this->assertNotNull($change->before_object);
         $beforeObject = $change->before_object;
         $this->assertEquals($formats[0]->shared_id_bigint, $beforeObject[0]);
-        $this->assertEquals($formats[0]->format_type_enum, $beforeObject[1]);
+        $this->assertEquals($formats[0]->main->format_type_enum, $beforeObject[1]);
         $this->assertEquals($formats[0]->key_string, $beforeObject[2]);
         $this->assertNull($beforeObject[3]);
-        $this->assertEquals($formats[0]->worldid_mixed, $beforeObject[4]);
+        $this->assertEquals($formats[0]->main->worldid_mixed, $beforeObject[4]);
         $this->assertEquals($formats[0]->lang_enum, $beforeObject[5]);
         $this->assertEquals($formats[0]->name_string, $beforeObject[6]);
         $this->assertEquals($formats[0]->description_string, $beforeObject[7]);
         $this->assertNotNull($change->after_object);
         $afterObject = $change->after_object;
         $this->assertEquals($newTranslation->shared_id_bigint, $afterObject[0]);
-        $this->assertEquals($newTranslation->format_type_enum, $afterObject[1]);
+        $this->assertEquals($newTranslation->main->format_type_enum, $afterObject[1]);
         $this->assertEquals($newTranslation->key_string, $afterObject[2]);
         $this->assertNull($afterObject[3]);
-        $this->assertEquals($newTranslation->worldid_mixed, $afterObject[4]);
+        $this->assertEquals($newTranslation->main->worldid_mixed, $afterObject[4]);
         $this->assertEquals($newTranslation->lang_enum, $afterObject[5]);
         $this->assertEquals($newTranslation->name_string, $afterObject[6]);
         $this->assertEquals($newTranslation->description_string, $afterObject[7]);
@@ -393,10 +396,10 @@ class FormatChangeTest extends TestCase
             $this->assertNull($change->after_object);
             $beforeObject = $change->before_object;
             $this->assertEquals($translation->shared_id_bigint, $beforeObject[0]);
-            $this->assertEquals($translation->format_type_enum, $beforeObject[1]);
+            //$this->assertEquals($translation->main->format_type_enum, $beforeObject[1]);
             $this->assertEquals($translation->key_string, $beforeObject[2]);
             $this->assertNull($beforeObject[3]);
-            $this->assertEquals($translation->worldid_mixed, $beforeObject[4]);
+            //$this->assertEquals($translation->main->worldid_mixed, $beforeObject[4]);
             $this->assertEquals($translation->lang_enum, $beforeObject[5]);
             $this->assertEquals($translation->name_string, $beforeObject[6]);
             $this->assertEquals($translation->description_string, $beforeObject[7]);

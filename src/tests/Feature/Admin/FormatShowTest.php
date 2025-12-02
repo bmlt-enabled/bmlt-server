@@ -3,23 +3,37 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
+use App\Models\FormatTranslation;
+use App\Models\FormatMain;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FormatShowTest extends TestCase
 {
     use RefreshDatabase;
 
+
     private function createFormat(array $values): Format
     {
-        return Format::create(array_merge([
-            'shared_id_bigint' => Format::query()->max('shared_id_bigint') + 1,
+        $values = array_merge([
             'key_string' => 'T',
             'worldid_mixed' => 'test',
             'lang_enum' => 'en',
             'name_string' => 'test',
             'description_string' => 'test',
             'format_type_enum' => 'FC1',
-        ], $values));
+        ], $values);
+        $main = FormatMain::create([
+            'worldid_mixed' => $values['worldid_mixed'],
+            'format_type_enum' => $values['format_type_enum'],
+        ]);
+        return Format::create([
+            'shared_id_bigint' => $main->shared_id_bigint,
+            'key_string' => $values['key_string'],
+            'name_string' => $values['name_string'],
+            'lang_enum' => $values['lang_enum'],
+            'description_string' => $values['description_string'],
+
+        ]);
     }
 
     public function testShowFormatWorldIdNotNull()
@@ -34,7 +48,7 @@ class FormatShowTest extends TestCase
             ->json();
 
         $this->assertIsString($data['worldId']);
-        $this->assertEquals($format->worldid_mixed, $data['worldId']);
+        $this->assertEquals($format->main->worldid_mixed, $data['worldId']);
     }
 
     public function testShowFormatWorldIdNull()

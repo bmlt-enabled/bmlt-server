@@ -4,7 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Change;
 use App\Models\Format;
-
+use App\Models\FormatMain;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
@@ -48,15 +48,16 @@ class FormatPartialUpdateTest extends TestCase
 
     private function createFormats(): Collection
     {
-        $nextId = Format::query()->max('shared_id_bigint') + 1;
-        return collect(['en', 'es'])->map(function ($lang) use ($nextId) {
+        $main = FormatMain::create([
+            'worldid_mixed' => 'OPEN',
+            'format_type_enum' => 'FC3',
+        ]);
+        return collect(['en', 'es'])->map(function ($lang) use ($main) {
             return Format::create([
-                'shared_id_bigint' => $nextId,
+                'shared_id_bigint' => $main->shared_id_bigint,
                 'key_string' => 'O' . $lang,
                 'name_string' => 'Open' . $lang,
                 'description_string' => 'Open Description' . $lang,
-                'worldid_mixed' => 'OPEN',
-                'format_type_enum' => 'FC3',
                 'lang_enum' => $lang,
             ]);
         });
@@ -74,7 +75,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertNull($format->worldid_mixed);
+            $this->assertNull($format->main->worldid_mixed);
         }
 
         $data = ['worldId' => ''];
@@ -83,7 +84,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertNull($format->worldid_mixed);
+            $this->assertNull($format->main->worldid_mixed);
         }
 
         $data = ['worldId' => 'test'];
@@ -92,7 +93,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($data['worldId'], $format->worldid_mixed);
+            $this->assertEquals($data['worldId'], $format->main->worldid_mixed);
         }
 
         $data = ['type' => null];
@@ -101,7 +102,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertNull($format->format_type_enum);
+            $this->assertNull($format->main->format_type_enum);
         }
 
         $data = ['type' => ''];
@@ -110,7 +111,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertNull($format->format_type_enum);
+            $this->assertNull($format->main->format_type_enum);
         }
 
         $data = ['type' => FormatTypeConsts::TYPE_MEETING_FORMAT];
@@ -119,7 +120,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
         }
 
         $data = ['type' => FormatTypeConsts::TYPE_MEETING_FORMAT];
@@ -128,7 +129,7 @@ class FormatPartialUpdateTest extends TestCase
             ->assertStatus(204);
         foreach ($formats as $format) {
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
         }
     }
 
@@ -155,8 +156,8 @@ class FormatPartialUpdateTest extends TestCase
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($data['worldId'], $format->worldid_mixed);
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals($data['worldId'], $format->main->worldid_mixed);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -183,11 +184,11 @@ class FormatPartialUpdateTest extends TestCase
 
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
-            $oldWorldId = $format->worldid_mixed;
-            $oldType = $format->format_type_enum;
+            $oldWorldId = $format->main->worldid_mixed;
+            $oldType = $format->main->format_type_enum;
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($oldWorldId, $format->worldid_mixed);
-            $this->assertEquals($oldType, $format->format_type_enum);
+            $this->assertEquals($oldWorldId, $format->main->worldid_mixed);
+            $this->assertEquals($oldType, $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -221,8 +222,8 @@ class FormatPartialUpdateTest extends TestCase
 
         foreach ($data['translations'] as $translation) {
             $format = Format::query()->where('shared_id_bigint', $formats[0]->shared_id_bigint)->where('lang_enum', $translation['language'])->first();
-            $this->assertEquals($formats[0]->worldid_mixed, $format->worldid_mixed);
-            $this->assertEquals($formats[0]->format_type_enum, $format->format_type_enum);
+            $this->assertEquals($formats[0]->main->worldid_mixed, $format->main->worldid_mixed);
+            $this->assertEquals($formats[0]->main->format_type_enum, $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -260,8 +261,8 @@ class FormatPartialUpdateTest extends TestCase
 
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
-            $oldWorldId = $format->worldid_mixed;
-            $oldType = $format->format_type_enum;
+            $oldWorldId = $format->main->worldid_mixed;
+            $oldType = $format->main->format_type_enum;
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
             $this->assertEquals($oldWorldId, $format->worldid_mixed);
             $this->assertEquals($oldType, $format->format_type_enum);
