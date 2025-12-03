@@ -122,8 +122,8 @@ TS;
 
         $updatedContent = File::get($this->testTranslationFilePath);
 
-        // With TODO comment for non-English files
-        $this->assertStringContainsString("zipCode: 'Zip Code', // TODO: translate", $updatedContent);
+        // Last item should NOT have comma
+        $this->assertStringContainsString("zipCode: 'Zip Code' // TODO: translate", $updatedContent);
     }
 
     public function testAddsKeyToEmptyTranslations()
@@ -321,5 +321,31 @@ TS;
         $this->assertStringContainsString("addMeeting: 'Add Meeting', // TODO: translate", $updatedContent);
         $this->assertStringContainsString("accountTitle: 'Account'", $updatedContent);
         $this->assertStringContainsString("Cancel: 'Cancel'", $updatedContent);
+    }
+
+    public function testAddsKeyAfterLastKeyWithTodoComment()
+    {
+        $content = <<<'TS'
+export const testTranslations = {
+  accountTitle: 'Account',
+  zoomLevel: 'Zoom Level' // TODO: Translate
+};
+TS;
+
+        $this->createTestTranslationFile($content);
+
+        $this->artisan('translation:add', [
+            'key' => 'zoomNo',
+            'value' => 'two'
+        ])->assertExitCode(0);
+
+        $updatedContent = File::get($this->testTranslationFilePath);
+
+        // Should add comma before the TODO comment on previous line
+        $this->assertStringContainsString("zoomLevel: 'Zoom Level', // TODO: Translate", $updatedContent);
+        // Last item should NOT have comma
+        $this->assertStringContainsString("zoomNo: 'two' // TODO: translate", $updatedContent);
+        // Make sure comma is not after the comment
+        $this->assertStringNotContainsString("// TODO: Translate,", $updatedContent);
     }
 }

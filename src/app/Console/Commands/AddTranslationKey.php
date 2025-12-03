@@ -113,7 +113,13 @@ class AddTranslationKey extends Command
         // Create the new line
         // escape single quotes and backslashes
         $escapedValue = str_replace(['\\', "'"], ['\\\\', "\\'"], $translationValue);
-        $newLine = "  {$key}: '{$escapedValue}'{$comment}";
+        
+        // Determine if we're inserting at the end (after last key)
+        // If so, don't add comma since it will be the new last item
+        $isLastItem = ($insertAfterKey && !$insertBeforeKey);
+        $commentForNewLine = $isLastItem && !$isEnglish ? ' // TODO: translate' : $comment;
+        
+        $newLine = "  {$key}: '{$escapedValue}'{$commentForNewLine}";
 
         // Find the position to insert
         if ($insertBeforeKey) {
@@ -121,32 +127,44 @@ class AddTranslationKey extends Command
             if (preg_match('/^\s*' . preg_quote($insertBeforeKey, '/') . ':/m', $translationsContent, $match, PREG_OFFSET_CAPTURE)) {
                 $insertPos = $match[0][1];
                 $comma = $isEnglish ? ',' : '';
-                $beforeInsert = substr($translationsContent, 0, $insertPos);
-                
-                // Insert before a key
-                $afterInsert = substr($translationsContent, $insertPos);
-                
-                // Check if we're at the very start (only whitespace before first key)
-                if (trim($beforeInsert) === '') {
-                    // At the start - ensure we have proper newline formatting
-                    // If $beforeInsert doesn't end with newline, add one
-                    $needsLeadingNewline = !str_ends_with($beforeInsert, "\n");
-                    $prefix = $needsLeadingNewline ? "\n" : '';
-                    // Don't add extra newline at end - $afterInsert already starts at the next key's line
-                    $updatedContent = $beforeInsert . $prefix . $newLine . $comma . $afterInsert;
+                $before = substr($translationsContent, 0, $insertPos);
+                $after = substr($translationsContent, $insertPos);
+
+                if (trim($before) === '') {
+                    // At the start - keep structure but ensure newline before first key
+                    if (substr($after, 0, 1) === "\n") {
+                        $after = substr($after, 1);
+                    }
+                    $updatedContent = "\n" . $newLine . $comma . "\n" . $after;
                 } else {
-                    // There's content before, insert normally
-                    $updatedContent = $beforeInsert . $newLine . $comma . "\n" . $afterInsert;
+                    $updatedContent = $before . $newLine . $comma . "\n" . $after;
                 }
+            } else {
+                return;
             }
         } elseif ($insertAfterKey) {
             // Insert after the previous key (at the end)
-            // Find the end of the last key's line
             if (preg_match('/^\s*' . preg_quote($insertAfterKey, '/') . ':.*$/m', $translationsContent, $match, PREG_OFFSET_CAPTURE)) {
-                $lineEnd = $match[0][1] + strlen($match[0][0]);
-                $updatedContent = substr($translationsContent, 0, $lineEnd)
-                    . ",\n" . $newLine
-                    . substr($translationsContent, $lineEnd);
+                $lineStart = $match[0][1];
+                $lineLen = strlen($match[0][0]);
+                $before = substr($translationsContent, 0, $lineStart);
+                $lastLine = substr($translationsContent, $lineStart, $lineLen);
+                $after = substr($translationsContent, $lineStart + $lineLen);
+
+                // Ensure previous last line has trailing comma before any comment
+                if (!preg_match('/,\s*(?:\/\/.*)?$/', $lastLine)) {
+                    if (preg_match('/(.*?)(\s*\/\/.*)$/', $lastLine, $m2)) {
+                        $beforeComment = rtrim($m2[1]);
+                        $commentPart = ltrim($m2[2]);
+                        $lastLine = $beforeComment . ', ' . $commentPart;
+                    } else {
+                        $lastLine = rtrim($lastLine) . ',';
+                    }
+                }
+
+                $updatedContent = $before . $lastLine . "\n" . $newLine . $after;
+            } else {
+                return;
             }
         } else {
             // No existing keys, add as first key
