@@ -99,11 +99,12 @@ class MeetingController extends ResourceController
         $request->merge(
             collect(Meeting::$mainFields)
                 ->merge($stockDataFields)
+                ->merge(['formats'])
                 ->mapWithKeys(function ($fieldName) use ($request, $meeting, $meetingData) {
                     if ($fieldName == 'service_body_bigint') {
                         return ['serviceBodyId' => $request->has('serviceBodyId') ? $request->input('serviceBodyId') : $meeting->service_body_bigint];
                     } elseif ($fieldName == 'formats') {
-                        return ['formatIds' => $request->has('formatIds') ? $request->input('formatIds') : (empty($meeting->formats) ? collect([]) : collect(explode(',', $meeting->formats))->map(fn ($id) => intval($id))->reject(fn ($id) => $id == $this->getVirtualFormatId() || $id == $this->getHybridFormatId() || $id == $this->getTemporarilyClosedFormatId())->toArray())];
+                        return ['formatIds' => $request->has('formatIds') ? $request->input('formatIds') : (empty($meeting->formatIds) ? collect([]) : $meeting->formatIds->pluck('format_id')->reject(fn ($id) => $id == $this->getVirtualFormatId() || $id == $this->getHybridFormatId() || $id == $this->getTemporarilyClosedFormatId())->toArray())];
                     } elseif ($fieldName == 'venue_type') {
                         return ['venueType' => $request->has('venueType') ? $request->input('venueType') : $meeting->venue_type];
                     } elseif ($fieldName == 'weekday_tinyint') {
@@ -176,7 +177,7 @@ class MeetingController extends ResourceController
             array_merge([
                 'serviceBodyId' => 'required|int|exists:comdef_service_bodies,id_bigint',
                 'formatIds' => 'present|array',
-                'formatIds.*' => ['int', 'exists:comdef_formats,shared_id_bigint', Rule::notIn([$this->getVirtualFormatId(), $this->getTemporarilyClosedFormatId(), $this->getHybridFormatId()])],
+                'formatIds.*' => ['int', 'exists:comdef_formats_translations,shared_id_bigint', Rule::notIn([$this->getVirtualFormatId(), $this->getTemporarilyClosedFormatId(), $this->getHybridFormatId()])],
                 'venueType' => ['required', Rule::in(Meeting::VALID_VENUE_TYPES)],
                 'temporarilyVirtual' => 'sometimes|boolean',
                 'day' => 'required|int|between:0,6',
@@ -239,9 +240,12 @@ class MeetingController extends ResourceController
         return $id;
     }
 
-    private function buildFormatsString(Collection $validated): string
+    private function buildFormatsArray(Collection $validated): array
     {
-        $formatIds = $validated['formatIds'];
+        $formatIds = [];
+        if (!empty($validated['formatIds'])) {
+            $formatIds = $validated['formatIds'];
+        }
         $temporarilyVirtual = boolval($validated['temporarilyVirtual'] ?? false);
         $venueType = $validated['venueType'];
         if ($venueType == Meeting::VENUE_TYPE_VIRTUAL) {
@@ -252,14 +256,14 @@ class MeetingController extends ResourceController
         } elseif ($venueType == Meeting::VENUE_TYPE_HYBRID) {
             array_push($formatIds, $this->getHybridFormatId());
         }
-        return collect($formatIds)->sort()->unique()->join(',');
+        return $formatIds;
     }
 
     private function buildValuesArray(Collection $validated): array
     {
         $values = [
             'service_body_bigint' => $validated['serviceBodyId'],
-            'formats' => $this->buildFormatsString($validated),
+            'formats' => $this->buildFormatsArray($validated),
             'venue_type' => $validated['venueType'],
             'weekday_tinyint' => $validated['day'],
             'time_zone' => $validated['timeZone'] ?? null,

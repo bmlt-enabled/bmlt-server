@@ -6,6 +6,7 @@ use App\Interfaces\MeetingRepositoryInterface;
 use App\Models\Change;
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\MeetingFormats;
 use App\Models\MeetingLongData;
 use App\Repositories\External\ExternalMeeting;
 use App\Repositories\Import\MeetingImportResult;
@@ -53,7 +54,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         int $pageSize = null,
         int $pageNum = null,
     ): Collection {
-        $eagerLoadRelations = ['data', 'longdata'];
+        $eagerLoadRelations = ['data', 'longdata', 'formatIds'];
         if ($eagerServiceBodies) {
             $eagerLoadRelations[] = 'serviceBody';
         }
@@ -109,24 +110,16 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         if (!is_null($formatsInclude)) {
             if ($formatsComparisonOperator == 'AND') {
-                foreach ($formatsInclude as $formatId) {
-                    $meetings = $meetings->where(function (Builder $query) use ($formatId) {
-                        $query
-                            ->orWhere('formats', "$formatId")
-                            ->orWhere('formats', 'LIKE', "$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId");
+                foreach ($formatsInclude as $testId) {
+                    $meetings = $meetings->whereHas('formatIds', function (Builder $query) use ($testId) {
+                        $query->where('format_id', $testId);
                     });
                 }
             } else {
                 $meetings = $meetings->where(function (Builder $query) use ($formatsInclude) {
-                    foreach ($formatsInclude as $formatId) {
-                        $query->orWhere(function (Builder $query) use ($formatId) {
-                            $query
-                                ->orWhere('formats', "$formatId")
-                                ->orWhere('formats', 'LIKE', "$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId");
+                    foreach ($formatsInclude as $testId) {
+                        $query->orWhereHas('formatIds', function (Builder $query) use ($testId) {
+                            $query->where('format_id', $testId);
                         });
                     }
                 });
@@ -134,18 +127,16 @@ class MeetingRepository implements MeetingRepositoryInterface
         }
 
         if (!is_null($formatsExclude)) {
-            foreach ($formatsExclude as $formatId) {
-                $meetings = $meetings
-                    ->whereNot('formats', "$formatId")
-                    ->whereNot('formats', 'LIKE', "$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId");
+            foreach ($formatsExclude as $testId) {
+                $meetings = $meetings->whereDoesntHave('formatIds', function (Builder $query) use ($testId) {
+                    $query->where('format_id', $testId);
+                });
             }
         }
 
         if (!is_null($meetingKey) && !is_null($meetingKeyValue)) {
             if (in_array($meetingKey, Meeting::$mainFields)) {
-                if ($meetingKey == 'formats' || $meetingKey == 'latitude' || $meetingKey == 'longitude') {
+                if ($meetingKey == 'latitude' || $meetingKey == 'longitude') {
                     $meetings = $meetings->whereRaw('1 = 0');
                 } else {
                     $meetings = $meetings->where($meetingKey, $meetingKeyValue);
@@ -441,12 +432,13 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getFieldValues(string $fieldName, array $specificFormats = [], bool $allFormats = false): Collection
     {
-        if (in_array($fieldName, Meeting::$mainFields)) {
+        if (in_array($fieldName, Meeting::$mainFields) || $fieldName == 'formats') {
             $meetingIdsByValue = Meeting::query()
                 ->where('published', 1)
                 ->get()
                 ->mapToGroups(function ($meeting, $_) use ($fieldName, $specificFormats, $allFormats) {
-                    $value = $meeting->{$fieldName};
+                    $value = $fieldName == 'formats' ? $meeting->formatIds->pluck('format_id')->join(',')
+                        : $meeting->{$fieldName};
                     $value = $fieldName == 'worldid_mixed' && $value ? trim($value) : $value;
 
                     if ($fieldName == 'formats' && $specificFormats && $value) {
@@ -625,9 +617,16 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
+        $dataFormats = $values['formats'] ?? [];
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $dataFormats) {
             $meeting = Meeting::create($mainValues);
+            foreach ($dataFormats as $formatId) {
+                MeetingFormats::create([
+                    'meeting_id' => $meeting->id_bigint,
+                    'format_id' => $formatId,
+                ]);
+            }
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
                 if (strlen($fieldValue) > 255) {
@@ -663,12 +662,20 @@ class MeetingRepository implements MeetingRepositoryInterface
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
+        $dataFormats = $values['formats'] ?? [];
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $dataFormats) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
+                MeetingFormats::query()->where('meeting_id', $id)->delete();
+                foreach ($dataFormats as $formatId) {
+                    MeetingFormats::create([
+                        'meeting_id' => $id,
+                        'format_id' => $formatId,
+                    ]);
+                }
                 MeetingData::query()->where('meetingid_bigint', $id)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
@@ -708,6 +715,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             $meeting = Meeting::find($id);
             if (!is_null($meeting)) {
                 $meeting->loadMissing(['data', 'longdata']);
+                MeetingFormats::query()->where('meeting_id', $meeting->id_bigint)->delete();
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();

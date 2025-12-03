@@ -7,7 +7,8 @@ use App\Interfaces\MeetingRepositoryInterface;
 use App\Interfaces\RootServerRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
-use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
@@ -79,7 +80,7 @@ class ImportRootServers extends Command
         MeetingData::query()->whereIn('meetingid_bigint', $meetingIds)->whereNot('meetingid_bigint', 0)->delete();
         MeetingLongData::query()->whereIn('meetingid_bigint', $meetingIds)->whereNot('meetingid_bigint', 0)->delete();
         ServiceBody::query()->whereNull('root_server_id')->delete();
-        Format::query()->whereNull('root_server_id')->delete();
+        FormatMain::query()->whereNull('root_server_id')->delete();
         Change::query()->delete();
     }
 
@@ -264,7 +265,8 @@ class ImportRootServers extends Command
             $prefix . (new MeetingData)->getTable(),
             $prefix . (new MeetingLongData)->getTable(),
             $prefix . (new ServiceBody)->getTable(),
-            $prefix . (new Format)->getTable(),
+            $prefix . (new FormatMain)->getTable(),
+            $prefix . (new FormatTranslation)->getTable(),
             $prefix . (new RootServer)->getTable(),
             $prefix . (new RootServerStatistics)->getTable(),
         ];

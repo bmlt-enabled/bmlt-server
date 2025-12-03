@@ -4,7 +4,8 @@ namespace App\Console\Commands;
 
 use App\Interfaces\RootServerRepositoryInterface;
 use App\Models\Change;
-use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
@@ -55,7 +56,8 @@ class PrimeDatabaseFromLegacyTomato extends Command
         MeetingData::query()->whereNot('meetingid_bigint', 0)->delete();
         MeetingLongData::query()->whereNot('meetingid_bigint', 0)->delete();
         ServiceBody::query()->truncate();
-        Format::query()->truncate();
+        FormatMain::query()->truncate();
+        FormatTranslation::query()->truncate();
         Change::query()->truncate();
     }
 
@@ -176,7 +178,8 @@ class PrimeDatabaseFromLegacyTomato extends Command
             $prefix . (new MeetingData)->getTable(),
             $prefix . (new MeetingLongData)->getTable(),
             $prefix . (new ServiceBody)->getTable(),
-            $prefix . (new Format)->getTable(),
+            $prefix . (new FormatMain)->getTable(),
+            $prefix . (new FormatTranslation())->getTable(),
         ];
         foreach ($tableNames as $tableName) {
             DB::statement("ANALYZE TABLE $tableName;");

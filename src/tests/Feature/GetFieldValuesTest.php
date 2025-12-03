@@ -4,7 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\MeetingFormats;
 use App\Models\MeetingLongData;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,14 +17,24 @@ class GetFieldValuesTest extends TestCase
 
     private function createMeeting($fieldName, $fieldValue)
     {
-        $fields = array_merge(
-            [
-                'published' => 1,
-                'service_body_bigint' => 1
-            ],
-            [$fieldName => $fieldValue],
-        );
-        return Meeting::create($fields);
+        $formats = [];
+        $fields = [
+            'published' => 1,
+            'service_body_bigint' => 1
+        ];
+        if ($fieldName !== 'formats') {
+            $fields[$fieldName] = $fieldValue;
+        } elseif (!is_null($fieldValue)) {
+            $formats = explode(',', $fieldValue);
+        }
+        $meeting = Meeting::create($fields);
+        foreach ($formats as $formatId) {
+            MeetingFormats::create([
+                'meeting_id' => $meeting->id_bigint,
+                'format_id' => $formatId,
+            ]);
+        }
+        return $meeting;
     }
 
     private function createMeetingWithData($fieldName, $fieldValue)
@@ -71,7 +84,35 @@ class GetFieldValuesTest extends TestCase
 
         return $meeting;
     }
+    private function createFormat1(string $langEnum = 'en')
+    {
+        return $this->createFormat('O1', 'Open1', 'desc1', $langEnum, 'worldid');
+    }
 
+    private function createFormat2(string $langEnum = 'en')
+    {
+        return $this->createFormat('C2', 'Closed2', 'desc2', $langEnum, 'worldid');
+    }
+
+    private function createFormat3(string $langEnum = 'en')
+    {
+        return $this->createFormat('C3', 'Closed3', 'desc3', $langEnum, 'worldid');
+    }
+
+    private function createFormat(string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    {
+        $main = FormatMain::create([
+            'worldid_mixed' => $worldId,
+            'format_type_enum' => $formatTypeEnum,
+        ]);
+        return FormatTranslation::create([
+            'shared_id_bigint' => $main->shared_id_bigint,
+            'key_string' => $keyString,
+            'name_string' => $nameString,
+            'lang_enum' => $langEnum,
+            'description_string' => $description,
+        ]);
+    }
     public function testJsonp()
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetFieldValues&callback=asdf&meeting_key=meeting_name')
@@ -94,20 +135,25 @@ class GetFieldValuesTest extends TestCase
 
     public function testStringMainFields()
     {
+        $this->createFormat1();
+        $this->createFormat2();
         $mainFields = ['worldid_mixed', 'time_zone', 'lang_enum', 'formats'];
 
         foreach ($mainFields as $fieldName) {
             try {
+                $value1 = $fieldName == 'formats' ? '1' : 'test';
+                $value2 = $fieldName == 'formats' ? '2' : 'test2';
                 $meeting1 = $this->createMeeting($fieldName, null);
-                $meeting2 = $this->createMeeting($fieldName, 'test');
-                $meeting3 = $this->createMeeting($fieldName, 'test');
-                $meeting4 = $this->createMeeting($fieldName, 'test2');
+                $meeting2 = $this->createMeeting($fieldName, $value1);
+                $meeting3 = $this->createMeeting($fieldName, $value1);
+                $meeting4 = $this->createMeeting($fieldName, $value2);
+
                 $this->get("/client_interface/json/?switcher=GetFieldValues&meeting_key=$fieldName")
                     ->assertStatus(200)
                     ->assertExactJson([
                         [$fieldName => 'NULL', 'ids' => strval($meeting1->id_bigint)],
-                        [$fieldName => $meeting2->{$fieldName}, 'ids' => implode(',', [$meeting2->id_bigint, $meeting3->id_bigint])],
-                        [$fieldName => $meeting4->{$fieldName}, 'ids' => strval($meeting4->id_bigint)]
+                        [$fieldName => $value1, 'ids' => implode(',', [$meeting2->id_bigint, $meeting3->id_bigint])],
+                        [$fieldName => $value2, 'ids' => strval($meeting4->id_bigint)]
                     ]);
             } finally {
                 Meeting::query()->delete();

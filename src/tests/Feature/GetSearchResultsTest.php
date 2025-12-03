@@ -5,8 +5,11 @@ namespace Tests\Feature;
 use App\Http\Resources\Query\MeetingResource;
 use App\LegacyConfig;
 use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\MeetingFormats;
 use App\Models\MeetingLongData;
 use App\Models\RootServer;
 use App\Models\ServiceBody;
@@ -18,6 +21,7 @@ use Tests\TestCase;
 class GetSearchResultsTest extends TestCase
 {
     use RefreshDatabase;
+
 
     private static $mainFieldDefaults = [
         'worldid_mixed' => 'worldid_mixed_default',
@@ -49,6 +53,10 @@ class GetSearchResultsTest extends TestCase
 
     private function createMeeting(array $mainFields = [], array $dataFields = [], array $longDataFields = [])
     {
+        $formats = isset($mainFields['formats']) ? explode(',', $mainFields['formats']) : [];
+        if (isset($mainFields['formats'])) {
+            unset($mainFields['formats']);
+        }
         static $dataFieldTemplates;
         if (!isset($dataFieldTemplates)) {
             $dataFieldTemplates = MeetingData::query()
@@ -93,7 +101,15 @@ class GetSearchResultsTest extends TestCase
                 'visibility' => $fieldTemplate->visibility,
             ]);
         }
-
+        foreach ($formats as $formatId) {
+            if (empty(trim($formatId))) {
+                continue;
+            }
+            MeetingFormats::create([
+                'meeting_id' => $meeting->id_bigint,
+                'format_id' => trim($formatId),
+            ]);
+        }
         return $meeting;
     }
 
@@ -130,29 +146,31 @@ class GetSearchResultsTest extends TestCase
 
     private function createFormat1(string $langEnum = 'en')
     {
-        return $this->createFormat(901, 'A', 'Open1', 'desc1', $langEnum, 'worldid');
+        return $this->createFormat('A', 'Open1', 'desc1', $langEnum, 'worldid');
     }
 
     private function createFormat2(string $langEnum = 'en')
     {
-        return $this->createFormat(902, 'B', 'Closed2', 'desc2', $langEnum, 'worldid');
+        return $this->createFormat('B', 'Closed2', 'desc2', $langEnum, 'worldid');
     }
 
     private function createFormat3(string $langEnum = 'en')
     {
-        return $this->createFormat(903, 'C', 'Closed3', 'desc3', $langEnum, 'worldid');
+        return $this->createFormat('C', 'Closed3', 'desc3', $langEnum, 'worldid');
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
     {
-        return Format::create([
-            'shared_id_bigint' => $sharedId,
+        $main = FormatMain::create([
+            'worldid_mixed' => $worldId,
+            'format_type_enum' => $formatTypeEnum,
+        ]);
+        return FormatTranslation::create([
+            'shared_id_bigint' => $main->shared_id_bigint,
             'key_string' => $keyString,
             'name_string' => $nameString,
             'lang_enum' => $langEnum,
             'description_string' => $description,
-            'worldid_mixed' => $worldId,
-            'format_type_enum' => $formatTypeEnum,
         ]);
     }
 
@@ -789,7 +807,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testFormatsOpenAtBeginning()
     {
-        $openFormat = Format::query()->where('shared_id_bigint', 17)->first();
+        $openFormat = FormatTranslation::query()->where('shared_id_bigint', 17)->first();
         $format1 = $this->createFormat1();
         $meeting1 = $this->createMeeting(['formats' => "$format1->shared_id_bigint,$openFormat->shared_id_bigint"]);
         $this->get("/client_interface/json/?switcher=GetSearchResults")
@@ -2279,7 +2297,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            //'formats' => '999',
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,
         ], [
@@ -2349,7 +2367,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            //'formats' => '999',
             'venue_type' => 2,
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,

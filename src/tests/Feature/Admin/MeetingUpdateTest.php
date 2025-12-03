@@ -60,8 +60,7 @@ class MeetingUpdateTest extends TestCase
                     ->toBase()
             );
 
-        $formatIds = empty($this->formats) ? collect([]) : collect(explode(',', $this->formats))
-            ->map(fn ($id) => intval($id))
+        $formatIds = count($meeting->formatIds) ? collect([]) : $meeting->formatIds->pluck('format_id')
             ->reject(fn ($id) => !self::$formatsById->has($id))
             ->sort();
 

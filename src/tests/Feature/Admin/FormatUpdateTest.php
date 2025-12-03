@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
+use App\Models\FormatMain;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -21,14 +22,14 @@ class FormatUpdateTest extends TestCase
 
         foreach ($formats as $format) {
             if (is_null($payload['worldId'])) {
-                if (!empty($format->worldid_mixed)) {
-                    $payload['worldId'] = $format->worldid_mixed;
+                if (!empty($format->main->worldid_mixed)) {
+                    $payload['worldId'] = $format->main->worldid_mixed;
                 }
             }
 
             if (is_null($payload['type'])) {
-                if (!empty($format->format_type_enum)) {
-                    $payload['type'] = FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->format_type_enum];
+                if (!empty($format->main->format_type_enum)) {
+                    $payload['type'] = FormatTypeConsts::COMDEF_TYPE_TO_TYPE_MAP[$format->main->format_type_enum];
                 }
             }
 
@@ -45,15 +46,16 @@ class FormatUpdateTest extends TestCase
 
     private function createFormats(): Collection
     {
-        $nextId = Format::query()->max('shared_id_bigint') + 1;
-        return collect(['en', 'es'])->map(function ($lang) use ($nextId) {
+        $main = FormatMain::create([
+            'worldid_mixed' => 'OPEN',
+            'format_type_enum' => 'FC3',
+        ]);
+        return collect(['en', 'es'])->map(function ($lang) use ($main) {
             return Format::create([
-                'shared_id_bigint' => $nextId,
+                'shared_id_bigint' => $main->shared_id_bigint,
                 'key_string' => 'O' . $lang,
                 'name_string' => 'Open' . $lang,
                 'description_string' => 'Open Description' . $lang,
-                'worldid_mixed' => 'OPEN' . $lang,
-                'format_type_enum' => 'FC3',
                 'lang_enum' => $lang,
             ]);
         });
@@ -82,8 +84,8 @@ class FormatUpdateTest extends TestCase
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertNull($format->worldid_mixed);
-            $this->assertNull($format->format_type_enum);
+            $this->assertNull($format->main->worldid_mixed);
+            $this->assertNull($format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -113,8 +115,8 @@ class FormatUpdateTest extends TestCase
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($data['worldId'], $format->worldid_mixed);
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals($data['worldId'], $format->main->worldid_mixed);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -155,8 +157,8 @@ class FormatUpdateTest extends TestCase
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($data['worldId'], $format->worldid_mixed);
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals($data['worldId'], $format->main->worldid_mixed);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
@@ -193,8 +195,8 @@ class FormatUpdateTest extends TestCase
         foreach ($formats as $format) {
             $translation = collect($data['translations'])->firstWhere('language', $format->lang_enum);
             $format = Format::query()->where('shared_id_bigint', $format->shared_id_bigint)->where('lang_enum', $format->lang_enum)->first();
-            $this->assertEquals($data['worldId'], $format->worldid_mixed);
-            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->format_type_enum);
+            $this->assertEquals($data['worldId'], $format->main->worldid_mixed);
+            $this->assertEquals(FormatTypeConsts::TYPE_TO_COMDEF_TYPE_MAP[$data['type']], $format->main->format_type_enum);
             $this->assertEquals($translation['key'], $format->key_string);
             $this->assertEquals($translation['name'], $format->name_string);
             $this->assertEquals($translation['description'], $format->description_string);
