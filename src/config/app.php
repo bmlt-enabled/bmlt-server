@@ -28,7 +28,7 @@ return [
     | or any other location as required by the application or its packages.
     */
 
-    'version' => env('APP_VERSION', '4.0.5'),
+    'version' => env('APP_VERSION', '4.1.0'),
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +106,10 @@ return [
     |
     */
 
-    'locale' => legacy_config('language', 'en'),
+    // Note: Cannot load from database because config files are loaded before DB connection.
+    // This is just a fallback, actual language comes from setting in database.
+    // Note that language specific translations for things like server error messages probably wont work.
+    'locale' => 'en',
 
     /*
     |--------------------------------------------------------------------------

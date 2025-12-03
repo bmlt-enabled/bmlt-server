@@ -60,13 +60,18 @@ export const ruTranslations = {
   accountSettingsTitle: 'Account Settings',
   accountTitle: 'Account',
   accountTypeTitle: 'Account Type',
+  addCountiesOrSubProvincesWhereMeetingsAreHeld: 'Add counties or sub-provinces where meetings are held', // TODO: Translate
+  addCountySubProvince: 'Add county/sub-province (e.g., Berkshire, Dukes)',
   addFormat: 'Add Format',
   addMeeting: 'Add Meeting',
   addServiceBody: 'Add Service Body',
+  addStateProvince: 'Add state/province (e.g., NY, MA)',
+  addStatesOrProvincesWhereMeetingsAreHeld: 'Add states or provinces where meetings are held',
   addUser: 'Add User',
   administrationTitle: 'Administration',
   administratorTitle: 'Administrator',
   adminTitle: 'Admin',
+  advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
   applyChangesTitle: 'Apply Changes',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
@@ -74,6 +79,7 @@ export const ruTranslations = {
   busLinesTitle: 'Bus Lines',
   by: 'by',
   cancel: 'Cancel',
+  changeHistoryDepth: 'Change History Depth', // TODO: Translate
   chooseStartTime: 'Choose start time',
   cityTownTitle: 'City/Town',
   clearFormTitle: 'Clear Form',
@@ -105,6 +111,10 @@ export const ruTranslations = {
   dayTitle: 'Weekday',
   deactivatedTitle: 'Deactivated',
   deactivatedUserTitle: 'Deactivated User',
+  defaultClosedStatus: 'Default Closed Status (for NAWS export)', // TODO: Translate
+  defaultLanguage: 'Default Language',
+  defaultMeetingDuration: 'Default Meeting Duration',
+  defaultSortKey: 'Default Sort Key',
   delete: 'Delete',
   deleteFormat: 'Delete Format',
   deleteMeeting: 'Delete Meeting',
@@ -112,6 +122,7 @@ export const ruTranslations = {
   deleteUser: 'Delete User',
   descriptionTitle: 'Description',
   details: 'Details (row number or meeting ID)',
+  distanceUnits: 'Distance Units', // TODO: Translate
   downloading: 'Downloading...',
   downloadLaravelLog: 'Download Laravel Log',
   downloadSpreadsheet: 'Download Spreadsheet', // TODO: translate
@@ -121,6 +132,10 @@ export const ruTranslations = {
   editFormat: 'Edit Format',
   editUser: 'Edit User',
   emailTitle: 'Email',
+  enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
+  enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
+  enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Error',
   errorDownloading: 'Error Downloading',
   errors: 'Errors',
@@ -129,6 +144,9 @@ export const ruTranslations = {
   filter: 'Filter',
   formatDeleteConflictError: 'Error: The format could not be deleted because it is still associated with meetings.',
   formatId: 'Format ID',
+  formatLangNames: 'Format Language Names (Advanced)', // TODO: Translate
+  formatLangNamesHelperText:
+    'Specify custom language names for format translations not included in the server. This is an advanced feature—consider requesting official translations instead. Example: ga → Gaelic', // TODO: Translate
   formatsTitle: 'Formats',
   formatTypeCode_ALERT: 'Format should be especially prominent (Clean requirement, etc.)',
   formatTypeCode_COMMON_NEEDS_OR_RESTRICTION: 'Common Needs and Restrictions (Mens Meeting, LGTBQ, No Children, etc.)',
@@ -139,19 +157,23 @@ export const ruTranslations = {
   formatTypeCode_OPEN_OR_CLOSED: 'Attendance by non-addicts (Open, Closed)',
   formatTypeTitle: 'Format Type',
   formatValidationError: 'Error: This format is protected and cannot be deleted.',
+  generalSettings: 'General Settings', // TODO: Translate
   geocodingFailed: 'Geocoding failed',
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
+  googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
   helplineTitle: 'Helpline',
   hideDetails: 'Скрыть детали',
   homeTitle: 'Home',
   hoursTitle: 'Hours',
   idTitle: 'ID',
+  includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
   invalidUsernameOrPassword: 'Invalid username or password.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'key is required',
   keyTitle: 'Key',
+  kilometers: 'Kilometers', // TODO: Translate
   languageSelectTitle: 'Select Language',
   lastLoginTitle: 'Last Login',
   latitudeTitle: 'Latitude',
@@ -165,15 +187,22 @@ export const ruTranslations = {
   logout: 'Logout',
   longitudeTitle: 'Longitude',
   malformedRows: 'Malformed rows',
+  mapCenterLocation: 'Map Center Location', // TODO: Translate
+  mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'meeting',
+  meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Tabs with one or more errors:',
   meetingIsPublishedTitle: 'Meeting is Published',
   meetingListEditorsTitle: 'Meeting List Editors',
   meetings: 'meetings',
+  meetingSettings: 'Meeting Settings', // TODO: Translate
   meetingsPerPage: 'Meetings per page',
+  meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Meetings',
   meetingUnpublishedNote: 'Note: Unpublishing a meeting indicates a temporary closure. If this meeting has closed permanently, please delete it.',
+  miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
+  myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Name',
   nationTitle: 'Nation',
   nawsFormat_BEG: 'Beginner/Newcomer',
@@ -226,10 +255,13 @@ export const ruTranslations = {
   noServiceBodiesTitle: 'No service bodies found that this user can edit',
   notedAsDeleted: 'Noted as deleted',
   notFound: 'Not found',
+  noticeMessageDisplayedToUsers: 'Notice message displayed to users', // TODO: Translate
   noTranslationAvailable: 'no translation available',
   noUpdateNeeded: 'No update needed',
   noUsersTitle: 'No other users found that this user can edit',
   noWhitespaceInKey: 'Whitespace not allowed in key',
+  numberOfMeetingsForAutoSearch: 'Number of Meetings for Auto Search', // TODO: Translate
+  numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'Service Body Observer',
   occurredAt: 'Произошло в',
   ownedByTitle: 'Owned By',
@@ -241,9 +273,11 @@ export const ruTranslations = {
   postMeridiem: 'PM',
   processingFile: 'Processing file...',
   published: 'Published',
+  regionBias: 'Region Bias', // TODO: Translate
   saveAsCopy: 'Сохранить как копию',
   saveAsCopyCheckbox: 'Сохранить эту встречу как копию (Создает новую встречу)',
   saveAsNewMeeting: 'Сохранить как новую встречу',
+  saveSettings: 'Save Settings', // TODO: Translate
   saving: 'Сохранение...',
   search: 'Search',
   searchByDay: 'Search by day',
@@ -253,7 +287,9 @@ export const ruTranslations = {
   selectAllDays: 'Select All Days',
   selectAllServiceBodies: 'Select All Service Bodies',
   serverAdministratorTitle: 'Main Server Administrator',
+  serverNotice: 'Server Notice', // TODO: Translate
   serverTitle: 'BMLT Server',
+  serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'No Parent (Top-Level)',
   serviceBodiesTitle: 'Service Bodies',
   serviceBodiesWithEditableMeetings: 'This user can edit meetings in these service bodies:',
@@ -302,5 +338,7 @@ export const ruTranslations = {
   welcome: 'Welcome',
   worldIdTitle: 'World Committee Code',
   youHaveUnsavedChanges: 'You have unsaved changes. Do you really want to close?',
-  zipCodeTitle: 'Zip Code/Postal Code'
+  yourGoogleMapsApiKey: 'Your Google Maps API Key',
+  zipCodeTitle: 'Zip Code/Postal Code',
+  zoomLevel: 'Zoom Level' // TODO: Translate
 };

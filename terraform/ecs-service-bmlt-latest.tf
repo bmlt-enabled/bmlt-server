@@ -35,7 +35,15 @@ resource "aws_ecs_task_definition" "bmlt_latest" {
             value = "CT,MA,NH,NJ,NY,PA,VT"
           },
           {
+            name  = "ENABLE_LANGUAGE_SELECTOR",
+            value = "true"
+          },
+          {
             name  = "DB_DATABASE",
+            value = "rootserver"
+          },
+          {
+            name  = "DB_USERNAME",
             value = "rootserver"
           },
           {
