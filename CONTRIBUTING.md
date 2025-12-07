@@ -3,61 +3,50 @@
 For general information about BMLT, including ways to contribute to the project, please see
 [the BMLT website](https://bmlt.app).
 
-This file contains information specifically about how to set up a development environment to work on the server.
-We want the server code (as well as code for the other project core elements) to continue to be of high quality, so
-prospective developers should have a solid grounding in good software engineering practice. In other words, making
-changes to the server code with the intent to contribute them back to
-the main repository wouldn't be the best place to start for folks new to software development -- there are, on
-the other hand, lots of other parts of the project that could very much use your time and energy! (An exception is
-that we do frequently need fluent speakers of languages other than English to translate localization strings -- even
-if the initial translation has already been done, there are often new strings added in subsequent development work
-that need translation.)
+This file contains information specifically about how to set up a development environment for work on the server. There are various ways you can do this; in the directions here we use
+[Docker](https://www.docker.com). If you don't have them already, clone the
+[BMLT server repo](https://github.com/bmlt-enabled/bmlt-server) from github, and install
+[Docker Desktop](https://www.docker.com/products/docker-desktop). These directions were tested with Docker Desktop v4.53.0.
 
-There are various ways you can set up your development environment; in the directions here we use
-[Docker](https://www.docker.com). If you don't have them already, clone the server repo from github, and install
-[Docker Desktop](https://www.docker.com/products/docker-desktop). The make file assumes docker-compose v2.
-
-## Running the server under docker
-1. You will need to make sure you are using docker-compose v2. You can do this by opening the docker dashboard and going
-to preferences then general then scroll to the bottom and check the box that says `Use Docker Compose V2`, then hit apply &
-restart.
-1. Copy `docker/docker-compose.dev.yml.example` to `docker/docker-compose.dev.yml` and edit it to set the `GKEY` variable to your google api key.
+## Running the Server under Docker
+1. If you want to use Google Maps for displaying meeting locations, copy `docker/docker-compose.dev.yml.example` to `docker/docker-compose.dev.yml` and edit it to set the `GKEY` variable to your google api key. If you want to use OpenStreetMap, omit this step. You can also provide values for other environment variables using this file (see below).
 1. Run the command `make dev` in the top-level `bmlt-server` directory. If something isn't working (for example,
 mising packages), try running `make clean` first and then `make dev`.
 1. Browse to `http://localhost:8000/main_server/`.
 1. Login with username "serveradmin" and password "CoreysGoryStory".
-1. When finished, exit by pressing ctrl+c. You may also wish to delete the containers in the Docker Dashboard.
+1. When finished, exit by pressing ctrl+c in the terminal window where you ran `make dev`. You may also wish to delete the containers in the Docker Dashboard.
 
 
-### Supported environment variables
-This is an example `docker-compose.dev.yml` file. The value for each of these variables, on start of the container, is automatically
-written to the appropriate line in `auto-config.inc.php`.
+### Environment Variables and Settings
+
+When running a production server, there is a file `auto-config.inc.php` that is used to initialize a set of environment variables used by the server. Other server settings are read from a table in the database.
+
+For development work, Docker takes care of initalizing these environment variables. You can also specify other server settings that will override the values in the database. This is done by adding key/value pairs to the file `docker/docker-compose.dev.yml`. The sample file `docker/docker-compose.dev.yml.example` has just one variable listed (`GKEY` for the Google API key). You can add others as needed. The keys should be in SCREAMING_SNAKE_CASE.  See the `readFromEnvironment` function in `src/app/Models/Setting.php` for a list of possibilities. There are also a few database options: `DB_PREFIX`, `DB_DATABASE`, `DB_USER`, `DB_PASSWORD`, and `DB_HOST`.  Of these `DB_PREFIX` is probably the only one you might want to override.
+
+Server settings that are overridden by entries in `docker/docker-compose.dev.yml` will show up correctly in the Server Settings pane in the UI, but won't necessarily be reflected in the `settings` table in the database. However, if you make a change to the settings in the UI and save, then all the values (including ones from entries in  `docker/docker-compose.dev.yml`) will be written to the database.
+
+## Loading a Different Sample Database
+
+If your database uses a table prefix other than `na` (say `myprefix`), add this line to `docker/docker-compose.dev.yml`:
 ```
-version: '3'
-
-services:
-  bmlt:
-    environment:
-      GKEY: ''
-      DB_DATABASE: rootserver
-      DB_USER: rootserver
-      DB_PASSWORD: rootserver
-      DB_HOST: db
-      DB_PREFIX: na
-      AGGREGATOR_MODE_ENABLED: 'false'
+DB_PREFIX: 'myprefix'
+```
+Then use the following command to load your database:
+```
+docker exec -i docker-db-1 sh -c 'exec mariadb -uroot -prootserver rootserver' < mydb.sql
 ```
 
-## Developing the New UI
-The new UI is developed using [Svelte](https://svelte.dev/), and the code is located in the `resources/js` directory.
+## UI Development
+The UI is now written using [Svelte](https://svelte.dev/), and the code is located in the `resources/js` directory. (The previous UI has now been removed from the current code base.)
 
 To install the UI's dependencies, run the `npm install` command from the `src` directory.
 
 When working on the UI, you'll need to have the [Vite](https://vitejs.dev/) dev server running. To start the dev server, run `npm run dev` from the `src` directory. While the dev server is running, the UI is served out of the `resources/js` directory instead of the normal `public` directory, and [hot module replacement](https://vitejs.dev/guide/features.html#hot-module-replacement) is enabled.
 
-### Debugging the New UI
-This assumes you are using [VS Code](https://code.visualstudio.com) to develop the new UI.
+### Debugging the UI
+This assumes you are using [VS Code](https://code.visualstudio.com) to develop the UI.
 
-#### Debugging the Browser
+#### Debugging Using a Browser
 First, follow the instructions above for running the server under Docker. This mostly just involves running `make dev`.
 
 Then, create `.vscode/launch.json` with a `chrome` debug configuration:
@@ -79,7 +68,7 @@ Then, create `.vscode/launch.json` with a `chrome` debug configuration:
 
 You should now be able to set breakpoints, launch this debug configuration, and step through the code.
 
-#### Debugging the Tests
+#### Debugging Tests
 
 This works exactly as described in the [vitest documentation](https://v0.vitest.dev/guide/debugging.html). Set any breakpoints, launch a new JavaScript Debug Terminal, and run `npm run test`.
 
@@ -124,7 +113,7 @@ make generate
 
 This allows you to develop the API without changing your configs or imports.
 
-## Some useful `make` commands
+## Some Useful `make` Commands
 
 - `make help`  Describe all of the make commands.
 - `make clean` Clean the build by removing all build artifacts and downloaded dependencies.
@@ -132,58 +121,47 @@ This allows you to develop the API without changing your configs or imports.
 has been made to the Dockerfile or its base image.
 - `make dev` Run the server under docker (see above).
 - `make bash` Open a bash shell on the container's file system.  This will start in the directory `/var/www/html/main_server`
-- `make mysql` Start the mysql command-line client with the database `rootserver`, which holds the server's tables.
+- `make mysql` Start the mysql command-line client with the database `rootserver`, which holds the server's tables. (Well, actually it uses the MariaDB command-line client now rather than mysql, but the `make` command still has the old name.)
 - `make test`  Run PHP tests.
 
 There are some additional commands as well; `make help` will list them.
 
-## Loading a different sample database
-
-Use this command to replace the supplied test database with your own:
-```
-docker exec -i docker-db-1 sh -c 'exec mariadb -uroot -prootserver rootserver' < mydb.sql
-```
-
-## Running tests
+## Running PHP Tests
 
 Start the server using `make dev` (see above).  Then in a separate terminal, run the tests using `make test`.
-Somewhat annoyingly, `make test` will clobber your current database, so you'll need to restore it if you want to go
-back to running the server.
-
 
 ## Running lint
 You can run the linter by running `make lint` in the top-level directory.
 It doesn't work when xdebug is listening, so make sure xdebug is off first.
 
-## Testing the install wizard
-The Docker files automatically set up an `auto-config.inc.php` file for you. Usually this is great since it saves you
-the bother of going through the install wizard each time you restart the server. However, if you want to test or
-change the install wizard, you can start with the install wizard instead of the login screen by deleting this file.
-Here are modified steps to do that.
-1. Edit `docker-compose.dev.yml` to set your google maps api key, `GKEY: API_KEY`.
-1. Run the command `make dev` in the top-level `bmlt-server` directory.
-1. In another window, run `make bash` to open a bash shell accessing the container's file system. The shell should
-start in the directory `cd /var/www/html/main_server`.  
-1. In the bash shell, `cd ..` to get to the parent directory, then `rm auto-config.inc.php`.
-1. Leave the shell open so that you can check whether the installer generated a new `auto-config.inc.php` and if so what it contains.
-1. Browse to `http://localhost:8000/main_server/`.
-1. In the browser you will now be in the Install Wizard. Start by filling in the Database Connection Settings screen as follows.
-```
-Database Type: mysql
-Database Host: db
-Table Prefix: na2
-Database Name: rootserver
-Database User: rootserver
-Database Password: rootserver
-```
-Note that the Database Host is `db` rather than the usual `localhost`. If you start with the install wizard, normally
-you need an empty database, but the `rootserver` database already contains sample data. A convenient alternative to dropping
-and (re) creating `rootserver` is to use the provided `rootserver` database, and to change the Table Prefix to `na2`, as
-above.  If you need to run the installer again, just use a new Table Prefix each time (`na3` etc).
+## Utility Commands to Help with Localization
+The strings that the UI displays are localized using files in the `src/resources/js/lang` directory. So if you add a new string, normally the programmer would need to add it to 11 or more files (one file per language). There are some utility commands to make this easer. If you are running under Docker, a convenient way to run them is to open a bash shell using `make bash`, connect to the `src` directory, and run the desired command.
 
-Finally, as with the earlier directions, when finished exit by pressing ctrl+c or by running `docker-compose down`.
+### Adding a new key/value pair or updating an existing one
+This adds a new key/value pair to all language files, respecting alphabetical order. For languages other than English, the new key/value pair will also have a comment `// TODO: translate`.
+````
+php artisan translation:add meetingName "Meeting Name"
+````
+To update an existing key use `--force`.
+````
+php artisan translation:add cancel "Cancelled" --force
+````
 
-## To debug in IntelliJ or PhpStorm (see screenshots below for more detail)
+### Deleing a Key/Value Pair
+This deletes a key and its value from all language files.
+````
+php artisan translation:delete oldKey
+````
+
+### Updating the Translations for One Language from a Spreadsheet
+A convenient starting point for the spreadsheet file is to use the button `Download Translations Spreadsheet` under the Administration tab.
+````
+php artisan translation:update-from-spreadsheet /path/to/italian-translations.xlsx it
+````
+
+## Debugging in IntelliJ or PhpStorm
+
+See screenshots below for more detail.
 
 1. Open IntelliJ Preferences. Go to `Languages & Frameworks -> PHP -> Debug`. Under the `Xdebug` section, set the `Debug port` to `10000,9003`. Close IntelliJ Preferences. ![image](docker/img/intellij-prefs-xdebug.png)
 1. Add a new `PHP Remote Debug` debug configuration.
