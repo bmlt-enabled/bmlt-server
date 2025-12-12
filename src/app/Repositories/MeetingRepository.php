@@ -401,7 +401,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         // The stock fields are all english, but we want to account for the possibility that someone added a new/translated
         // field in their server's native language, so we get those first.
-        $langEnum = legacy_config('language') ?: App::currentLocale();
+        $langEnum = config('app.locale');
         $fields = MeetingData::query()
             ->where('meetingid_bigint', 0)
             ->where('lang_enum', $langEnum)
