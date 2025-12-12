@@ -219,7 +219,18 @@
     extend: validator({ schema: yup.object(yupSchema), castValues: true })
   });
 
-  const errorStringArray = $derived(Object.values($errors).filter(Boolean));
+  const errorStringArray = $derived(Object.entries($errors).map(errorToLabeledDescription).filter(Boolean));
+
+  // Take an error represented as an array with 2 strings (language_field and description) and return the description labelled with the language
+  // Example: given ['en_key', 'key already in use for another format'] return 'English: key already in use for another format'
+  function errorToLabeledDescription(e: any[]) {
+    if (e[1]) {
+      const langAbbrev = e[0].split('_')[0];
+      return mappings[langAbbrev] + ': ' + e[1];
+    } else {
+      return '';
+    }
+  }
 
   // This hack is required until https://github.com/themesberg/flowbite-svelte/issues/1395 is fixed.
   function disableButtonHack(event: MouseEvent) {
@@ -315,9 +326,9 @@
       </Button>
       <Helper class="mt-4" color="red">
         {#if errorStringArray.length}
-          {errorStringArray.length === 1 ? $translations.error : $translations.errors}
+          <p>{errorStringArray.length === 1 ? $translations.error : $translations.errors}</p>
           {#each errorStringArray as e}
-            {e}
+            <p>{e}</p>
           {/each}
         {/if}
       </Helper>
