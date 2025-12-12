@@ -28,30 +28,19 @@ class SettingController extends ResourceController
     {
         $this->authorize('update', Setting::class);
 
-        $invalidKeys = [];
         $rules = [];
+        $validKeys = array_keys(Setting::SETTING_TYPES);
 
         foreach ($request->all() as $key => $value) {
-            if (!array_key_exists($key, Setting::SETTING_TYPES)) {
-                $invalidKeys[] = $key;
-                continue;
-            }
-
-            $type = Setting::SETTING_TYPES[$key];
+            $type = Setting::SETTING_TYPES[$key] ?? null;
             $rules[$key] = match ($type) {
                 Setting::TYPE_STRING => 'nullable|string|max:65535',
                 Setting::TYPE_INT => 'nullable|integer',
                 Setting::TYPE_FLOAT => 'nullable|numeric',
                 Setting::TYPE_BOOL => 'nullable|boolean',
                 Setting::TYPE_ARRAY => 'nullable|array',
+                default => 'in:' . implode(',', $validKeys),
             };
-        }
-
-        if (!empty($invalidKeys)) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'errors' => array_fill_keys($invalidKeys, ['The setting key is not valid.'])
-            ], 422);
         }
 
         $validated = validator($request->all(), $rules)->validate();
