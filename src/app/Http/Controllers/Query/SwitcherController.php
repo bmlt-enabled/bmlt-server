@@ -357,7 +357,7 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
-        $langEnum = $request->input('lang_enum', legacy_config('language') ?: config('app.locale'));
+        $langEnum = $request->input('lang_enum', legacy_config('language'));
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
@@ -416,7 +416,7 @@ class SwitcherController extends Controller
         $formatsExclude = collect($formatIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
         $formatsExclude = count($formatsExclude) ? $formatsExclude : null;
 
-        $langEnums = $request->input('lang_enum', legacy_config('language') ?: config('app.locale'));
+        $langEnums = $request->input('lang_enum', legacy_config('language'));
         if (!is_array($langEnums)) {
             $langEnums = [$langEnums];
         }
@@ -543,7 +543,7 @@ class SwitcherController extends Controller
             'version' => config('app.version'),
             'versionInt' => strval((intval($versionArray[0]) * 1000000) + (intval($versionArray[1]) * 1000) + intval(strstr($versionArray[2], '-', true) ?: $versionArray[2])),
             'langs' => collect(scandir(base_path('lang')))->reject(fn ($dir) => str_starts_with($dir, '.'))->sort()->join(','),
-            'nativeLang' => legacy_config('language') ?: config('app.locale'),
+            'nativeLang' => legacy_config('language'),
             'centerLongitude' => strval(legacy_config('search_spec_map_center_longitude')),
             'centerLatitude' => strval(legacy_config('search_spec_map_center_latitude')),
             'centerZoom' => strval(legacy_config('search_spec_map_center_zoom')),
