@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Meeting;
 use App\Models\MeetingData;
+use App\Models\MeetingFormats;
 use App\Models\RootServer;
 use App\Models\ServiceBody;
 use App\Models\User;
@@ -52,8 +53,20 @@ class TestCase extends BaseTestCase
             ->get()
             ->mapWithKeys(fn ($value, $_) => [$value->key => $value]);
 
-        $meeting = Meeting::create(array_merge(self::$meetingMainFieldDefaults, $mainFields));
-
+        $fields = array_merge(self::$meetingMainFieldDefaults, $mainFields);
+        $formats = $fields['formats'] ?? '';
+        if (!isset($fields['formats'])) {
+            unset($fields['formats']);
+        }
+        $meeting = Meeting::create($fields);
+        foreach (explode(',', $formats) as $formatId) {
+            if (!empty($formatId)) {
+                MeetingFormats::create([
+                    'meeting_id' => $meeting->id_bigint,
+                    'format_id' => (int)$formatId,
+                ]);
+            }
+        }
         $dataFields = array_merge(self::$meetingDataFieldDefaults, $dataFields);
         foreach (array_keys($longDataFields) as $fieldName) {
             unset($dataFields[$fieldName]);

@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\FormatRepositoryInterface;
 use App\Models\Change;
-use App\Models\Format;
+use App\Models\FormatMain;
+use App\Models\FormatTranslation;
 use App\Models\Meeting;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\Import\FormatImportResult;
@@ -24,7 +25,7 @@ class FormatRepository implements FormatRepositoryInterface
         Collection $meetings = null,
         bool $eagerRootServers = false
     ): Collection {
-        $formats = Format::query();
+        $formats = FormatTranslation::query()->with(['main']);
 
         if ($eagerRootServers) {
             $formats = $formats->with(['rootServer']);
@@ -61,25 +62,25 @@ class FormatRepository implements FormatRepositoryInterface
         return $formats->get();
     }
 
-    public function getVirtualFormat(): Format
+    public function getVirtualFormat(): FormatTranslation
     {
-        return Format::query()
+        return FormatTranslation::query()
             ->where('key_string', 'VM')
             ->where('lang_enum', 'en')
             ->firstOrFail();
     }
 
-    public function getHybridFormat(): Format
+    public function getHybridFormat(): FormatTranslation
     {
-        return Format::query()
+        return FormatTranslation::query()
             ->where('key_string', 'HY')
             ->where('lang_enum', 'en')
             ->firstOrFail();
     }
 
-    public function getTemporarilyClosedFormat(): Format
+    public function getTemporarilyClosedFormat(): FormatTranslation
     {
-        return Format::query()
+        return FormatTranslation::query()
             ->where('key_string', 'TC')
             ->where('lang_enum', 'en')
             ->firstOrFail();
@@ -90,50 +91,54 @@ class FormatRepository implements FormatRepositoryInterface
         $uniqueFormatIds = [];
 
         if (is_null($meetings)) {
-            $meetings = Meeting::query();
+            $meetings = Meeting::query()->with('formatIds')->get();
         }
 
-        foreach ($meetings->pluck('formats') as $formatIds) {
-            if ($formatIds) {
-                $formatIds = explode(",", $formatIds);
-                foreach ($formatIds as $formatId) {
-                    $uniqueFormatIds[$formatId] = null;
-                }
+        foreach ($meetings->pluck('formatIds') as $formatIds) {
+            foreach ($formatIds as $formatId) {
+                $uniqueFormatIds[$formatId['format_id']] = null;
             }
         }
 
         return array_keys($uniqueFormatIds);
     }
 
-    public function create(array $sharedFormatsValues): Format
+    public function create(array $sharedFormatsValues): FormatMain
     {
         return DB::transaction(function () use ($sharedFormatsValues) {
-            $sharedIdBigint = Format::query()->max('shared_id_bigint') + 1;
-            $format = null;
-            foreach ($sharedFormatsValues as $values) {
-                $values['shared_id_bigint'] = $sharedIdBigint;
-                $format = Format::create($values);
+            $formatMainValues = [
+                'worldid_mixed' => $sharedFormatsValues['worldid_mixed'],
+                'format_type_enum' => $sharedFormatsValues['format_type_enum'],
+            ];
+            $formatMain = FormatMain::create($formatMainValues);
+            foreach ($sharedFormatsValues['translations'] as $values) {
+                $values['shared_id_bigint'] = $formatMain->shared_id_bigint;
+                $format = FormatTranslation::create($values);
                 if (!legacy_config('aggregator_mode_enabled')) {
                     $this->saveChange(null, $format);
                 }
             }
-            return $format;
+            return $formatMain;
         });
     }
 
     public function update(int $sharedId, array $sharedFormatsValues): bool
     {
         return DB::transaction(function () use ($sharedId, $sharedFormatsValues) {
-            $oldFormats = Format::query()
+            $formatMainValues = [
+                'worldid_mixed' => $sharedFormatsValues['worldid_mixed'],
+                'format_type_enum' => $sharedFormatsValues['format_type_enum'],
+            ];
+            FormatMain::query()->where('shared_id_bigint', $sharedId)->update($formatMainValues);
+
+            // save changes for deleted formats
+            $oldFormats = FormatTranslation::query()
                 ->where('shared_id_bigint', $sharedId)
                 ->get()
                 ->mapWithKeys(fn ($fmt, $_) => [$fmt->lang_enum => $fmt]);
 
-            Format::query()->where('shared_id_bigint', $sharedId)->delete();
-
-            // save changes for deleted formats
             foreach ($oldFormats as $oldFormat) {
-                $isDeleted = collect($sharedFormatsValues)
+                $isDeleted = collect($sharedFormatsValues['translations'])
                     ->filter(fn ($values) => $values['lang_enum'] == $oldFormat->lang_enum)
                     ->isEmpty();
                 if ($isDeleted) {
@@ -142,10 +147,10 @@ class FormatRepository implements FormatRepositoryInterface
                     }
                 }
             }
-
-            foreach ($sharedFormatsValues as $values) {
+            FormatTranslation::query()->where('shared_id_bigint', $sharedId)->delete();
+            foreach ($sharedFormatsValues['translations'] as $values) {
                 $values['shared_id_bigint'] = $sharedId;
-                $newFormat = Format::create($values);
+                $newFormat = FormatTranslation::create($values);
                 $oldFormat = $oldFormats->get($newFormat->lang_enum);
                 if (!legacy_config('aggregator_mode_enabled')) {
                     if (is_null($oldFormat)) {
@@ -163,36 +168,31 @@ class FormatRepository implements FormatRepositoryInterface
     public function delete(int $sharedId): bool
     {
         return DB::transaction(function () use ($sharedId) {
-            $formats = Format::query()->where('shared_id_bigint', $sharedId)->get();
-            if ($formats->isNotEmpty()) {
-                foreach ($formats as $format) {
-                    $format->delete();
-                    if (!legacy_config('aggregator_mode_enabled')) {
-                        $this->saveChange($format, null);
-                    }
-                }
-                return true;
+            $format = FormatMain::query()->where('shared_id_bigint', $sharedId)->first();
+            if (is_null($format)) {
+                return false;
             }
-            return false;
+            foreach ($format->translations as $translation) {
+                if (!legacy_config('aggregator_mode_enabled')) {
+                    $this->saveChange($translation, null);
+                }
+            }
+            $format->delete();
+            return true;
         });
     }
 
     public function getAsTranslations(array $formatIds = null): Collection
     {
-        return Format::query()
-            ->with(['translations'])
-            ->whereIn('id', function ($query) use ($formatIds) {
-                $query->selectRaw(DB::raw('MIN(id)'));
-                $query->from('comdef_formats');
-                if (!is_null($formatIds)) {
-                    $query->whereIn('shared_id_bigint', $formatIds);
-                }
-                $query->groupBy('shared_id_bigint');
-            })
-            ->get();
+        $query = FormatMain::query()
+            ->with('translations');
+        if (!is_null($formatIds)) {
+            $query->whereIn('shared_id_bigint', $formatIds);
+        };
+        return $query->get();
     }
 
-    private function saveChange(?Format $beforeFormat, ?Format $afterFormat): void
+    private function saveChange(?FormatTranslation $beforeFormat, ?FormatTranslation $afterFormat): void
     {
         $beforeObject = !is_null($beforeFormat) ? $this->serializeForChange($beforeFormat) : null;
         $afterObject = !is_null($afterFormat) ? $this->serializeForChange($afterFormat) : null;
@@ -216,14 +216,14 @@ class FormatRepository implements FormatRepositoryInterface
         ]);
     }
 
-    private function serializeForChange(Format $format): string
+    private function serializeForChange(FormatTranslation $format): string
     {
         return serialize([
             $format->shared_id_bigint,
-            $format->format_type_enum,
+            $format->main->format_type_enum,
             $format->key_string,
             $format->icon_blob,
-            $format->worldid_mixed,
+            $format->main->worldid_mixed,
             $format->lang_enum,
             $format->name_string,
             $format->description_string,
@@ -236,7 +236,7 @@ class FormatRepository implements FormatRepositoryInterface
 
         // deleted formats
         $sourceIds = $externalObjects->pluck('id');
-        $result->numDeleted = Format::query()
+        $result->numDeleted = FormatMain::query()
             ->where('root_server_id', $rootServerId)
             ->whereNotIn('source_id', $sourceIds)
             ->delete();
@@ -245,13 +245,13 @@ class FormatRepository implements FormatRepositoryInterface
         foreach ($bySourceIdByLanguage as $sourceId => $byLanguage) {
             // deleted languages
             $languages = $byLanguage->keys();
-            $result->numDeleted += Format::query()
+            $result->numDeleted += FormatTranslation::query()
                 ->where('root_server_id', $rootServerId)
                 ->where('source_id', $sourceId)
                 ->whereNotIn('lang_enum', $languages)
                 ->delete();
 
-            $existingFormats = Format::query()
+            $existingFormats = FormatTranslation::query()
                 ->where('root_server_id', $rootServerId)
                 ->where('source_id', $sourceId)
                 ->get();

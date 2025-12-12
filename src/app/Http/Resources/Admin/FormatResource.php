@@ -16,11 +16,12 @@ class FormatResource extends JsonResource
 
     public function toArray($request)
     {
+        $main = (get_class($this->resource) != "App\Models\FormatMain") ? $this->resource->main : $this->resource;
         return [
-            'id' => $this->shared_id_bigint,
-            'worldId' => $this->worldid_mixed,
-            'type' => FormatType::getApiEnumFromKey($this->format_type_enum),
-            'translations' => $this->translations->map(function ($translation) {
+            'id' => $main->shared_id_bigint,
+            'worldId' => $main->worldid_mixed,
+            'type' => FormatType::getApiEnumFromKey($main->format_type_enum),
+            'translations' => $main->translations->map(function ($translation) {
                 return [
                     'key' => $translation->key_string ?? '',
                     'name' => $translation->name_string ?? '',

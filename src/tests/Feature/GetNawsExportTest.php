@@ -2,18 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Http\Resources\Query\MeetingResource;
-use App\Models\Meeting;
-use App\Models\MeetingData;
-use App\Models\MeetingLongData;
-use App\Models\ServiceBody;
+use Tests\TestCase;
 use App\Models\User;
 use App\LegacyConfig;
-use App\Repositories\MeetingRepository;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Meeting;
+use App\Models\MeetingData;
+use App\Models\ServiceBody;
+use App\Models\MeetingFormats;
+use App\Models\MeetingLongData;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
 use League\Csv\Reader as CsvReader;
+use App\Repositories\MeetingRepository;
+use App\Http\Resources\Query\MeetingResource;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GetNawsExportTest extends TestCase
 {
@@ -40,6 +41,10 @@ class GetNawsExportTest extends TestCase
 
     private function createMeeting(array $mainFields = [], array $dataFields = [], array $longDataFields = [])
     {
+        $formats = isset($mainFields['formats']) ? explode(',', $mainFields['formats']) : [];
+        if (isset($mainFields['formats'])) {
+            unset($mainFields['formats']);
+        }
         static $dataFieldTemplates;
         if (!isset($dataFieldTemplates)) {
             $dataFieldTemplates = MeetingData::query()
@@ -84,7 +89,15 @@ class GetNawsExportTest extends TestCase
                 'visibility' => $fieldTemplate->visibility,
             ]);
         }
-
+        foreach ($formats as $formatId) {
+            if (empty(trim($formatId))) {
+                continue;
+            }
+            MeetingFormats::create([
+                'meeting_id' => $meeting->id_bigint,
+                'format_id' => trim($formatId),
+            ]);
+        }
         return $meeting;
     }
 

@@ -22,8 +22,8 @@ class FormatResource extends JsonResource
             'description_string' => $this->description_string ?? '',
             'lang' => $this->lang_enum,
             'id' => (string)$this->shared_id_bigint,
-            'world_id' => $this->worldid_mixed ?? '',
-            'format_type_enum' => $this->format_type_enum ?? '',
+            'world_id' => $this->main->worldid_mixed ?? '',
+            'format_type_enum' => $this->main->format_type_enum ?? '',
             'root_server_uri' => $isAggregatorModeEnabled && $this->root_server_id ? $this->rootServer->url : $request->getSchemeAndHttpHost() . $request->getBaseUrl(),
             'root_server_id' => $this->when($isAggregatorModeEnabled, $this->root_server_id ?? '')
         ];
