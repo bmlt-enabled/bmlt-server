@@ -2,6 +2,15 @@
 
 use Illuminate\Support\Str;
 
+function getDbPrefix(): string
+{
+    $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
+    if ($prefix) {
+        return $prefix . '_';
+    }
+    return env('APP_ENV') === 'testing' ? 'test_' : '';
+}
+
 return [
 
     /*
@@ -46,13 +55,7 @@ return [
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => (function () {
-                $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
-                if ($prefix) {
-                    return $prefix . '_';
-                }
-                return env('APP_ENV') === 'testing' ? 'test_' : '';
-            })(),
+            'prefix' => getDbPrefix(),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => 'InnoDB',
@@ -72,13 +75,7 @@ return [
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => (function () {
-                $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
-                if ($prefix) {
-                    return $prefix . '_';
-                }
-                return env('APP_ENV') === 'testing' ? 'test_' : '';
-            })(),
+            'prefix' => getDbPrefix(),
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => 'InnoDB',
