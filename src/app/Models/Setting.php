@@ -139,9 +139,14 @@ class Setting extends Model
             return $envConfig[$name];
         }
 
-        $setting = self::where('name', $name)->first();
-        if ($setting) {
-            return $setting->value;
+        // Only query database if the settings table exists
+        // This is necessary during bootstrapping: config/database.php -> legacy_config() -> LegacyConfig::get() -> Setting::get()
+        // At that point, migrations haven't run yet, so the table doesn't exist
+        if (self::getConnectionResolver()->connection()->getSchemaBuilder()->hasTable('settings')) {
+            $setting = self::where('name', $name)->first();
+            if ($setting) {
+                return $setting->value;
+            }
         }
 
         // Fall back to default
