@@ -2,11 +2,27 @@
 
 namespace Tests\Feature;
 
+use App\LegacyConfig;
 use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 
 class GetFieldKeysTest extends TestCase
 {
+    private string $originalLocale;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->originalLocale = App::currentLocale();
+    }
+
+    protected function tearDown(): void
+    {
+        App::setLocale($this->originalLocale);
+        LegacyConfig::reset();
+        parent::tearDown();
+    }
+
     public function testJsonp()
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetFieldKeys&callback=asdf');
@@ -109,5 +125,22 @@ class GetFieldKeysTest extends TestCase
         } finally {
             App::setLocale($oldLocale);
         }
+    }
+
+    public function testLocaleIsSyncedFromDatabaseSetting()
+    {
+        LegacyConfig::set('language', 'it');
+
+        // Sync the app locale from the (mocked) database setting
+        $language = LegacyConfig::get('language');
+        App::setLocale($language);
+
+        // The response should have Italian translations (from the database setting)
+        $this->get('/client_interface/json/?switcher=GetFieldKeys')
+            ->assertStatus(200)
+            ->assertJsonPath('0.description', 'ID')
+            ->assertJsonPath('1.description', 'ID mondiale')
+            ->assertJsonPath('4.description', 'Venue Type') // Not translated in test data
+            ->assertJsonPath('9.description', 'Lingua');
     }
 }
