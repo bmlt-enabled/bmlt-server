@@ -31,15 +31,4 @@ class FormatTranslation extends Model
     {
         return $this->belongsTo(FormatMain::class, 'shared_id_bigint', 'shared_id_bigint');
     }
-    //We want these to emulate the DB field names as in the old schema
-    //phpcs:ignore PSR1.Methods.CamelCapsMethodName
-    public function format_type_enum()
-    {
-        return $this->main()->first()->format_type_enum;
-    }
-    //phpcs:ignore PSR1.Methods.CamelCapsMethodName
-    public function worldid_mixed()
-    {
-        return $this->main()->first()->worldid_mixed;
-    }
 }

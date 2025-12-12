@@ -245,13 +245,13 @@ class FormatRepository implements FormatRepositoryInterface
         foreach ($bySourceIdByLanguage as $sourceId => $byLanguage) {
             // deleted languages
             $languages = $byLanguage->keys();
-            $result->numDeleted += FormatMain::query()
+            $result->numDeleted += FormatTranslation::query()
                 ->where('root_server_id', $rootServerId)
                 ->where('source_id', $sourceId)
                 ->whereNotIn('lang_enum', $languages)
                 ->delete();
 
-            $existingFormats = FormatMain::query()
+            $existingFormats = FormatTranslation::query()
                 ->where('root_server_id', $rootServerId)
                 ->where('source_id', $sourceId)
                 ->get();

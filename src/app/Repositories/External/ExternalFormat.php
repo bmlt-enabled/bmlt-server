@@ -42,10 +42,10 @@ class ExternalFormat extends ExternalObject
         if ($this->language != $serviceBody->lang_enum) {
             return false;
         }
-        if ($this->type != $serviceBody->format_type_enum) {
+        if ($this->type != $serviceBody->main->format_type_enum) {
             return false;
         }
-        if ($this->worldId != $serviceBody->worldid_mixed) {
+        if ($this->worldId != $serviceBody->main->worldid_mixed) {
             return false;
         }
         return true;
