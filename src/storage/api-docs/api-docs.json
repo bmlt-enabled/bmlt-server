@@ -1618,7 +1618,7 @@
                     }
                 ]
             },
-            "put": {
+            "patch": {
                 "tags": [
                     "rootServer"
                 ],

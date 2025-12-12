@@ -25,7 +25,7 @@ class SettingUpdateTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'language' => 'es',
                 'bmltTitle' => 'New Title',
                 'autoGeocodingEnabled' => false,
@@ -43,7 +43,7 @@ class SettingUpdateTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'bmltTitle' => 'Updated Title Only'
             ])
             ->assertStatus(204);
@@ -58,7 +58,7 @@ class SettingUpdateTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'invalid_key' => 'value'
             ])
             ->assertStatus(422);
@@ -70,7 +70,7 @@ class SettingUpdateTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'autoGeocodingEnabled' => 'not a boolean'
             ])
             ->assertStatus(422);
@@ -84,7 +84,7 @@ class SettingUpdateTest extends TestCase
         Setting::updateOrCreate(['name' => 'meetingStatesAndProvinces'], ['value' => []]);
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'meetingStatesAndProvinces' => ['CA', 'NY', 'TX']
             ])
             ->assertStatus(204);
@@ -102,7 +102,7 @@ class SettingUpdateTest extends TestCase
         Setting::updateOrCreate(['name' => 'searchSpecMapCenterLatitude'], ['value' => 34.235918]);
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'searchSpecMapCenterZoom' => 10,
                 'searchSpecMapCenterLatitude' => 40.7128
             ])
@@ -118,7 +118,7 @@ class SettingUpdateTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withHeader('Authorization', "Bearer $token")
-            ->putJson('/api/v1/settings', [
+            ->patchJson('/api/v1/settings', [
                 'bmltTitle' => 'New Title'
             ])
             ->assertStatus(403);
@@ -126,7 +126,7 @@ class SettingUpdateTest extends TestCase
 
     public function testUpdateSettingsUnauthenticated()
     {
-        $this->putJson('/api/v1/settings', [
+        $this->patchJson('/api/v1/settings', [
             'bmltTitle' => 'New Title'
         ])
         ->assertStatus(401);

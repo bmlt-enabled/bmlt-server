@@ -41,18 +41,3 @@ if (!function_exists('build_time_string')) {
         return null;
     }
 }
-
-if (!function_exists('bmlt_setting')) {
-    /**
-     * Get a BMLT setting value.
-     * Priority: environment variable > database > default
-     *
-     * @param string $name Setting name (e.g., 'language', 'googleApiKey')
-     * @param mixed $default Default value if setting not found
-     * @return mixed
-     */
-    function bmlt_setting(string $name, $default = null)
-    {
-        return Setting::get($name, $default);
-    }
-}

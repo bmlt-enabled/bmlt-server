@@ -82,7 +82,7 @@ class SettingController extends Controller
     }
 
     /**
-     * @OA\Put(path="/api/v1/settings", summary="Update settings", description="Updates one or more server settings. Only accessible to server administrators.", operationId="updateSettings", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Patch(path="/api/v1/settings", summary="Update settings", description="Updates one or more server settings. Only accessible to server administrators.", operationId="updateSettings", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\RequestBody(required=true, description="Pass in settings object with values to update",
      *         @OA\JsonContent(ref="#/components/schemas/SettingsUpdate"),
      *     ),

@@ -44,5 +44,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::patch('/users/{user}', [UserController::class, 'partialUpdate']);
     Route::get('/settings', [SettingController::class, 'index']);
-    Route::put('/settings', [SettingController::class, 'update']);
+    Route::patch('/settings', [SettingController::class, 'update']);
 });

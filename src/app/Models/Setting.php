@@ -139,14 +139,9 @@ class Setting extends Model
             return $envConfig[$name];
         }
 
-        // Then check database
-        try {
-            $setting = self::where('name', $name)->first();
-            if ($setting) {
-                return $setting->value;
-            }
-        } catch (\Exception $e) {
-            // Database might not be available yet
+        $setting = self::where('name', $name)->first();
+        if ($setting) {
+            return $setting->value;
         }
 
         // Fall back to default
