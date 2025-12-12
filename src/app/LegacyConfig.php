@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Models\Setting;
+use App\Repositories\SettingRepository;
 
 class LegacyConfig
 {
@@ -64,11 +65,11 @@ class LegacyConfig
             return self::$config[$key];
         }
 
-        // Redirect to Setting model which checks: env > database > defaults
+        // Redirect to SettingRepository which checks: env > database > defaults
         // Use legacy key mapping to find the Setting name
         $settingName = self::LEGACY_KEY_MAPPING[$key] ?? null;
         if ($settingName) {
-            return Setting::get($settingName, $default);
+            return (new SettingRepository())->getValue($settingName, $default);
         }
 
         return $default;

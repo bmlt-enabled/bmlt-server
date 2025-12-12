@@ -2,13 +2,15 @@
 
 use Illuminate\Support\Str;
 
-function getDbPrefix(): string
-{
-    $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
-    if ($prefix) {
-        return $prefix . '_';
+if (!function_exists('getDbPrefix')) {
+    function getDbPrefix(): string
+    {
+        $prefix = env('DB_PREFIX') ?? legacy_config('db_prefix');
+        if ($prefix) {
+            return $prefix . '_';
+        }
+        return env('APP_ENV') === 'testing' ? 'test_' : '';
     }
-    return env('APP_ENV') === 'testing' ? 'test_' : '';
 }
 
 return [
