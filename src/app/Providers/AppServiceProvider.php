@@ -33,7 +33,8 @@ class AppServiceProvider extends ServiceProvider
         JsonResource::withoutWrapping();
 
         // Sync Laravel's app.locale with the database setting
-        $language = (new SettingRepository())->getValue('language', 'en');
+        $settingRepository = new SettingRepository();
+        $language = $settingRepository->getValue('language', 'en');
         app()->setLocale($language);
     }
 }

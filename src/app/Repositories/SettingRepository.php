@@ -61,11 +61,15 @@ class SettingRepository implements SettingRepositoryInterface
         // Only query database if the settings table exists
         // This is necessary during bootstrapping: config/database.php -> legacy_config() -> LegacyConfig::get()
         // At that point, migrations haven't run yet, so the table doesn't exist
-        if (DB::connection()->getSchemaBuilder()->hasTable('settings')) {
-            $setting = $this->getByKey($name);
-            if ($setting) {
-                return $setting->value;
+        try {
+            if (DB::connection()->getSchemaBuilder()->hasTable('settings')) {
+                $setting = $this->getByKey($name);
+                if ($setting) {
+                    return $setting->value;
+                }
             }
+        } catch (\Exception $e) {
+            // Database connection not ready yet (e.g., during bootstrap in tests)
         }
 
         // Fall back to default

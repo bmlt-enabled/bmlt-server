@@ -28,18 +28,15 @@ class SettingController extends ResourceController
     {
         $this->authorize('update', Setting::class);
 
+        // only known settings keys are allowed
         $rules = [];
-        $validKeys = array_keys(Setting::SETTING_TYPES);
-
-        foreach ($request->all() as $key => $value) {
-            $type = Setting::SETTING_TYPES[$key] ?? null;
+        foreach (Setting::SETTING_TYPES as $key => $type) {
             $rules[$key] = match ($type) {
                 Setting::TYPE_STRING => 'nullable|string|max:65535',
                 Setting::TYPE_INT => 'nullable|integer',
                 Setting::TYPE_FLOAT => 'nullable|numeric',
                 Setting::TYPE_BOOL => 'nullable|boolean',
                 Setting::TYPE_ARRAY => 'nullable|array',
-                default => 'in:' . implode(',', $validKeys),
             };
         }
 
