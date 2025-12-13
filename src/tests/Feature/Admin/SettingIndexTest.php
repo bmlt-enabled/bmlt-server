@@ -72,7 +72,7 @@ class SettingIndexTest extends TestCase
         Setting::updateOrCreate(['name' => 'language'], ['value' => 'en']);
         Setting::updateOrCreate(['name' => 'autoGeocodingEnabled'], ['value' => false]);
 
-        $_SERVER['GKEY'] = 'env_override_key';
+        $_SERVER['GOOGLE_API_KEY'] = 'env_override_key';
         $_SERVER['LANGUAGE'] = 'es';
         $_SERVER['AUTO_GEOCODING_ENABLED'] = 'true';
 
@@ -88,7 +88,7 @@ class SettingIndexTest extends TestCase
         $this->assertEquals('es', $data['language']);
         $this->assertTrue($data['autoGeocodingEnabled']);
 
-        unset($_SERVER['GKEY']);
+        unset($_SERVER['GOOGLE_API_KEY']);
         unset($_SERVER['LANGUAGE']);
         unset($_SERVER['AUTO_GEOCODING_ENABLED']);
     }

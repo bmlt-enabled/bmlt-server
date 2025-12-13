@@ -998,8 +998,6 @@ export const mockSettings: SettingsBase = {
   zipAutoGeocodingEnabled: true,
   defaultClosedStatus: false,
   enableLanguageSelector: true,
-  aggregatorModeEnabled: false,
-  aggregatorMaxGeoWidthKm: 0,
   includeServiceBodyEmailInSemantic: false,
   bmltTitle: 'BMLT Administration',
   bmltNotice: "We've upgraded the BMLT to 4.0.0 with a new interface! Please report any issues to bmlt@sezf.org",

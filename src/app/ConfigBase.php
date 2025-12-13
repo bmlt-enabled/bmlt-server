@@ -12,11 +12,7 @@ abstract class ConfigBase
 
     public static function fromEnv(string $name): mixed
     {
-        if ($name == 'googleApiKey') {
-            $envName = 'GKEY';
-        } else {
-            $envName = strtoupper(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
-        }
+        $envName = strtoupper(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
 
         $value = $_SERVER[$envName] ?? env($envName);
 

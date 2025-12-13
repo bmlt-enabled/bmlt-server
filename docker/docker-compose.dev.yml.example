@@ -1,4 +1,4 @@
 services:
   bmlt:
     environment:
-      GKEY: ''
+      GOOGLE_API_KEY: ''

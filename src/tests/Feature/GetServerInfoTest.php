@@ -251,12 +251,12 @@ class GetServerInfoTest extends TestCase
     {
         Setting::updateOrCreate(['name' => 'googleApiKey'], ['value' => 'database_key']);
 
-        $_SERVER['GKEY'] = 'env_override_key';
+        $_SERVER['GOOGLE_API_KEY'] = 'env_override_key';
 
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['google_api_key' => 'env_override_key']);
 
-        unset($_SERVER['GKEY']);
+        unset($_SERVER['GOOGLE_API_KEY']);
     }
 }

@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "bmlt_latest" {
         dockerSecurityOptions = null,
         environment = [
           {
-            name  = "GKEY",
+            name  = "GOOGLE_API_KEY",
             value = var.GOOGLE_API_KEY
           },
           {

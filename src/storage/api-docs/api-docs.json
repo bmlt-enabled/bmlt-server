@@ -3004,13 +3004,6 @@
                     "enableLanguageSelector": {
                         "type": "boolean"
                     },
-                    "aggregatorModeEnabled": {
-                        "type": "boolean"
-                    },
-                    "aggregatorMaxGeoWidthKm": {
-                        "type": "number",
-                        "format": "float"
-                    },
                     "includeServiceBodyEmailInSemantic": {
                         "type": "boolean"
                     },
@@ -3108,15 +3101,6 @@
                     "enableLanguageSelector": {
                         "type": "boolean",
                         "example": false
-                    },
-                    "aggregatorModeEnabled": {
-                        "type": "boolean",
-                        "example": false
-                    },
-                    "aggregatorMaxGeoWidthKm": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 1000
                     },
                     "includeServiceBodyEmailInSemantic": {
                         "type": "boolean",
