@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\Setting;
+use App\Repositories\SettingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SettingUpdateTest extends TestCase
@@ -13,10 +13,10 @@ class SettingUpdateTest extends TestCase
     {
         parent::setUp();
 
-        // Update settings with test values (migrations already seed them)
-        Setting::updateOrCreate(['name' => 'language'], ['value' => 'en']);
-        Setting::updateOrCreate(['name' => 'bmltTitle'], ['value' => 'Test Server']);
-        Setting::updateOrCreate(['name' => 'autoGeocodingEnabled'], ['value' => true]);
+        $repository = new SettingRepository();
+        $repository->update('language', 'en');
+        $repository->update('bmltTitle', 'Test Server');
+        $repository->update('autoGeocodingEnabled', true);
     }
 
     public function testUpdateSettingsAsAdmin()
@@ -32,9 +32,10 @@ class SettingUpdateTest extends TestCase
             ])
             ->assertStatus(204);
 
-        $this->assertEquals('es', Setting::where('name', 'language')->first()->value);
-        $this->assertEquals('New Title', Setting::where('name', 'bmltTitle')->first()->value);
-        $this->assertFalse(Setting::where('name', 'autoGeocodingEnabled')->first()->value);
+        $repository = new SettingRepository();
+        $this->assertEquals('es', $repository->getByName('language')?->value);
+        $this->assertEquals('New Title', $repository->getByName('bmltTitle')?->value);
+        $this->assertFalse($repository->getByName('autoGeocodingEnabled')?->value);
     }
 
     public function testUpdateSingleSetting()
@@ -48,8 +49,9 @@ class SettingUpdateTest extends TestCase
             ])
             ->assertStatus(204);
 
-        $this->assertEquals('en', Setting::where('name', 'language')->first()->value);
-        $this->assertEquals('Updated Title Only', Setting::where('name', 'bmltTitle')->first()->value);
+        $repository = new SettingRepository();
+        $this->assertEquals('en', $repository->getByName('language')?->value);
+        $this->assertEquals('Updated Title Only', $repository->getByName('bmltTitle')?->value);
     }
 
     public function testUpdateWithInvalidKey()
@@ -81,7 +83,8 @@ class SettingUpdateTest extends TestCase
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
 
-        Setting::updateOrCreate(['name' => 'meetingStatesAndProvinces'], ['value' => []]);
+        $repository = new SettingRepository();
+        $repository->update('meetingStatesAndProvinces', []);
 
         $this->withHeader('Authorization', "Bearer $token")
             ->patchJson('/api/v1/settings', [
@@ -89,7 +92,7 @@ class SettingUpdateTest extends TestCase
             ])
             ->assertStatus(204);
 
-        $setting = Setting::where('name', 'meetingStatesAndProvinces')->first();
+        $setting = $repository->getByName('meetingStatesAndProvinces');
         $this->assertEquals(['CA', 'NY', 'TX'], $setting->value);
     }
 
@@ -98,8 +101,9 @@ class SettingUpdateTest extends TestCase
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
 
-        Setting::updateOrCreate(['name' => 'searchSpecMapCenterZoom'], ['value' => 6]);
-        Setting::updateOrCreate(['name' => 'searchSpecMapCenterLatitude'], ['value' => 34.235918]);
+        $repository = new SettingRepository();
+        $repository->update('searchSpecMapCenterZoom', 6);
+        $repository->update('searchSpecMapCenterLatitude', 34.235918);
 
         $this->withHeader('Authorization', "Bearer $token")
             ->patchJson('/api/v1/settings', [
@@ -108,8 +112,8 @@ class SettingUpdateTest extends TestCase
             ])
             ->assertStatus(204);
 
-        $this->assertEquals(10, Setting::where('name', 'searchSpecMapCenterZoom')->first()->value);
-        $this->assertEquals(40.7128, Setting::where('name', 'searchSpecMapCenterLatitude')->first()->value);
+        $this->assertEquals(10, $repository->getByName('searchSpecMapCenterZoom')?->value);
+        $this->assertEquals(40.7128, $repository->getByName('searchSpecMapCenterLatitude')?->value);
     }
 
     public function testUpdateSettingsAsServiceBodyAdmin()

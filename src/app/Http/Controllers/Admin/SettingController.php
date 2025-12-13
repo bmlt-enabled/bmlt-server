@@ -32,10 +32,10 @@ class SettingController extends ResourceController
     public function update(Request $request)
     {
         $this->authorize('update', Setting::class);
-
+        $settingTypes = $this->settingRepository->getAll()->mapWithKeys(fn ($s) => [$s->name => $s->type]);
         $rules = array_merge(
-            ['*' => Rule::in(array_keys(Setting::SETTING_TYPES))],
-            collect(Setting::SETTING_TYPES)->mapWithKeys(function ($type, $name) {
+            ['*' => Rule::in($settingTypes->keys())],
+            $settingTypes->mapWithKeys(function ($type, $name) {
                 return [$name => match ($type) {
                     Setting::TYPE_STRING => 'nullable|string|max:65535',
                     Setting::TYPE_INT => 'nullable|integer',
@@ -45,7 +45,6 @@ class SettingController extends ResourceController
                 }];
             })->toArray()
         );
-        $rules['*'] = Rule::in(array_keys(Setting::SETTING_TYPES));
         $validated = $request->validate($rules);
         $this->settingRepository->updateMultiple($validated);
         return response()->noContent();

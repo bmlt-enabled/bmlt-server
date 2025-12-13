@@ -10,6 +10,11 @@ abstract class ConfigBase
     abstract public static function set(string $name, $value);
     abstract public static function reset(): void;
 
+    protected static function getSettingType(string $name): string
+    {
+        throw new \RuntimeException('unimplemented');
+    }
+
     public static function fromEnv(string $name): mixed
     {
         $envName = strtoupper(preg_replace('/(?<!^)[A-Z]/', '_$0', $name));
@@ -20,12 +25,12 @@ abstract class ConfigBase
             return null;
         }
 
-        $type = Setting::SETTING_TYPES[$name] ?? null;
+        $type = static::getSettingType($name);
         return match ($type) {
             Setting::TYPE_INT => (int)$value,
             Setting::TYPE_FLOAT => (float)$value,
             Setting::TYPE_BOOL => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-            Setting::TYPE_ARRAY => self::parseEnvArray($value),
+            Setting::TYPE_ARRAY => static::parseEnvArray($value),
             default => $value,
         };
     }

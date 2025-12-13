@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Admin;
 
 use App\Http\Resources\JsonResource;
-use App\Models\Setting;
 
 class SettingResource extends JsonResource
 {

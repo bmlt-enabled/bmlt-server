@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\FromFileConfig;
 use App\FromDatabaseConfig;
-use App\Models\Setting;
+use App\Repositories\SettingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
@@ -249,7 +249,8 @@ class GetServerInfoTest extends TestCase
 
     public function testEnvironmentVariableOverridesDatabase()
     {
-        Setting::updateOrCreate(['name' => 'googleApiKey'], ['value' => 'database_key']);
+        $repository = new SettingRepository();
+        $repository->update('googleApiKey', 'database_key');
 
         $_SERVER['GOOGLE_API_KEY'] = 'env_override_key';
 

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\Setting;
+use App\Repositories\SettingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SettingIndexTest extends TestCase
@@ -13,11 +13,11 @@ class SettingIndexTest extends TestCase
     {
         parent::setUp();
 
-        // Update settings with test values (migrations already seed them)
-        Setting::updateOrCreate(['name' => 'language'], ['value' => 'en']);
-        Setting::updateOrCreate(['name' => 'bmltTitle'], ['value' => 'Test Server']);
-        Setting::updateOrCreate(['name' => 'autoGeocodingEnabled'], ['value' => true]);
-        Setting::updateOrCreate(['name' => 'searchSpecMapCenterZoom'], ['value' => 8]);
+        $repository = new SettingRepository();
+        $repository->update('language', 'en');
+        $repository->update('bmltTitle', 'Test Server');
+        $repository->update('autoGeocodingEnabled', true);
+        $repository->update('searchSpecMapCenterZoom', 8);
     }
 
     public function testGetSettingsAsAdmin()
@@ -68,9 +68,10 @@ class SettingIndexTest extends TestCase
 
     public function testEnvironmentVariableOverridesDatabase()
     {
-        Setting::updateOrCreate(['name' => 'googleApiKey'], ['value' => 'database_key']);
-        Setting::updateOrCreate(['name' => 'language'], ['value' => 'en']);
-        Setting::updateOrCreate(['name' => 'autoGeocodingEnabled'], ['value' => false]);
+        $repository = new SettingRepository();
+        $repository->update('googleApiKey', 'database_key');
+        $repository->update('language', 'en');
+        $repository->update('autoGeocodingEnabled', false);
 
         $_SERVER['GOOGLE_API_KEY'] = 'env_override_key';
         $_SERVER['LANGUAGE'] = 'es';
