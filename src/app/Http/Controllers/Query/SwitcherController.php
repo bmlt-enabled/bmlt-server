@@ -357,7 +357,7 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
-        $langEnum = $request->input('lang_enum', config('app.locale'));
+        $langEnum = $request->input('lang_enum', App::currentLocale());
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
@@ -416,7 +416,7 @@ class SwitcherController extends Controller
         $formatsExclude = collect($formatIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
         $formatsExclude = count($formatsExclude) ? $formatsExclude : null;
 
-        $langEnums = $request->input('lang_enum', config('app.locale'));
+        $langEnums = $request->input('lang_enum', App::currentLocale());
         if (!is_array($langEnums)) {
             $langEnums = [$langEnums];
         }
@@ -543,7 +543,7 @@ class SwitcherController extends Controller
             'version' => config('app.version'),
             'versionInt' => strval((intval($versionArray[0]) * 1000000) + (intval($versionArray[1]) * 1000) + intval(strstr($versionArray[2], '-', true) ?: $versionArray[2])),
             'langs' => collect(scandir(base_path('lang')))->reject(fn ($dir) => str_starts_with($dir, '.'))->sort()->join(','),
-            'nativeLang' => config('app.locale'),
+            'nativeLang' => App::currentLocale(),
             'centerLongitude' => strval(legacy_config('search_spec_map_center_longitude')),
             'centerLatitude' => strval(legacy_config('search_spec_map_center_latitude')),
             'centerZoom' => strval(legacy_config('search_spec_map_center_zoom')),
@@ -692,7 +692,7 @@ class SwitcherController extends Controller
                 })
                 ->reject(fn ($meeting) => is_null($meeting));
             $meetings = $meetings->concat($deletedMeetings);
-            $allFormats = $this->formatRepository->search(langEnums: [config('app.locale')], showAll: true)
+            $allFormats = $this->formatRepository->search(langEnums: [App::currentLocale()], showAll: true)
                 ->reject(fn ($fmt) => is_null($fmt->key_string) || empty(trim($fmt->key_string)));
             $formatIdToWorldId = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->worldid_mixed]);
             $formatIdToKeyString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->key_string]);

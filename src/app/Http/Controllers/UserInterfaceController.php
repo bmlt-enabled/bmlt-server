@@ -32,7 +32,7 @@ class UserInterfaceController extends Controller
             'customFields' => self::getCustomFields(),
             'defaultClosedStatus' => legacy_config('default_closed_status'),
             'defaultDuration' => legacy_config('default_duration_time'),
-            'defaultLanguage' => config('app.locale'),
+            'defaultLanguage' => App::currentLocale(),
             'distanceUnits' => legacy_config('distance_units'),
             'googleApiKey' => legacy_config('google_api_key', ''),
             'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
