@@ -529,7 +529,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getDataTemplates(): Collection
     {
-        $serverLanguage = legacy_config('language') ?: App::currentLocale();
+        $serverLanguage = App::currentLocale();
         $fallbackLanguage = config('fallback_locale');
         $dataTemplates = MeetingData::query()->where('meetingid_bigint', 0)->get();
 
@@ -621,7 +621,7 @@ class MeetingRepository implements MeetingRepositoryInterface
     public function create(array $values): Meeting
     {
         $values = collect($values);
-        $values->put('lang_enum', legacy_config('language') ?: App::currentLocale());
+        $values->put('lang_enum', App::currentLocale());
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
@@ -734,12 +734,12 @@ class MeetingRepository implements MeetingRepositoryInterface
             // http request there will be a user, which will have a numeric ID.
             'user_id_bigint' => request()?->user()?->id_bigint,
             'service_body_id_bigint' => $afterMeeting?->service_body_bigint ?? $beforeMeeting->service_body_bigint,
-            'lang_enum' => $beforeMeeting?->lang_enum ?: $afterMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale(),
+            'lang_enum' => $beforeMeeting?->lang_enum ?: $afterMeeting?->lang_enum ?: App::currentLocale(),
             'object_class_string' => 'c_comdef_meeting',
             'before_id_bigint' => $beforeMeeting?->id_bigint,
-            'before_lang_enum' => !is_null($beforeMeeting) ? $beforeMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale() : null,
+            'before_lang_enum' => !is_null($beforeMeeting) ? $beforeMeeting?->lang_enum ?: App::currentLocale() : null,
             'after_id_bigint' => $afterMeeting?->id_bigint,
-            'after_lang_enum' => !is_null($afterMeeting) ? $afterMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale() : null,
+            'after_lang_enum' => !is_null($afterMeeting) ? $afterMeeting?->lang_enum ?: App::currentLocale() : null,
             'change_type_enum' => is_null($beforeMeeting) ? 'comdef_change_type_new' : (is_null($afterMeeting) ? 'comdef_change_type_delete' : 'comdef_change_type_change'),
             'before_object' => $beforeObject,
             'after_object' => $afterObject,
