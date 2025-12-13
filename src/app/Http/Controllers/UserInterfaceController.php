@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use App\Interfaces\MeetingRepositoryInterface;
 
 class UserInterfaceController extends Controller
