@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-$dbPrefix = config_file_setting('db_prefix', '');
+$dbPrefix = file_config('db_prefix', '');
 if ($dbPrefix) {
     $dbPrefix = $dbPrefix . '_';
 } elseif (env('APP_ENV') === 'testing') {
@@ -45,11 +45,11 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => config_file_setting('db_host', '0.0.0.0'),
+            'host' => file_config('db_host', '0.0.0.0'),
             'port' => env('DB_PORT', '3306'),
-            'database' => config_file_setting('db_database'),
-            'username' => config_file_setting('db_username'),
-            'password' => config_file_setting('db_password'),
+            'database' => file_config('db_database'),
+            'username' => file_config('db_username'),
+            'password' => file_config('db_password'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -65,11 +65,11 @@ return [
         'test' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => config_file_setting('db_host', '0.0.0.0'),
+            'host' => file_config('db_host', '0.0.0.0'),
             'port' => env('DB_PORT', '3306'),
-            'database' => config_file_setting('db_database', 'rootserver'),
-            'username' => config_file_setting('db_username', 'root'),
-            'password' => config_file_setting('db_password', 'rootserver'),
+            'database' => file_config('db_database', 'rootserver'),
+            'username' => file_config('db_username', 'root'),
+            'password' => file_config('db_password', 'rootserver'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',

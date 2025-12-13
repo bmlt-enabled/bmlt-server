@@ -45,7 +45,7 @@ class ImportRootServers extends Command
         MeetingRepositoryInterface $meetingRepository,
         ServiceBodyRepositoryInterface $serviceBodyRepository
     ) {
-        if (!config_file_setting('aggregator_mode_enabled')) {
+        if (!file_config('aggregator_mode_enabled')) {
             $this->error('aggregator mode is not enabled');
             return;
         }

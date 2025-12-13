@@ -17,33 +17,33 @@ class UserInterfaceController extends Controller
 
     public static function handle(Request $request): Response
     {
-        if (config_file_setting('aggregator_mode_enabled')) {
+        if (file_config('aggregator_mode_enabled')) {
             return response('"the aggregator formerly known as tomato"');
         }
 
         return response()->view('frontend', [
-            'autoGeocodingEnabled' => legacy_config('autoGeocodingEnabled'),
+            'autoGeocodingEnabled' => bmlt_config('autoGeocodingEnabled'),
             'baseUrl' => $request->getBaseurl(),
-            'bmltTitle' => legacy_config('bmltTitle'),
-            'bmltNotice' => legacy_config('bmltNotice'),
-            'centerLongitude' => legacy_config('searchSpecMapCenterLongitude'),
-            'centerLatitude' => legacy_config('searchSpecMapCenterLatitude'),
-            'centerZoom' => legacy_config('searchSpecMapCenterZoom'),
-            'countyAutoGeocodingEnabled' => legacy_config('countyAutoGeocodingEnabled'),
+            'bmltTitle' => bmlt_config('bmltTitle'),
+            'bmltNotice' => bmlt_config('bmltNotice'),
+            'centerLongitude' => bmlt_config('searchSpecMapCenterLongitude'),
+            'centerLatitude' => bmlt_config('searchSpecMapCenterLatitude'),
+            'centerZoom' => bmlt_config('searchSpecMapCenterZoom'),
+            'countyAutoGeocodingEnabled' => bmlt_config('countyAutoGeocodingEnabled'),
             'customFields' => self::getCustomFields(),
-            'defaultClosedStatus' => legacy_config('default_closed_status'),
-            'defaultDuration' => legacy_config('default_duration_time'),
+            'defaultClosedStatus' => bmlt_config('default_closed_status'),
+            'defaultDuration' => bmlt_config('default_duration_time'),
             'defaultLanguage' => App::currentLocale(),
-            'distanceUnits' => legacy_config('distance_units'),
-            'googleApiKey' => legacy_config('google_api_key', ''),
-            'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
+            'distanceUnits' => bmlt_config('distance_units'),
+            'googleApiKey' => bmlt_config('google_api_key', ''),
+            'isLanguageSelectorEnabled' => bmlt_config('enable_language_selector'),
             'languageMapping' => self::getLanguageMapping(),
-            'formatLangNames' => legacy_config('formatLangNames', []),
-            'meetingStatesAndProvinces' => legacy_config('meetingStatesAndProvinces', []),
-            'meetingCountiesAndSubProvinces' => legacy_config('meetingCountiesAndSubProvinces', []),
-            'regionBias' => legacy_config('regionBias'),
+            'formatLangNames' => bmlt_config('formatLangNames', []),
+            'meetingStatesAndProvinces' => bmlt_config('meetingStatesAndProvinces', []),
+            'meetingCountiesAndSubProvinces' => bmlt_config('meetingCountiesAndSubProvinces', []),
+            'regionBias' => bmlt_config('regionBias'),
             'version' => config('app.version'),
-            'zipAutoGeocodingEnabled' => legacy_config('zipAutoGeocodingEnabled'),
+            'zipAutoGeocodingEnabled' => bmlt_config('zipAutoGeocodingEnabled'),
         ]);
     }
 

@@ -57,7 +57,7 @@ class FromFileConfig extends ConfigBase
             'db_password' => self::fromEnv('db_password') ?? $dbPassword ?? null,
             'db_host' => self::fromEnv('db_host') ?? $dbHost ?? null,
             'db_prefix' => self::fromEnv('db_prefix') ?? $dbPrefix ?? null,
-            'aggregator_mode_enabled' => boolval(self::fromEnv('aggregator_mode_enabled') ?? $aggregator_mode_enabled ?? false),
+            'aggregator_mode_enabled' => filter_var(self::fromEnv('aggregator_mode_enabled') ?? $aggregator_mode_enabled ?? false, FILTER_VALIDATE_BOOLEAN),
             'aggregator_max_geo_width_km' => is_numeric($aggregator_max_geo_width_km) ? floatval($aggregator_max_geo_width_km) : 1000,
         ];
 

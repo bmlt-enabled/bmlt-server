@@ -650,7 +650,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                     ]);
                 }
             }
-            if (!config_file_setting('aggregator_mode_enabled')) {
+            if (!file_config('aggregator_mode_enabled')) {
                 $this->saveChange(null, $meeting);
             }
             return $meeting;
@@ -693,7 +693,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         ]);
                     }
                 }
-                if (!config_file_setting('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, Meeting::find($id));
                 }
                 return true;
@@ -711,7 +711,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();
-                if (!config_file_setting('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, null);
                 }
                 return true;
@@ -745,7 +745,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             'after_object' => $afterObject,
         ]);
 
-        $changeLimit = legacy_config('changeDepthForMeetings');
+        $changeLimit = bmlt_config('changeDepthForMeetings');
         if (is_integer($changeLimit) && $changeLimit > 0) {
             $meetingId = $beforeMeeting?->id_bigint ?? $afterMeeting?->id_bigint;
             if (!is_null($meetingId)) {

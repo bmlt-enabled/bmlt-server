@@ -106,10 +106,10 @@ class MeetingResource extends JsonResource
         $serviceBodyRepository = new ServiceBodyRepository();
 
         // Default duration time
-        self::$defaultDurationTime = legacy_config('defaultDurationTime');
+        self::$defaultDurationTime = bmlt_config('defaultDurationTime');
 
         // Aggregator mode
-        self::$isAggregatorModeEnabled = (bool)config_file_setting('aggregator_mode_enabled');
+        self::$isAggregatorModeEnabled = (bool)file_config('aggregator_mode_enabled');
 
         // Preload meeting data templates
         self::$meetingDataTemplates = $meetingRepository->getDataTemplates();

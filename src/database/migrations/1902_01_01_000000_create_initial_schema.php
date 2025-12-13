@@ -182,7 +182,7 @@ return new class extends Migration
                 $table->index('key_string', 'key_string');
                 $table->index(['root_server_id', 'source_id'], 'root_server_id_source_id');
             });
-            if (!config_file_setting('aggregator_mode_enabled')) {
+            if (!file_config('aggregator_mode_enabled')) {
                 // aggregator mode does not need any stock data
                 DB::table('comdef_formats')->insert([
                     ['shared_id_bigint' => 1, 'key_string' => 'B', 'worldid_mixed' => 'BEG', 'lang_enum' => 'de', 'name_string' => 'Beginners', 'description_string' => 'This meeting is focused on the needs of new members of NA.', 'format_type_enum' => 'FC3'],
