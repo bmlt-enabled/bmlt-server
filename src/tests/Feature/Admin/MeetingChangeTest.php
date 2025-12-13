@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\FromDatabaseConfig;
 use App\Models\Change;
 use App\Models\Format;
 use App\Models\Meeting;
@@ -15,7 +15,7 @@ class MeetingChangeTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromDatabaseConfig::reset();
         parent::tearDown();
     }
 
@@ -389,7 +389,7 @@ class MeetingChangeTest extends TestCase
 
         $nextChangeId = Change::query()->max('id_bigint') + 1;
 
-        LegacyConfig::set('change_depth_for_meetings', 3);
+        FromDatabaseConfig::set('changeDepthForMeetings', 3);
 
         $this
             ->withHeader('Authorization', "Bearer $token")
@@ -438,7 +438,7 @@ class MeetingChangeTest extends TestCase
         }
         $nextChangeId = Change::query()->max('id_bigint') + 1;
 
-        LegacyConfig::set('change_depth_for_meetings', 3);
+        FromDatabaseConfig::set('changeDepthForMeetings', 3);
 
         $this
             ->withHeader('Authorization', "Bearer $token")
@@ -472,7 +472,7 @@ class MeetingChangeTest extends TestCase
             ]);
         }
 
-        LegacyConfig::set('change_depth_for_meetings', null);
+        FromDatabaseConfig::set('changeDepthForMeetings', null);
 
         $this
             ->withHeader('Authorization', "Bearer $token")

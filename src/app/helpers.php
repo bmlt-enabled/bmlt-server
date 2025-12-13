@@ -1,19 +1,19 @@
 <?php
 
-use App\LegacyConfig;
-use App\ConfigFile;
+use App\FromDatabaseConfig;
+use App\FromFileConfig;
 
 if (!function_exists('legacy_config')) {
-    function legacy_config($key, $default = null)
+    function legacy_config($key = null, $default = null)
     {
-        return LegacyConfig::get($key, $default);
+        return FromDatabaseConfig::get($key, $default);
     }
 }
 
 if (!function_exists('config_file_setting')) {
     function config_file_setting($key = null, $default = null)
     {
-        return ConfigFile::get($key, $default);
+        return FromFileConfig::get($key, $default);
     }
 }
 

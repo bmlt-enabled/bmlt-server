@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\ConfigFile;
+use App\FromFileConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RootServerShowTest extends TestCase
@@ -11,13 +11,13 @@ class RootServerShowTest extends TestCase
 
     protected function tearDown(): void
     {
-        ConfigFile::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
     public function testNullLastSuccessfulImport()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(123);
         $this->get("/api/v1/rootservers/$rootServer->id")
             ->assertStatus(200)
@@ -48,7 +48,7 @@ class RootServerShowTest extends TestCase
 
     public function testNonNullLastSuccessfulImport()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(123);
         $rootServer->last_successful_import = $rootServer->updated_at;
         $rootServer->save();

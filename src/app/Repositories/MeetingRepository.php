@@ -745,7 +745,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             'after_object' => $afterObject,
         ]);
 
-        $changeLimit = legacy_config('change_depth_for_meetings');
+        $changeLimit = legacy_config('changeDepthForMeetings');
         if (is_integer($changeLimit) && $changeLimit > 0) {
             $meetingId = $beforeMeeting?->id_bigint ?? $afterMeeting?->id_bigint;
             if (!is_null($meetingId)) {

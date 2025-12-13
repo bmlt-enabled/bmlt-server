@@ -106,7 +106,7 @@ class MeetingResource extends JsonResource
         $serviceBodyRepository = new ServiceBodyRepository();
 
         // Default duration time
-        self::$defaultDurationTime = legacy_config('default_duration_time');
+        self::$defaultDurationTime = legacy_config('defaultDurationTime');
 
         // Aggregator mode
         self::$isAggregatorModeEnabled = (bool)config_file_setting('aggregator_mode_enabled');

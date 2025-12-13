@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\ConfigFile;
+use App\FromFileConfig;
 use App\Http\Resources\Query\MeetingResource;
-use App\LegacyConfig;
+use App\FromDatabaseConfig;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
@@ -185,8 +185,8 @@ class GetSearchResultsTest extends TestCase
 
     protected function tearDown(): void
     {
-        ConfigFile::reset();
-        LegacyConfig::reset();
+        FromFileConfig::reset();
+        FromDatabaseConfig::reset();
         MeetingResource::resetStaticVariables();
         parent::tearDown();
     }
@@ -1333,7 +1333,7 @@ class GetSearchResultsTest extends TestCase
     //
     public function testDefaultSortKeyWeekday()
     {
-        LegacyConfig::set('default_sort_key', 'weekday');
+        FromDatabaseConfig::set('defaultSortKey', 'weekday');
         $meeting1 = $this->createMeeting(['lang_enum' => 'a', 'weekday_tinyint' => 3, 'start_time' => '01:00:00'], ['location_municipality' => 'a']);
         $meeting2 = $this->createMeeting(['lang_enum' => 'b', 'weekday_tinyint' => 3, 'start_time' => '01:00:00'], ['location_municipality' => 'z']);
         $meeting3 = $this->createMeeting(['lang_enum' => 'c', 'weekday_tinyint' => 1, 'start_time' => '19:00:00'], ['location_municipality' => 'z']);
@@ -1692,7 +1692,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testDataFieldKeyRootServerUriWithAggregatorEnabled()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
         $meeting1->rootserver()->associate($rootServer);
@@ -1720,7 +1720,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testDataFieldKeyRootServerIdWithAggregatorEnabled()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
         $meeting1->rootserver()->associate($rootServer);
@@ -2035,7 +2035,7 @@ class GetSearchResultsTest extends TestCase
     {
         $this->createMeeting(['duration_time' => null]);
 
-        LegacyConfig::set('default_duration_time', 'blah');
+        FromDatabaseConfig::set('defaultDurationTime', 'blah');
         $this->get("/client_interface/json/?switcher=GetSearchResults")
             ->assertStatus(200)
             ->assertJsonFragment(['duration_time' => 'blah']);
@@ -2045,7 +2045,7 @@ class GetSearchResultsTest extends TestCase
     {
         $this->createMeeting(['duration_time' => '00:00:00']);
 
-        LegacyConfig::set('default_duration_time', 'blah');
+        FromDatabaseConfig::set('defaultDurationTime', 'blah');
         $this->get("/client_interface/json/?switcher=GetSearchResults")
             ->assertStatus(200)
             ->assertJsonFragment(['duration_time' => 'blah']);
@@ -2061,7 +2061,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerUriWithAggregatorEnabled()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2073,7 +2073,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdWithAggregatorDisabled()
     {
-        ConfigFile::set('aggregator_mode_enabled', false);
+        FromFileConfig::set('aggregator_mode_enabled', false);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2086,7 +2086,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdWithAggregatorEnabled()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2113,7 +2113,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsNone()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2127,7 +2127,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsIncludeOne()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2147,7 +2147,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsIncludeTwo()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2176,7 +2176,7 @@ class GetSearchResultsTest extends TestCase
     //
     public function testAggregatorModeRequiredFiltersNone()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2190,7 +2190,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersMeetingIds()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2204,7 +2204,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersServices()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting(['service_body_bigint' => 1]);
@@ -2218,7 +2218,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersFormats()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
@@ -2233,7 +2233,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersMeetingKeyAndMeetingKeyValue()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2247,7 +2247,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersGeo()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting(['latitude' => 36.065752051707, 'longitude' => -79.793701171875]);
@@ -2261,7 +2261,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersPageSizePageNum()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();

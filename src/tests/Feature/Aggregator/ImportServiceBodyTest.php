@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Aggregator;
 
-use App\ConfigFile;
+use App\FromFileConfig;
 use App\Models\ServiceBody;
 use App\Repositories\External\ExternalServiceBody;
 use App\Repositories\ServiceBodyRepository;
@@ -15,7 +15,7 @@ class ImportServiceBodyTest extends TestCase
 
     protected function tearDown(): void
     {
-        ConfigFile::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -51,7 +51,7 @@ class ImportServiceBodyTest extends TestCase
 
     public function testCreate()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
 
         $external = $this->external();
@@ -69,7 +69,7 @@ class ImportServiceBodyTest extends TestCase
 
     public function testUpdate()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
         $rootServer2 = $this->createRootServer(2);
 
@@ -97,7 +97,7 @@ class ImportServiceBodyTest extends TestCase
 
     public function testDelete()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
         $rootServer2 = $this->createRootServer(2);
         $rootServer3 = $this->createRootServer(3);
@@ -136,7 +136,7 @@ class ImportServiceBodyTest extends TestCase
 
     public function testSbOwnerAssignment()
     {
-        ConfigFile::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
         $rootServer2 = $this->createRootServer(2);
 

@@ -23,7 +23,7 @@ class ServiceBodyResource extends JsonResource
             'url' => $this->uri_string ?? '',
             'helpline' => $this->kml_file_uri_string ?? '',
             'world_id' => $this->worldid_mixed ?? '',
-            'contact_email' => $this->when(legacy_config('include_service_body_email_in_semantic'), $this->sb_meeting_email ?? ''),
+            'contact_email' => $this->when(legacy_config('includeServiceBodyEmailInSemantic'), $this->sb_meeting_email ?? ''),
             'root_server_id' => $this->when(config_file_setting('aggregator_mode_enabled'), $this->root_server_id ?? '')
         ];
     }

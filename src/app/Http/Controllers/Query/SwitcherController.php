@@ -201,12 +201,12 @@ class SwitcherController extends Controller
         }
         $searchStringIsAddress = !is_null($searchString) && $request->input('StringSearchIsAnAddress') == '1';
         if (!is_null($searchString) && $searchStringIsAddress) {
-            $googleApiKey = legacy_config('google_api_key');
+            $googleApiKey = legacy_config('googleApiKey');
             if (is_null($googleApiKey)) {
                 abort(400, 'A google api key must be configured to use StringSearchIsAnAddress.');
             }
 
-            $regionBias = legacy_config('region_bias');
+            $regionBias = legacy_config('regionBias');
             if (is_string($regionBias) && is_numeric($searchString)) {
                 // when it's numeric, like a postcode, add $regionBias directly
                 $searchString .= ' ' . $regionBias;
@@ -238,12 +238,12 @@ class SwitcherController extends Controller
 
             $searchStringRadius = $request->input('SearchStringRadius');
             if (is_null($searchStringRadius) || !is_numeric($searchStringRadius)) {
-                $nNearestAuto = abs(legacy_config('number_of_meetings_for_auto')) * -1;
-                $geoWidthMiles = legacy_config('distance_units') == 'mi' ? $nNearestAuto : null;
-                $geoWidthKilometers = legacy_config('distance_units') != 'mi' ? $nNearestAuto : null;
+                $nNearestAuto = abs(legacy_config('numberOfMeetingsForAuto')) * -1;
+                $geoWidthMiles = legacy_config('distanceUnits') == 'mi' ? $nNearestAuto : null;
+                $geoWidthKilometers = legacy_config('distanceUnits') != 'mi' ? $nNearestAuto : null;
             } else {
-                $geoWidthMiles = legacy_config('distance_units') == 'mi' ? floatval($searchStringRadius) : null;
-                $geoWidthKilometers = legacy_config('distance_units') != 'mi' ? floatval($searchStringRadius) : null;
+                $geoWidthMiles = legacy_config('distanceUnits') == 'mi' ? floatval($searchStringRadius) : null;
+                $geoWidthKilometers = legacy_config('distanceUnits') != 'mi' ? floatval($searchStringRadius) : null;
             }
 
             $searchString = null;
@@ -261,7 +261,7 @@ class SwitcherController extends Controller
         $sortKeys = $request->input('sort_keys');
         $sortKeys = empty($sortKeys) ? null : explode(',', $sortKeys);
         if (is_null($sortKeys)) {
-            $sortAlias = $request->input('sort_key') ?? legacy_config('default_sort_key');
+            $sortAlias = $request->input('sort_key') ?? legacy_config('defaultSortKey');
             if (!is_null($sortAlias)) {
                 if ($sortAlias == 'weekday') {
                     $sortKeys = ['weekday_tinyint', 'location_municipality', 'location_city_subsection', 'start_time', 'location_neighborhood'];
@@ -545,27 +545,27 @@ class SwitcherController extends Controller
             'versionInt' => strval((intval($versionArray[0]) * 1000000) + (intval($versionArray[1]) * 1000) + intval(strstr($versionArray[2], '-', true) ?: $versionArray[2])),
             'langs' => collect(scandir(base_path('lang')))->reject(fn ($dir) => str_starts_with($dir, '.'))->sort()->join(','),
             'nativeLang' => App::currentLocale(),
-            'centerLongitude' => strval(legacy_config('search_spec_map_center_longitude')),
-            'centerLatitude' => strval(legacy_config('search_spec_map_center_latitude')),
-            'centerZoom' => strval(legacy_config('search_spec_map_center_zoom')),
-            'defaultDuration' => legacy_config('default_duration_time'),
-            'regionBias' => legacy_config('region_bias'),
+            'centerLongitude' => strval(legacy_config('searchSpecMapCenterLongitude')),
+            'centerLatitude' => strval(legacy_config('searchSpecMapCenterLatitude')),
+            'centerZoom' => strval(legacy_config('searchSpecMapCenterZoom')),
+            'defaultDuration' => legacy_config('defaultDurationTime'),
+            'regionBias' => legacy_config('regionBias'),
             'charSet' => 'UTF-8',
-            'distanceUnits' => legacy_config('distance_units'),
+            'distanceUnits' => legacy_config('distanceUnits'),
             'semanticAdmin' => '1', // Yap uses this flag to determine legacy auth so we must keep it.
-            'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
-            'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
-            'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
+            'changesPerMeeting' => strval(legacy_config('changeDepthForMeetings')),
+            'meeting_states_and_provinces' => implode(',', legacy_config('meetingStatesAndProvinces', [])),
+            'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meetingCountiesAndSubProvinces', [])),
             'available_keys' => $this->meetingRepository->getFieldKeys()->map(fn ($value) => $value['key'])->merge(['root_server_uri', 'format_shared_id_list'])->join(','),
-            'google_api_key' => config_file_setting('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
+            'google_api_key' => config_file_setting('aggregator_mode_enabled') ? null : legacy_config('googleApiKey', ''),
             'dbVersion' => $this->migrationRepository->getLastMigration()['migration'],
             'dbPrefix' => config_file_setting('db_prefix'),
             'phpVersion' => phpversion(),
-            'auto_geocoding_enabled' => legacy_config('auto_geocoding_enabled'),
-            'county_auto_geocoding_enabled' => legacy_config('county_auto_geocoding_enabled'),
-            'zip_auto_geocoding_enabled' => legacy_config('zip_auto_geocoding_enabled'),
+            'auto_geocoding_enabled' => legacy_config('autoGeocodingEnabled'),
+            'county_auto_geocoding_enabled' => legacy_config('countyAutoGeocodingEnabled'),
+            'zip_auto_geocoding_enabled' => legacy_config('zipAutoGeocodingEnabled'),
             'commit' => config('app.commit'),
-            'default_closed_status' => legacy_config('default_closed_status'),
+            'default_closed_status' => legacy_config('defaultClosedStatus'),
             'aggregator_mode_enabled' => config_file_setting('aggregator_mode_enabled')
         ]]);
     }
@@ -937,7 +937,7 @@ class SwitcherController extends Controller
         if (in_array('OPEN', $meetingFormats)) {
             return 'OPEN';
         }
-        return legacy_config('default_closed_status') ? 'CLOSED' : 'OPEN';
+        return legacy_config('defaultClosedStatus') ? 'CLOSED' : 'OPEN';
     }
 
     // Meeting times will be of the form 19:30:00.  Convert to 1930 (which is what this format expects).

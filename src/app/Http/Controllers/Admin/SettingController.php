@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\Admin\SettingResource;
 use App\Interfaces\SettingRepositoryInterface;
-use App\LegacyConfig;
+use App\FromDatabaseConfig;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -23,7 +23,7 @@ class SettingController extends ResourceController
         $this->authorize('viewAny', Setting::class);
 
         $settings = $this->settingRepository->getAll()->map(function ($setting) {
-            $setting->value = LegacyConfig::fromEnv($setting->name) ?? $setting->value;
+            $setting->value = FromDatabaseConfig::fromEnv($setting->name) ?? $setting->value;
             return $setting;
         });
         return response()->json(SettingResource::collection($settings));

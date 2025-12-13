@@ -22,14 +22,14 @@ class UserInterfaceController extends Controller
         }
 
         return response()->view('frontend', [
-            'autoGeocodingEnabled' => legacy_config('auto_geocoding_enabled'),
+            'autoGeocodingEnabled' => legacy_config('autoGeocodingEnabled'),
             'baseUrl' => $request->getBaseurl(),
-            'bmltTitle' => legacy_config('bmlt_title'),
-            'bmltNotice' => legacy_config('bmlt_notice'),
-            'centerLongitude' => legacy_config('search_spec_map_center_longitude'),
-            'centerLatitude' => legacy_config('search_spec_map_center_latitude'),
-            'centerZoom' => legacy_config('search_spec_map_center_zoom'),
-            'countyAutoGeocodingEnabled' => legacy_config('county_auto_geocoding_enabled'),
+            'bmltTitle' => legacy_config('bmltTitle'),
+            'bmltNotice' => legacy_config('bmltNotice'),
+            'centerLongitude' => legacy_config('searchSpecMapCenterLongitude'),
+            'centerLatitude' => legacy_config('searchSpecMapCenterLatitude'),
+            'centerZoom' => legacy_config('searchSpecMapCenterZoom'),
+            'countyAutoGeocodingEnabled' => legacy_config('countyAutoGeocodingEnabled'),
             'customFields' => self::getCustomFields(),
             'defaultClosedStatus' => legacy_config('default_closed_status'),
             'defaultDuration' => legacy_config('default_duration_time'),
@@ -38,12 +38,12 @@ class UserInterfaceController extends Controller
             'googleApiKey' => legacy_config('google_api_key', ''),
             'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
             'languageMapping' => self::getLanguageMapping(),
-            'formatLangNames' => legacy_config('format_lang_names', []),
-            'meetingStatesAndProvinces' => legacy_config('meeting_states_and_provinces', []),
-            'meetingCountiesAndSubProvinces' => legacy_config('meeting_counties_and_sub_provinces', []),
-            'regionBias' => legacy_config('region_bias'),
+            'formatLangNames' => legacy_config('formatLangNames', []),
+            'meetingStatesAndProvinces' => legacy_config('meetingStatesAndProvinces', []),
+            'meetingCountiesAndSubProvinces' => legacy_config('meetingCountiesAndSubProvinces', []),
+            'regionBias' => legacy_config('regionBias'),
             'version' => config('app.version'),
-            'zipAutoGeocodingEnabled' => legacy_config('zip_auto_geocoding_enabled'),
+            'zipAutoGeocodingEnabled' => legacy_config('zipAutoGeocodingEnabled'),
         ]);
     }
 
