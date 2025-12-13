@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\ConfigFile;
 use App\Http\Resources\Query\MeetingResource;
 use App\LegacyConfig;
 use App\Models\Format;
@@ -184,6 +185,7 @@ class GetSearchResultsTest extends TestCase
 
     protected function tearDown(): void
     {
+        ConfigFile::reset();
         LegacyConfig::reset();
         MeetingResource::resetStaticVariables();
         parent::tearDown();
@@ -1690,7 +1692,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testDataFieldKeyRootServerUriWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
         $meeting1->rootserver()->associate($rootServer);
@@ -1718,7 +1720,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testDataFieldKeyRootServerIdWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
         $meeting1->rootserver()->associate($rootServer);
@@ -2059,7 +2061,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerUriWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2071,7 +2073,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdWithAggregatorDisabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', false);
+        ConfigFile::set('aggregator_mode_enabled', false);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2084,7 +2086,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $meeting = $this->createMeeting();
         $meeting->rootServer()->associate($rootServer);
@@ -2111,7 +2113,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsNone()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2125,7 +2127,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsIncludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2145,7 +2147,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testRootServerIdsIncludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2174,7 +2176,7 @@ class GetSearchResultsTest extends TestCase
     //
     public function testAggregatorModeRequiredFiltersNone()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2188,7 +2190,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersMeetingIds()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2202,7 +2204,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersServices()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting(['service_body_bigint' => 1]);
@@ -2216,7 +2218,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersFormats()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
@@ -2231,7 +2233,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersMeetingKeyAndMeetingKeyValue()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();
@@ -2245,7 +2247,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersGeo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting(['latitude' => 36.065752051707, 'longitude' => -79.793701171875]);
@@ -2259,7 +2261,7 @@ class GetSearchResultsTest extends TestCase
 
     public function testAggregatorModeRequiredFiltersPageSizePageNum()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $meeting1 = $this->createMeeting();

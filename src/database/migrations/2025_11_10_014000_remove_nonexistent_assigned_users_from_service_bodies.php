@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (legacy_config('aggregator_mode_enabled')) {
+        if (config_file_setting('aggregator_mode_enabled')) {
             return;
         }
 

@@ -650,7 +650,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                     ]);
                 }
             }
-            if (!legacy_config('aggregator_mode_enabled')) {
+            if (!config_file_setting('aggregator_mode_enabled')) {
                 $this->saveChange(null, $meeting);
             }
             return $meeting;
@@ -693,7 +693,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         ]);
                     }
                 }
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!config_file_setting('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, Meeting::find($id));
                 }
                 return true;
@@ -711,7 +711,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!config_file_setting('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, null);
                 }
                 return true;

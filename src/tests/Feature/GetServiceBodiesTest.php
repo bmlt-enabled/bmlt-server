@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\ConfigFile;
 use App\LegacyConfig;
 use App\Models\RootServer;
 use App\Models\ServiceBody;
@@ -92,6 +93,7 @@ class GetServiceBodiesTest extends TestCase
 
     protected function tearDown(): void
     {
+        ConfigFile::reset();
         LegacyConfig::reset();
         parent::tearDown();
     }
@@ -455,7 +457,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $zone = $this->createZone("sezf", "sezf", "https://zone");
         $zone->rootServer()->associate($rootServer);
@@ -485,7 +487,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsNone()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -499,7 +501,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsIncludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -519,7 +521,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsIncludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -545,7 +547,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsExcludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -565,7 +567,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsExcludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");

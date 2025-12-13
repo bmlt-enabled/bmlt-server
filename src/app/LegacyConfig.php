@@ -9,8 +9,32 @@ class LegacyConfig
 {
     private static ?array $config = null;
     private static bool $configLoaded = false;
+    private const SETTING_TO_ENV_VAR_MAP = [
+        'googleApiKey' => 'GKEY',
+        'changeDepthForMeetings' => 'CHANGE_DEPTH_FOR_MEETINGS',
+        'defaultSortKey' => 'DEFAULT_SORT_KEY',
+        'language' => 'LANGUAGE',
+        'defaultDurationTime' => 'DEFAULT_DURATION_TIME',
+        'regionBias' => 'REGION_BIAS',
+        'distanceUnits' => 'DISTANCE_UNITS',
+        'meetingStatesAndProvinces' => 'MEETING_STATES_AND_PROVINCES',
+        'meetingCountiesAndSubProvinces' => 'MEETING_COUNTIES_AND_SUB_PROVINCES',
+        'searchSpecMapCenterLongitude' => 'SEARCH_SPEC_MAP_CENTER_LONGITUDE',
+        'searchSpecMapCenterLatitude' => 'SEARCH_SPEC_MAP_CENTER_LATITUDE',
+        'searchSpecMapCenterZoom' => 'SEARCH_SPEC_MAP_CENTER_ZOOM',
+        'numberOfMeetingsForAuto' => 'NUMBER_OF_MEETINGS_FOR_AUTO',
+        'autoGeocodingEnabled' => 'AUTO_GEOCODING_ENABLED',
+        'countyAutoGeocodingEnabled' => 'COUNTY_AUTO_GEOCODING_ENABLED',
+        'zipAutoGeocodingEnabled' => 'ZIP_AUTO_GEOCODING_ENABLED',
+        'defaultClosedStatus' => 'DEFAULT_CLOSED_STATUS',
+        'enableLanguageSelector' => 'ENABLE_LANGUAGE_SELECTOR',
+        'includeServiceBodyEmailInSemantic' => 'INCLUDE_SERVICE_BODY_EMAIL_IN_SEMANTIC',
+        'bmltTitle' => 'BMLT_TITLE',
+        'bmltNotice' => 'BMLT_NOTICE',
+        'formatLangNames' => 'FORMAT_LANG_NAMES',
+    ];
 
-    private const LEGACY_KEY_MAPPING = [
+    private const LEGACY_NAME_TO_NEW_NAME_MAP = [
         'gkey' => 'googleApiKey',
         'google_api_key' => 'googleApiKey',
         'change_depth_for_meetings' => 'changeDepthForMeetings',
@@ -34,8 +58,6 @@ class LegacyConfig
         'default_closed_status' => 'defaultClosedStatus',
         'g_enable_language_selector' => 'enableLanguageSelector',
         'enable_language_selector' => 'enableLanguageSelector',
-        'aggregator_mode_enabled' => 'aggregatorModeEnabled',
-        'aggregator_max_geo_width_km' => 'aggregatorMaxGeoWidthKm',
         'g_include_service_body_email_in_semantic' => 'includeServiceBodyEmailInSemantic',
         'include_service_body_email_in_semantic' => 'includeServiceBodyEmailInSemantic',
         'bmlt_title' => 'bmltTitle',
@@ -43,95 +65,87 @@ class LegacyConfig
         'format_lang_names' => 'formatLangNames',
     ];
 
-    public static function get(?string $key = null, $default = null)
+    public static function get(string $legacyName, $default = null)
     {
         if (!self::$configLoaded) {
             self::loadConfig();
         }
 
-        if (is_null($key)) {
-            // Return only DB credentials when getting all config
-            return self::$config;
-        }
-
-        // DB credential keys come from legacy config file
-        $dbCredentialKeys = ['db_database', 'db_username', 'db_password', 'db_host', 'db_prefix'];
-        if (in_array($key, $dbCredentialKeys)) {
-            return self::$config[$key] ?? $default;
-        }
-
-        // Check for in-memory override (used in tests)
-        if (isset(self::$config[$key])) {
-            return self::$config[$key];
-        }
-
-        // Redirect to SettingRepository which checks: env > database > defaults
-        // Use legacy key mapping to find the Setting name
-        $settingName = self::LEGACY_KEY_MAPPING[$key] ?? null;
-        if ($settingName) {
-            return (new SettingRepository())->getValue($settingName, $default);
-        }
-
-        return $default;
+        return self::$config[$legacyName] ?? $default;
     }
 
-    public static function set(string $key, $value)
+    public static function fromEnv(string $name): mixed
     {
-        // really should only be used in testing
-        if (!self::$configLoaded) {
-            self::loadConfig();
+        $envName = self::SETTING_TO_ENV_VAR_MAP[$name] ?? null;
+        if (!$envName) {
+            return null;
         }
 
-        self::$config[$key] = $value;
+        $value = $_SERVER[$envName] ?? env($envName);
+
+        if (is_null($value) || $value === '') {
+            return null;
+        }
+
+        $type = Setting::SETTING_TYPES[$name];
+        return match ($type) {
+            Setting::TYPE_INT => (int)$value,
+            Setting::TYPE_FLOAT => (float)$value,
+            Setting::TYPE_BOOL => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+            Setting::TYPE_ARRAY => self::parseArrayValue($value),
+            default => $value,
+        };
     }
 
-    public static function remove(string $key)
+    private static function parseArrayValue($value): array
     {
-        // really should only be used in testing
-        if (!self::$configLoaded) {
-            self::loadConfig();
+        if (is_array($value)) {
+            return $value;
         }
 
-        unset(self::$config[$key]);
+        // Try JSON first
+        $decoded = json_decode($value, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+
+        // Fall back to comma-separated
+        if (is_string($value) && $value !== '') {
+            return array_map('trim', explode(',', $value));
+        }
+
+        return [];
+    }
+
+    public static function set(string $legacyName, $value)
+    {
+        // should only be used in testing
+        $name = self::LEGACY_NAME_TO_NEW_NAME_MAP[$legacyName];
+        $repository = app(SettingRepository::class);
+        $repository->update($name, $value);
+        $setting = $repository->getByName($name);
+        self::$config[$legacyName] = $setting->value;
     }
 
     public static function reset()
     {
-        // really should only be used in testing
+        // should only be used in testing
         self::$config = null;
         self::$configLoaded = false;
     }
 
     private static function loadConfig()
     {
-        $legacyConfigFile = base_path() . '/../auto-config.inc.php';
-        if (file_exists($legacyConfigFile)) {
-            defined('BMLT_EXEC') or define('BMLT_EXEC', 1);
-            require($legacyConfigFile);
-        }
+        $newNameToLegacyName = collect(self::LEGACY_NAME_TO_NEW_NAME_MAP)->mapWithKeys(fn ($new, $legacy) => [$new => $legacy]);
+        $repository = app(SettingRepository::class);
+        self::$config = $repository->getAll()
+            ->mapWithKeys(function ($setting) use ($newNameToLegacyName) {
+                $value = self::fromEnv($setting->name) ?? $setting->value;
+                $legacyName = $newNameToLegacyName->get($setting->name);
+                return [$legacyName => $value];
+            })
+            ->toArray();
 
-        $config = [];
-
-        // Only load DB credentials from auto-config.inc.php
-        // All other settings come from the database via Setting model
-        if (isset($dbName)) {
-            $config['db_database'] = $dbName;
-        }
-        if (isset($dbUser)) {
-            $config['db_username'] = $dbUser;
-        }
-        if (isset($dbPassword)) {
-            $config['db_password'] = $dbPassword;
-        }
-        if (isset($dbServer)) {
-            $config['db_host'] = $dbServer;
-        }
-        // Don't load db_prefix in testing - let config/database.php handle it
-        if (env('APP_ENV') !== 'testing') {
-            $config['db_prefix'] = env('DB_PREFIX') ?? $dbPrefix ?? null;
-        }
-
-        self::$config = $config;
         self::$configLoaded = true;
     }
 }

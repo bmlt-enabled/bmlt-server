@@ -472,7 +472,7 @@ class MeetingChangeTest extends TestCase
             ]);
         }
 
-        LegacyConfig::remove('change_depth_for_meetings');
+        LegacyConfig::set('change_depth_for_meetings', null);
 
         $this
             ->withHeader('Authorization', "Bearer $token")

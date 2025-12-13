@@ -3,11 +3,13 @@
 namespace Tests\Feature;
 
 use App\LegacyConfig;
-use Illuminate\Support\Facades\App;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class GetFieldKeysTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function testJsonp()
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetFieldKeys&callback=asdf');
@@ -57,8 +59,7 @@ class GetFieldKeysTest extends TestCase
 
     public function testGetFieldKeysItalian()
     {
-        $oldLocale = App::currentLocale();
-        App::setLocale('it');
+        LegacyConfig::set('language', 'it');
         try {
             $this->get('/client_interface/json/?switcher=GetFieldKeys')
                 ->assertStatus(200)
@@ -94,33 +95,27 @@ class GetFieldKeysTest extends TestCase
                     ['key' => 'virtual_meeting_additional_info', 'description' => 'Virtual Meeting Additional Info'],
                 ]);
         } finally {
-            App::setLocale($oldLocale);
+            LegacyConfig::reset();
         }
     }
 
     public function testGetFieldKeysAllLocales200()
     {
-        $oldLocale = App::currentLocale();
         try {
             $locales = ['de', 'dk', 'en', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv'];
             foreach ($locales as $locale) {
-                App::setLocale($locale);
+                LegacyConfig::set('language', $locale);
                 $this->get('/client_interface/json/?switcher=GetFieldKeys')->assertStatus(200);
             }
         } finally {
-            App::setLocale($oldLocale);
+            LegacyConfig::reset();
         }
     }
 
     public function testLocaleIsSyncedFromDatabaseSetting()
     {
-        $oldLocale = App::currentLocale();
         try {
             LegacyConfig::set('language', 'it');
-
-            // Sync the app locale from the (mocked) database setting
-            $language = LegacyConfig::get('language');
-            App::setLocale($language);
 
             // The response should have Italian translations (from the database setting)
             $this->get('/client_interface/json/?switcher=GetFieldKeys')
@@ -130,7 +125,6 @@ class GetFieldKeysTest extends TestCase
                 ->assertJsonPath('4.description', 'Venue Type') // Not translated in test data
                 ->assertJsonPath('9.description', 'Lingua');
         } finally {
-            App::setLocale($oldLocale);
             LegacyConfig::reset();
         }
     }

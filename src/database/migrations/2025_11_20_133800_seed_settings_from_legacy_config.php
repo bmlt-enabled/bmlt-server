@@ -30,8 +30,6 @@ return new class extends Migration
         'zipAutoGeocodingEnabled' => self::TYPE_BOOL,
         'defaultClosedStatus' => self::TYPE_BOOL,
         'enableLanguageSelector' => self::TYPE_BOOL,
-        'aggregatorModeEnabled' => self::TYPE_BOOL,
-        'aggregatorMaxGeoWidthKm' => self::TYPE_FLOAT,
         'includeServiceBodyEmailInSemantic' => self::TYPE_BOOL,
         'bmltTitle' => self::TYPE_STRING,
         'bmltNotice' => self::TYPE_STRING,
@@ -57,8 +55,6 @@ return new class extends Migration
         'zipAutoGeocodingEnabled' => false,
         'defaultClosedStatus' => true,
         'enableLanguageSelector' => false,
-        'aggregatorModeEnabled' => false,
-        'aggregatorMaxGeoWidthKm' => 160.0,
         'includeServiceBodyEmailInSemantic' => false,
         'bmltTitle' => 'BMLT Administration',
         'bmltNotice' => '',
@@ -236,12 +232,6 @@ return new class extends Migration
         }
         if (isset($g_enable_language_selector)) {
             $config['enableLanguageSelector'] = $g_enable_language_selector;
-        }
-        if (isset($aggregator_mode_enabled)) {
-            $config['aggregatorModeEnabled'] = $aggregator_mode_enabled;
-        }
-        if (isset($aggregator_max_geo_width_km)) {
-            $config['aggregatorMaxGeoWidthKm'] = $aggregator_max_geo_width_km;
         }
         if (isset($g_include_service_body_email_in_semantic)) {
             $config['includeServiceBodyEmailInSemantic'] = $g_include_service_body_email_in_semantic;

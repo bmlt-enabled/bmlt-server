@@ -14,7 +14,7 @@ class FormatResource extends JsonResource
      */
     public function toArray($request)
     {
-        $isAggregatorModeEnabled = (bool)legacy_config('aggregator_mode_enabled');
+        $isAggregatorModeEnabled = (bool)config_file_setting('aggregator_mode_enabled');
 
         return [
             'key_string' => $this->key_string,

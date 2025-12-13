@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Http\Resources\Admin\MeetingResource;
+use App\LegacyConfig;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
@@ -10,7 +11,6 @@ use App\Models\Setting;
 use App\Repositories\FormatRepository;
 use App\Repositories\MeetingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 
 class MeetingCreateTest extends TestCase
 {
@@ -18,6 +18,7 @@ class MeetingCreateTest extends TestCase
 
     protected function tearDown(): void
     {
+        LegacyConfig::reset();
         MeetingResource::resetStaticVariables();
         parent::tearDown();
     }

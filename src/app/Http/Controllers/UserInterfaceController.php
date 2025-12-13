@@ -16,7 +16,7 @@ class UserInterfaceController extends Controller
 
     public static function handle(Request $request): Response
     {
-        if (legacy_config('aggregator_mode_enabled')) {
+        if (config_file_setting('aggregator_mode_enabled')) {
             return response('"the aggregator formerly known as tomato"');
         }
 

@@ -2,9 +2,7 @@
 
 namespace App\Providers;
 
-use App\Repositories\SettingRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,10 +29,5 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         JsonResource::withoutWrapping();
-
-        // Sync Laravel's app.locale with the database setting
-        $settingRepository = new SettingRepository();
-        $language = $settingRepository->getValue('language', 'en');
-        app()->setLocale($language);
     }
 }

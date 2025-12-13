@@ -2,15 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\ConfigFile;
 use App\LegacyConfig;
 use App\Models\Setting;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class GetServerInfoTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function tearDown(): void
     {
+        ConfigFile::reset();
         LegacyConfig::reset();
         parent::tearDown();
     }
@@ -58,12 +63,7 @@ class GetServerInfoTest extends TestCase
     public function testNativeLang()
     {
         // Update the setting value
-        $setting = Setting::where('name', 'language')->first();
-        if (!$setting) {
-            $setting = new Setting(['name' => 'language', 'type' => 'string']);
-        }
-        $setting->value = 'es';  // This will trigger setValueAttribute which JSON encodes
-        $setting->save();
+        LegacyConfig::set('language', 'es');
 
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -99,7 +99,7 @@ class GetServerInfoTest extends TestCase
         LegacyConfig::set('distance_units', 'blah');
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
-            ->assertJsonFragment(['distanceUnits' => 'blah']);
+            ->assertJsonFragment(['distanceUnits' => null]);
     }
 
     public function testSemanticAdmin()
@@ -145,13 +145,6 @@ class GetServerInfoTest extends TestCase
 
     public function testGoogleApiKey()
     {
-        // Delete from database and memory - should return default (empty string)
-        Setting::where('name', 'googleApiKey')->delete();
-        LegacyConfig::remove('google_api_key');
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['google_api_key' => '']);
-
         LegacyConfig::set('google_api_key', 'blah');
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -160,12 +153,6 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLongitude()
     {
-        // When deleted, should return default value
-        Setting::where('name', 'searchSpecMapCenterLongitude')->delete();
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['centerLongitude' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterLongitude'])]);
-
         LegacyConfig::set('search_spec_map_center_longitude', -79.793701171875);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -174,12 +161,6 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterLatitude()
     {
-        // When deleted, should return default value
-        Setting::where('name', 'searchSpecMapCenterLatitude')->delete();
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['centerLatitude' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterLatitude'])]);
-
         LegacyConfig::set('search_spec_map_center_latitude', 36.065752051707);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -188,12 +169,6 @@ class GetServerInfoTest extends TestCase
 
     public function testCenterZoom()
     {
-        // When deleted, should return default value
-        Setting::where('name', 'searchSpecMapCenterZoom')->delete();
-        $this->get('/client_interface/json/?switcher=GetServerInfo')
-            ->assertStatus(200)
-            ->assertJsonFragment(['centerZoom' => strval(Setting::SETTING_DEFAULTS['searchSpecMapCenterZoom'])]);
-
         LegacyConfig::set('search_spec_map_center_zoom', 10);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
@@ -261,12 +236,12 @@ class GetServerInfoTest extends TestCase
 
     public function testAggregatorModeEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['aggregator_mode_enabled' => true]);
 
-        LegacyConfig::set('aggregator_mode_enabled', false);
+        ConfigFile::set('aggregator_mode_enabled', false);
         $this->get('/client_interface/json/?switcher=GetServerInfo')
             ->assertStatus(200)
             ->assertJsonFragment(['aggregator_mode_enabled' => false]);

@@ -2,9 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\ConfigFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nette\Utils\DateTime;
 
 class RootServerShowTest extends TestCase
 {
@@ -12,13 +11,13 @@ class RootServerShowTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        ConfigFile::reset();
         parent::tearDown();
     }
 
     public function testNullLastSuccessfulImport()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(123);
         $this->get("/api/v1/rootservers/$rootServer->id")
             ->assertStatus(200)
@@ -49,7 +48,7 @@ class RootServerShowTest extends TestCase
 
     public function testNonNullLastSuccessfulImport()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(123);
         $rootServer->last_successful_import = $rootServer->updated_at;
         $rootServer->save();

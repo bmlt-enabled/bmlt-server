@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!legacy_config('aggregator_mode_enabled')) {
+        if (!config_file_setting('aggregator_mode_enabled')) {
             $adminUserIds = DB::table('comdef_users')->where('user_level_tinyint', 1)->pluck('id_bigint');
             DB::table('comdef_users')->whereIn('owner_id_bigint', $adminUserIds)->update(['owner_id_bigint' => -1]);
         }

@@ -94,7 +94,7 @@ class SwitcherController extends Controller
 
     private function getSearchResults(Request $request, ?string $dataFormat = null): BaseJsonResponse
     {
-        $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
+        $isAggregatorMode = (bool)config_file_setting('aggregator_mode_enabled');
         $meetingIds = $request->input('meeting_ids') ?? [];
         $meetingIds = is_string($meetingIds) ? array_map(fn ($id) => trim($id), explode(',', $meetingIds)) : $meetingIds;
         $meetingIds = ensure_integer_array($meetingIds);
@@ -178,7 +178,7 @@ class SwitcherController extends Controller
             $geoWidthMiles = is_numeric($geoWidthMiles) ? floatval($geoWidthMiles) : null;
 
             if ($isAggregatorMode) {
-                $maxGeoWidthKilometers = legacy_config('aggregator_max_geo_width_km');
+                $maxGeoWidthKilometers = config_file_setting('aggregator_max_geo_width_km');
                 $maxGeoWidthMiles = $maxGeoWidthKilometers * 0.621371;
                 $geoWidthKilometers = !is_null($geoWidthKilometers) && $geoWidthKilometers > $maxGeoWidthKilometers ? $maxGeoWidthKilometers : $geoWidthKilometers;
                 $geoWidthMiles = !is_null($geoWidthMiles) && $geoWidthMiles > $maxGeoWidthMiles ? $maxGeoWidthMiles : $geoWidthMiles;
@@ -393,7 +393,7 @@ class SwitcherController extends Controller
 
     private function getFormats(Request $request): BaseJsonResponse
     {
-        $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
+        $isAggregatorMode = (bool)config_file_setting('aggregator_mode_enabled');
         $rootServersInclude = null;
         $rootServersExclude = null;
 
@@ -463,7 +463,7 @@ class SwitcherController extends Controller
 
         $rootServersInclude = null;
         $rootServersExclude = null;
-        if (legacy_config('aggregator_mode_enabled')) {
+        if (config_file_setting('aggregator_mode_enabled')) {
             $rootServerIds = $request->input('root_server_ids', []);
             $rootServerIds = ensure_integer_array($rootServerIds);
             $rootServersInclude = collect($rootServerIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
@@ -556,16 +556,16 @@ class SwitcherController extends Controller
             'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
             'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
             'available_keys' => $this->meetingRepository->getFieldKeys()->map(fn ($value) => $value['key'])->merge(['root_server_uri', 'format_shared_id_list'])->join(','),
-            'google_api_key' => legacy_config('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
+            'google_api_key' => config_file_setting('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
             'dbVersion' => $this->migrationRepository->getLastMigration()['migration'],
-            'dbPrefix' => legacy_config('db_prefix'),
+            'dbPrefix' => config_file_setting('db_prefix'),
             'phpVersion' => phpversion(),
             'auto_geocoding_enabled' => legacy_config('auto_geocoding_enabled'),
             'county_auto_geocoding_enabled' => legacy_config('county_auto_geocoding_enabled'),
             'zip_auto_geocoding_enabled' => legacy_config('zip_auto_geocoding_enabled'),
             'commit' => config('app.commit'),
             'default_closed_status' => legacy_config('default_closed_status'),
-            'aggregator_mode_enabled' => legacy_config('aggregator_mode_enabled')
+            'aggregator_mode_enabled' => config_file_setting('aggregator_mode_enabled')
         ]]);
     }
 

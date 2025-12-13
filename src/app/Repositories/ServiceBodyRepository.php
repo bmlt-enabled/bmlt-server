@@ -57,7 +57,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
     {
         return DB::transaction(function () use ($values) {
             $serviceBody = ServiceBody::create($values);
-            if (!legacy_config('aggregator_mode_enabled')) {
+            if (!config_file_setting('aggregator_mode_enabled')) {
                 $this->saveChange(null, $serviceBody);
             }
             return $serviceBody;
@@ -70,7 +70,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             $serviceBody = ServiceBody::find($id);
             if (!is_null($serviceBody)) {
                 ServiceBody::query()->where('id_bigint', $id)->update($values);
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!config_file_setting('aggregator_mode_enabled')) {
                     $this->saveChange($serviceBody, ServiceBody::find($id));
                 }
                 return true;
@@ -85,7 +85,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             $serviceBody = ServiceBody::find($id);
             if (!is_null($serviceBody)) {
                 $serviceBody->delete();
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!config_file_setting('aggregator_mode_enabled')) {
                     $this->saveChange($serviceBody, null);
                 }
                 return true;

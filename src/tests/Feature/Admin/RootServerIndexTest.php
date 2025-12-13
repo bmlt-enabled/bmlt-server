@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\ConfigFile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RootServerIndexTest extends TestCase
@@ -11,13 +11,13 @@ class RootServerIndexTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        ConfigFile::reset();
         parent::tearDown();
     }
 
     public function test()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        ConfigFile::set('aggregator_mode_enabled', true);
         $this->createRootServer(123);
         $this->createRootServer(123, 'test2', 'https://test2.com');
         $this->get("/api/v1/rootservers")
