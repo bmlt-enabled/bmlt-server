@@ -61,71 +61,22 @@ return new class extends Migration
         'formatLangNames' => [],
     ];
 
-    /**
-     * Run the migrations.
-     *
-     * Migrates settings from auto-config.inc.php to the database.
-     * Uses defaults if the legacy config file doesn't exist or doesn't contain the setting.
-     *
-     * @return void
-     */
     public function up()
     {
-        $legacyConfig = $this->readLegacyConfigFile();
-
-        $settingsToMigrate = array_keys(self::SETTING_TYPES);
-
-        foreach ($settingsToMigrate as $key) {
-            // Priority: legacy file > defaults
-            $value = $legacyConfig[$key] ?? self::SETTING_DEFAULTS[$key];
-            $type = self::SETTING_TYPES[$key];
-
-            $storedValue = $this->convertToStorableValue($value, $type);
-
-            $existing = DB::table('settings')->where('name', $key)->first();
-            if ($existing) {
-                DB::table('settings')
-                    ->where('name', $key)
-                    ->update([
-                        'type' => $type,
-                        'value' => $storedValue,
-                        'updated_at' => now(),
-                    ]);
-            } else {
-                DB::table('settings')->insert([
-                    'name' => $key,
-                    'type' => $type,
-                    'value' => $storedValue,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+        $config = $this->getConfig();
+        $settingNames = array_keys(self::SETTING_TYPES);
+        foreach ($settingNames as $name) {
+            $type = self::SETTING_TYPES[$name];
+            $value = $config[$name];
+            if (!is_null($value)) {
+                $value = $this->cast($value, $type);
+                $value = json_encode($value);
             }
+            DB::table('settings')->insert(['name' => $name, 'type' => $type, 'value' => $value]);
         }
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        DB::table('settings')->truncate();
-    }
-
-    /**
-     * Convert value to storable JSON format.
-     */
-    private function convertToStorableValue($value, string $type): string
-    {
-        $typedValue = $this->convertToType($value, $type);
-        return json_encode($typedValue);
-    }
-
-    /**
-     * Convert a value to the specified type.
-     */
-    private function convertToType($value, string $type)
+    private function cast($value, string $type): mixed
     {
         switch ($type) {
             case self::TYPE_ARRAY:
@@ -138,25 +89,21 @@ return new class extends Migration
                 return [];
 
             case self::TYPE_BOOL:
-                return (bool) $value;
+                return (bool)$value;
 
             case self::TYPE_INT:
-                return (int) $value;
+                return (int)$value;
 
             case self::TYPE_FLOAT:
-                return (float) $value;
+                return (float)$value;
 
             case self::TYPE_STRING:
             default:
-                return (string) $value;
+                return (string)$value;
         }
     }
 
-    /**
-     * Read settings directly from auto-config.inc.php file.
-     * Returns values with camelCase keys matching Setting model constants.
-     */
-    private function readLegacyConfigFile(): array
+    private function getConfig(): array
     {
         // Declare all possible global variables so they're accessible
         global $gkey, $change_depth_for_meetings, $default_sort_key, $comdef_global_language;
@@ -165,7 +112,6 @@ return new class extends Migration
         global $search_spec_map_center, $number_of_meetings_for_auto;
         global $auto_geocoding_enabled, $county_auto_geocoding_enabled, $zip_auto_geocoding_enabled;
         global $g_defaultClosedStatus, $g_enable_language_selector;
-        global $aggregator_mode_enabled, $aggregator_max_geo_width_km;
         global $g_include_service_body_email_in_semantic, $bmlt_title, $bmlt_notice, $format_lang_names;
 
         // If not in testing and file exists, load it
@@ -175,77 +121,34 @@ return new class extends Migration
             require($legacyConfigFile);
         }
 
-        $config = [];
+        return [
+            'googleApiKey' => $gkey ?? self::SETTING_DEFAULTS['googleApiKey'],
+            'changeDepthForMeetings' => $change_depth_for_meetings ?? self::SETTING_DEFAULTS['changeDepthForMeetings'],
+            'defaultSortKey' => $default_sort_key ?? self::SETTING_DEFAULTS['defaultSortKey'],
+            'language' => $comdef_global_language ?? self::SETTING_DEFAULTS['language'],
+            'defaultDurationTime' => $default_duration_time ?? self::SETTING_DEFAULTS['defaultDurationTime'],
+            'regionBias' => $region_bias ?? self::SETTING_DEFAULTS['regionBias'],
+            'distanceUnits' => $comdef_distance_units ?? self::SETTING_DEFAULTS['distanceUnits'],
+            'meetingStatesAndProvinces' => $meeting_states_and_provinces ?? self::SETTING_DEFAULTS['meetingStatesAndProvinces'],
+            'meetingCountiesAndSubProvinces' => $meeting_counties_and_sub_provinces ?? self::SETTING_DEFAULTS['meetingCountiesAndSubProvinces'],
+            'searchSpecMapCenterLongitude' => (isset($search_spec_map_center) ? ($search_spec_map_center['longitude'] ?? null) : null) ?? self::SETTING_DEFAULTS['searchSpecMapCenterLongitude'],
+            'searchSpecMapCenterLatitude' => (isset($search_spec_map_center) ? ($search_spec_map_center['latitude'] ?? null) : null) ?? self::SETTING_DEFAULTS['searchSpecMapCenterLatitude'],
+            'searchSpecMapCenterZoom' => (isset($search_spec_map_center) ? ($search_spec_map_center['zoom'] ?? null) : null) ?? self::SETTING_DEFAULTS['searchSpecMapCenterZoom'],
+            'numberOfMeetingsForAuto' => $number_of_meetings_for_auto ?? self::SETTING_DEFAULTS['numberOfMeetingsForAuto'],
+            'autoGeocodingEnabled' => $auto_geocoding_enabled ?? self::SETTING_DEFAULTS['autoGeocodingEnabled'],
+            'countyAutoGeocodingEnabled' => $county_auto_geocoding_enabled ?? self::SETTING_DEFAULTS['countyAutoGeocodingEnabled'],
+            'zipAutoGeocodingEnabled' => $zip_auto_geocoding_enabled ?? self::SETTING_DEFAULTS['zipAutoGeocodingEnabled'],
+            'defaultClosedStatus' => $g_defaultClosedStatus ?? self::SETTING_DEFAULTS['defaultClosedStatus'],
+            'enableLanguageSelector' => $g_enable_language_selector ?? self::SETTING_DEFAULTS['enableLanguageSelector'],
+            'includeServiceBodyEmailInSemantic' => $g_include_service_body_email_in_semantic ?? self::SETTING_DEFAULTS['includeServiceBodyEmailInSemantic'],
+            'bmltTitle' => $bmlt_title ?? self::SETTING_DEFAULTS['bmltTitle'],
+            'bmltNotice' => $bmlt_notice ?? self::SETTING_DEFAULTS['bmltNotice'],
+            'formatLangNames' => $format_lang_names ?? self::SETTING_DEFAULTS['formatLangNames'],
+        ];
+    }
 
-        if (isset($gkey)) {
-            $config['googleApiKey'] = $gkey;
-        }
-        if (isset($change_depth_for_meetings)) {
-            $config['changeDepthForMeetings'] = $change_depth_for_meetings;
-        }
-        if (isset($default_sort_key)) {
-            $config['defaultSortKey'] = $default_sort_key;
-        }
-        if (isset($comdef_global_language)) {
-            $config['language'] = $comdef_global_language;
-        }
-        if (isset($default_duration_time)) {
-            $config['defaultDurationTime'] = $default_duration_time;
-        }
-        if (isset($region_bias)) {
-            $config['regionBias'] = $region_bias;
-        }
-        if (isset($comdef_distance_units)) {
-            $config['distanceUnits'] = $comdef_distance_units;
-        }
-        if (isset($meeting_states_and_provinces)) {
-            $config['meetingStatesAndProvinces'] = $meeting_states_and_provinces;
-        }
-        if (isset($meeting_counties_and_sub_provinces)) {
-            $config['meetingCountiesAndSubProvinces'] = $meeting_counties_and_sub_provinces;
-        }
-        if (isset($search_spec_map_center)) {
-            if (isset($search_spec_map_center['longitude'])) {
-                $config['searchSpecMapCenterLongitude'] = $search_spec_map_center['longitude'];
-            }
-            if (isset($search_spec_map_center['latitude'])) {
-                $config['searchSpecMapCenterLatitude'] = $search_spec_map_center['latitude'];
-            }
-            if (isset($search_spec_map_center['zoom'])) {
-                $config['searchSpecMapCenterZoom'] = $search_spec_map_center['zoom'];
-            }
-        }
-        if (isset($number_of_meetings_for_auto)) {
-            $config['numberOfMeetingsForAuto'] = $number_of_meetings_for_auto;
-        }
-        if (isset($auto_geocoding_enabled)) {
-            $config['autoGeocodingEnabled'] = $auto_geocoding_enabled;
-        }
-        if (isset($county_auto_geocoding_enabled)) {
-            $config['countyAutoGeocodingEnabled'] = $county_auto_geocoding_enabled;
-        }
-        if (isset($zip_auto_geocoding_enabled)) {
-            $config['zipAutoGeocodingEnabled'] = $zip_auto_geocoding_enabled;
-        }
-        if (isset($g_defaultClosedStatus)) {
-            $config['defaultClosedStatus'] = $g_defaultClosedStatus;
-        }
-        if (isset($g_enable_language_selector)) {
-            $config['enableLanguageSelector'] = $g_enable_language_selector;
-        }
-        if (isset($g_include_service_body_email_in_semantic)) {
-            $config['includeServiceBodyEmailInSemantic'] = $g_include_service_body_email_in_semantic;
-        }
-        if (isset($bmlt_title)) {
-            $config['bmltTitle'] = $bmlt_title;
-        }
-        if (isset($bmlt_notice)) {
-            $config['bmltNotice'] = $bmlt_notice;
-        }
-        if (isset($format_lang_names)) {
-            $config['formatLangNames'] = $format_lang_names;
-        }
-
-        return $config;
+    public function down()
+    {
+        DB::table('settings')->truncate();
     }
 };
