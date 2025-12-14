@@ -17,7 +17,7 @@ Get the latest version of the server from https://github.com/bmlt-enabled/bmlt-s
 
 This step is also different from the old tutorial.
 
-Download the file `initial-auto-config.txt` from github at https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/initial-auto-config.txt.
+Download the file `initial-auto-config.txt` from GitHub at https://github.com/bmlt-enabled/bmlt-server/blob/main/installation/initial-auto-config.txt.
 
 Upload this file to your server, put it in the directory that holds your `main_server` directory, and rename it to `auto-config.inc.php`.  This file should have the permissions `-rw-r--r--` (`0644` in octal). This means that the owner of the file can read and write it, and the owning group and others can read it.
 
