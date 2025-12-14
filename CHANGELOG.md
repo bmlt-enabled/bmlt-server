@@ -4,6 +4,7 @@
       Admin UI's Settings page. Settings are stored in the database and can also be managed via the Admin API (/api/v1/settings).
     * A migration was added to automatically seed settings from legacy `auto-config.inc.php` file on upgrade.
 * Fix location map errors when auto geocoding is disabled.
+* Fix duplicate format keys in the initial migrations schema and in existing databases
 
 ## 4.0.4 (November 26, 2025)
 * Modified the UI to hide the New Meeting button and show a helpful message when a user does not have editing privileges on any service bodies.
