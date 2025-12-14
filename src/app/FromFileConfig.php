@@ -67,7 +67,7 @@ class FromFileConfig extends ConfigBase
 
         static::$config = [
             'db_database' => static::fromEnv('db_database') ?? $dbName ?? null,
-            'db_username' => static::fromEnv('db_username') ?? $dbUsername ?? null,
+            'db_username' => static::fromEnv('db_username') ?? $dbUser ?? null,
             'db_password' => static::fromEnv('db_password') ?? $dbPassword ?? null,
             'db_host' => static::fromEnv('db_host') ?? $dbHost ?? null,
             'db_prefix' => static::fromEnv('db_prefix') ?? $dbPrefix ?? null,
