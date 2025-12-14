@@ -32,60 +32,60 @@ return new class extends Migration
         // each of key, name, and description, just skip that update -- the server admin can sort out the format later if necessary.
 
         // update the key and name for Restricted Access format in Italian (it was mixed up with Meditation format)
-         $available = DB::table('comdef_formats')
-             ->where('lang_enum', 'it')
-             ->where('key_string', 'AR')
-             ->doesntExist();
-         if ($available) {
+        $available = DB::table('comdef_formats')
+            ->where('lang_enum', 'it')
+            ->where('key_string', 'AR')
+            ->doesntExist();
+        if ($available) {
             DB::table('comdef_formats')
                 ->where('lang_enum', 'it')
                 ->where('key_string', 'M')
                 ->where('name_string', 'Meditazione')
                 ->where('description_string', 'In questa riunione sono poste restrizioni alle modalità di partecipazione.')
                 ->update(['key_string' => 'AR', 'name_string' => 'Accesso ristretto']);
-         }
+        }
 
-         // update the key and name for Children Welcome format in Portuguese
-         $available = DB::table('comdef_formats')
-             ->where('lang_enum', 'pt')
-             ->where('key_string', 'CBM')
-             ->doesntExist();
-         if ($available) {
+        // update the key and name for Children Welcome format in Portuguese
+        $available = DB::table('comdef_formats')
+            ->where('lang_enum', 'pt')
+            ->where('key_string', 'CBM')
+            ->doesntExist();
+        if ($available) {
             DB::table('comdef_formats')
                 ->where('lang_enum', 'pt')
                 ->where('key_string', 'PC')
                 ->where('name_string', 'Permitido Crianças')
                 ->where('description_string', 'Crianças são bem-vindas a essa reunião.')
                 ->update(['key_string' => 'CBM', 'name_string' => 'Crianças são bem-vindas']);
-         }
+        }
 
-         // update the key for Candlelight format in Portuguese
-         $available = DB::table('comdef_formats')
-             ->where('lang_enum', 'pt')
-             ->where('key_string', 'LV')
-             ->doesntExist();
-         if ($available) {
+        // update the key for Candlelight format in Portuguese
+        $available = DB::table('comdef_formats')
+            ->where('lang_enum', 'pt')
+            ->where('key_string', 'LV')
+            ->doesntExist();
+        if ($available) {
             DB::table('comdef_formats')
                 ->where('lang_enum', 'pt')
                 ->where('key_string', 'VL')
                 ->where('name_string', 'Luz de velas')
                 ->where('description_string', 'Esta reunião acontece à luz de velas.')
                 ->update(['key_string' => 'LV']);
-         }
+        }
 
-         // delete the duplicate ENG format for Swedish
-         $formats = DB::table('comdef_formats')
-             ->where('lang_enum', 'sv')
-             ->where('key_string', 'ENG')
-             ->where('name_string', 'Engelska')
-             ->where('description_string', 'Engelsktalande möte');
-         $n = $formats->count();
-         if ($n == 2) {
+        // delete the duplicate ENG format for Swedish
+        $formats = DB::table('comdef_formats')
+            ->where('lang_enum', 'sv')
+            ->where('key_string', 'ENG')
+            ->where('name_string', 'Engelska')
+            ->where('description_string', 'Engelsktalande möte');
+        $n = $formats->count();
+        if ($n == 2) {
             $dupId =$formats->max('id');
             DB::table('comdef_formats')
                 ->where('id', $dupId)
                 ->delete();
-         }
+        }
     }
 
     /**
