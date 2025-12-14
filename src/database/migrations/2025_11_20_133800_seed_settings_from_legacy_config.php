@@ -106,7 +106,7 @@ return new class extends Migration
     private function getConfig(): array
     {
         // Declare all possible global variables so they're accessible
-        global $gkey, $change_depth_for_meetings, $default_sort_key, $comdef_global_language;
+        global $gkey, $gKey, $change_depth_for_meetings, $default_sort_key, $comdef_global_language;
         global $default_duration_time, $region_bias, $comdef_distance_units;
         global $meeting_states_and_provinces, $meeting_counties_and_sub_provinces;
         global $search_spec_map_center, $number_of_meetings_for_auto;
@@ -122,7 +122,7 @@ return new class extends Migration
         }
 
         return [
-            'googleApiKey' => $gkey ?? self::SETTING_DEFAULTS['googleApiKey'],
+            'googleApiKey' => $gkey ?? $gKey ?? self::SETTING_DEFAULTS['googleApiKey'],
             'changeDepthForMeetings' => $change_depth_for_meetings ?? self::SETTING_DEFAULTS['changeDepthForMeetings'],
             'defaultSortKey' => $default_sort_key ?? self::SETTING_DEFAULTS['defaultSortKey'],
             'language' => $comdef_global_language ?? self::SETTING_DEFAULTS['language'],
