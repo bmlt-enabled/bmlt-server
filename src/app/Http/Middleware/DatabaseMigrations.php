@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2025_11_20_133800_seed_settings_from_legacy_config')) {
+        if (!$this->migrationRepository->migrationExists('2025_12_12_201931_fix_formats')) {
             return true;
         }
 
