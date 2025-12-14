@@ -22,13 +22,13 @@
       .map((item) => item.trim())
       .filter((item) => item && !value.includes(item));
     if (items.length > 0) {
-      value = [...value, ...items];
+      value = [...value, ...items].sort();
       inputValue = '';
     }
   }
 
   function removeItem(index: number) {
-    value = value.filter((_, i) => i !== index);
+    value = value.filter((_, i) => i !== index).sort();
   }
 
   function handleKeydown(event: KeyboardEvent) {
