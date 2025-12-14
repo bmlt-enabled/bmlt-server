@@ -3,8 +3,6 @@
     * All server settings (except database credentials) are now fully configurable through the
       Admin UI's Settings page. Settings are stored in the database and can also be managed via the Admin API (/api/v1/settings).
     * A migration was added to automatically seed settings from legacy `auto-config.inc.php` file on upgrade.
-
-## 4.0.5 (UNRELEASED)
 * Fix location map errors when auto geocoding is disabled.
 
 ## 4.0.4 (November 26, 2025)
