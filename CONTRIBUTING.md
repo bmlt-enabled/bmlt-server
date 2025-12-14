@@ -103,7 +103,7 @@ npm link
 2. Link the client in the BMLT server frontend:
 ```bash
 cd /path/to/bmlt-server/src
-npm link bmlt-server-typescript-client
+npm link ../../bmlt-server-typescript-client
 ```
 
 ### Development Workflow

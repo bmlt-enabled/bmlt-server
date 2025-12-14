@@ -160,22 +160,22 @@ class TestCase extends BaseTestCase
     // service bodies
     //
     //
-    protected function createZone(string $name, string $description, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $adminUserId = null, array $assignedUserIds = null)
+    protected function createZone(string $name, string $description, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $adminUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'ZF', 0, $uri, $helpline, $worldId, $email, $adminUserId, $assignedUserIds);
     }
 
-    protected function createRegion(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $adminUserId = null, array $assignedUserIds = null)
+    protected function createRegion(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $adminUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'RS', $sbOwner, $uri, $helpline, $worldId, $email, $adminUserId, $assignedUserIds);
     }
 
-    protected function createArea(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $adminUserId = null, array $assignedUserIds = null)
+    protected function createArea(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $adminUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'AS', $sbOwner, $uri, $helpline, $worldId, $email, $adminUserId, $assignedUserIds);
     }
 
-    protected function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $adminUserId = null, array $assignedUserIds = null)
+    protected function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $adminUserId = null, ?array $assignedUserIds = null)
     {
         return ServiceBody::create([
             'sb_owner' => $sbOwner,

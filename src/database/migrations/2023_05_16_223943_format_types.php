@@ -26,7 +26,7 @@ return new class extends Migration
             $table->index('key_string');
             $table->index('api_enum');
         });
-        if (!legacy_config('aggregator_mode_enabled')) {
+        if (!file_config('aggregator_mode_enabled')) {
             // aggregator mode does not need any stock data
             DB::table('comdef_format_types')->insert([
                 ['key_string' => 'FC1', 'api_enum' => 'MEETING_FORMAT', 'position_int' => '1'],

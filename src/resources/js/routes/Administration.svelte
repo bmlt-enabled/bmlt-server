@@ -6,8 +6,11 @@
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';
   import RootServerApi from '../lib/ServerApi';
+  import { spinner } from '../stores/spinner';
   import type { Meeting, MeetingPartialUpdate } from 'bmlt-server-client';
-
+  import SettingsModal from '../components/SettingsModal.svelte';
+  import { Toast } from 'flowbite-svelte';
+  import { CheckCircleSolid } from 'flowbite-svelte-icons';
   let files = $state<FileList | undefined>(undefined);
   let isLoading = $state(false);
   let errorMessage = $state<string | null>(null);
@@ -16,6 +19,10 @@
   let isDownloadingTranslations = $state(false);
   let laravelDownloadError = $state(false);
   let translationsDownloadError = $state(false);
+  let showSettingsSuccessToast = $state(false);
+  let showSettingsModal = $state(false);
+  let serverSettings: Record<string, any> = $state({});
+  let serverSettingsLoaded = $state(false);
 
   // Statistics tracking.  Stats components are as follows. (worldId is known as 'Committee' in NAWS-speak.)
   //
@@ -285,6 +292,37 @@
       .join(', ');
   }
 
+  async function loadSettings() {
+    if (!serverSettingsLoaded) {
+      try {
+        spinner.show();
+        serverSettings = await RootServerApi.getSettings();
+        serverSettingsLoaded = true;
+      } catch (error) {
+        await RootServerApi.handleErrors(error as Error);
+      } finally {
+        spinner.hide();
+      }
+    }
+  }
+
+  async function handleSettingsSaveSuccess() {
+    showSettingsModal = false;
+    showSettingsSuccessToast = true;
+    // Reload settings from server
+    serverSettingsLoaded = false;
+    await loadSettings();
+    setTimeout(() => {
+      showSettingsSuccessToast = false;
+    }, 3000);
+  }
+
+  $effect(() => {
+    if ($authenticatedUser?.type === 'admin') {
+      loadSettings();
+    }
+  });
+
   // Reset processed state for world committee code update when new files are selected
   $effect(() => {
     if (files && files.length > 0) {
@@ -417,6 +455,15 @@
   </Card>
 {/if}
 {#if $authenticatedUser?.type === 'admin'}
+  {#if serverSettingsLoaded}
+    <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
+      <div class="p-4">
+        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">Server Settings</Heading>
+        <Button onclick={() => (showSettingsModal = true)} color="primary" class="w-full">Manage Server Settings</Button>
+      </div>
+    </Card>
+  {/if}
+
   <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
     <div class="p-4">
       <div class="mb-4">
@@ -463,4 +510,18 @@
       {/if}
     </div>
   </Card>
+{/if}
+
+{#if showSettingsSuccessToast}
+  <Toast color="green" position="bottom-right" class="mb-4">
+    {#snippet icon()}
+      <CheckCircleSolid class="h-5 w-5" />
+      <span class="sr-only">Check icon</span>
+    {/snippet}
+    Settings saved successfully!
+  </Toast>
+{/if}
+
+{#if serverSettingsLoaded}
+  <SettingsModal bind:showModal={showSettingsModal} {serverSettings} onSaveSuccess={handleSettingsSaveSuccess} />
 {/if}

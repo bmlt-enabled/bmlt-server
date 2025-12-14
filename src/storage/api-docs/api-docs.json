@@ -1572,6 +1572,112 @@
                 ]
             }
         },
+        "/api/v1/settings": {
+            "get": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Retrieves all settings",
+                "description": "Retrieve all server settings. Only accessible to server administrators.",
+                "operationId": "getSettings",
+                "responses": {
+                    "200": {
+                        "description": "Returns when user is authenticated as admin.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SettingsObject"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is not an admin",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Update settings",
+                "description": "Updates one or more server settings. Only accessible to server administrators.",
+                "operationId": "updateSettings",
+                "requestBody": {
+                    "description": "Pass in settings object with values to update",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SettingsUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is not an admin.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/auth/token": {
             "post": {
                 "tags": [
@@ -2832,6 +2938,196 @@
                 "items": {
                     "$ref": "#/components/schemas/ServiceBody"
                 }
+            },
+            "SettingsBase": {
+                "properties": {
+                    "googleApiKey": {
+                        "type": "string"
+                    },
+                    "changeDepthForMeetings": {
+                        "type": "integer"
+                    },
+                    "defaultSortKey": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "language": {
+                        "type": "string"
+                    },
+                    "defaultDurationTime": {
+                        "type": "string"
+                    },
+                    "regionBias": {
+                        "type": "string"
+                    },
+                    "distanceUnits": {
+                        "type": "string"
+                    },
+                    "meetingStatesAndProvinces": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "meetingCountiesAndSubProvinces": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "searchSpecMapCenterLongitude": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "searchSpecMapCenterLatitude": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "searchSpecMapCenterZoom": {
+                        "type": "integer"
+                    },
+                    "numberOfMeetingsForAuto": {
+                        "type": "integer"
+                    },
+                    "autoGeocodingEnabled": {
+                        "type": "boolean"
+                    },
+                    "countyAutoGeocodingEnabled": {
+                        "type": "boolean"
+                    },
+                    "zipAutoGeocodingEnabled": {
+                        "type": "boolean"
+                    },
+                    "defaultClosedStatus": {
+                        "type": "boolean"
+                    },
+                    "enableLanguageSelector": {
+                        "type": "boolean"
+                    },
+                    "includeServiceBodyEmailInSemantic": {
+                        "type": "boolean"
+                    },
+                    "bmltTitle": {
+                        "type": "string"
+                    },
+                    "bmltNotice": {
+                        "type": "string"
+                    },
+                    "formatLangNames": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "SettingsObject": {
+                "properties": {
+                    "googleApiKey": {
+                        "type": "string",
+                        "example": ""
+                    },
+                    "changeDepthForMeetings": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "defaultSortKey": {
+                        "type": "string",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "language": {
+                        "type": "string",
+                        "example": "en"
+                    },
+                    "defaultDurationTime": {
+                        "type": "string",
+                        "example": "01:00"
+                    },
+                    "regionBias": {
+                        "type": "string",
+                        "example": "us"
+                    },
+                    "distanceUnits": {
+                        "type": "string",
+                        "example": "mi"
+                    },
+                    "meetingStatesAndProvinces": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": []
+                    },
+                    "meetingCountiesAndSubProvinces": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": []
+                    },
+                    "searchSpecMapCenterLongitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -118.563659
+                    },
+                    "searchSpecMapCenterLatitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 34.235918
+                    },
+                    "searchSpecMapCenterZoom": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "numberOfMeetingsForAuto": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "autoGeocodingEnabled": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "countyAutoGeocodingEnabled": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "zipAutoGeocodingEnabled": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "defaultClosedStatus": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "enableLanguageSelector": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "includeServiceBodyEmailInSemantic": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "bmltTitle": {
+                        "type": "string",
+                        "example": ""
+                    },
+                    "bmltNotice": {
+                        "type": "string",
+                        "example": ""
+                    },
+                    "formatLangNames": {
+                        "type": "object",
+                        "example": []
+                    }
+                },
+                "type": "object"
+            },
+            "SettingsUpdate": {
+                "description": "Partial update object - include only the settings you want to update",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/SettingsBase"
+                    }
+                ]
             },
             "Token": {
                 "required": [

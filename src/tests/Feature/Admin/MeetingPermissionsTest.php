@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MeetingPermissionsTest extends TestCase
@@ -11,7 +11,7 @@ class MeetingPermissionsTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -238,7 +238,7 @@ class MeetingPermissionsTest extends TestCase
 
     public function testStoreWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $this->withHeader('Authorization', "Bearer $token")
@@ -314,7 +314,7 @@ class MeetingPermissionsTest extends TestCase
 
     public function testUpdateWithAggregatorEnabledAsAdminDenied()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area1 = $this->createArea('area1', 'area1', 0);
@@ -392,7 +392,7 @@ class MeetingPermissionsTest extends TestCase
 
     public function testPartialUpdateWithAggregatorEnabledAsAdminDenied()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area1 = $this->createArea('area1', 'area1', 0);
@@ -470,7 +470,7 @@ class MeetingPermissionsTest extends TestCase
 
     public function testDeleteWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area1 = $this->createArea('area1', 'area1', 0);

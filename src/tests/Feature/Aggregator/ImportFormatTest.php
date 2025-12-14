@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Aggregator;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use App\Models\Format;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\FormatRepository;
@@ -15,7 +15,7 @@ class ImportFormatTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -50,7 +50,7 @@ class ImportFormatTest extends TestCase
 
     public function testCreate()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
@@ -77,7 +77,7 @@ class ImportFormatTest extends TestCase
 
     public function testUpdate()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
@@ -118,7 +118,7 @@ class ImportFormatTest extends TestCase
 
     public function testDelete()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         Format::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);

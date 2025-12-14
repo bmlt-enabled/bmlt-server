@@ -1,11 +1,19 @@
 <?php
 
-use App\LegacyConfig;
+use App\FromDatabaseConfig;
+use App\FromFileConfig;
 
-if (!function_exists('legacy_config')) {
-    function legacy_config($key = null, $default = null)
+if (!function_exists('bmlt_config')) {
+    function bmlt_config($key = null, $default = null)
     {
-        return LegacyConfig::get($key, $default);
+        return FromDatabaseConfig::get($key, $default);
+    }
+}
+
+if (!function_exists('file_config')) {
+    function file_config($key = null, $default = null)
+    {
+        return FromFileConfig::get($key, $default);
     }
 }
 

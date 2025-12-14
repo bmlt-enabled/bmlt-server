@@ -650,7 +650,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                     ]);
                 }
             }
-            if (!legacy_config('aggregator_mode_enabled')) {
+            if (!file_config('aggregator_mode_enabled')) {
                 $this->saveChange(null, $meeting);
             }
             return $meeting;
@@ -693,7 +693,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         ]);
                     }
                 }
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, Meeting::find($id));
                 }
                 return true;
@@ -711,7 +711,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 MeetingData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, null);
                 }
                 return true;
@@ -734,18 +734,18 @@ class MeetingRepository implements MeetingRepositoryInterface
             // http request there will be a user, which will have a numeric ID.
             'user_id_bigint' => request()?->user()?->id_bigint,
             'service_body_id_bigint' => $afterMeeting?->service_body_bigint ?? $beforeMeeting->service_body_bigint,
-            'lang_enum' => $beforeMeeting?->lang_enum ?: $afterMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale(),
+            'lang_enum' => $beforeMeeting?->lang_enum ?: $afterMeeting?->lang_enum ?: App::currentLocale(),
             'object_class_string' => 'c_comdef_meeting',
             'before_id_bigint' => $beforeMeeting?->id_bigint,
-            'before_lang_enum' => !is_null($beforeMeeting) ? $beforeMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale() : null,
+            'before_lang_enum' => !is_null($beforeMeeting) ? $beforeMeeting?->lang_enum ?: App::currentLocale() : null,
             'after_id_bigint' => $afterMeeting?->id_bigint,
-            'after_lang_enum' => !is_null($afterMeeting) ? $afterMeeting?->lang_enum ?: legacy_config('language') ?: App::currentLocale() : null,
+            'after_lang_enum' => !is_null($afterMeeting) ? $afterMeeting?->lang_enum ?: App::currentLocale() : null,
             'change_type_enum' => is_null($beforeMeeting) ? 'comdef_change_type_new' : (is_null($afterMeeting) ? 'comdef_change_type_delete' : 'comdef_change_type_change'),
             'before_object' => $beforeObject,
             'after_object' => $afterObject,
         ]);
 
-        $changeLimit = legacy_config('change_depth_for_meetings');
+        $changeLimit = bmlt_config('changeDepthForMeetings');
         if (is_integer($changeLimit) && $changeLimit > 0) {
             $meetingId = $beforeMeeting?->id_bigint ?? $afterMeeting?->id_bigint;
             if (!is_null($meetingId)) {

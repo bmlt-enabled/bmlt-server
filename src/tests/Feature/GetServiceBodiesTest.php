@@ -2,7 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
+use App\FromDatabaseConfig;
 use App\Models\RootServer;
 use App\Models\ServiceBody;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -92,7 +93,8 @@ class GetServiceBodiesTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
+        FromDatabaseConfig::reset();
         parent::tearDown();
     }
 
@@ -455,7 +457,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdWithAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $zone = $this->createZone("sezf", "sezf", "https://zone");
         $zone->rootServer()->associate($rootServer);
@@ -485,7 +487,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsNone()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -499,7 +501,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsIncludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -519,7 +521,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsIncludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -545,7 +547,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsExcludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -565,7 +567,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerIdsExcludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $serviceBody1 = $this->createZone("sezf", "sezf");
@@ -590,7 +592,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerWithContactEnabled()
     {
-        LegacyConfig::set('include_service_body_email_in_semantic', true);
+        FromDatabaseConfig::set('includeServiceBodyEmailInSemantic', true);
         $rootServer = $this->createRootServer(1);
         $zone = $this->createZone('sezf', 'sezf', 'https://zone');
         $zone->sb_meeting_email = 'blah@blah.com';
@@ -605,7 +607,7 @@ class GetServiceBodiesTest extends TestCase
 
     public function testRootServerWithContactDisabled()
     {
-        LegacyConfig::set('include_service_body_email_in_semantic', false);
+        FromDatabaseConfig::set('includeServiceBodyEmailInSemantic', false);
         $rootServer = $this->createRootServer(1);
         $zone = $this->createZone('sezf', 'sezf', 'https://zone');
         $zone->sb_meeting_email = 'blah@blah.com';

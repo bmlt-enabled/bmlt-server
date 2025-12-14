@@ -48,6 +48,8 @@ import type {
   ServiceBody,
   ServiceBodyCreate,
   ServiceBodyUpdate,
+  SettingsBase,
+  SettingsUpdate,
   Token,
   User,
   UserCreate,
@@ -976,6 +978,59 @@ async function mockGetLaravelLog(): Promise<Blob> {
   return new Blob([u], { type: 'application/gzip' });
 }
 
+// Settings Mock Data and Functions
+export const mockSettings: SettingsBase = {
+  googleApiKey: 'AIzaSyCTRjSYhE685S0QHbRTDqRl1YKD44KXSKw',
+  changeDepthForMeetings: 5,
+  defaultSortKey: 'weekday',
+  language: 'en',
+  defaultDurationTime: '01:30:00',
+  regionBias: 'us',
+  distanceUnits: 'mi',
+  meetingStatesAndProvinces: ['MA', 'CT', 'RI'],
+  meetingCountiesAndSubProvinces: ['Berkshire', 'Dukes'],
+  searchSpecMapCenterLongitude: -118.563659,
+  searchSpecMapCenterLatitude: 34.235918,
+  searchSpecMapCenterZoom: 6,
+  numberOfMeetingsForAuto: 10,
+  autoGeocodingEnabled: false,
+  countyAutoGeocodingEnabled: false,
+  zipAutoGeocodingEnabled: true,
+  defaultClosedStatus: false,
+  enableLanguageSelector: true,
+  includeServiceBodyEmailInSemantic: false,
+  bmltTitle: 'BMLT Administration',
+  bmltNotice: "We've upgraded the BMLT to 4.0.0 with a new interface! Please report any issues to bmlt@sezf.org",
+  formatLangNames: { fa: 'Farsi' }
+};
+
+export let mockSavedSettingsUpdate: SettingsUpdate | null = null;
+
+async function mockGetSettings(): Promise<Record<string, any>> {
+  const userId = get(authenticatedUser)?.id;
+  if (!userId) {
+    throw new Error('internal error -- trying to get settings when no simulated user is logged in');
+  }
+  if (get(authenticatedUser)?.type !== 'admin') {
+    throw new ResponseError(makeResponse('Forbidden', 403, 'Forbidden'), 'Response returned an error code');
+  }
+
+  return mockSettings;
+}
+
+async function mockUpdateSettings({ settingsUpdate }: { settingsUpdate: SettingsUpdate }): Promise<void> {
+  const userId = get(authenticatedUser)?.id;
+  if (!userId) {
+    throw new Error('internal error -- trying to update settings when no simulated user is logged in');
+  }
+  if (get(authenticatedUser)?.type !== 'admin') {
+    throw new ResponseError(makeResponse('Forbidden', 403, 'Forbidden'), 'Response returned an error code');
+  }
+  mockSavedSettingsUpdate = settingsUpdate;
+
+  Object.assign(mockSettings, settingsUpdate);
+}
+
 export function sharedBeforeAll() {
   // set up mocks
   vi.spyOn(ApiClientWrapper.api, 'getUser').mockImplementation(mockGetUser);
@@ -1004,6 +1059,8 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'deleteMeeting').mockImplementation(mockDeleteMeeting);
   vi.spyOn(ApiClientWrapper.api, 'getMeetingChanges').mockImplementation(mockGetMeetingChanges);
   vi.spyOn(ApiClientWrapper.api, 'getLaravelLog').mockImplementation(mockGetLaravelLog);
+  vi.spyOn(ApiClientWrapper.api, 'getSettings').mockImplementation(mockGetSettings);
+  vi.spyOn(ApiClientWrapper.api, 'updateSettings').mockImplementation(mockUpdateSettings);
   Element.prototype.animate = vi.fn().mockReturnValue({
     finished: Promise.resolve(),
     cancel: vi.fn(),
@@ -1062,6 +1119,8 @@ export function sharedBeforeEach() {
   mockSavedMeetingCreate = null;
   mockSavedMeetingUpdate = null;
   mockDeletedMeetingId = null;
+
+  mockSavedSettingsUpdate = null;
 
   badUser = false;
 

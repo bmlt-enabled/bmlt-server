@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\App;
+use App\FromDatabaseConfig;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class GetFieldKeysTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function testJsonp()
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetFieldKeys&callback=asdf');
@@ -56,8 +59,7 @@ class GetFieldKeysTest extends TestCase
 
     public function testGetFieldKeysItalian()
     {
-        $oldLocale = App::currentLocale();
-        App::setLocale('it');
+        FromDatabaseConfig::set('language', 'it');
         try {
             $this->get('/client_interface/json/?switcher=GetFieldKeys')
                 ->assertStatus(200)
@@ -93,21 +95,37 @@ class GetFieldKeysTest extends TestCase
                     ['key' => 'virtual_meeting_additional_info', 'description' => 'Virtual Meeting Additional Info'],
                 ]);
         } finally {
-            App::setLocale($oldLocale);
+            FromDatabaseConfig::reset();
         }
     }
 
     public function testGetFieldKeysAllLocales200()
     {
-        $oldLocale = App::currentLocale();
         try {
             $locales = ['de', 'dk', 'en', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv'];
             foreach ($locales as $locale) {
-                App::setLocale($locale);
+                FromDatabaseConfig::set('language', $locale);
                 $this->get('/client_interface/json/?switcher=GetFieldKeys')->assertStatus(200);
             }
         } finally {
-            App::setLocale($oldLocale);
+            FromDatabaseConfig::reset();
+        }
+    }
+
+    public function testLocaleIsSyncedFromDatabaseSetting()
+    {
+        try {
+            FromDatabaseConfig::set('language', 'it');
+
+            // The response should have Italian translations (from the database setting)
+            $this->get('/client_interface/json/?switcher=GetFieldKeys')
+                ->assertStatus(200)
+                ->assertJsonPath('0.description', 'ID')
+                ->assertJsonPath('1.description', 'ID mondiale')
+                ->assertJsonPath('4.description', 'Venue Type') // Not translated in test data
+                ->assertJsonPath('9.description', 'Lingua');
+        } finally {
+            FromDatabaseConfig::reset();
         }
     }
 }

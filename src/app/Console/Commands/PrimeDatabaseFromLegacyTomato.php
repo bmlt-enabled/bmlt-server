@@ -26,7 +26,7 @@ class PrimeDatabaseFromLegacyTomato extends Command
 
     public function handle(RootServerRepository $rootServerRepository)
     {
-        if (!legacy_config('aggregator_mode_enabled')) {
+        if (!file_config('aggregator_mode_enabled')) {
             $this->error('aggregator mode is not enabled');
             return;
         }

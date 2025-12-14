@@ -729,53 +729,53 @@
   function hasBasicErrors(errors: any): boolean {
     return Boolean(
       errors.published ||
-        errors.name ||
-        errors.timeZone ||
-        errors.day ||
-        errors.startTime ||
-        errors.duration ||
-        errors.serviceBodyId ||
-        errors.email ||
-        errors.worldId ||
-        errors.formatIds?.map((f: any) => Object.keys(f).length).find((n: number) => n > 0)
+      errors.name ||
+      errors.timeZone ||
+      errors.day ||
+      errors.startTime ||
+      errors.duration ||
+      errors.serviceBodyId ||
+      errors.email ||
+      errors.worldId ||
+      errors.formatIds?.map((f: any) => Object.keys(f).length).find((n: number) => n > 0)
     );
   }
 
   function hasLocationErrors(errors: any): boolean {
     return Boolean(
       errors.venueType ||
-        errors.temporarilyVirtual ||
-        errors.longitude ||
-        errors.latitude ||
-        errors.locationText ||
-        errors.locationInfo ||
-        errors.locationStreet ||
-        errors.locationNeighborhood ||
-        errors.locationCitySubsection ||
-        errors.locationMunicipality ||
-        errors.locationSubProvince ||
-        errors.locationProvince ||
-        errors.locationPostalCode1 ||
-        errors.locationNation ||
-        errors.locationPostalCode1 ||
-        errors.locationNation ||
-        errors.phoneMeetingNumber ||
-        errors.virtualMeetingLink ||
-        errors.virtualMeetingAdditionalInfo
+      errors.temporarilyVirtual ||
+      errors.longitude ||
+      errors.latitude ||
+      errors.locationText ||
+      errors.locationInfo ||
+      errors.locationStreet ||
+      errors.locationNeighborhood ||
+      errors.locationCitySubsection ||
+      errors.locationMunicipality ||
+      errors.locationSubProvince ||
+      errors.locationProvince ||
+      errors.locationPostalCode1 ||
+      errors.locationNation ||
+      errors.locationPostalCode1 ||
+      errors.locationNation ||
+      errors.phoneMeetingNumber ||
+      errors.virtualMeetingLink ||
+      errors.virtualMeetingAdditionalInfo
     );
   }
 
   function hasOtherErrors(errors: any): boolean {
     return Boolean(
       errors.comments ||
-        errors.busLines ||
-        errors.trainLines ||
-        errors.contactName1 ||
-        errors.contactName2 ||
-        errors.contactPhone1 ||
-        errors.contactPhone2 ||
-        errors.contactEmail1 ||
-        errors.contactEmail2
+      errors.busLines ||
+      errors.trainLines ||
+      errors.contactName1 ||
+      errors.contactName2 ||
+      errors.contactPhone1 ||
+      errors.contactPhone2 ||
+      errors.contactEmail1 ||
+      errors.contactEmail2
     );
   }
 

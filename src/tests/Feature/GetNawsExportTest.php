@@ -8,7 +8,7 @@ use App\Models\MeetingData;
 use App\Models\MeetingLongData;
 use App\Models\ServiceBody;
 use App\Models\User;
-use App\LegacyConfig;
+use App\FromDatabaseConfig;
 use App\Repositories\MeetingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -121,7 +121,7 @@ class GetNawsExportTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromDatabaseConfig::reset();
         MeetingResource::resetStaticVariables();
         parent::tearDown();
     }
@@ -328,7 +328,7 @@ class GetNawsExportTest extends TestCase
             'formats' => ''
         ];
         $meeting1 = $this->createMeeting($meetingMainFields);
-        LegacyConfig::set('default_closed_status', false);
+        FromDatabaseConfig::set('defaultClosedStatus', false);
         $csv = $this->get("/client_interface/csv/?switcher=GetNAWSDump&sb_id=$area1->id_bigint")->streamedContent();
         $reader = CsvReader::createFromString($csv);
         $reader->setHeaderOffset(0);

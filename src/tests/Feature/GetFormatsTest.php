@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\RootServer;
@@ -80,7 +80,7 @@ class GetFormatsTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -267,7 +267,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerUriWhenAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
         Format::query()->delete();
@@ -286,7 +286,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdWhenAggregatorEnabled()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
         Format::query()->delete();
@@ -428,7 +428,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdsNone()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         Format::query()->delete();
         $rootServer1 = $this->createRootServer(1);
@@ -446,7 +446,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdsIncludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
@@ -469,7 +469,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdsIncludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
@@ -499,7 +499,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdsExcludeOne()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
@@ -522,7 +522,7 @@ class GetFormatsTest extends TestCase
 
     public function testRootServerIdsExcludeTwo()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();

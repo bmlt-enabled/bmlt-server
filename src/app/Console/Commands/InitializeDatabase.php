@@ -14,7 +14,7 @@ class InitializeDatabase extends Command
 
     public function handle()
     {
-        if (!legacy_config('aggregator_mode_enabled')) {
+        if (!file_config('aggregator_mode_enabled')) {
             $this->error('aggregator mode is not enabled');
             return;
         }

@@ -5,14 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use App\Interfaces\MeetingRepositoryInterface;
 
 class UserInterfaceController extends Controller
 {
-    private static array $allowedLegacyPathEndings = [
-        '/client_interface/html/index.php',
-    ];
-
     public function all(Request $request): Response
     {
         return self::handle($request);
@@ -20,33 +17,33 @@ class UserInterfaceController extends Controller
 
     public static function handle(Request $request): Response
     {
-        if (legacy_config('aggregator_mode_enabled')) {
+        if (file_config('aggregator_mode_enabled')) {
             return response('"the aggregator formerly known as tomato"');
         }
 
         return response()->view('frontend', [
-            'autoGeocodingEnabled' => legacy_config('auto_geocoding_enabled'),
+            'autoGeocodingEnabled' => bmlt_config('autoGeocodingEnabled'),
             'baseUrl' => $request->getBaseurl(),
-            'bmltTitle' => legacy_config('bmlt_title'),
-            'bmltNotice' => legacy_config('bmlt_notice'),
-            'centerLongitude' => legacy_config('search_spec_map_center_longitude'),
-            'centerLatitude' => legacy_config('search_spec_map_center_latitude'),
-            'centerZoom' => legacy_config('search_spec_map_center_zoom'),
-            'countyAutoGeocodingEnabled' => legacy_config('county_auto_geocoding_enabled'),
+            'bmltTitle' => bmlt_config('bmltTitle'),
+            'bmltNotice' => bmlt_config('bmltNotice'),
+            'centerLongitude' => bmlt_config('searchSpecMapCenterLongitude'),
+            'centerLatitude' => bmlt_config('searchSpecMapCenterLatitude'),
+            'centerZoom' => bmlt_config('searchSpecMapCenterZoom'),
+            'countyAutoGeocodingEnabled' => bmlt_config('countyAutoGeocodingEnabled'),
             'customFields' => self::getCustomFields(),
-            'defaultClosedStatus' => legacy_config('default_closed_status'),
-            'defaultDuration' => legacy_config('default_duration_time'),
-            'defaultLanguage' => legacy_config('language'),
-            'distanceUnits' => legacy_config('distance_units'),
-            'googleApiKey' => legacy_config('google_api_key', ''),
-            'isLanguageSelectorEnabled' => legacy_config('enable_language_selector'),
+            'defaultClosedStatus' => bmlt_config('defaultClosedStatus'),
+            'defaultDuration' => bmlt_config('defaultDurationTime'),
+            'defaultLanguage' => App::currentLocale(),
+            'distanceUnits' => bmlt_config('distanceUnits'),
+            'googleApiKey' => bmlt_config('googleApiKey', ''),
+            'isLanguageSelectorEnabled' => bmlt_config('enableLanguageSelector'),
             'languageMapping' => self::getLanguageMapping(),
-            'formatLangNames' => legacy_config('format_lang_names', []),
-            'meetingStatesAndProvinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
-            'meetingCountiesAndSubProvinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
-            'regionBias' => legacy_config('region_bias'),
+            'formatLangNames' => bmlt_config('formatLangNames', []),
+            'meetingStatesAndProvinces' => bmlt_config('meetingStatesAndProvinces', []),
+            'meetingCountiesAndSubProvinces' => bmlt_config('meetingCountiesAndSubProvinces', []),
+            'regionBias' => bmlt_config('regionBias'),
             'version' => config('app.version'),
-            'zipAutoGeocodingEnabled' => legacy_config('zip_auto_geocoding_enabled'),
+            'zipAutoGeocodingEnabled' => bmlt_config('zipAutoGeocodingEnabled'),
         ]);
     }
 

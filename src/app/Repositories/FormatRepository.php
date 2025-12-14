@@ -113,7 +113,7 @@ class FormatRepository implements FormatRepositoryInterface
             foreach ($sharedFormatsValues as $values) {
                 $values['shared_id_bigint'] = $sharedIdBigint;
                 $format = Format::create($values);
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange(null, $format);
                 }
             }
@@ -137,7 +137,7 @@ class FormatRepository implements FormatRepositoryInterface
                     ->filter(fn ($values) => $values['lang_enum'] == $oldFormat->lang_enum)
                     ->isEmpty();
                 if ($isDeleted) {
-                    if (!legacy_config('aggregator_mode_enabled')) {
+                    if (!file_config('aggregator_mode_enabled')) {
                         $this->saveChange($oldFormat, null);
                     }
                 }
@@ -147,7 +147,7 @@ class FormatRepository implements FormatRepositoryInterface
                 $values['shared_id_bigint'] = $sharedId;
                 $newFormat = Format::create($values);
                 $oldFormat = $oldFormats->get($newFormat->lang_enum);
-                if (!legacy_config('aggregator_mode_enabled')) {
+                if (!file_config('aggregator_mode_enabled')) {
                     if (is_null($oldFormat)) {
                         $this->saveChange(null, $newFormat);
                     } else {
@@ -167,7 +167,7 @@ class FormatRepository implements FormatRepositoryInterface
             if ($formats->isNotEmpty()) {
                 foreach ($formats as $format) {
                     $format->delete();
-                    if (!legacy_config('aggregator_mode_enabled')) {
+                    if (!file_config('aggregator_mode_enabled')) {
                         $this->saveChange($format, null);
                     }
                 }

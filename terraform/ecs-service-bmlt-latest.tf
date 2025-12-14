@@ -27,7 +27,7 @@ resource "aws_ecs_task_definition" "bmlt_latest" {
         dockerSecurityOptions = null,
         environment = [
           {
-            name  = "GKEY",
+            name  = "GOOGLE_API_KEY",
             value = var.GOOGLE_API_KEY
           },
           {
@@ -35,7 +35,15 @@ resource "aws_ecs_task_definition" "bmlt_latest" {
             value = "CT,MA,NH,NJ,NY,PA,VT"
           },
           {
+            name  = "ENABLE_LANGUAGE_SELECTOR",
+            value = "true"
+          },
+          {
             name  = "DB_DATABASE",
+            value = "rootserver"
+          },
+          {
+            name  = "DB_USERNAME",
             value = "rootserver"
           },
           {
@@ -63,8 +71,9 @@ resource "aws_ecs_task_definition" "bmlt_latest" {
           credentialsParameter = data.aws_secretsmanager_secret.docker.arn
         },
         command = [
-          "/bin/bash",
-          "/tmp/start-bmlt.sh"
+          "apachectl",
+          "-D",
+          "FOREGROUND"
         ],
         user         = null,
         dockerLabels = null,

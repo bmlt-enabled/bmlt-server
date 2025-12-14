@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!legacy_config('aggregator_mode_enabled')) {
+        if (!file_config('aggregator_mode_enabled')) {
             DB::table('comdef_meetings_main')
                 ->whereNull('lang_enum')
                 ->update(['lang_enum' => config('app.locale')]);

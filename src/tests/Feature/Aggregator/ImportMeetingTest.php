@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Aggregator;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use App\Models\Meeting;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\External\ExternalMeeting;
@@ -19,7 +19,7 @@ class ImportMeetingTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -126,7 +126,7 @@ class ImportMeetingTest extends TestCase
 
     public function testCreate()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
 
         $extSb = $this->externalServiceBody();
@@ -154,7 +154,7 @@ class ImportMeetingTest extends TestCase
 
     public function testUpdate()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer1 = $this->createRootServer(1);
         $rootServer2 = $this->createRootServer(2);
 

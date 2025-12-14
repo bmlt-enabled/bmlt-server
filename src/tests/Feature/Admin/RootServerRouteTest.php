@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class RootServerRouteTest extends TestCase
@@ -11,7 +11,7 @@ class RootServerRouteTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -23,7 +23,7 @@ class RootServerRouteTest extends TestCase
 
     public function testIndexRouteExists()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $this->get('/api/v1/rootservers')->assertStatus(200);
     }
 
@@ -36,7 +36,7 @@ class RootServerRouteTest extends TestCase
 
     public function testShowRouteExists()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $rootServer = $this->createRootServer(1);
         $this->get("/api/v1/rootservers/$rootServer->id")->assertStatus(200);
     }

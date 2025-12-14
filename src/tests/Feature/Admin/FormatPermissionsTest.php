@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\LegacyConfig;
+use App\FromFileConfig;
 use App\Models\Format;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,7 +12,7 @@ class FormatPermissionsTest extends TestCase
 
     protected function tearDown(): void
     {
-        LegacyConfig::reset();
+        FromFileConfig::reset();
         parent::tearDown();
     }
 
@@ -157,7 +157,7 @@ class FormatPermissionsTest extends TestCase
 
     public function testStoreWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $this->withHeader('Authorization', "Bearer $token")
@@ -227,7 +227,7 @@ class FormatPermissionsTest extends TestCase
 
     public function testUpdateWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $format = Format::query()->first();
@@ -288,7 +288,7 @@ class FormatPermissionsTest extends TestCase
 
     public function testPartialUpdateWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $format = Format::query()->first();
@@ -349,7 +349,7 @@ class FormatPermissionsTest extends TestCase
 
     public function testDeleteWithAggregatorEnabledAsAdmin()
     {
-        LegacyConfig::set('aggregator_mode_enabled', true);
+        FromFileConfig::set('aggregator_mode_enabled', true);
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $format = Format::query()->first();

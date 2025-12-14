@@ -3,13 +3,14 @@
 namespace Tests\Feature\Admin;
 
 use App\Http\Resources\Admin\MeetingResource;
+use App\FromDatabaseConfig;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Repositories\FormatRepository;
 use App\Repositories\MeetingRepository;
+use App\Repositories\SettingRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Config;
 
 class MeetingCreateTest extends TestCase
 {
@@ -17,6 +18,7 @@ class MeetingCreateTest extends TestCase
 
     protected function tearDown(): void
     {
+        FromDatabaseConfig::reset();
         MeetingResource::resetStaticVariables();
         parent::tearDown();
     }
@@ -1189,7 +1191,8 @@ class MeetingCreateTest extends TestCase
 
     public function testStoreMeetingCheckLangEnum()
     {
-        Config::set('app.locale', 'es');
+        $settingRepository = new SettingRepository();
+        $settingRepository->update('language', 'es');
         $user = $this->createAdminUser();
         $token = $user->createToken('test')->plainTextToken;
         $area = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);

@@ -18,6 +18,7 @@ use App\Models\Change;
 use App\Models\Meeting;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse as BaseJsonResponse;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -94,7 +95,7 @@ class SwitcherController extends Controller
 
     private function getSearchResults(Request $request, ?string $dataFormat = null): BaseJsonResponse
     {
-        $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
+        $isAggregatorMode = (bool)file_config('aggregator_mode_enabled');
         $meetingIds = $request->input('meeting_ids') ?? [];
         $meetingIds = is_string($meetingIds) ? array_map(fn ($id) => trim($id), explode(',', $meetingIds)) : $meetingIds;
         $meetingIds = ensure_integer_array($meetingIds);
@@ -178,7 +179,7 @@ class SwitcherController extends Controller
             $geoWidthMiles = is_numeric($geoWidthMiles) ? floatval($geoWidthMiles) : null;
 
             if ($isAggregatorMode) {
-                $maxGeoWidthKilometers = legacy_config('aggregator_max_geo_width_km');
+                $maxGeoWidthKilometers = file_config('aggregator_max_geo_width_km');
                 $maxGeoWidthMiles = $maxGeoWidthKilometers * 0.621371;
                 $geoWidthKilometers = !is_null($geoWidthKilometers) && $geoWidthKilometers > $maxGeoWidthKilometers ? $maxGeoWidthKilometers : $geoWidthKilometers;
                 $geoWidthMiles = !is_null($geoWidthMiles) && $geoWidthMiles > $maxGeoWidthMiles ? $maxGeoWidthMiles : $geoWidthMiles;
@@ -200,12 +201,12 @@ class SwitcherController extends Controller
         }
         $searchStringIsAddress = !is_null($searchString) && $request->input('StringSearchIsAnAddress') == '1';
         if (!is_null($searchString) && $searchStringIsAddress) {
-            $googleApiKey = legacy_config('google_api_key');
+            $googleApiKey = bmlt_config('googleApiKey');
             if (is_null($googleApiKey)) {
                 abort(400, 'A google api key must be configured to use StringSearchIsAnAddress.');
             }
 
-            $regionBias = legacy_config('region_bias');
+            $regionBias = bmlt_config('regionBias');
             if (is_string($regionBias) && is_numeric($searchString)) {
                 // when it's numeric, like a postcode, add $regionBias directly
                 $searchString .= ' ' . $regionBias;
@@ -237,12 +238,12 @@ class SwitcherController extends Controller
 
             $searchStringRadius = $request->input('SearchStringRadius');
             if (is_null($searchStringRadius) || !is_numeric($searchStringRadius)) {
-                $nNearestAuto = abs(legacy_config('number_of_meetings_for_auto')) * -1;
-                $geoWidthMiles = legacy_config('distance_units') == 'mi' ? $nNearestAuto : null;
-                $geoWidthKilometers = legacy_config('distance_units') != 'mi' ? $nNearestAuto : null;
+                $nNearestAuto = abs(bmlt_config('numberOfMeetingsForAuto')) * -1;
+                $geoWidthMiles = bmlt_config('distanceUnits') == 'mi' ? $nNearestAuto : null;
+                $geoWidthKilometers = bmlt_config('distanceUnits') != 'mi' ? $nNearestAuto : null;
             } else {
-                $geoWidthMiles = legacy_config('distance_units') == 'mi' ? floatval($searchStringRadius) : null;
-                $geoWidthKilometers = legacy_config('distance_units') != 'mi' ? floatval($searchStringRadius) : null;
+                $geoWidthMiles = bmlt_config('distanceUnits') == 'mi' ? floatval($searchStringRadius) : null;
+                $geoWidthKilometers = bmlt_config('distanceUnits') != 'mi' ? floatval($searchStringRadius) : null;
             }
 
             $searchString = null;
@@ -260,7 +261,7 @@ class SwitcherController extends Controller
         $sortKeys = $request->input('sort_keys');
         $sortKeys = empty($sortKeys) ? null : explode(',', $sortKeys);
         if (is_null($sortKeys)) {
-            $sortAlias = $request->input('sort_key') ?? legacy_config('default_sort_key');
+            $sortAlias = $request->input('sort_key') ?? bmlt_config('defaultSortKey');
             if (!is_null($sortAlias)) {
                 if ($sortAlias == 'weekday') {
                     $sortKeys = ['weekday_tinyint', 'location_municipality', 'location_city_subsection', 'start_time', 'location_neighborhood'];
@@ -357,7 +358,7 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
-        $langEnum = $request->input('lang_enum', config('app.locale'));
+        $langEnum = $request->input('lang_enum', App::currentLocale());
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
@@ -393,7 +394,7 @@ class SwitcherController extends Controller
 
     private function getFormats(Request $request): BaseJsonResponse
     {
-        $isAggregatorMode = (bool)legacy_config('aggregator_mode_enabled');
+        $isAggregatorMode = (bool)file_config('aggregator_mode_enabled');
         $rootServersInclude = null;
         $rootServersExclude = null;
 
@@ -416,7 +417,7 @@ class SwitcherController extends Controller
         $formatsExclude = collect($formatIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
         $formatsExclude = count($formatsExclude) ? $formatsExclude : null;
 
-        $langEnums = $request->input('lang_enum', config('app.locale'));
+        $langEnums = $request->input('lang_enum', App::currentLocale());
         if (!is_array($langEnums)) {
             $langEnums = [$langEnums];
         }
@@ -463,7 +464,7 @@ class SwitcherController extends Controller
 
         $rootServersInclude = null;
         $rootServersExclude = null;
-        if (legacy_config('aggregator_mode_enabled')) {
+        if (file_config('aggregator_mode_enabled')) {
             $rootServerIds = $request->input('root_server_ids', []);
             $rootServerIds = ensure_integer_array($rootServerIds);
             $rootServersInclude = collect($rootServerIds)->filter(fn($r) => $r > 0)->map(fn($r) => $r)->toArray();
@@ -543,31 +544,29 @@ class SwitcherController extends Controller
             'version' => config('app.version'),
             'versionInt' => strval((intval($versionArray[0]) * 1000000) + (intval($versionArray[1]) * 1000) + intval(strstr($versionArray[2], '-', true) ?: $versionArray[2])),
             'langs' => collect(scandir(base_path('lang')))->reject(fn ($dir) => str_starts_with($dir, '.'))->sort()->join(','),
-            'nativeLang' => config('app.locale'),
-            'centerLongitude' => strval(legacy_config('search_spec_map_center_longitude')),
-            'centerLatitude' => strval(legacy_config('search_spec_map_center_latitude')),
-            'centerZoom' => strval(legacy_config('search_spec_map_center_zoom')),
-            'defaultDuration' => legacy_config('default_duration_time'),
-            'regionBias' => legacy_config('region_bias'),
+            'nativeLang' => App::currentLocale(),
+            'centerLongitude' => strval(bmlt_config('searchSpecMapCenterLongitude')),
+            'centerLatitude' => strval(bmlt_config('searchSpecMapCenterLatitude')),
+            'centerZoom' => strval(bmlt_config('searchSpecMapCenterZoom')),
+            'defaultDuration' => bmlt_config('defaultDurationTime'),
+            'regionBias' => bmlt_config('regionBias'),
             'charSet' => 'UTF-8',
-            'distanceUnits' => legacy_config('distance_units'),
+            'distanceUnits' => bmlt_config('distanceUnits'),
             'semanticAdmin' => '1', // Yap uses this flag to determine legacy auth so we must keep it.
-            'emailEnabled' => legacy_config('enable_email_contact') ? '1' : '0',
-            'emailIncludesServiceBodies' => legacy_config('include_service_body_admin_on_emails') ? '1' : '0',
-            'changesPerMeeting' => strval(legacy_config('change_depth_for_meetings')),
-            'meeting_states_and_provinces' => implode(',', legacy_config('meeting_states_and_provinces', [])),
-            'meeting_counties_and_sub_provinces' => implode(',', legacy_config('meeting_counties_and_sub_provinces', [])),
+            'changesPerMeeting' => strval(bmlt_config('changeDepthForMeetings')),
+            'meeting_states_and_provinces' => implode(',', bmlt_config('meetingStatesAndProvinces', [])),
+            'meeting_counties_and_sub_provinces' => implode(',', bmlt_config('meetingCountiesAndSubProvinces', [])),
             'available_keys' => $this->meetingRepository->getFieldKeys()->map(fn ($value) => $value['key'])->merge(['root_server_uri', 'format_shared_id_list'])->join(','),
-            'google_api_key' => legacy_config('aggregator_mode_enabled') ? null : legacy_config('google_api_key', ''),
+            'google_api_key' => file_config('aggregator_mode_enabled') ? null : bmlt_config('googleApiKey', ''),
             'dbVersion' => $this->migrationRepository->getLastMigration()['migration'],
-            'dbPrefix' => legacy_config('db_prefix'),
+            'dbPrefix' => file_config('db_prefix'),
             'phpVersion' => phpversion(),
-            'auto_geocoding_enabled' => legacy_config('auto_geocoding_enabled'),
-            'county_auto_geocoding_enabled' => legacy_config('county_auto_geocoding_enabled'),
-            'zip_auto_geocoding_enabled' => legacy_config('zip_auto_geocoding_enabled'),
+            'auto_geocoding_enabled' => bmlt_config('autoGeocodingEnabled'),
+            'county_auto_geocoding_enabled' => bmlt_config('countyAutoGeocodingEnabled'),
+            'zip_auto_geocoding_enabled' => bmlt_config('zipAutoGeocodingEnabled'),
             'commit' => config('app.commit'),
-            'default_closed_status' => legacy_config('default_closed_status'),
-            'aggregator_mode_enabled' => legacy_config('aggregator_mode_enabled')
+            'default_closed_status' => bmlt_config('defaultClosedStatus'),
+            'aggregator_mode_enabled' => file_config('aggregator_mode_enabled')
         ]]);
     }
 
@@ -694,7 +693,7 @@ class SwitcherController extends Controller
                 })
                 ->reject(fn ($meeting) => is_null($meeting));
             $meetings = $meetings->concat($deletedMeetings);
-            $allFormats = $this->formatRepository->search(langEnums: [legacy_config('language')], showAll: true)
+            $allFormats = $this->formatRepository->search(langEnums: [App::currentLocale()], showAll: true)
                 ->reject(fn ($fmt) => is_null($fmt->key_string) || empty(trim($fmt->key_string)));
             $formatIdToWorldId = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->worldid_mixed]);
             $formatIdToKeyString = $allFormats->mapWithKeys(fn ($fmt, $_) => [$fmt->shared_id_bigint => $fmt->key_string]);
@@ -938,7 +937,7 @@ class SwitcherController extends Controller
         if (in_array('OPEN', $meetingFormats)) {
             return 'OPEN';
         }
-        return legacy_config('default_closed_status') ? 'CLOSED' : 'OPEN';
+        return bmlt_config('defaultClosedStatus') ? 'CLOSED' : 'OPEN';
     }
 
     // Meeting times will be of the form 19:30:00.  Convert to 1930 (which is what this format expects).
