@@ -28,6 +28,8 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
+const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0 +aggregator';
+
 class ImportRootServers extends Command
 {
     protected $signature = 'aggregator:ImportRootServers {--list-url=https://raw.githubusercontent.com/bmlt-enabled/aggregator/main/serverList.json}';
@@ -278,7 +280,7 @@ class ImportRootServers extends Command
     {
         sleep(self::$requestDelaySeconds);
 
-        $headers = ['User-Agent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0 +aggregator'];
+        $headers = ['User-Agent' => USER_AGENT];
         $response = Http::withHeaders($headers)->retry(3, self::$retryDelaySeconds * 1000)->get($url);
 
         if ($shouldLogResponse) {
