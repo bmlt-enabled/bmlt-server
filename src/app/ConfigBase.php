@@ -9,7 +9,6 @@ abstract class ConfigBase
     abstract public static function get(?string $name = null, $default = null);
     abstract public static function set(string $name, $value);
     abstract public static function reset(): void;
-
     abstract protected static function getSettingType(string $name): string;
 
     public static function fromEnv(string $name): mixed
