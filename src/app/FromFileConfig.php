@@ -19,6 +19,7 @@ class FromFileConfig extends ConfigBase
             'db_prefix' => Setting::TYPE_STRING,
             'aggregator_mode_enabled' => Setting::TYPE_BOOL,
             'aggregator_max_geo_width_km' => Setting::TYPE_FLOAT,
+            'aggregator_user_agent' => Setting::TYPE_STRING,
         ];
         return $types[$name];
     }
@@ -73,6 +74,7 @@ class FromFileConfig extends ConfigBase
             'db_prefix' => static::fromEnv('db_prefix') ?? $dbPrefix ?? null,
             'aggregator_mode_enabled' => static::fromEnv('aggregator_mode_enabled') ?? $aggregator_mode_enabled ?? false,
             'aggregator_max_geo_width_km' => static::fromEnv('aggregator_max_geo_width_km') ?? $aggregator_max_geo_width_km ?? null,
+            'aggregator_user_agent' => static::fromEnv('aggregator_user_agent') ?? $aggregator_user_agent ?? 'Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0 +aggregator',
         ];
 
         static::$configLoaded = true;
