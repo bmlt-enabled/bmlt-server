@@ -10,10 +10,7 @@ abstract class ConfigBase
     abstract public static function set(string $name, $value);
     abstract public static function reset(): void;
 
-    protected static function getSettingType(string $name): string
-    {
-        throw new \RuntimeException('unimplemented');
-    }
+    abstract protected static function getSettingType(string $name): string;
 
     public static function fromEnv(string $name): mixed
     {
