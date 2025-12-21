@@ -60,7 +60,7 @@ RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
 RUN a2enmod rewrite
 
 # Disable default PHP modules
-RUN for ver in 8.2 8.3 8.4 8.5; do \
+RUN for ver in 8.1 8.2 8.3 8.4 8.5; do \
         if [ -f "/etc/apache2/mods-enabled/php$ver.conf" ] && [ "$ver" != "${PHP_VERSION}" ]; then \
             a2dismod php$ver; \
         fi; \
