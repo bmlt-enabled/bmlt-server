@@ -24,7 +24,7 @@ ifeq ($(CI)x, x)
 else
 	DOCKERFILE := Dockerfile
 	IMAGE := bmltenabled/bmlt-server
-	TAG := 3.0.0-$(COMMIT)
+	TAG := 4.0.0-$(COMMIT)
 	ifeq ($(strip $(GITHUB_REF_NAME)),main)
 		TAG := latest
 	endif

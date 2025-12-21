@@ -23,6 +23,23 @@ When running a production server, there is a file `auto-config.inc.php` that is 
 
 For development work, Docker takes care of initializing these environment variables. You can also specify other server settings that will override the values in the database. This is done by adding key/value pairs to the file `docker/docker-compose.dev.yml`. The sample file `docker/docker-compose.dev.yml.example` has just one variable listed (`GOOGLE_API_KEY` for the Google API key). You can add others as needed. The keys should be in SCREAMING_SNAKE_CASE.  See the `SETTING_DEFAULTS` constant in `src/database/migrations/2025_11_20_133800_seed_settings_from_legacy_config.php` for a list of possibilities. There are also a few database options: `DB_PREFIX`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_HOST`.  Of these `DB_PREFIX` is probably the only one you might want to override.
 
+### Switching PHP Versions
+
+To test with a different PHP version, add this to `docker/docker-compose.dev.yml`:
+```yaml
+services:
+  bmlt:
+    build:
+      args:
+        PHP_VERSION: 8.4
+```
+
+Then rebuild without cache:
+```bash
+docker compose -f docker/docker-compose.yml -f docker/docker-compose.dev.yml build --no-cache bmlt
+make dev
+```
+
 Server settings that are overridden by entries in `docker/docker-compose.dev.yml` will show up correctly in the Server Settings pane in the UI, but won't necessarily be reflected in the `settings` table in the database. However, if you make a change to the settings in the UI and save, then all the values (including ones from entries in  `docker/docker-compose.dev.yml`) will be written to the database.
 
 ## Loading a Different Sample Database
