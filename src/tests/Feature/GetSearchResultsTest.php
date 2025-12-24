@@ -98,22 +98,22 @@ class GetSearchResultsTest extends TestCase
         return $meeting;
     }
 
-    private function createZone(string $name, string $description, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $principalUserId = null, array $assignedUserIds = null)
+    private function createZone(string $name, string $description, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'ZF', 0, $uri, $helpline, $worldId, $email, $principalUserId, $assignedUserIds);
     }
 
-    private function createRegion(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $principalUserId = null, array $assignedUserIds = null)
+    private function createRegion(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'RS', $sbOwner, $uri, $helpline, $worldId, $email, $principalUserId, $assignedUserIds);
     }
 
-    private function createArea(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $principalUserId = null, array $assignedUserIds = null)
+    private function createArea(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'AS', $sbOwner, $uri, $helpline, $worldId, $email, $principalUserId, $assignedUserIds);
     }
 
-    private function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null, int $principalUserId = null, array $assignedUserIds = null)
+    private function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return ServiceBody::create([
             'sb_owner' => $sbOwner,
@@ -144,7 +144,7 @@ class GetSearchResultsTest extends TestCase
         return $this->createFormat(903, 'C', 'Closed3', 'desc3', $langEnum, 'worldid');
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(int $sharedId, string $keyString, string $nameString, ?string $description = null, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
         return Format::create([
             'shared_id_bigint' => $sharedId,
