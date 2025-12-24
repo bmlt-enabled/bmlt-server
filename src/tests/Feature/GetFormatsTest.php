@@ -37,7 +37,7 @@ class GetFormatsTest extends TestCase
         return $this->createFormat(3, 'C3', 'Closed3', 'desc3', $langEnum, 'worldid');
     }
 
-    private function createFormat(int $sharedId, string $keyString, string $nameString, string $description = null, string $langEnum = 'en', string $worldId = null, string $formatTypeEnum = 'FC')
+    private function createFormat(int $sharedId, string $keyString, string $nameString, ?string $description = null, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
         return Format::create([
             'shared_id_bigint' => $sharedId,

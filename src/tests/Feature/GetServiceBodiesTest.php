@@ -22,22 +22,22 @@ class GetServiceBodiesTest extends TestCase
         ]);
     }
 
-    private function createZone(string $name, string $description, string $uri = null, string $helpline = null, string $worldId = null, string $email = null)
+    private function createZone(string $name, string $description, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null)
     {
         return $this->createServiceBody($name, $description, 'ZF', 0, $uri, $helpline, $worldId, $email);
     }
 
-    private function createRegion(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null)
+    private function createRegion(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null)
     {
         return $this->createServiceBody($name, $description, 'RS', $sbOwner, $uri, $helpline, $worldId, $email);
     }
 
-    private function createArea(string $name, string $description, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null)
+    private function createArea(string $name, string $description, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null)
     {
         return $this->createServiceBody($name, $description, 'AS', $sbOwner, $uri, $helpline, $worldId, $email);
     }
 
-    private function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, string $uri = null, string $helpline = null, string $worldId = null, string $email = null)
+    private function createServiceBody(string $name, string $description, string $sbType, int $sbOwner, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null)
     {
         return ServiceBody::create([
             'sb_owner' => $sbOwner,

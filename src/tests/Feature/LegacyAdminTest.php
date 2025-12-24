@@ -38,7 +38,7 @@ class LegacyAdminTest extends TestCase
         ]);
     }
 
-    public function createArea(string $name, int $principalUserId = null, array $assignedUserIds = null)
+    public function createArea(string $name, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return ServiceBody::create([
             'sb_owner' => 0,
