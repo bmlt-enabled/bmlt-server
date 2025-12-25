@@ -70,7 +70,7 @@ class FromFileConfig extends ConfigBase
             'db_database' => static::fromEnv('db_database') ?? $dbName ?? null,
             'db_username' => static::fromEnv('db_username') ?? $dbUser ?? null,
             'db_password' => static::fromEnv('db_password') ?? $dbPassword ?? null,
-            'db_host' => static::fromEnv('db_host') ?? $dbHost ?? null,
+            'db_host' => static::fromEnv('db_host') ?? $dbServer ?? null,
             'db_prefix' => static::fromEnv('db_prefix') ?? $dbPrefix ?? null,
             'aggregator_mode_enabled' => static::fromEnv('aggregator_mode_enabled') ?? $aggregator_mode_enabled ?? false,
             'aggregator_max_geo_width_km' => static::fromEnv('aggregator_max_geo_width_km') ?? $aggregator_max_geo_width_km ?? null,
