@@ -342,7 +342,7 @@ return new class extends Migration
                 {
                     $dbPrefix = $GLOBALS['dbPrefix'];
                     $table = "$dbPrefix" . "_comdef_formats";
-                    $langs = array('en', 'dk', 'de', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv');
+                    $langs = array('en', 'da', 'de', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv');
                     // if there are additional languages, fix those formats as well
                     if (array_key_exists('format_lang_names', $GLOBALS)) {
                         $langs = array_merge($langs, array_keys($GLOBALS['format_lang_names']));

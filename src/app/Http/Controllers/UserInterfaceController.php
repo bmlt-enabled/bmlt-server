@@ -53,7 +53,7 @@ class UserInterfaceController extends Controller
             ->reject(fn ($dir) => str_starts_with($dir, '.'))
             ->sort()
             ->mapWithKeys(function ($langAbbreviation, $_) {
-                $langName = $langAbbreviation == 'dk' ? 'da' : $langAbbreviation;
+                $langName = $langAbbreviation;
                 $langName = \Locale::getDisplayLanguage($langName, $langName);
                 $langName = mb_str_split($langName);
                 $langName = mb_strtoupper($langName[0]) . implode('', array_slice($langName, 1));
