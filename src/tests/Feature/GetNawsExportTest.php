@@ -219,7 +219,7 @@ class GetNawsExportTest extends TestCase
         $this->assertEquals('FALSE', $row['Institutional']);
         $this->assertEquals('W', $row['Format1']);  // W (women) should come before the other formats
         // format2 and format3 should be TOP and TRAD (in either order)
-        $this->assertTrue($row['Format2'] == 'TOP' && $row['Format3']== 'TRAD' || $row['Format2'] == 'TRAD' && $row['Format3']== 'TOP');
+        $this->assertTrue($row['Format2'] == 'TOP' && $row['Format3'] == 'TRAD' || $row['Format2'] == 'TRAD' && $row['Format3'] == 'TOP');
         $this->assertEquals('', $row['Format4']);
         $this->assertEquals('', $row['Format5']);
         $this->assertEquals('', $row['Delete']);

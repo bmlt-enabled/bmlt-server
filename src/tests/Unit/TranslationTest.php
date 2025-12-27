@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+
 use function Composer\Autoload\includeFile;
 
 class TranslationTest extends TestCase

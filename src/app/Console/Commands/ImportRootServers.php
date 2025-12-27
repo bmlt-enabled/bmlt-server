@@ -240,7 +240,7 @@ class ImportRootServers extends Command
                 ->whereIn('meetingid_bigint', function ($query) use ($serviceBody) {
                     $query
                         ->select('id_bigint')
-                        ->from((new Meeting)->getTable())
+                        ->from((new Meeting())->getTable())
                         ->where('service_body_bigint', $serviceBody->id_bigint)
                         ->where(function (Builder $query) {
                             $query
@@ -260,13 +260,13 @@ class ImportRootServers extends Command
         $this->info('analyzing tables');
         $prefix = DB::connection()->getTablePrefix();
         $tableNames = [
-            $prefix . (new Meeting)->getTable(),
-            $prefix . (new MeetingData)->getTable(),
-            $prefix . (new MeetingLongData)->getTable(),
-            $prefix . (new ServiceBody)->getTable(),
-            $prefix . (new Format)->getTable(),
-            $prefix . (new RootServer)->getTable(),
-            $prefix . (new RootServerStatistics)->getTable(),
+            $prefix . (new Meeting())->getTable(),
+            $prefix . (new MeetingData())->getTable(),
+            $prefix . (new MeetingLongData())->getTable(),
+            $prefix . (new ServiceBody())->getTable(),
+            $prefix . (new Format())->getTable(),
+            $prefix . (new RootServer())->getTable(),
+            $prefix . (new RootServerStatistics())->getTable(),
         ];
         foreach ($tableNames as $tableName) {
             $sql = DB::raw("ANALYZE TABLE $tableName;")->getValue(DB::connection()->getQueryGrammar());

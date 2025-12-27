@@ -172,11 +172,11 @@ class PrimeDatabaseFromLegacyTomato extends Command
         $this->info('analyzing tables');
         $prefix = DB::connection()->getTablePrefix();
         $tableNames = [
-            $prefix . (new Meeting)->getTable(),
-            $prefix . (new MeetingData)->getTable(),
-            $prefix . (new MeetingLongData)->getTable(),
-            $prefix . (new ServiceBody)->getTable(),
-            $prefix . (new Format)->getTable(),
+            $prefix . (new Meeting())->getTable(),
+            $prefix . (new MeetingData())->getTable(),
+            $prefix . (new MeetingLongData())->getTable(),
+            $prefix . (new ServiceBody())->getTable(),
+            $prefix . (new Format())->getTable(),
         ];
         foreach ($tableNames as $tableName) {
             DB::statement("ANALYZE TABLE $tableName;");

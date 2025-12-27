@@ -5,7 +5,6 @@ namespace Tests\Feature\Admin;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MeetingDeleteTest extends TestCase

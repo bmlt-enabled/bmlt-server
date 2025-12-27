@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 class MeetingChangeResource extends JsonResource
 {
     use ChangeDetailsTrait;
+
     private static bool $isRequestInitialized = false;
     private static Collection $allFormats;
     private static Collection $allServiceBodies;
@@ -29,7 +30,7 @@ class MeetingChangeResource extends JsonResource
         'c_comdef_meeting' => 'meeting',
         'c_comdef_format' => 'format',
         'c_comdef_user' => 'user',
-        'c_comdef_service_body'=> 'service_body',
+        'c_comdef_service_body' => 'service_body',
     ];
 
     private static array $changeTypeToStrMap = [
@@ -188,7 +189,7 @@ class MeetingChangeResource extends JsonResource
 
         $dataTableValues = $meetingObject['data_table_values'] ?? [];
         $userHasPermission = self::$userIsAuthenticated && (self::$userIsAdmin || self::$serviceBodyPermissions?->has($serviceBodyBigint));
-        
+
         foreach ($dataTableValues as $data) {
             if (isset($data['key']) && $data['key'] == 'root_server_uri') {
                 continue;
@@ -196,7 +197,7 @@ class MeetingChangeResource extends JsonResource
             if (!isset($data['data_string'])) {
                 continue;
             }
-            
+
             // Check visibility field - if visibility is 1 (protected) and user doesn't have permission, mask with asterisks
             if (isset($data['visibility']) && $data['visibility'] == 1 && !$userHasPermission && !empty($data['data_string'])) {
                 $ret->put($data['key'], '********');

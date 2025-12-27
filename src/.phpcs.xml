@@ -45,8 +45,5 @@
     You can add specific global ignores to different
     rules here.
     -->
-    <rule ref='PSR2'></rule>
-    <rule ref="PSR1">
-        <exclude name="PSR1.Classes.ClassDeclaration.MultipleClasses" />
-    </rule>
+    <rule ref="PSR12"></rule>
 </ruleset>

@@ -58,7 +58,7 @@ class FormatController extends ResourceController
                     if ($fieldName == 'worldId') {
                         return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->worldid_mixed];
                     } elseif ($fieldName == 'type') {
-                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : (!is_null($format->format_type_enum) ? FormatType::getApiEnumFromKey($format->format_type_enum): null)];
+                        return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : (!is_null($format->format_type_enum) ? FormatType::getApiEnumFromKey($format->format_type_enum) : null)];
                     } else {
                         return [$fieldName => $request->has($fieldName) ? $request->input($fieldName) : $format->translations->map(function ($translation) {
                             return [

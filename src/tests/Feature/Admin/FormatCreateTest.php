@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FormatCreateTest extends TestCase

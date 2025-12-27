@@ -34,7 +34,6 @@ namespace App\Http\Controllers\Admin\Swagger;
  */
 class UserController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/users", summary="Retrieves users", description="Retrieve users for authenticated user.", operationId="getUsers", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated.",

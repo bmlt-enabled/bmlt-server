@@ -10,7 +10,7 @@ class SwaggerController extends Controller
 {
     public function openapi(Request $request)
     {
-        $server = new \stdClass;
+        $server = new \stdClass();
         $server->url = rtrim(url('/'), '/') . '/';
         $server->description = 'this server';
 

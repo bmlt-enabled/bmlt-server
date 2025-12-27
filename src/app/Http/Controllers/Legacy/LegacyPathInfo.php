@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Legacy;
 
 use Illuminate\Http\Request;

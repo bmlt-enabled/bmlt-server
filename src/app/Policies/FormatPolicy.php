@@ -8,7 +8,8 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class FormatPolicy
 {
-    use DeniesDeactivatedUser, HandlesAuthorization;
+    use DeniesDeactivatedUser;
+    use HandlesAuthorization;
 
     public function viewAny(User $user)
     {

@@ -188,7 +188,7 @@ class MeetingController extends ResourceController
                 'email' => 'nullable|email|max:255',
                 'worldId' => 'nullable|string|max:30',
                 'name' => 'required|string|max:128',
-                'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone],
+                'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone()],
             ], $this->getDataFieldValidators($skipVenueTypeLocationValidation))
         ));
     }
@@ -200,7 +200,7 @@ class MeetingController extends ResourceController
             ->reject(fn ($_, $fieldName) => $fieldName == 'meeting_name' || $customFields->contains($fieldName))
             ->mapWithKeys(function ($_, $fieldName) use ($skipVenueTypeLocationValidation) {
                 if (!$skipVenueTypeLocationValidation && in_array($fieldName, VenueTypeLocation::FIELDS)) {
-                    return [$fieldName => ['max:512', new VenueTypeLocation]];
+                    return [$fieldName => ['max:512', new VenueTypeLocation()]];
                 } else {
                     return [$fieldName => 'nullable|string|max:512'];
                 }

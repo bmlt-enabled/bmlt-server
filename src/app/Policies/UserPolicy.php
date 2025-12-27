@@ -7,7 +7,8 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
 {
-    use DeniesDeactivatedUser, HandlesAuthorization;
+    use DeniesDeactivatedUser;
+    use HandlesAuthorization;
 
     public function viewAny(User $user)
     {

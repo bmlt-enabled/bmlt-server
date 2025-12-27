@@ -63,12 +63,12 @@ class RootServerRepository implements RootServerRepositoryInterface
         MeetingData::query()
             ->whereNot('meetingid_bigint', 0)
             ->whereNotIn('meetingid_bigint', function ($query) {
-                $query->select('id_bigint')->from((new Meeting)->getTable());
+                $query->select('id_bigint')->from((new Meeting())->getTable());
             })->delete();
         MeetingLongData::query()
             ->whereNot('meetingid_bigint', 0)
             ->whereNotIn('meetingid_bigint', function ($query) {
-                $query->select('id_bigint')->from((new Meeting)->getTable());
+                $query->select('id_bigint')->from((new Meeting())->getTable());
             })->delete();
 
         foreach ($externalObjects as $externalRoot) {

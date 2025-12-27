@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
-
 use App\Repositories\FormatRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

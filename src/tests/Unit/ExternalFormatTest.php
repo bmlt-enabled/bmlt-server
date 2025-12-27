@@ -17,7 +17,7 @@ class ExternalFormatTest extends TestCase
             'name_string' => 'Hybrid',
             'description_string' => 'Meets virtually and in person',
             'lang' => $language,
-            'format_type_enum' =>'FC2',
+            'format_type_enum' => 'FC2',
             'world_id' => 'HYBR',
         ];
     }
