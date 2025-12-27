@@ -54,7 +54,8 @@ class GetServiceBodiesTest extends TestCase
     private function allServiceBodiesInArray($expectedItems, $array): bool
     {
         foreach ($expectedItems as $item) {
-            if (!in_array([
+            if (
+                !in_array([
                 'id' => strval($item->id_bigint),
                 'parent_id' => strval($item->sb_owner),
                 'name' => $item->name_string,
@@ -63,7 +64,8 @@ class GetServiceBodiesTest extends TestCase
                 'url' => $item->uri_string,
                 'helpline' => $item->kml_file_uri_string ?? '',
                 'world_id' => $item->worldid_mixed ?? '',
-            ], $array)) {
+                ], $array)
+            ) {
                 return false;
             }
         }
@@ -74,7 +76,8 @@ class GetServiceBodiesTest extends TestCase
     private function allServiceBodiesNotInArray($unexpectedItems, $array): bool
     {
         foreach ($unexpectedItems as $item) {
-            if (in_array([
+            if (
+                in_array([
                 'id' => strval($item->id_bigint),
                 'parent_id' => strval($item->sb_owner),
                 'name' => $item->name_string,
@@ -83,7 +86,8 @@ class GetServiceBodiesTest extends TestCase
                 'url' => $item->uri_string,
                 'helpline' => $item->kml_file_uri_string ?? '',
                 'world_id' => $item->worldid_mixed ?? '',
-            ], $array)) {
+                ], $array)
+            ) {
                 return false;
             }
         }

@@ -35,7 +35,6 @@ namespace App\Http\Controllers\Admin\Swagger;
  */
 class FormatController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/formats", summary="Retrieves formats", description="Retrieve formats", operationId="getFormats", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated.",

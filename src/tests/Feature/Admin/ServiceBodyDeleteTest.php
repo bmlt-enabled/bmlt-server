@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\ServiceBody;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ServiceBodyDeleteTest extends TestCase

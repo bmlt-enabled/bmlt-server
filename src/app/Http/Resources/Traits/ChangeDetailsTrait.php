@@ -13,7 +13,7 @@ trait ChangeDetailsTrait
         'c_comdef_meeting' => 'meeting',
         'c_comdef_format' => 'format',
         'c_comdef_user' => 'user',
-        'c_comdef_service_body'=> 'service_body',
+        'c_comdef_service_body' => 'service_body',
     ];
 
     private static array $changeTypeToStrMap = [
@@ -158,9 +158,9 @@ trait ChangeDetailsTrait
                     $afterValue = floatval($afterValue);
                 } elseif ($key == 'start_time' || $key == 'duration_time') {
                     $beforeValue = explode(':', $beforeValue);
-                    $beforeValue = strval(intval($beforeValue[0])).':'.(intval($beforeValue[1]) < 10 ? '0' : '').strval(intval($beforeValue[1]));
+                    $beforeValue = strval(intval($beforeValue[0])) . ':' . (intval($beforeValue[1]) < 10 ? '0' : '') . strval(intval($beforeValue[1]));
                     $afterValue = explode(':', $afterValue);
-                    $afterValue = strval(intval($afterValue[0])).':'.(intval($afterValue[1]) < 10 ? '0' : '').strval(intval($afterValue[1]));
+                    $afterValue = strval(intval($afterValue[0])) . ':' . (intval($afterValue[1]) < 10 ? '0' : '') . strval(intval($afterValue[1]));
                     if ($beforeValue == $afterValue) {
                         continue;
                     }

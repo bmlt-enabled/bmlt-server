@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Change;
 use App\Models\User;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserPartialUpdateTest extends TestCase

@@ -98,7 +98,7 @@ TS;
         // With TODO comment for non-English files
         $this->assertStringContainsString("accountTitle: 'Account', // TODO: translate", $updatedContent);
         $this->assertStringContainsString("cancel: 'Cancel'", $updatedContent);
-        
+
         // Verify proper formatting with newline after opening brace
         $this->assertStringContainsString("{\n  accountTitle:", $updatedContent);
         $this->assertStringNotContainsString("{ \n  accountTitle:", $updatedContent);

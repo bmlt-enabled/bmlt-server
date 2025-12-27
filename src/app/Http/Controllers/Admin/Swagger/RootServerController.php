@@ -35,7 +35,6 @@ namespace App\Http\Controllers\Admin\Swagger;
  */
 class RootServerController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/rootservers", summary="Retrieves root servers", description="Retrieve root servers.", operationId="getRootServers", tags={"rootServer"},
      *     @OA\Response(response=200, description="Successful response.",

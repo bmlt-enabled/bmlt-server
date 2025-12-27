@@ -67,7 +67,6 @@ namespace App\Http\Controllers\Admin\Swagger;
 
 class MeetingController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/meetings", summary="Retrieves meetings", description="Retrieve meetings for authenticated user.", operationId="getMeetings", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="comma delimited meeting ids", in="query", name="meetingIds", required=false, example="1,2",

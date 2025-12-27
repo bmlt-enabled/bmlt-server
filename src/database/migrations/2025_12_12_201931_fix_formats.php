@@ -81,7 +81,7 @@ return new class extends Migration
             ->where('description_string', 'Engelsktalande möte');
         $n = $formats->count();
         if ($n == 2) {
-            $dupId =$formats->max('id');
+            $dupId = $formats->max('id');
             DB::table('comdef_formats')
                 ->where('id', $dupId)
                 ->delete();

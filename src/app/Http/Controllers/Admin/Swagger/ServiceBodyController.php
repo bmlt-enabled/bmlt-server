@@ -36,7 +36,6 @@ namespace App\Http\Controllers\Admin\Swagger;
  */
 class ServiceBodyController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/servicebodies", summary="Retrieves service bodies", description="Retrieve service bodies for authenticated user.", operationId="getServiceBodies", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated.",

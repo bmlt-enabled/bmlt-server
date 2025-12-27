@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 class MeetingChangeResource extends JsonResource
 {
     use ChangeDetailsTrait;
+
     private static bool $isRequestInitialized = false;
     private static Collection $allFormats;
     private static Collection $allServiceBodies;

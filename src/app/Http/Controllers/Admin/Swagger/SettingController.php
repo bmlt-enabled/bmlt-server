@@ -59,7 +59,6 @@ namespace App\Http\Controllers\Admin\Swagger;
  */
 class SettingController extends Controller
 {
-
     /**
      * @OA\Get(path="/api/v1/settings", summary="Retrieves all settings", description="Retrieve all server settings. Only accessible to server administrators.", operationId="getSettings", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Response(response=200, description="Returns when user is authenticated as admin.",

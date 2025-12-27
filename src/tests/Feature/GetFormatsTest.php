@@ -61,7 +61,8 @@ class GetFormatsTest extends TestCase
     private function allFormatsInArray($expectedItems, $array): bool
     {
         foreach ($expectedItems as $item) {
-            if (!in_array([
+            if (
+                !in_array([
                 'key_string' => $item->key_string,
                 'name_string' => $item->name_string ?? '',
                 'description_string' => $item->description_string ?? '',
@@ -70,7 +71,8 @@ class GetFormatsTest extends TestCase
                 'world_id' => $item->worldid_mixed ?? '',
                 'format_type_enum' => $item->format_type_enum ?? '',
                 'root_server_uri' => 'http://localhost',
-            ], $array)) {
+                ], $array)
+            ) {
                 return false;
             }
         }

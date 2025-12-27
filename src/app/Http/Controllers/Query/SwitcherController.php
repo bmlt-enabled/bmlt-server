@@ -945,7 +945,7 @@ class SwitcherController extends Controller
     {
         $t = explode(':', $meeting->start_time);
         if (is_array($t) && count($t) > 1) {
-            return $t[0].$t[1];
+            return $t[0] . $t[1];
         } else {
             return $t;
         }

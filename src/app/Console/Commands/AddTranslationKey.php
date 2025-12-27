@@ -113,12 +113,12 @@ class AddTranslationKey extends Command
         // Create the new line
         // escape single quotes and backslashes
         $escapedValue = str_replace(['\\', "'"], ['\\\\', "\\'"], $translationValue);
-        
+
         // Determine if we're inserting at the end (after last key)
         // If so, don't add comma since it will be the new last item
         $isLastItem = ($insertAfterKey && !$insertBeforeKey);
         $commentForNewLine = $isLastItem && !$isEnglish ? ' // TODO: translate' : $comment;
-        
+
         $newLine = "  {$key}: '{$escapedValue}'{$commentForNewLine}";
 
         // Find the position to insert

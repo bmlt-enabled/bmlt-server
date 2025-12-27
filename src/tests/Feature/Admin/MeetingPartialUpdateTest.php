@@ -9,7 +9,6 @@ use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
 use App\Repositories\MeetingRepository;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MeetingPartialUpdateTest extends TestCase

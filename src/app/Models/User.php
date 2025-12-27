@@ -9,7 +9,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Model implements AuthenticatableContract
 {
-    use Authenticatable, HasApiTokens;
+    use Authenticatable;
+    use HasApiTokens;
 
     public const USER_LEVEL_ADMIN = 1;
     public const USER_LEVEL_SERVICE_BODY_ADMIN = 2;

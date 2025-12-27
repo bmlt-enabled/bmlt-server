@@ -9,7 +9,8 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ChangePolicy
 {
-    use DeniesDeactivatedUser, HandlesAuthorization;
+    use DeniesDeactivatedUser;
+    use HandlesAuthorization;
 
     private ServiceBodyRepositoryInterface $serviceBodyRepository;
 
