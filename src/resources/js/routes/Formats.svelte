@@ -97,7 +97,7 @@
   // English; if no English version, then just pick the first one in the array.  If that doesn't exist either then return a blank.
   // This last case only arises when trying to create a format with no translations; the UI signals an error if that happens.
   export function getFormatName(format: Format): string {
-    const n = format.translations.find((t) => t.language === (language == 'da' ? 'dk' : language));
+    const n = format.translations.find((t) => t.language === language);
     if (n) {
       return `(${n.key}) ${n.name}`;
     } else {

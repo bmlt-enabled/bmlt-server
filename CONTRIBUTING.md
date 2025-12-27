@@ -176,6 +176,72 @@ A convenient starting point for the spreadsheet file is to use the button `Downl
 php artisan translation:update-from-spreadsheet /path/to/italian-translations.xlsx it
 ````
 
+## Adding a new language to the server
+
+To add a new language (for example, Norwegian, which has [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) code `no`):
+
+### Backend Translation Files
+
+1. Copy the English translation directory:
+   ```bash
+   cp -r src/lang/en/ src/lang/no/
+   ```
+
+2. Edit `src/lang/no/language_name.php` to set the native language name:
+   ```php
+   <?php
+   
+   return [
+       'name' => 'Norsk',
+   ];
+   ```
+
+3. Translate the strings in the other PHP files (`main_prompts.php`, `change_detail.php`, `change_type.php`, `weekdays.php`, etc.).
+
+### Frontend Translation Files
+
+1. Copy the English translation file:
+   ```bash
+   cp src/resources/js/lang/en.ts src/resources/js/lang/no.ts
+   ```
+
+2. Translate the strings in `src/resources/js/lang/no.ts`.
+
+3. Export the new language in `src/resources/js/lang/index.ts`:
+   ```typescript
+   export { noTranslations, noYupLocale } from './no';
+   ```
+
+4. Import and add the new language to `src/resources/js/stores/localization.ts`:
+   - Add to imports:
+     ```typescript
+     noTranslations,
+     noYupLocale,
+     ```
+   - Add to the `strings` object (maintain alphabetical order):
+     ```typescript
+     no: noTranslations,
+     ```
+   - Add to the `yupLocales` object (maintain alphabetical order):
+     ```typescript
+     no: noYupLocale,
+     ```
+
+### Format Translations
+
+The server will actually run without any format translations for the new language, but you will almost certainly want to add some to provide a reasonable experience for users and service body administrators. There are two options for adding format translations for the new language:
+1. add them using a database migration
+2. add them by logging in as the server admin and using the editor available on the Formats tab
+
+Option 1 puts the format translations into the code base, and is how all the formats that come with a fresh out-of-the-box server are defined.
+
+Option 2 is much simpler -- just use the format translation editor in the UI -- but they won't be in the code base and someone who spins up a new server in your new language won't get them automatically. You can also do some of both: start with a set of basic format translations defined using a database migration, and then add some additional ones using the UI.
+
+The migration `src/database/migrations/1902_01_01_000000_create_initial_schema.php` has the basic format translations for the initial languages shipped with the server; there are some additional migrations to define format types, define the special formats `HY`, `TC`, and `VM` (see below), the `SPAD` format, and to fix up some mistakes in the initial schema migration.
+
+For historical reasons, the meeting's venue type (in-person, hybrid, or virtual) is specified in the server database using the `HY` (hybrid) and `VM` (virtual meeting) formats. The UI for service body administrators doesn't expose these to the administrator however; they get set using the Venue Type menu on the meeting editor Location tab. `TC` (Temporarily Closed) has been deprecated -- it was used a lot during the pandemic -- but you may still encounter it if you start with a database containing some older data. However, these formats **are** visible in crouton and bread for hybrid, virtual, or temporarily closed meetings, so you should provide translations for them.
+
+
 ## Debugging in IntelliJ or PhpStorm
 
 See screenshots below for more detail.

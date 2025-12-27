@@ -50,15 +50,9 @@ class UserInterfaceController extends Controller
     private static function getLanguageMapping(): array
     {
         return collect(scandir(base_path('lang')))
-            ->reject(fn ($dir) => str_starts_with($dir, '.'))
+            ->reject(fn($dir) => str_starts_with($dir, '.'))
             ->sort()
-            ->mapWithKeys(function ($langAbbreviation, $_) {
-                $langName = $langAbbreviation == 'dk' ? 'da' : $langAbbreviation;
-                $langName = \Locale::getDisplayLanguage($langName, $langName);
-                $langName = mb_str_split($langName);
-                $langName = mb_strtoupper($langName[0]) . implode('', array_slice($langName, 1));
-                return [$langAbbreviation => $langName];
-            })
+            ->mapWithKeys(fn($langCode) => [$langCode => __('language_name.name', [], $langCode)])
             ->toArray();
     }
 
