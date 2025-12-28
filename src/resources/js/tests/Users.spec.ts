@@ -342,6 +342,7 @@ describe('Spreadsheet download functionality', () => {
       expect(sheet['D1'].v).toBe('email');
       expect(sheet['E1'].v).toBe('type');
       expect(sheet['F1'].v).toBe('ownerId');
+      expect(sheet['G1'].v).toBe('lastLoginAt');
 
       // Check for some known user data (from shared mocks)
       // Big Region user should be in the spreadsheet
