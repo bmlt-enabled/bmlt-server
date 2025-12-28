@@ -102,7 +102,7 @@ class GetFieldKeysTest extends TestCase
     public function testGetFieldKeysAllLocales200()
     {
         try {
-            $locales = ['de', 'dk', 'en', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv'];
+            $locales = ['da', 'de', 'en', 'es', 'fa', 'fr', 'it', 'pl', 'pt', 'ru', 'sv'];
             foreach ($locales as $locale) {
                 FromDatabaseConfig::set('language', $locale);
                 $this->get('/client_interface/json/?switcher=GetFieldKeys')->assertStatus(200);
