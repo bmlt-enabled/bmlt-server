@@ -39,7 +39,8 @@
       displayName: user.displayName,
       email: user.email,
       type: user.type,
-      ownerId: user.ownerId
+      ownerId: user.ownerId,
+      lastLoginAt: user.lastLoginAt
     }))
   );
 
