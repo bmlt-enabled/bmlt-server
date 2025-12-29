@@ -36,7 +36,7 @@ class MeetingResource extends JsonResource
         if ($langEnum === $requestedLangEnum) {
             return 3;
         }
-        if ($langEnum === (legacy_config('language') ?: App::currentLocale())){
+        if ($langEnum === (legacy_config('language') ?: App::currentLocale())) {
             return 2;
         }
         return 1;

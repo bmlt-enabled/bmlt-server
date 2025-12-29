@@ -93,9 +93,9 @@ class UserRepository implements UserRepositoryInterface
     public function setTargetLanguage(int $id, string $langEnum): bool
     {
             $user = User::find($id);
-            if (!is_null($user)) {
-                $user->setTargetLanguage($langEnum);
-            }
+        if (!is_null($user)) {
+            $user->setTargetLanguage($langEnum);
+        }
             return true;
     }
     private function saveChange(?User $beforeUser, ?User $afterUser): void

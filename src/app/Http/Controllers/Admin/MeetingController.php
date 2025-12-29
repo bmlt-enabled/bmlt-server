@@ -85,7 +85,7 @@ class MeetingController extends ResourceController
         // Translators can only update the data fields, not the main meeting fields
         // so we remove any main fields from the request before proceeding
         if ($request->user()->isTranslator()) {
-            foreach(Meeting::$mainFields as $fieldName) {
+            foreach (Meeting::$mainFields as $fieldName) {
                 $request->request->remove($fieldName);
             }
         }

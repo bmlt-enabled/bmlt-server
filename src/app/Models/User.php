@@ -78,7 +78,8 @@ class User extends Model implements AuthenticatableContract
     {
         return $this->user_level_tinyint == self::USER_LEVEL_TRANSLATOR;
     }
-    public function setTargetLanguage(string $langEnum) {
+    public function setTargetLanguage(string $langEnum)
+    {
         session()->put('target_language', $langEnum);
     }
     public function getTargetLanguage(): ?string

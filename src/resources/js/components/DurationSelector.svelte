@@ -9,7 +9,7 @@
   interface Props {
     initialDuration: string;
     updateDuration: (d: string) => void;
-    disabled?: boolean;
+    disabled: boolean;
   }
 
   let { initialDuration, updateDuration, disabled }: Props = $props();
@@ -51,11 +51,11 @@
 
 <div class="flex space-x-4">
   <div class="flex flex-col">
-    <Select id="hours" class="rounded-lg dark:bg-gray-600" items={hourOptions} bind:value={hours} onchange={handleHourChange} disabled={disabled}/>
+    <Select id="hours" class="rounded-lg dark:bg-gray-600" items={hourOptions} bind:value={hours} onchange={handleHourChange} {disabled} />
     <Label for="hours" class="mt-2 text-sm font-semibold">{$translations.hoursTitle}</Label>
   </div>
   <div class="flex flex-col">
-    <Select id="minutes" class="rounded-lg dark:bg-gray-600" items={minuteOptions} bind:value={minutes} onchange={handleMinuteChange} disabled={disabled}/>
+    <Select id="minutes" class="rounded-lg dark:bg-gray-600" items={minuteOptions} bind:value={minutes} onchange={handleMinuteChange} {disabled} />
     <Label for="minutes" class="mt-2 text-sm font-semibold">{$translations.minutesTitle}</Label>
   </div>
 </div>
