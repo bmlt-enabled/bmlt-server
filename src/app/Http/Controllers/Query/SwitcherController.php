@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Query;
 
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Query\FormatResource;
 use App\Http\Resources\Query\MeetingResource;
@@ -355,7 +356,7 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
-        $langEnum = $request->input('lang_enum', config('app.locale'));
+        $langEnum = $request->input('lang_enum', legacy_config('language') ?: App::currentLocale());
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
@@ -414,7 +415,7 @@ class SwitcherController extends Controller
         $formatsExclude = collect($formatIds)->filter(fn($r) => $r < 0)->map(fn($r) => abs($r))->toArray();
         $formatsExclude = count($formatsExclude) ? $formatsExclude : null;
 
-        $langEnums = $request->input('lang_enum', config('app.locale'));
+        $langEnums = $request->input('lang_enum', legacy_config('language') ?: App::currentLocale());
         if (!is_array($langEnums)) {
             $langEnums = [$langEnums];
         }

@@ -86,6 +86,9 @@ class UserController extends ResourceController
 
     public function partialUpdate(Request $request, User $user)
     {
+        if ($request->targetLanguage ?? false) {
+            return $this->setTargetLanguage($request, $user);
+        }
         $request->merge(
             collect(User::FIELDS)
                 ->mapWithKeys(function ($fieldName, $_) use ($request, $user) {
@@ -180,5 +183,14 @@ class UserController extends ResourceController
             })
             ->reject(fn ($_, $key) => empty($key))
             ->toArray();
+    }
+    public function setTargetLanguage(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'targetLanguage' => 'required|string|max:10',
+        ]);
+
+        $this->userRepository->setTargetLanguage($user->id_bigint, $validated['targetLanguage']);
+        return response()->noContent();
     }
 }

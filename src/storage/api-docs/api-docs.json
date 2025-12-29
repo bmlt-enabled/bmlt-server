@@ -1087,6 +1087,90 @@
                 ]
             }
         },
+        "/api/v1/translations/meetings/{meetingId}": {
+            "patch": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Translates the a meeting data",
+                "description": "Provide tranlations for a meeting by id",
+                "operationId": "translateMeeting",
+                "parameters": [
+                    {
+                        "name": "meetingId",
+                        "in": "path",
+                        "description": "ID of meeting",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Pass in fields you want to update.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MeetingPartialUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is unauthorized to perform action.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Returns when no meeting exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/rootservers": {
             "get": {
                 "tags": [
@@ -2988,6 +3072,10 @@
                     {
                         "properties": {
                             "password": {
+                                "type": "string",
+                                "example": "string"
+                            },
+                            "targetLanguage": {
                                 "type": "string",
                                 "example": "string"
                             }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use Illuminate\Support\Facades\App;
 use App\Http\Resources\JsonResource;
 use App\Models\Meeting;
 use App\Repositories\MeetingRepository;
@@ -35,7 +36,7 @@ class MeetingResource extends JsonResource
         if ($langEnum === $requestedLangEnum) {
             return 3;
         }
-        if ($langEnum === config('app.locale')) {
+        if ($langEnum === (legacy_config('language') ?: App::currentLocale())){
             return 2;
         }
         return 1;
@@ -56,7 +57,7 @@ class MeetingResource extends JsonResource
             self::$hiddenFormatIds = collect([self::$virtualFormatId, self::$hybridFormatId, self::$temporarilyClosedFormatId]);
             self::$isRequestInitialized = true;
         }
-        $requestedLangEnum = $request->cookie('lang', config('app.locale'));
+        $requestedLangEnum = $request->user()->getTargetLanguage() ?? (legacy_config('language') ?: App::currentLocale());
         $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
             if (!isset($carry[0][$item->key])) {
                 $carry[0][$item->key] = $item->data_string;

@@ -220,6 +220,14 @@ class ApiClientWrapper {
     return this.api.patchMeeting(params);
   }
 
+  async translateMeeting(id: number, meeting: MeetingPartialUpdate): Promise<void> {
+    const params = {
+      meetingId: id,
+      meetingPartialUpdate: meeting
+    };
+    return this.api.translateMeeting(params);
+  }
+
   async deleteMeeting(id: number): Promise<void> {
     const params = { meetingId: id };
     return this.api.deleteMeeting(params);

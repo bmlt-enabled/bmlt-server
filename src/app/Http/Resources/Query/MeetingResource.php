@@ -85,7 +85,7 @@ class MeetingResource extends JsonResource
             'format_shared_id_list' => $this->getFormatSharedIdList(),
             'root_server_id' => $this->getRootServerId(),
         ];
-        $requestedLangEnum = $request->cookie('lang', config('app.locale'));
+        $requestedLangEnum = $request->lang_enum ?? config('app.locale');
         // data table keys
         $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
             if (!isset($carry[0][$item->key])) {

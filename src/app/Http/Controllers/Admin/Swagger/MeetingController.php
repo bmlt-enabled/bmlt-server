@@ -199,6 +199,31 @@ class MeetingController extends Controller
     public function partialUpdate()
     {
     }
+    /** @OA\Patch(path="/api/v1/translations/meetings/{meetingId}", summary="Translates the a meeting data", description="Provide tranlations for a meeting by id", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\RequestBody(required=true, description="Pass in fields you want to update.",
+     *         @OA\JsonContent(ref="#/components/schemas/MeetingPartialUpdate"),
+     *     ),
+     *     @OA\Response(response=204, description="Success."),
+     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
+     *     ),
+     *     @OA\Response(response=403, description="Returns when user is unauthorized to perform action.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthorizationError")
+     *     ),
+     *     @OA\Response(response=404, description="Returns when no meeting exists.",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
+     *     ),
+     *     @OA\Response(response=422, description="Validation error.",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     *     ),
+     * )
+     */
+    public function translate()
+    {
+    }
 
     /**
      * @OA\Delete(path="/api/v1/meetings/{meetingId}", summary="Deletes a meeting", description="Deletes a meeting by id.", operationId="deleteMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},

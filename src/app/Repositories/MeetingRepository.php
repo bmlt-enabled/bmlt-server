@@ -634,7 +634,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $this->getRequestedLanguage(),
+                        'lang_enum' => legacy_config('language') ?: App::currentLocale(),
                         'data_blob' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -643,7 +643,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $this->getRequestedLanguage(),
+                        'lang_enum' => legacy_config('language') ?: App::currentLocale(),
                         'data_string' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -655,32 +655,39 @@ class MeetingRepository implements MeetingRepositoryInterface
             return $meeting;
         });
     }
-    private function getRequestedLanguage(): string
+    private function getTargetLanguage(): string
     {
-        return request()->cookie('lang', config('app.locale'));
+        return request()->user()->getTargetLanguage() ?? legacy_config('language') ?: App::currentLocale();
     }
-    public function update(int $id, array $values): bool
+    public function update(int $id, array $values, bool $isTranslation = false): bool
     {
         $values = collect($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $isTranslation) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
+                $meetingDataValues = collect($meeting)->reject(fn ($_, $fieldName) => empty($value) || !$dataTemplates->has($fieldName))
+                    ->toBase();
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
-                MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getRequestedLanguage())->delete();
+                MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getTargetLanguage())->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
                     $t = $dataTemplates->get($fieldName);
+                    if (!$isTranslation && $meeting->{$fieldName} != $fieldValue) {
+                        $meetingDataValues->forget($fieldName);
+                        MeetingData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                        MeetingLongData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                    }
                     if (strlen($fieldValue) > 255) {
                         MeetingLongData::create([
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $this->getRequestedLanguage(),
+                            'lang_enum' => $this->getTargetLanguage(),
                             'data_blob' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
@@ -689,10 +696,16 @@ class MeetingRepository implements MeetingRepositoryInterface
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $this->getRequestedLanguage(),
+                            'lang_enum' => $this->getTargetLanguage(),
                             'data_string' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
+                    }
+                }
+                if (!$isTranslation) {
+                    foreach ($meetingDataValues as $fieldName => $fieldValue) {
+                        MeetingData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                        MeetingLongData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
                     }
                 }
                 if (!legacy_config('aggregator_mode_enabled')) {

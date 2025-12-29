@@ -26,10 +26,12 @@
   const USER_TYPE_DEACTIVATED = 'deactivated';
   const USER_TYPE_OBSERVER = 'observer';
   const USER_TYPE_SERVICE_BODY_ADMIN = 'serviceBodyAdmin';
+  const USER_TYPE_TRANSLATOR = 'translator';
   const userTypeItems = [
     { value: USER_TYPE_DEACTIVATED, name: 'Deactivated' },
     { value: USER_TYPE_OBSERVER, name: 'Observer' },
-    { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' }
+    { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' },
+    { value: USER_TYPE_TRANSLATOR, name: 'Translator' }
   ];
   const initialValues = {
     type: selectedUser?.type ?? USER_TYPE_SERVICE_BODY_ADMIN,

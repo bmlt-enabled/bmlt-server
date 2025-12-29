@@ -24,6 +24,7 @@
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
   import { TrashBinOutline } from 'flowbite-svelte-icons';
+  import { authenticatedUser } from '../stores/apiCredentials';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -84,6 +85,7 @@
     value: index,
     name: day
   }));
+  const isTranlation = $authenticatedUser?.type === 'translator';
   const statesAndProvincesChoices = globalSettings.meetingStatesAndProvinces
     .map((state) => ({
       value: state,
@@ -253,7 +255,10 @@
         };
         savedMeeting = await RootServerApi.createMeeting(copyData);
       } else if (selectedMeeting) {
-        await RootServerApi.updateMeeting(selectedMeeting.id, values);
+        if (isTranlation)
+          await RootServerApi.translateMeeting(selectedMeeting.id, values);
+        else
+          await RootServerApi.partialUpdateMeeting(selectedMeeting.id, values);
         savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
       } else {
         savedMeeting = await RootServerApi.createMeeting(values);
@@ -799,7 +804,7 @@
 {#snippet basicTabContent()}
   <div class="grid items-center gap-4 md:grid-cols-3">
     <div class="w-full">
-      <Checkbox name="published" bind:checked={isPublishedChecked}>
+      <Checkbox name="published" bind:checked={isPublishedChecked} disabled={isTranlation}>
         {$translations.meetingIsPublishedTitle}
       </Checkbox>
       {#if !isPublishedChecked}
@@ -824,6 +829,7 @@
           onclick={(e: MouseEvent) => selectedMeeting && handleDelete(e, selectedMeeting)}
           class="text-red-600 dark:text-red-500"
           aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          disabled={isTranlation}
         >
           <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
           <span class="sr-only">{$translations.deleteMeeting}</span>
@@ -845,7 +851,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
+      <Select id="timeZone" name="timeZone" class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder} disabled={isTranlation}>
         {#each timeZoneGroups as continent}
           <optgroup label={continent.name}>
             {#each continent.values as timezone}
@@ -864,7 +870,7 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" />
+      <Select id="day" items={weekdayChoices} name="day" class="rounded-lg dark:bg-gray-600" disabled={isTranlation}/>
       {#if $errors.day}
         <Helper class="mt-2" color="red">
           {$errors.day}
@@ -873,7 +879,7 @@
     </div>
     <div class="w-full">
       <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
-      <Input type="time" id="startTime" name="startTime" />
+      <Input type="time" id="startTime" name="startTime" disabled={isTranlation}/>
       {#if $errors.startTime}
         <Helper class="mt-2" color="red">
           {$errors.startTime}
@@ -882,7 +888,7 @@
     </div>
     <div class="w-full">
       <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
+      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} disabled={isTranlation}/>
       {#if $errors.duration}
         <Helper class="mt-2" color="red">
           {$errors.duration}
@@ -893,7 +899,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
-      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="rounded-lg dark:bg-gray-600" />
+      <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" class="rounded-lg dark:bg-gray-600" disabled={isTranlation} />
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
           {$errors.serviceBodyId}
@@ -904,7 +910,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="email" class="mt-2 mb-2">{$translations.emailTitle}</Label>
-      <Input type="email" id="email" name="email" />
+      <Input type="email" id="email" name="email" disabled={isTranlation}/>
       {#if $errors.email}
         <Helper class="mt-2" color="red">
           {$errors.email}
@@ -913,7 +919,7 @@
     </div>
     <div class="w-full">
       <Label for="worldId" class="mt-2 mb-2">{$translations.worldIdTitle}</Label>
-      <Input type="text" id="worldId" name="worldId" />
+      <Input type="text" id="worldId" name="worldId" disabled={isTranlation}/>
       {#if $errors.worldId}
         <Helper class="mt-2" color="red">
           {$errors.worldId}
@@ -923,7 +929,7 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
+    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected} placeholder={$translations.formatSelectPlaceholder} disabled={isTranlation}  >
       {#snippet children({ item, clear })}
         <div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="presentation">
           <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
@@ -945,7 +951,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" class="rounded-lg dark:bg-gray-600" />
+      <Select id="venueType" items={venueTypeItems} name="venueType" class="rounded-lg dark:bg-gray-600" disabled={isTranlation}/>
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -953,7 +959,7 @@
       {/if}
     </div>
   </div>
-  {#if selectedMeeting}
+  {#if selectedMeeting && !isTranlation}
     <div class="mt-4 grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
         <MapAccordion
@@ -989,7 +995,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="longitude" class="mt-2 mb-2">{$translations.longitudeTitle}</Label>
-      <Input type="text" id="longitude" name="longitude" bind:value={longitude} required />
+      <Input type="text" id="longitude" name="longitude" bind:value={longitude} required disabled={isTranlation}/>
       {#if $errors.longitude}
         <Helper class="mt-2" color="red">
           {$errors.longitude}
@@ -998,7 +1004,7 @@
     </div>
     <div class="w-full">
       <Label for="latitude" class="mt-2 mb-2">{$translations.latitudeTitle}</Label>
-      <Input type="text" id="latitude" name="latitude" bind:value={latitude} required />
+      <Input type="text" id="latitude" name="latitude" bind:value={latitude} required disabled={isTranlation}/>
       {#if $errors.latitude}
         <Helper class="mt-2" color="red">
           {$errors.latitude}
@@ -1119,7 +1125,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="phoneMeetingNumber" class="mt-2 mb-2">{$translations.phoneMeetingTitle}</Label>
-      <Input type="text" id="phoneMeetingNumber" name="phoneMeetingNumber" />
+      <Input type="text" id="phoneMeetingNumber" name="phoneMeetingNumber" disabled={isTranlation}/>
       {#if $errors.phoneMeetingNumber}
         <Helper class="mt-2" color="red">
           {$errors.phoneMeetingNumber}
@@ -1130,7 +1136,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="virtualMeetingLink" class="mt-2 mb-2">{$translations.virtualMeetingTitle}</Label>
-      <Input type="text" id="virtualMeetingLink" name="virtualMeetingLink" />
+      <Input type="text" id="virtualMeetingLink" name="virtualMeetingLink" disabled={isTranlation}/>
       {#if $errors.virtualMeetingLink}
         <Helper class="mt-2" color="red">
           {$errors.virtualMeetingLink}
@@ -1141,7 +1147,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="virtualMeetingAdditionalInfo" class="mt-2 mb-2">{$translations.virtualMeetingAdditionalInfoTitle}</Label>
-      <Input type="text" id="virtualMeetingAdditionalInfo" name="virtualMeetingAdditionalInfo" />
+      <Input type="text" id="virtualMeetingAdditionalInfo" name="virtualMeetingAdditionalInfo" disabled={isTranlation}/>
       {#if $errors.virtualMeetingAdditionalInfo}
         <Helper class="mt-2" color="red">
           {$errors.virtualMeetingAdditionalInfo}
@@ -1186,7 +1192,7 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="contactName1" class="mt-2 mb-2">{$translations.contact1NameTitle}</Label>
-      <Input type="text" id="contactName1" name="contactName1" />
+      <Input type="text" id="contactName1" name="contactName1"/>
       {#if $errors.contactName1}
         <Helper class="mt-2" color="red">
           {$errors.contactName1}

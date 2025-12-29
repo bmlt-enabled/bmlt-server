@@ -80,7 +80,18 @@ class MeetingController extends ResourceController
         $this->meetingRepository->update($meeting->id_bigint, $values);
         return response()->noContent();
     }
-
+    public function translate(Request $request, Meeting $meeting)
+    {
+        // Translators can only update the data fields, not the main meeting fields
+        // so we remove any main fields from the request before proceeding
+        if ($request->user()->isTranslator()) {
+            foreach(Meeting::$mainFields as $fieldName) {
+                $request->request->remove($fieldName);
+            }
+        }
+        $this->partialUpdate($request, $meeting);
+        return response()->noContent();
+    }
     public function partialUpdate(Request $request, Meeting $meeting)
     {
         $meetingData = $meeting->data

@@ -25,6 +25,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  * ),
  * @OA\Schema(schema="UserPartialUpdate",
  *     @OA\Property(property="password", type="string", example="string"),
+ *     @OA\Property(property="targetLanguage", type="string", example="string"),
  *     allOf={ @OA\Schema(ref="#/components/schemas/UserBase") }
  * ),
  * @OA\Schema(schema="UserCollection", type="array",
