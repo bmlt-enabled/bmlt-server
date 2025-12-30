@@ -56,6 +56,7 @@ class UserController extends ResourceController
             'displayName' => 'required|string|max:255',
             'description' => 'nullable|string|max:1024',
             'email' => 'nullable|email',
+            'targetLanguage' => 'required_if:type,' . User::USER_TYPE_TRANSLATOR . '|string|max:10',
             'ownerId' => 'nullable|present|int|exists:comdef_users,id_bigint',
         ]);
 
@@ -72,6 +73,7 @@ class UserController extends ResourceController
             'description_string' => $validated['description'] ?? '',
             'email_address_string' => $validated['email'] ?? '',
             'owner_id_bigint' => $validated['ownerId'] ?? -1,
+            'target_language' => $validated['targetLanguage'] ?? '',
         ]);
         return new UserResource($user);
     }
@@ -140,6 +142,7 @@ class UserController extends ResourceController
             'description' => 'nullable|string|max:1024',
             'email' => 'nullable|email',
             'ownerId' => 'nullable|present|int|exists:comdef_users,id_bigint',
+            'targetLanguage' => 'required_if:type,' . User::USER_TYPE_TRANSLATOR . '|string|max:10',
         ]));
 
         $ownerId = $validated->get('ownerId');
@@ -177,20 +180,13 @@ class UserController extends ResourceController
                     return [$fieldName => $validated['description'] ?? ''];
                 } elseif ($fieldName == 'email_address_string') {
                     return [$fieldName => $validated['email'] ?? ''];
+                } elseif ($fieldName == 'target_language') {
+                    return [$fieldName => $validated['targetLanguage'] ?? ''];
                 } else {
                     return [null => null];
                 }
             })
             ->reject(fn ($_, $key) => empty($key))
             ->toArray();
-    }
-    public function setTargetLanguage(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'targetLanguage' => 'required|string|max:10',
-        ]);
-
-        $this->userRepository->setTargetLanguage($user->id_bigint, $validated['targetLanguage']);
-        return response()->noContent();
     }
 }

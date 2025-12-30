@@ -41,6 +41,9 @@ class MeetingResource extends JsonResource
         }
         return 1;
     }
+    private function getTargetLanguage($request) {
+        return $request->lang;
+    }
     public function toArray($request)
     {
         if (!self::$isRequestInitialized) {
@@ -57,7 +60,7 @@ class MeetingResource extends JsonResource
             self::$hiddenFormatIds = collect([self::$virtualFormatId, self::$hybridFormatId, self::$temporarilyClosedFormatId]);
             self::$isRequestInitialized = true;
         }
-        $requestedLangEnum = $request->user()->getTargetLanguage() ?? (legacy_config('language') ?: App::currentLocale());
+        $requestedLangEnum = $this->getTargetLanguage($request) ?? (legacy_config('language') ?: App::currentLocale());
         $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
             if (!isset($carry[0][$item->key])) {
                 $carry[0][$item->key] = $item->data_string;

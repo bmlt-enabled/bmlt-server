@@ -255,8 +255,14 @@
         };
         savedMeeting = await RootServerApi.createMeeting(copyData);
       } else if (selectedMeeting) {
-        if (isTranlation) await RootServerApi.translateMeeting(selectedMeeting.id, values);
-        else await RootServerApi.partialUpdateMeeting(selectedMeeting.id, values);
+        let updated = Object.getOwnPropertyNames(values).reduce<MeetingPartialUpdate>((acc, curr) => {
+          if (values[curr as keyof MeetingPartialUpdate] !== initialValues[curr as keyof MeetingPartialUpdate]) {
+            acc[curr as keyof MeetingPartialUpdate] = values[curr as keyof MeetingPartialUpdate] as any;
+          }
+          return acc;
+        }, {} as MeetingPartialUpdate);
+        if (isTranlation) await RootServerApi.translateMeeting(selectedMeeting.id, $authenticatedUser?.targetLanguage??'', updated);
+        else await RootServerApi.partialUpdateMeeting(selectedMeeting.id, updated);
         savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
       } else {
         savedMeeting = await RootServerApi.createMeeting(values);

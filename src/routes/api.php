@@ -37,7 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);
     Route::patch('/meetings/{meeting}', [MeetingController::class, 'partialUpdate']);
-    Route::patch('/translations/meetings/{meeting}', [MeetingController::class, 'translate'])->can('translate', 'meeting');
+    Route::patch('/translations/{lang}/meetings/{meeting}', [MeetingController::class, 'translate'])->can('translate', 'meeting');
+    Route::get('/translations/{lang}/meetings/{meeting}', [MeetingController::class, 'getTranslation']);
+    Route::get('/translations/{lang}/meetings', [MeetingController::class, 'searchTranslations']);
     Route::apiResource('meetings.changes', MeetingChangeController::class)->only([ 'index' ]);
     Route::apiResource('servicebodies', ServiceBodyController::class, ['parameters' => ['servicebodies' => 'serviceBody']]);
     Route::patch('/servicebodies/{serviceBody}', [ServiceBodyController::class, 'partialUpdate']);

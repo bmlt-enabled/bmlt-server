@@ -13,5 +13,4 @@ interface UserRepositoryInterface
     public function update(int $id, array $values): bool;
     public function delete(int $id): bool;
     public function updatePassword(int $id, string $plaintextPassword);
-    public function setTargetLanguage(int $id, string $langEnum);
 }

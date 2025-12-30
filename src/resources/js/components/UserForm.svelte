@@ -11,6 +11,10 @@
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
 
+  const globalSettings = settings;
+  const mappings = globalSettings.languageMapping;
+  const allLanguages = Object.entries(mappings).map(([code, name]) => ({ value: code, name: name }));
+
   interface Props {
     selectedUser: User | null;
     users: User[];
@@ -40,10 +44,11 @@
     displayName: selectedUser?.displayName ?? '',
     username: selectedUser?.username ?? '',
     password: '',
-    description: selectedUser?.description ?? ''
+    description: selectedUser?.description ?? '',
+    targetLanguage: selectedUser?.targetLanguage ?? ''
   };
   let savedUser: User;
-
+  let selectedType: string = $state(initialValues.type ?? '');
   const { data, errors, form, isDirty } = createForm({
     initialValues: initialValues,
     onSubmit: async (values) => {
@@ -66,7 +71,8 @@
             displayName: (error?.errors?.displayName ?? []).join(' '),
             username: (error?.errors?.username ?? []).join(' '),
             password: (error?.errors?.password ?? []).join(' '),
-            description: (error?.errors?.description ?? []).join(' ')
+            description: (error?.errors?.description ?? []).join(' '),
+            targetLanguage: (error?.errors?.targetLanguage ?? []).join(' ')
           });
         }
       });
@@ -147,7 +153,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
-      <Select id="type" items={userTypeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select id="type" bind:value={selectedType} items={userTypeItems} name="type" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -162,6 +168,13 @@
           {$errors.ownerId}
         {/if}
       </Helper>
+    </div>
+    <div class={(($authenticatedUser?.type !== 'admin') || selectedType != USER_TYPE_TRANSLATOR)? 'hidden' : ''}>
+      <Label for="targetLanguage" class="mb-2">{$translations.languageSelectTitle}</Label>
+      <Select id="targetLanguage" items={allLanguages} name="targetLanguage" class="rounded-lg dark:bg-gray-600" />
+        {#if $errors.targetLanguage}
+          {$errors.targetLanguage}
+        {/if}
     </div>
     <div class="md:col-span-2">
       <Label for="email" class="mb-2">{$translations.emailTitle}</Label>

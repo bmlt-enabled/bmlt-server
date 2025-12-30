@@ -190,7 +190,16 @@ class ApiClientWrapper {
     };
     return this.api.getMeetings(params);
   }
-
+  async getTranslatedMeetings(lang: string, { meetingIds = '', days = '', serviceBodyIds = '', searchString = '' }: GetMeetingsRequest = {}): Promise<Meeting[]> {
+    const params = {
+      lang,
+      ...(searchString && { searchString }),
+      ...(days && { days }),
+      ...(meetingIds && { meetingIds }),
+      ...(serviceBodyIds && { serviceBodyIds })
+    };
+    return this.api.getTranslatedMeetings(params);
+  }
   async getMeeting(id: number): Promise<Meeting> {
     const params = { meetingId: id };
     return this.api.getMeeting(params);
@@ -220,8 +229,9 @@ class ApiClientWrapper {
     return this.api.patchMeeting(params);
   }
 
-  async translateMeeting(id: number, meeting: MeetingPartialUpdate): Promise<void> {
+  async translateMeeting(id: number, lang: string, meeting: MeetingPartialUpdate): Promise<void> {
     const params = {
+      lang: lang,
       meetingId: id,
       meetingPartialUpdate: meeting
     };

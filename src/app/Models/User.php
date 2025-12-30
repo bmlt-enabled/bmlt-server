@@ -47,6 +47,7 @@ class User extends Model implements AuthenticatableContract
         'login_string',
         'password_string',
         'owner_id_bigint',
+        'target_language'
     ];
 
     protected $table = 'comdef_users';
@@ -78,18 +79,7 @@ class User extends Model implements AuthenticatableContract
     {
         return $this->user_level_tinyint == self::USER_LEVEL_TRANSLATOR;
     }
-    public function setTargetLanguage(string $langEnum)
-    {
-        session()->put('target_language', $langEnum);
-    }
-    public function getTargetLanguage(): ?string
-    {
-        $langEnum = session()->get('target_language', null);
-        if (!is_null($langEnum)) {
-            return $langEnum;
-        }
-        return null;
-    }
+
     public function isDeactivated(): bool
     {
         return $this->user_level_tinyint == self::USER_LEVEL_DEACTIVATED;

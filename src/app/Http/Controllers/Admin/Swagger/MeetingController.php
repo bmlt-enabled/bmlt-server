@@ -96,7 +96,37 @@ class MeetingController extends Controller
     public function index()
     {
     }
-
+    /**
+     * @OA\Get(path="/api/v1/translations/{lang}/meetings", summary="Retrieves meetings with translated values", description="Retrieve meetings for authenticated user.", operationId="getTranslatedMeetings", tags={"rootServer"}, security={{"bmltToken":{}}},
+     *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(description="comma delimited meeting ids", in="query", name="meetingIds", required=false, example="1,2",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(description="comma delimited day ids between 0-6", in="query", name="days", required=false, example="0,1",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(description="comma delimited service body ids", in="query", name="serviceBodyIds", required=false, example="3,4",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(description="string", in="query", name="searchString", required=false, example="Just for Today",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(response=200, description="List of meetings.",
+     *         @OA\JsonContent(ref="#/components/schemas/MeetingCollection")
+     *     ),
+     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
+     *     ),
+     *     @OA\Response(response=422, description="Validation error.",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     *     ),
+     * )
+     */
+    public function translateIndex()
+    {
+    }
     /**
      * @OA\Get(path="/api/v1/meetings/{meetingId}", summary="Retrieves a meeting", description="Retrieve a meeting.", operationId="getMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
@@ -116,7 +146,28 @@ class MeetingController extends Controller
     public function show()
     {
     }
-
+    /**
+     * @OA\Get(path="/api/v1/translations/{lang}/meetings/{meetingId}", summary="Retrieves a meeting translation", description="Retrieve a meeting.", operationId="getMeetingTranslation", tags={"rootServer"}, security={{"bmltToken":{}}},
+     *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
+     *         @OA\Schema(type="integer",format="int64")
+     *     ),
+     *     @OA\Response(response=200, description="Returns when user is authenticated.",
+     *         @OA\JsonContent(ref="#/components/schemas/Meeting")
+     *     ),
+     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
+     *     ),
+     *     @OA\Response(response=404, description="Returns when no meeting exists.",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
+     *     ),
+     * )
+     */
+    public function showTranslation()
+    {
+    }
     /**
      * @OA\Post(path="/api/v1/meetings", summary="Creates a meeting", description="Creates a meeting.", operationId="createMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\RequestBody(required=true, description="Pass in meeting object",
@@ -199,7 +250,10 @@ class MeetingController extends Controller
     public function partialUpdate()
     {
     }
-    /** @OA\Patch(path="/api/v1/translations/meetings/{meetingId}", summary="Translates the a meeting data", description="Provide tranlations for a meeting by id", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+    /** @OA\Patch(path="/api/v1/translations/{lang}/meetings/{meetingId}", summary="Translates the a meeting data", description="Provide tranlations for a meeting by id", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
      *     ),

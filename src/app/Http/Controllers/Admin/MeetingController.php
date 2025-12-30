@@ -59,7 +59,11 @@ class MeetingController extends ResourceController
 
         return MeetingResource::collection($meetings);
     }
-
+    public function searchTranslations(Request $request)
+    {
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        return $this->index($request);
+    }
     public function show(Meeting $meeting)
     {
         return new MeetingResource($meeting);
@@ -82,14 +86,19 @@ class MeetingController extends ResourceController
     }
     public function translate(Request $request, Meeting $meeting)
     {
-        // Translators can only update the data fields, not the main meeting fields
-        // so we remove any main fields from the request before proceeding
-        if ($request->user()->isTranslator()) {
-            foreach (Meeting::$mainFields as $fieldName) {
-                $request->request->remove($fieldName);
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        $validated = $this->validateTranslationInputs($request);
+        if (isset($validated['customFields'])) {
+            foreach ($validated['customFields'] as $key => $value) {
+                $validated[$key] = $value;
             }
+            unset($validated['customFields']);
         }
-        $this->partialUpdate($request, $meeting);
+        if (isset($validated['name'])) {
+            $validated['meeting_name'] = $validated['name'];
+            unset($validated['name']);
+        }
+        $this->meetingRepository->translate($meeting->id_bigint, $validated);
         return response()->noContent();
     }
     public function partialUpdate(Request $request, Meeting $meeting)
@@ -180,7 +189,12 @@ class MeetingController extends ResourceController
         }
         return $customFields;
     }
-
+    private function validateTranslationInputs(Request $request)
+    {
+        return $request->validate(
+            array_merge(['name' => 'nullable|string|max:128'], $this->getDataFieldValidators(true))
+        );
+    }
     private function validateInputs(Request $request, $skipVenueTypeLocationValidation = false)
     {
         return collect($request->validate(
