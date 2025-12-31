@@ -176,7 +176,7 @@ A convenient starting point for the spreadsheet file is to use the button `Downl
 php artisan translation:update-from-spreadsheet /path/to/italian-translations.xlsx it
 ````
 
-## Adding a new language to the server
+## Adding a New Language to the Server
 
 To add a new language (for example, Norwegian, which has [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) code `no`):
 
@@ -205,7 +205,9 @@ To add a new language (for example, Norwegian, which has [ISO 639-1](https://en.
    cp src/resources/js/lang/en.ts src/resources/js/lang/no.ts
    ```
 
-2. Translate the strings in `src/resources/js/lang/no.ts`.
+2. Translate the strings in the file `src/resources/js/lang/no.ts` and rename the two constants that it exports:
+   `enYupLocale` => `noYupLocale`, `enTranslations` => `noTranslations`.
+
 
 3. Export the new language in `src/resources/js/lang/index.ts`:
    ```typescript
@@ -213,7 +215,7 @@ To add a new language (for example, Norwegian, which has [ISO 639-1](https://en.
    ```
 
 4. Import and add the new language to `src/resources/js/stores/localization.ts`:
-   - Add to imports:
+   - Add to imports (maintain alphabetical order):
      ```typescript
      noTranslations,
      noYupLocale,
@@ -237,19 +239,33 @@ Option 1 puts the format translations into the code base, and is how all the for
 
 Option 2 is much simpler -- just use the format translation editor in the UI -- but they won't be in the code base and someone who spins up a new server in your new language won't get them automatically. You can also do some of both: start with a set of basic format translations defined using a database migration, and then add some additional ones using the UI.
 
-The migration `src/database/migrations/1902_01_01_000000_create_initial_schema.php` has the basic format translations for the initial languages shipped with the server; there are some additional migrations to define format types, define the special formats `HY`, `TC`, and `VM` (see below), the `SPAD` format, and to fix up some mistakes in the initial schema migration.
-
 For historical reasons, the meeting's venue type (in-person, hybrid, or virtual) is specified in the server database using the `HY` (hybrid) and `VM` (virtual meeting) formats. The UI for service body administrators doesn't expose these to the administrator however; they get set using the Venue Type menu on the meeting editor Location tab. `TC` (Temporarily Closed) has been deprecated -- it was used a lot during the pandemic -- but you may still encounter it if you start with a database containing some older data. However, these formats **are** visible in crouton and bread for hybrid, virtual, or temporarily closed meetings, so you should provide translations for them.
 
+The migration `src/database/migrations/1902_01_01_000000_create_initial_schema.php` includes translations for the formats shipped with the server. You can use these as suggestions for other translations you might want to provide for the new language.
 
 ## Debugging in IntelliJ or PhpStorm
 
 See screenshots below for more detail.
 
-1. Open IntelliJ Preferences. Go to `Languages & Frameworks -> PHP -> Debug`. Under the `Xdebug` section, set the `Debug port` to `10000,9003`. Close IntelliJ Preferences. ![image](docker/img/intellij-prefs-xdebug.png)
-2. Add a new `PHP Remote Debug` debug configuration.
-3. In the new debug configuration, make click the three dots `...` next to the Server field, and add a new Server. Set the server's `Host` to `0.0.0.0`, and set the `Port` to `8000`. Check the `Use path mappings` checkbox, and set the `Absolute path on the server` for the `Project files` to `/var/www/html/main_server`.  ![image](docker/img/add-debug-server.png)
-4. Check `Filter debug connection by IDE key` and set the `IDE Key(session id)` to `ROOT_SERVER_DEBUG`. ![image](docker/img/final-debug-configuration.png)
-5. To start debugging, select your new debug configuration and click the `Start Listening for PHP Debug Connections` icon. ![image](docker/img/start-listening.png)
-6. Then, click the `Debug` icon to open your web browser and start the XDebug session. ![image](docker/img/debug.png)
-7. Then, browse to `http://0.0.0.0:8000/main_server/`
+1. Open IntelliJ Settings. Go to `Languages & Frameworks -> PHP -> Debug`. Under the `Xdebug` section, set the `Debug port` to `10000,9003`. Click OK and close IntelliJ Preferences.
+
+![image](docker/img/intellij-prefs-xdebug.png)
+
+2. Pick `Run -> Edit Configurations...` Add a new `PHP Remote Debug` debug configuration.
+3. In the new debug configuration, check `Filter debug connection by IDE key`. Click the three dots `...` next to the Server field, and add a new Server. Set the server's `Host` to `0.0.0.0`, and set the `Port` to `8000`. Check the `Use path mappings` checkbox, and set the `Absolute path on the server` for the `src` directory under `Project files` to `/var/www/html/main_server`. Click OK.
+
+ ![image](docker/img/add-debug-server.png)
+
+4. Back in the debug configuration, set the `IDE Key(session id)` to `ROOT_SERVER_DEBUG`.
+
+![image](docker/img/final-debug-configuration.png)
+
+5. To start debugging, select your new debug configuration and click the `Start Listening for PHP Debug Connections` icon.
+
+![image](docker/img/start-listening.png)
+
+6. Then, click the `Debug` icon to open your web browser and start the XDebug session.
+
+![image](docker/img/debug.png)
+
+7. Finally, browse to `http://0.0.0.0:8000/main_server/`
