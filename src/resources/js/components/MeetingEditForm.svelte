@@ -261,9 +261,13 @@
           }
           return acc;
         }, {} as MeetingPartialUpdate);
-        if (isTranlation) await RootServerApi.translateMeeting(selectedMeeting.id, $authenticatedUser?.targetLanguage??'', updated);
-        else await RootServerApi.partialUpdateMeeting(selectedMeeting.id, updated);
-        savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
+        if (isTranlation) {
+          await RootServerApi.translateMeeting(selectedMeeting.id, $authenticatedUser?.targetLanguage??'', updated);
+          savedMeeting = await RootServerApi.getMeetingTranslation($authenticatedUser?.targetLanguage??'', selectedMeeting.id);
+        } else {
+          await RootServerApi.partialUpdateMeeting(selectedMeeting.id, updated);
+          savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
+        }
       } else {
         savedMeeting = await RootServerApi.createMeeting(values);
       }

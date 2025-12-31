@@ -97,7 +97,7 @@ class MeetingController extends Controller
     {
     }
     /**
-     * @OA\Get(path="/api/v1/translations/{lang}/meetings", summary="Retrieves meetings with translated values", description="Retrieve meetings for authenticated user.", operationId="getTranslatedMeetings", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/translations/meetings/{lang}", summary="Retrieves meetings with translated values", description="Retrieve meetings for authenticated user.", operationId="getTranslatedMeetings", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
      *         @OA\Schema(type="string")
      *     ),
@@ -147,7 +147,7 @@ class MeetingController extends Controller
     {
     }
     /**
-     * @OA\Get(path="/api/v1/translations/{lang}/meetings/{meetingId}", summary="Retrieves a meeting translation", description="Retrieve a meeting.", operationId="getMeetingTranslation", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Get(path="/api/v1/translations/meetings/{meetingId}/{lang}", summary="Retrieves a meeting translation", description="Retrieve a meeting.", operationId="getMeetingTranslation", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
      *         @OA\Schema(type="string")
      *     ),
@@ -250,7 +250,7 @@ class MeetingController extends Controller
     public function partialUpdate()
     {
     }
-    /** @OA\Patch(path="/api/v1/translations/{lang}/meetings/{meetingId}", summary="Translates the a meeting data", description="Provide tranlations for a meeting by id", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+    /** @OA\Patch(path="/api/v1/translations/meetings/{meetingId}/{lang}", summary="Translates the a meeting data", description="Provide tranlations for a meeting by id", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="language", in="path", name="lang", required=true, example="en",
      *         @OA\Schema(type="string")
      *     ),

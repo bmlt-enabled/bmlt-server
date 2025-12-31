@@ -41,7 +41,8 @@ class MeetingResource extends JsonResource
         }
         return 1;
     }
-    private function getTargetLanguage($request) {
+    private function getTargetLanguage($request)
+    {
         return $request->lang;
     }
     public function toArray($request)

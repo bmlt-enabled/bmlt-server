@@ -792,7 +792,7 @@
                 ]
             }
         },
-        "/api/v1/translations/{lang}/meetings": {
+        "/api/v1/translations/meetings/{lang}": {
             "get": {
                 "tags": [
                     "rootServer"
@@ -1186,7 +1186,7 @@
                 ]
             }
         },
-        "/api/v1/translations/{lang}/meetings/{meetingId}": {
+        "/api/v1/translations/meetings/{meetingId}/{lang}": {
             "get": {
                 "tags": [
                     "rootServer"
