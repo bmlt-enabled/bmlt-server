@@ -21,7 +21,7 @@ return new class extends Migration
         $validFormatIds = DB::table('comdef_formats')
             ->pluck('id')
             ->map(fn($id) => (string)$id)
-            ->toArray();
+            ->flip();
 
         $minId = DB::table('comdef_meetings_main')->min('id_bigint');
         $maxId = DB::table('comdef_meetings_main')->max('id_bigint');
@@ -31,30 +31,31 @@ return new class extends Migration
         }
 
         $chunkSize = 500;
+        $startId = $minId;
 
-        for ($startId = $minId; $startId <= $maxId; $startId += $chunkSize) {
-            $endId = $startId + $chunkSize - 1;
-            $meetings = DB::table('comdef_meetings_main')
+        while ($startId <= $maxId) {
+            $endId = min($startId + $chunkSize, $maxId);
+
+            DB::table('comdef_meetings_main')
                 ->whereBetween('id_bigint', [$startId, $endId])
                 ->whereNotNull('formats')
-                ->where('formats', '!=', '')
+                ->whereNot('formats', '')
                 ->select('id_bigint', 'formats')
-                ->get();
+                ->get()
+                ->map(fn($meeting) => [
+                    'id' => $meeting->id_bigint,
+                    'original' => $meeting->formats,
+                    'cleaned' => collect(explode(',', $meeting->formats))
+                        ->map(fn($id) => trim($id))
+                        ->filter(fn($id) => $id !== '' && $validFormatIds->has($id))
+                        ->implode(','),
+                ])
+                ->filter(fn($row) => $row['cleaned'] !== $row['original'])
+                ->each(fn($row) => DB::table('comdef_meetings_main')
+                    ->where('id_bigint', $row['id'])
+                    ->update(['formats' => $row['cleaned']]));
 
-            foreach ($meetings as $meeting) {
-                $formatIds = array_map('trim', explode(',', $meeting->formats));
-                $formatIds = array_filter($formatIds, fn($id) => $id !== '');
-                $orphanedIds = array_diff($formatIds, $validFormatIds);
-
-                if (!empty($orphanedIds)) {
-                    $validIds = array_intersect($formatIds, $validFormatIds);
-                    $cleanedFormats = implode(',', $validIds);
-
-                    DB::table('comdef_meetings_main')
-                        ->where('id_bigint', $meeting->id_bigint)
-                        ->update(['formats' => $cleanedFormats]);
-                }
-            }
+            $startId = $endId + 1;
         }
     }
 
