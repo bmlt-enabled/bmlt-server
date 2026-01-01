@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2025_12_27_112435_update_danish_language_code')) {
+        if (!$this->migrationRepository->migrationExists('2025_12_31_233709_clean_orphaned_format_ids')) {
             return true;
         }
 
