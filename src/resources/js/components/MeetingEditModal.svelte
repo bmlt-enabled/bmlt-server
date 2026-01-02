@@ -12,7 +12,7 @@
     selectedMeeting: Meeting | null;
     formats: Format[];
     serviceBodies: ServiceBody[];
-    onSaved: (meeting: Meeting) => void;
+    onSaved: (meeting: Meeting, targetLanguage: string) => void;
     onClosed: () => void;
     onDeleted: (meeting: Meeting) => void;
   }

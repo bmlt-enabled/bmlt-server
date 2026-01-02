@@ -198,12 +198,14 @@
     filteredItems.slice(currentPosition, currentPosition + itemsPerPage);
   }
 
-  function onSaved(meeting: Meeting) {
-    const i = meetings.findIndex((m) => m.id === meeting.id);
-    if (i === -1) {
-      meetings = [...meetings, meeting];
-    } else {
-      meetings[i] = meeting;
+  function onSaved(meeting: Meeting, targetLanguage: string) {
+    if (targetLanguage == '') {
+      const i = meetings.findIndex((m) => m.id === meeting.id);
+      if (i === -1) {
+        meetings = [...meetings, meeting];
+      } else {
+        meetings[i] = meeting;
+      }
     }
     lastEditedMeetingId = meeting.id;
     closeModal();

@@ -68,7 +68,11 @@ class MeetingController extends ResourceController
     {
         return new MeetingResource($meeting);
     }
-
+    public function getTranslation(Request $request, Meeting $meeting)
+    {
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        return new MeetingResource($meeting);
+    }
     public function store(Request $request)
     {
         $validated = $this->validateInputs($request);
