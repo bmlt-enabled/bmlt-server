@@ -90,7 +90,6 @@ class UserRepository implements UserRepositoryInterface
             return false;
         });
     }
-
     private function saveChange(?User $beforeUser, ?User $afterUser): void
     {
         $beforeObject = !is_null($beforeUser) ? $this->serializeForChange($beforeUser) : null;

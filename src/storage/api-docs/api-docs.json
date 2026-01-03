@@ -792,6 +792,105 @@
                 ]
             }
         },
+        "/api/v1/translations/meetings/{lang}": {
+            "get": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Retrieves meetings with translated values",
+                "description": "Retrieve meetings for authenticated user.",
+                "operationId": "getTranslatedMeetings",
+                "parameters": [
+                    {
+                        "name": "lang",
+                        "in": "path",
+                        "description": "language",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "en"
+                    },
+                    {
+                        "name": "meetingIds",
+                        "in": "query",
+                        "description": "comma delimited meeting ids",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "1,2"
+                    },
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "description": "comma delimited day ids between 0-6",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "0,1"
+                    },
+                    {
+                        "name": "serviceBodyIds",
+                        "in": "query",
+                        "description": "comma delimited service body ids",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "3,4"
+                    },
+                    {
+                        "name": "searchString",
+                        "in": "query",
+                        "description": "string",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "Just for Today"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of meetings.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/MeetingCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/meetings/{meetingId}": {
             "get": {
                 "tags": [
@@ -1022,6 +1121,168 @@
                             "type": "boolean"
                         },
                         "example": "true"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Pass in fields you want to update.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MeetingPartialUpdate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is unauthorized to perform action.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Returns when no meeting exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/translations/meetings/{meetingId}/{lang}": {
+            "get": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Retrieves a meeting translation",
+                "description": "Retrieve a meeting.",
+                "operationId": "getMeetingTranslation",
+                "parameters": [
+                    {
+                        "name": "lang",
+                        "in": "path",
+                        "description": "language",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "en"
+                    },
+                    {
+                        "name": "meetingId",
+                        "in": "path",
+                        "description": "ID of meeting",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns when user is authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Meeting"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Returns when no meeting exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Translates the a meeting data",
+                "description": "Provide tranlations for a meeting by id",
+                "operationId": "translateMeeting",
+                "parameters": [
+                    {
+                        "name": "lang",
+                        "in": "path",
+                        "description": "language",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "en"
+                    },
+                    {
+                        "name": "meetingId",
+                        "in": "path",
+                        "description": "ID of meeting",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
                     }
                 ],
                 "requestBody": {
@@ -3194,6 +3455,10 @@
                         "example": "string"
                     },
                     "email": {
+                        "type": "string",
+                        "example": "string"
+                    },
+                    "targetLanguage": {
                         "type": "string",
                         "example": "string"
                     },

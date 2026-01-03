@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Card } from 'flowbite-svelte';
-
   import { authenticatedUser } from '../stores/apiCredentials';
   import Nav from '../components/NavBar.svelte';
   import { translations } from '../stores/localization';

@@ -51,6 +51,8 @@ interface MeetingRepositoryInterface
     public function getBoundingBox(): array;
     public function create(array $values): Meeting;
     public function update(int $id, array $values): bool;
+    public function translate(int $id, array $values): bool;
+    public function setTargetLanguage(string $lang);
     public function delete(int $id): bool;
     public function import(int $rootServerId, Collection $externalObjects): MeetingImportResult;
 }
