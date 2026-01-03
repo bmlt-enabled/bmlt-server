@@ -137,6 +137,7 @@
   $effect(() => {
     isDirty.set(formIsDirty(initialValues, $data));
   });
+  let selectedTargetLanguage = $state(initialValues.targetLanguage);
 </script>
 
 <form use:form>
@@ -178,7 +179,7 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' || $data.type != USER_TYPE_TRANSLATOR ? 'hidden' : ''}>
       <Label for="targetLanguage" class="mb-2">{$translations.languageSelectTitle}</Label>
-      <Select id="targetLanguage" items={allLanguages} name="targetLanguage" class="rounded-lg dark:bg-gray-600" />
+      <Select id="targetLanguage" items={allLanguages} name="targetLanguage" bind:value={selectedTargetLanguage} class="rounded-lg dark:bg-gray-600" />
       {#if $errors.targetLanguage}
         {$errors.targetLanguage}
       {/if}
