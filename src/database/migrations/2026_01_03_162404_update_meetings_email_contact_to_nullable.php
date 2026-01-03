@@ -25,8 +25,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('comdef_meetings_main')
-            ->whereNull('email_contact')
-            ->update(['email_contact' => '']);
     }
 };
