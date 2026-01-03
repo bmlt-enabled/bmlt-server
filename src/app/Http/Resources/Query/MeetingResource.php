@@ -37,6 +37,16 @@ class MeetingResource extends JsonResource
         self::$defaultDurationTime = null;
         self::$isAggregatorModeEnabled = false;
     }
+    private function languagePriority($langEnum, $requestedLangEnum)
+    {
+        if ($langEnum === $requestedLangEnum) {
+            return 3;
+        }
+        if ($langEnum === config('app.locale')) {
+            return 2;
+        }
+        return 1;
+    }
 
     /**
      * Transform the resource into an array.
@@ -75,13 +85,21 @@ class MeetingResource extends JsonResource
             'format_shared_id_list' => $this->getFormatSharedIdList(),
             'root_server_id' => $this->getRootServerId(),
         ];
-
+        $requestedLangEnum = $request->lang_enum ?? config('app.locale');
         // data table keys
-        $meetingData = $this->data->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])->toBase()
+        $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
+            if (!isset($carry[0][$item->key])) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            }
+            return $carry;
+        }, [[], []])[0])->toBase()
             ->merge(
-                $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_blob])->toBase()
+                $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key.'|'.$data->lang_enum => $data->data_blob])->toBase()
             );
-
         foreach (self::$meetingDataTemplates as $meetingDataTemplate) {
             if (self::$hasDataFieldKeys && !self::$dataFieldKeys->has($meetingDataTemplate->key)) {
                 continue;

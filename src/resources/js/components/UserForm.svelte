@@ -11,6 +11,10 @@
   import { translations } from '../stores/localization';
   import { authenticatedUser } from '../stores/apiCredentials';
 
+  const globalSettings = settings;
+  const mappings = globalSettings.languageMapping;
+  const allLanguages = Object.entries(mappings).map(([code, name]) => ({ value: code, name: name }));
+
   interface Props {
     selectedUser: User | null;
     users: User[];
@@ -26,10 +30,12 @@
   const USER_TYPE_DEACTIVATED = 'deactivated';
   const USER_TYPE_OBSERVER = 'observer';
   const USER_TYPE_SERVICE_BODY_ADMIN = 'serviceBodyAdmin';
+  const USER_TYPE_TRANSLATOR = 'translator';
   const userTypeItems = [
     { value: USER_TYPE_DEACTIVATED, name: 'Deactivated' },
     { value: USER_TYPE_OBSERVER, name: 'Observer' },
-    { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' }
+    { value: USER_TYPE_SERVICE_BODY_ADMIN, name: 'Service Body Administrator' },
+    { value: USER_TYPE_TRANSLATOR, name: 'Translator' }
   ];
   const initialValues = {
     type: selectedUser?.type ?? USER_TYPE_SERVICE_BODY_ADMIN,
@@ -38,10 +44,11 @@
     displayName: selectedUser?.displayName ?? '',
     username: selectedUser?.username ?? '',
     password: '',
-    description: selectedUser?.description ?? ''
+    description: selectedUser?.description ?? '',
+    targetLanguage: selectedUser?.targetLanguage ?? ''
   };
   let savedUser: User;
-
+  let selectedType: string = $state(initialValues.type ?? '');
   const { data, errors, form, isDirty } = createForm({
     initialValues: initialValues,
     onSubmit: async (values) => {
@@ -64,7 +71,8 @@
             displayName: (error?.errors?.displayName ?? []).join(' '),
             username: (error?.errors?.username ?? []).join(' '),
             password: (error?.errors?.password ?? []).join(' '),
-            description: (error?.errors?.description ?? []).join(' ')
+            description: (error?.errors?.description ?? []).join(' '),
+            targetLanguage: (error?.errors?.targetLanguage ?? []).join(' ')
           });
         }
       });
@@ -130,6 +138,7 @@
   $effect(() => {
     isDirty.set(formIsDirty(initialValues, $data));
   });
+  let selectedTargetLanguage = $state(initialValues.targetLanguage);
 </script>
 
 <form use:form>
@@ -168,6 +177,13 @@
           {$errors.ownerId}
         {/if}
       </Helper>
+    </div>
+    <div class={$authenticatedUser?.type !== 'admin' || $data.type != USER_TYPE_TRANSLATOR ? 'hidden' : ''}>
+      <Label for="targetLanguage" class="mb-2">{$translations.languageSelectTitle}</Label>
+      <Select id="targetLanguage" items={allLanguages} name="targetLanguage" bind:value={selectedTargetLanguage} class="rounded-lg dark:bg-gray-600" />
+      {#if $errors.targetLanguage}
+        {$errors.targetLanguage}
+      {/if}
     </div>
     <div class="md:col-span-2">
       <Label for="email" class="mb-2">{$translations.emailTitle}</Label>

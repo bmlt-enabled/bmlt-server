@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Admin;
 
+use Illuminate\Support\Facades\App;
 use App\Http\Resources\JsonResource;
 use App\Models\Meeting;
 use App\Repositories\MeetingRepository;
@@ -30,7 +31,20 @@ class MeetingResource extends JsonResource
         self::$hiddenFormatIds = null;
         self::$temporarilyClosedFormatId = null;
     }
-
+    private function languagePriority($langEnum, $requestedLangEnum)
+    {
+        if ($langEnum === $requestedLangEnum) {
+            return 3;
+        }
+        if ($langEnum === (file_config('language') ?: App::currentLocale())) {
+            return 2;
+        }
+        return 1;
+    }
+    private function getTargetLanguage($request)
+    {
+        return $request->lang;
+    }
     public function toArray($request)
     {
         if (!self::$isRequestInitialized) {
@@ -47,9 +61,17 @@ class MeetingResource extends JsonResource
             self::$hiddenFormatIds = collect([self::$virtualFormatId, self::$hybridFormatId, self::$temporarilyClosedFormatId]);
             self::$isRequestInitialized = true;
         }
-
-        $meetingData = $this->data
-            ->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])
+        $requestedLangEnum = $this->getTargetLanguage($request) ?? (file_config('language') ?: App::currentLocale());
+        $meetingData =  collect($this->data->reduce(function ($carry, $item) use ($requestedLangEnum) {
+            if (!isset($carry[0][$item->key])) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            } elseif ($this->languagePriority($item->lang_enum, $requestedLangEnum) > $this->languagePriority($carry[0][$item->key], $requestedLangEnum)) {
+                $carry[0][$item->key] = $item->data_string;
+                $carry[1][$item->key] = $item->lang_enum;
+            }
+            return $carry;
+        }, [[], []])[0])
             ->toBase()
             ->merge(
                 $this->longdata

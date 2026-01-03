@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SwaggerController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Meeting;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);
     Route::patch('/meetings/{meeting}', [MeetingController::class, 'partialUpdate']);
+    Route::patch('/translations/meetings/{meeting}/{lang}', [MeetingController::class, 'translate'])->can('translate', 'meeting');
+    Route::get('/translations/meetings/{meeting}/{lang}', [MeetingController::class, 'getTranslation']);
+    Route::get('/translations/meetings/{lang}', [MeetingController::class, 'searchTranslations']);
     Route::apiResource('meetings.changes', MeetingChangeController::class)->only([ 'index' ]);
     Route::apiResource('servicebodies', ServiceBodyController::class, ['parameters' => ['servicebodies' => 'serviceBody']]);
     Route::patch('/servicebodies/{serviceBody}', [ServiceBodyController::class, 'partialUpdate']);

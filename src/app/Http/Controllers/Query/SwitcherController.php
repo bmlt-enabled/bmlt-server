@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Query;
 
+
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Query\FormatResource;
 use App\Http\Resources\Query\MeetingResource;
@@ -18,7 +20,6 @@ use App\Models\Change;
 use App\Models\Meeting;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse as BaseJsonResponse;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
