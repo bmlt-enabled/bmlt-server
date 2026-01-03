@@ -48,6 +48,7 @@
     targetLanguage: selectedUser?.targetLanguage ?? ''
   };
   let savedUser: User;
+  let selectedType: string = $state(initialValues.type ?? '');
   const { data, errors, form, isDirty } = createForm({
     initialValues: initialValues,
     onSubmit: async (values) => {

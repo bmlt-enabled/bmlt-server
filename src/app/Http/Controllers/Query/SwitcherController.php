@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Query;
 
+
 use Illuminate\Support\Facades\App;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Query\FormatResource;
