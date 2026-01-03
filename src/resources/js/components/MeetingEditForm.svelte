@@ -2,7 +2,8 @@
   import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
-  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Spinner, Tooltip } from 'flowbite-svelte';
+  import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Spinner, Textarea, Tooltip } from 'flowbite-svelte';
+  import { LockOutline } from 'flowbite-svelte-icons';
   import * as yup from 'yup';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -147,6 +148,7 @@
     contactPhone2: selectedMeeting?.contactPhone2 ?? '',
     contactEmail1: selectedMeeting?.contactEmail1 ?? '',
     contactEmail2: selectedMeeting?.contactEmail2 ?? '',
+    adminNotes: selectedMeeting?.adminNotes ?? '',
     busLines: stripLegacyFieldSeparator(selectedMeeting?.busLines),
     trainLines: stripLegacyFieldSeparator(selectedMeeting?.trainLines),
     comments: selectedMeeting?.comments ?? '',
@@ -310,6 +312,7 @@
             contactPhone2: (error?.errors?.contact_phone_2 ?? []).join(' '),
             contactEmail1: (error?.errors?.contact_email_1 ?? []).join(' '),
             contactEmail2: (error?.errors?.contact_email_2 ?? []).join(' '),
+            adminNotes: (error?.errors?.adminNotes ?? []).join(' '),
             busLines: (error?.errors?.bus_lines ?? []).join(' '),
             trainLines: (error?.errors?.train_lines ?? []).join(' '),
             comments: (error?.errors?.comments ?? []).join(' '),
@@ -394,6 +397,7 @@
           .string()
           .transform((v) => v.trim())
           .email(),
+        adminNotes: yup.string().transform((v) => v.trim()),
         busLines: yup.string().transform((v) => v.trim()),
         trainLines: yup.string().transform((v) => v.trim()),
         comments: yup.string().transform((v) => v.trim())
@@ -1233,6 +1237,28 @@
       {/if}
     </div>
   </div>
+  {#each settings.customFields as { name, displayName }}
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="md:col-span-2">
+        <Label for={name} class="mt-2 mb-2">{displayName}</Label>
+        <Input type="text" id={name} name={$data.customFields[name]} bind:value={$data.customFields[name]} />
+        {#if $errors.customFields?.[name]}
+          <Helper class="mt-2" color="red">
+            {$errors.customFields[name]}
+          </Helper>
+        {/if}
+      </div>
+    </div>
+  {/each}
+  <div class="mt-6 mb-4 flex items-center gap-2 border-b border-gray-200 pb-2 dark:border-gray-700">
+    <Badge color="yellow" class="text-xs">
+      <LockOutline class="mr-1 h-3 w-3" />
+      {$translations.private}
+    </Badge>
+    <span class="text-sm text-gray-500 dark:text-gray-400">
+      {$translations.fieldVisibilityAuthenticatedOnly}
+    </span>
+  </div>
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="contactName1" class="mt-2 mb-2">{$translations.contact1NameTitle}</Label>
@@ -1291,19 +1317,17 @@
       {/if}
     </div>
   </div>
-  {#each settings.customFields as { name, displayName }}
-    <div class="grid gap-4 md:grid-cols-2">
-      <div class="md:col-span-2">
-        <Label for={name} class="mt-2 mb-2">{displayName}</Label>
-        <Input type="text" id={name} name={$data.customFields[name]} bind:value={$data.customFields[name]} />
-        {#if $errors.customFields?.[name]}
-          <Helper class="mt-2" color="red">
-            {$errors.customFields[name]}
-          </Helper>
-        {/if}
-      </div>
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="md:col-span-2">
+      <Label for="adminNotes" class="mt-2 mb-2">{$translations.adminNotes}</Label>
+      <Textarea id="adminNotes" name="adminNotes" rows={2} class="w-full" />
+      {#if $errors.adminNotes}
+        <Helper class="mt-2" color="red">
+          {$errors.adminNotes}
+        </Helper>
+      {/if}
     </div>
-  {/each}
+  </div>
 {/snippet}
 
 {#snippet changesTabContent()}

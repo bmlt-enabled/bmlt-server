@@ -102,6 +102,7 @@ class MeetingUpdateTest extends TestCase
             'bus_lines' => $meetingData->get('bus_lines') ?: null,
             'train_lines' => $meetingData->get('train_lines') ?: null,
             'comments' => $meetingData->get('comments') ?: null,
+            'admin_notes' => $meetingData->get('admin_notes') ?: null,
         ], self::$extraFieldsTemplates->mapWithKeys(fn ($t, $_) => [$t->key => $meetingData->get($t->key) ?: null])->toArray());
     }
 

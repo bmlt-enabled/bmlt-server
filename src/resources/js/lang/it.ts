@@ -70,6 +70,7 @@ export const itTranslations = {
   addUser: 'Aggiungi utente',
   administrationTitle: 'Amministrazione',
   administratorTitle: 'Amministratore',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'amministratore',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
@@ -140,6 +141,7 @@ export const itTranslations = {
   errorDownloading: 'Errore durante il download',
   errors: 'Errori',
   extraInfoTitle: 'Informazioni aggiuntive',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: '✓ File elaborato con successo',
   filter: 'Filtro',
   formatDeleteConflictError: 'Errore: impossibile eliminare il formato perché è ancora associato a riunioni.',
@@ -272,6 +274,7 @@ export const itTranslations = {
   passwordTitle: 'Password',
   phoneMeetingTitle: 'Numero da comporre per la riunione telefonica',
   postMeridiem: 'PM',
+  private: 'Private', // TODO: translate
   processingFile: 'Elaborazione file in corso...',
   published: 'Pubblicato',
   regionBias: 'Region Bias', // TODO: Translate

@@ -70,6 +70,7 @@ export const faTranslations = {
   addUser: 'افزودن کاربر',
   administrationTitle: 'اداره',
   administratorTitle: 'مدیر',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'ادمین',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'ق.ظ',
@@ -140,6 +141,7 @@ export const faTranslations = {
   errorDownloading: 'Error Downloading',
   errors: 'خطاها',
   extraInfoTitle: 'اطلاعات اضافی',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: 'پرونده با موفقیت پردازش شد',
   filter: 'فیلتر',
   formatDeleteConflictError: 'خطا: این فرمت قابل حذف نیست زیرا هنوز با جلسات همراه است.',
@@ -272,6 +274,7 @@ export const faTranslations = {
   passwordTitle: 'رمز',
   phoneMeetingTitle: 'شماره تماس جلسه تلفنی',
   postMeridiem: 'ب.ظ',
+  private: 'Private', // TODO: translate
   processingFile: 'پردازش پرونده ...',
   published: 'منتشر شده',
   regionBias: 'Region Bias', // TODO: Translate

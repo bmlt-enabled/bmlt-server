@@ -41,6 +41,7 @@ class MeetingData extends Model
         'meeting_name',
         'bus_lines',
         'train_lines',
+        'admin_notes',
     ];
 
     public function meeting()
