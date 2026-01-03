@@ -169,12 +169,12 @@
         {/if}
       </Helper>
     </div>
-    <div class={(($authenticatedUser?.type !== 'admin') || selectedType != USER_TYPE_TRANSLATOR)? 'hidden' : ''}>
+    <div class={$authenticatedUser?.type !== 'admin' || selectedType != USER_TYPE_TRANSLATOR ? 'hidden' : ''}>
       <Label for="targetLanguage" class="mb-2">{$translations.languageSelectTitle}</Label>
       <Select id="targetLanguage" items={allLanguages} name="targetLanguage" class="rounded-lg dark:bg-gray-600" />
-        {#if $errors.targetLanguage}
-          {$errors.targetLanguage}
-        {/if}
+      {#if $errors.targetLanguage}
+        {$errors.targetLanguage}
+      {/if}
     </div>
     <div class="md:col-span-2">
       <Label for="email" class="mb-2">{$translations.emailTitle}</Label>

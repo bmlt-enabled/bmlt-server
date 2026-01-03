@@ -185,12 +185,22 @@ class UserCreateTest extends TestCase
         // it can be any valid type
         foreach (array_keys(User::USER_TYPE_TO_USER_LEVEL_MAP) as $type) {
             $data['type'] = $type;
+            if ($type == 'translator') {
+                $data['targetLanguage'] = 'de';
+            } else {
+                unset($data['targetLanguage']);
+            }
             $id = $this->withHeader('Authorization', "Bearer $token")
                 ->post('/api/v1/users', $data)
                 ->assertStatus(201)
                 ->json()['id'];
             User::query()->where('id_bigint', $id)->delete();
         }
+        $data['type'] = 'translator';
+        unset($data['targetLanguage']);
+        $this->withHeader('Authorization', "Bearer $token")
+                ->post('/api/v1/users', $data)
+                ->assertStatus(422);
     }
 
     public function testStoreUserValidateDisplayName()

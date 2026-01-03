@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity';
   import { validator } from '@felte/validator-yup';
-  import { createForm, getValue } from 'felte';
+  import { createForm } from 'felte';
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge } from 'flowbite-svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
@@ -24,10 +24,9 @@
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
   import MeetingTranslateModal from './MeetingTranslateModal.svelte';
-  import { CodeBranchOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import { TrashBinOutline } from 'flowbite-svelte-icons';
   import { LanguageOutline } from 'flowbite-svelte-icons';
   import { authenticatedUser } from '../stores/apiCredentials';
-  import { resetClipboardStubOnView } from '@testing-library/user-event/dist/cjs/utils/index.js';
 
   interface Props {
     selectedMeeting: Meeting | null;
@@ -90,10 +89,8 @@
     value: index,
     name: day
   }));
-  let targetLanguage = $state(($authenticatedUser?.type === 'translator')
-                      ? $authenticatedUser.targetLanguage
-                      : '');
-  const isTranslation = () => (targetLanguage??'' != '') ? true : false;
+  let targetLanguage = $state($authenticatedUser?.type === 'translator' ? $authenticatedUser.targetLanguage : '');
+  const isTranslation = () => ((targetLanguage ?? '' != '') ? true : false);
   const statesAndProvincesChoices = globalSettings.meetingStatesAndProvinces
     .map((state) => ({
       value: state,
@@ -208,21 +205,21 @@
   function updateFields(meeting: Meeting, selectedTargetLanguage: string) {
     showTranslateModal = false;
     targetLanguage = selectedTargetLanguage;
-    const translationFields = ['name',
-    'locationText',
-    'locationInfo',
-    'locationStreet',
-    'locationNeighborhood',
-    'locationCitySubsection',
-    'locationMunicipality',
-    'locationSubProvince',
-    'locationProvince',
-    'locationNation',
-    'comments'
+    const translationFields = [
+      'name',
+      'locationText',
+      'locationInfo',
+      'locationStreet',
+      'locationNeighborhood',
+      'locationCitySubsection',
+      'locationMunicipality',
+      'locationSubProvince',
+      'locationProvince',
+      'locationNation',
+      'comments'
     ];
     translationFields.forEach((name) => {
-      if (meeting[name as keyof Meeting])
-        setFields(name as any, meeting[name as keyof Meeting]);
+      if (meeting[name as keyof Meeting]) setFields(name as any, meeting[name as keyof Meeting]);
     });
   }
   const { data, errors, form, setData, setFields, isDirty } = createForm({
@@ -288,7 +285,7 @@
           }
           return acc;
         }, {} as MeetingPartialUpdate);
-        if (targetLanguage && targetLanguage !== "") {
+        if (targetLanguage && targetLanguage !== '') {
           await RootServerApi.translateMeeting(selectedMeeting.id, targetLanguage, updated);
           savedMeeting = await RootServerApi.getMeetingTranslation(targetLanguage, selectedMeeting.id);
         } else {
@@ -348,7 +345,7 @@
     },
     onSuccess: () => {
       spinner.hide();
-      onSaved(savedMeeting, targetLanguage??'');
+      onSaved(savedMeeting, targetLanguage ?? '');
     },
     extend: validator({
       schema: yup.object({
@@ -521,7 +518,7 @@
     showDeleteModal = true;
   }
 
-  function handleTranslate(event: MouseEvent, meeting: Meeting) {
+  function handleTranslate(event: MouseEvent) {
     event.stopPropagation();
     if ($isDirty) return;
     showTranslateModal = true;
@@ -812,9 +809,8 @@
     setData('formatIds', formatIdsSelected);
   });
   function getTargetLanguageName(): string {
-    return targetLanguage?globalSettings.languageMapping[targetLanguage]:"";
+    return targetLanguage ? globalSettings.languageMapping[targetLanguage] : '';
   }
-
 </script>
 
 <svelte:head>
@@ -870,12 +866,12 @@
         </div>
         <Button
           color="alternative"
-          onclick={(e: MouseEvent) => selectedMeeting && handleTranslate(e, selectedMeeting)}
+          onclick={(e: MouseEvent) => selectedMeeting && handleTranslate(e)}
           class="text-red-600 dark:text-red-500"
           aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
-          disabled={$isDirty || $authenticatedUser?.type==='translator'}
+          disabled={$isDirty || $authenticatedUser?.type === 'translator'}
         >
-          <LanguageOutline title={{ id: 'translateMeeting', title: "Translate Meeting" }} ariaLabel="Translate Meeting" />
+          <LanguageOutline title={{ id: 'translateMeeting', title: 'Translate Meeting' }} ariaLabel="Translate Meeting" />
           <span class="sr-only">Translate Meeting</span>
           {getTargetLanguageName()}
         </Button>
@@ -1168,7 +1164,7 @@
     </div>
     <div class="w-full">
       <Label for="locationPostalCode1" class="mt-2 mb-2">{$translations.zipCodeTitle}</Label>
-      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={isTranslation()}/>
+      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={isTranslation()} />
       {#if $errors.locationPostalCode1}
         <Helper class="mt-2" color="red">
           {$errors.locationPostalCode1}
@@ -1387,7 +1383,8 @@
   </div>
 </form>
 <MeetingDeleteModal bind:showDeleteModal meetingToDelete={meetingToDelete as Meeting} {onDeleted} />
-<MeetingTranslateModal bind:showTranslateModal meeting={selectedMeeting as Meeting} onTranslate={updateFields} onClosed={()=>showTranslateModal=false}/>
+<MeetingTranslateModal bind:showTranslateModal meeting={selectedMeeting as Meeting} onTranslate={updateFields} onClosed={() => (showTranslateModal = false)} />
+
 <style>
   :global(.hide-close-button button[aria-label='Close']) {
     display: none !important;

@@ -207,7 +207,8 @@ class ApiClientWrapper {
   async getMeetingTranslation(lang: string, id: number): Promise<Meeting> {
     const params = {
       lang: lang,
-      meetingId: id };
+      meetingId: id
+    };
     return this.api.getMeetingTranslation(params);
   }
   async getMeetingChanges(id: number): Promise<Array<MeetingChangeResource>> {

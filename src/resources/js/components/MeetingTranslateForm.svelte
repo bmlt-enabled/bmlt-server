@@ -14,17 +14,16 @@
   const allLanguages = Object.entries(mappings).map(([code, name]) => ({ value: code, name: name }));
 
   interface Props {
-    meeting: Meeting,
+    meeting: Meeting;
     onTranslate: (meeting: Meeting, targetLanguage: string) => void;
     onClosed: () => void;
   }
 
   let { meeting, onTranslate, onClosed }: Props = $props();
   let targetLanguage = $state('');
-  let errorMessage: string | undefined = $state();
 
   const { form } = createForm({
-    initialValues: { targetLanguage: "" },
+    initialValues: { targetLanguage: '' },
     onSubmit: async () => {
       spinner.show();
       meeting = await RootServerApi.getMeetingTranslation(targetLanguage, meeting.id);
@@ -32,7 +31,6 @@
     onError: async (error) => {
       await RootServerApi.handleErrors(error as Error, {
         handleConflictError: () => {
-          errorMessage = 'conflict';
           console.log(error);
         }
       });
@@ -49,7 +47,7 @@
     })
   });
   function exitTranslation() {
-      onClosed();
+    onClosed();
   }
 </script>
 
@@ -60,7 +58,7 @@
       <Select id="targetLanguage" bind:value={targetLanguage} items={allLanguages} name="targetLanguage" class="rounded-lg dark:bg-gray-600" />
     </div>
     <div class="mb-5">
-      <Button type="submit" class="w-full" disabled={targetLanguage==''}>Edit Translation</Button>
+      <Button type="submit" class="w-full" disabled={targetLanguage == ''}>Edit Translation</Button>
     </div>
     <div class="mb-5">
       <Button class="w-full" onclick={exitTranslation}>Exit</Button>

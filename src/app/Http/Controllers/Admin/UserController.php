@@ -88,9 +88,6 @@ class UserController extends ResourceController
 
     public function partialUpdate(Request $request, User $user)
     {
-        if ($request->targetLanguage ?? false) {
-            return $this->setTargetLanguage($request, $user);
-        }
         $request->merge(
             collect(User::FIELDS)
                 ->mapWithKeys(function ($fieldName, $_) use ($request, $user) {
@@ -102,6 +99,8 @@ class UserController extends ResourceController
                         return ['displayName' => $request->has('displayName') ? $request->input('displayName') : $user->name_string];
                     } elseif ($fieldName == 'description_string') {
                         return ['description' => $request->has('description') ? $request->input('description') : $user->description_string];
+                    } elseif ($fieldName == 'target_language') {
+                        return ['description' => $request->has('targetLanguage') ? $request->input('targetLanguage') : $user->target_language];
                     } elseif ($fieldName == 'email_address_string') {
                         return ['email' => $request->has('email') ? $request->input('email') : $user->email_address_string];
                     } elseif ($fieldName == 'password_string') {

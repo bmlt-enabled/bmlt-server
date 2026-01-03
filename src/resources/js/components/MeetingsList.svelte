@@ -69,7 +69,7 @@
           meetingIds
         });
       } else {
-        meetings = await RootServerApi.getTranslatedMeetings($authenticatedUser?.targetLanguage??'', {
+        meetings = await RootServerApi.getTranslatedMeetings($authenticatedUser?.targetLanguage ?? '', {
           searchString,
           days,
           serviceBodyIds,

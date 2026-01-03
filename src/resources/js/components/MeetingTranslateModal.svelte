@@ -5,7 +5,7 @@
 
   interface Props {
     showTranslateModal: boolean;
-    meeting: Meeting
+    meeting: Meeting;
     onTranslate: (meeting: Meeting, targetLanguage: string) => void;
     onClosed: () => void;
   }
@@ -15,6 +15,6 @@
 
 <Modal bind:open={showTranslateModal} size="sm" outsideclose>
   <div class="p-2">
-    <MeetingTranslateForm {meeting} {onTranslate} {onClosed}/>
+    <MeetingTranslateForm {meeting} {onTranslate} {onClosed} />
   </div>
 </Modal>
