@@ -202,6 +202,7 @@ export const itTranslations = {
   meetingUnpublishedNote: "Nota: l'annullamento della pubblicazione di una riunione ne indica la chiusura temporanea. Se la riunione è stata chiusa definitivamente, eliminala.",
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minuti',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nome',
   nationTitle: 'Nazione',
@@ -295,6 +296,10 @@ export const itTranslations = {
   serviceBodiesWithEditableMeetings: 'Questo utente può modificare le riunioni nei seguenti enti di servizio:',
   serviceBodyAdminTitle: 'Amministratore organismo di servizio',
   serviceBodyDeleteConflictError: "Errore: non è stato possibile eliminare l'organismo di servizio perché è ancora associato a riunioni o è associato ad altri organismi di servizio.",
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Seleziona un ente di servizio valido',
   serviceBodyTitle: 'Ente di servizio',
   serviceBodyTypeTitle: 'Tipo di corpo di servizio',

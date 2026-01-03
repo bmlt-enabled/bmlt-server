@@ -1,5 +1,6 @@
 import {
   Configuration,
+  DeleteServiceBodyForceEnum,
   ResponseError,
   RootServerApi,
   type AuthenticationError,
@@ -249,8 +250,8 @@ class ApiClientWrapper {
     return this.api.patchServiceBody(params);
   }
 
-  async deleteServiceBody(id: number): Promise<void> {
-    const params = { serviceBodyId: id };
+  async deleteServiceBody(id: number, force: boolean = false): Promise<void> {
+    const params = { serviceBodyId: id, force: force ? DeleteServiceBodyForceEnum.True : DeleteServiceBodyForceEnum.False };
     return this.api.deleteServiceBody(params);
   }
 

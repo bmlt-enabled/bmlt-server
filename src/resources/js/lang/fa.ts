@@ -202,6 +202,7 @@ export const faTranslations = {
   meetingUnpublishedNote: 'توجه: انتشار جلسه نشانگر بسته شدن موقت است. اگر این جلسه به طور دائم بسته شده است ، لطفاً آن را حذف کنید.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'دقیقه',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'نام',
   nationTitle: 'ملیت',
@@ -295,6 +296,10 @@ export const faTranslations = {
   serviceBodiesWithEditableMeetings: 'این کاربر می تواند جلسات را در این بدنه خدماتی ویرایش کند:',
   serviceBodyAdminTitle: 'مدیر بدنه خدماتی',
   serviceBodyDeleteConflictError: 'خطا: بدنه خدمات نمی تواند حذف شود زیرا هنوز با جلسات همراه است یا والدین سایر نهادهای خدماتی است.',
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'لطفاً یک بدنه خدماتی معتبر را انتخاب کنید',
   serviceBodyTitle: 'بدنه خدماتی',
   serviceBodyTypeTitle: 'نوع بدنه خدماتی',

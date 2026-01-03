@@ -1423,7 +1423,7 @@
                     "rootServer"
                 ],
                 "summary": "Deletes a service body",
-                "description": "Deletes a service body by id.",
+                "description": "Deletes a service body by id. If the service body has meetings, use force=true to delete them as well.",
                 "operationId": "deleteServiceBody",
                 "parameters": [
                     {
@@ -1436,6 +1436,21 @@
                             "format": "int64"
                         },
                         "example": "1"
+                    },
+                    {
+                        "name": "force",
+                        "in": "query",
+                        "description": "Force deletion of service body and all associated meetings",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "false",
+                            "enum": [
+                                "true",
+                                "false"
+                            ]
+                        },
+                        "example": "false"
                     }
                 ],
                 "responses": {
@@ -1473,7 +1488,7 @@
                         }
                     },
                     "409": {
-                        "description": "Returns when service body has children.",
+                        "description": "Returns when service body has children or meetings (when force=false).",
                         "content": {
                             "application/json": {
                                 "schema": {

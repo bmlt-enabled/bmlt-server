@@ -151,9 +151,12 @@ class ServiceBodyController extends Controller
     {
     }
     /**
-     * @OA\Delete(path="/api/v1/servicebodies/{serviceBodyId}", summary="Deletes a service body", description="Deletes a service body by id.", operationId="deleteServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
+     * @OA\Delete(path="/api/v1/servicebodies/{serviceBodyId}", summary="Deletes a service body", description="Deletes a service body by id. If the service body has meetings, use force=true to delete them as well.", operationId="deleteServiceBody", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of service body", in="path", name="serviceBodyId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\Parameter(description="Force deletion of service body and all associated meetings", in="query", name="force", required=false, example="false",
+     *         @OA\Schema(type="string", enum={"true", "false"}, default="false")
      *     ),
      *     @OA\Response(response=204, description="Success."),
      *     @OA\Response(response=401, description="Returns when user is not authenticated.",
@@ -165,7 +168,7 @@ class ServiceBodyController extends Controller
      *     @OA\Response(response=404, description="Returns when no service body exists.",
      *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
      *     ),
-     *     @OA\Response(response=409, description="Returns when service body has children.",
+     *     @OA\Response(response=409, description="Returns when service body has children or meetings (when force=false).",
      *         @OA\JsonContent(ref="#/components/schemas/ConflictError")
      *     ),
      * )
