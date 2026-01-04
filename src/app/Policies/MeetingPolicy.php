@@ -74,7 +74,22 @@ class MeetingPolicy
     {
         return $this->update($user, $meeting);
     }
+    public function translate(User $user, Meeting $meeting)
+    {
+        if (file_config('aggregator_mode_enabled')) {
+            return false;
+        }
 
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        if ($user->isTranslator()) {
+            return $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->contains($meeting->service_body_bigint);
+        }
+
+        return false;
+    }
     public function delete(User $user, Meeting $meeting)
     {
         if (file_config('aggregator_mode_enabled')) {

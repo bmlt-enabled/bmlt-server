@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             'description' => $this->description_string,
             'email' => $this->email_address_string,
             'ownerId' => $this->owner_id_bigint == -1 ? null : $this->owner_id_bigint,
+            'targetLanguage' => $this->target_language ?? '',
             'lastLoginAt' => $this->last_access_datetime?->year > 1970 ? $this->last_access_datetime : null,
         ];
     }

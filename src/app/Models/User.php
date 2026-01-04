@@ -16,17 +16,20 @@ class User extends Model implements AuthenticatableContract
     public const USER_LEVEL_SERVICE_BODY_ADMIN = 2;
     public const USER_LEVEL_DEACTIVATED = 4;
     public const USER_LEVEL_OBSERVER = 5;
+    public const USER_LEVEL_TRANSLATOR = 6;
 
     public const USER_TYPE_DEACTIVATED = 'deactivated';
     public const USER_TYPE_ADMIN = 'admin';
     public const USER_TYPE_SERVICE_BODY_ADMIN = 'serviceBodyAdmin';
     public const USER_TYPE_OBSERVER = 'observer';
+    public const USER_TYPE_TRANSLATOR = 'translator';
 
     public const USER_LEVEL_TO_USER_TYPE_MAP = [
         self::USER_LEVEL_DEACTIVATED => self::USER_TYPE_DEACTIVATED,
         self::USER_LEVEL_ADMIN => self::USER_TYPE_ADMIN,
         self::USER_LEVEL_SERVICE_BODY_ADMIN => self::USER_TYPE_SERVICE_BODY_ADMIN,
         self::USER_LEVEL_OBSERVER => self::USER_TYPE_OBSERVER,
+        self::USER_LEVEL_TRANSLATOR => self::USER_TYPE_TRANSLATOR,
     ];
 
     public const USER_TYPE_TO_USER_LEVEL_MAP = [
@@ -34,6 +37,7 @@ class User extends Model implements AuthenticatableContract
         self::USER_TYPE_ADMIN => self::USER_LEVEL_ADMIN,
         self::USER_TYPE_SERVICE_BODY_ADMIN => self::USER_LEVEL_SERVICE_BODY_ADMIN,
         self::USER_TYPE_OBSERVER => self::USER_LEVEL_OBSERVER,
+        self::USER_TYPE_TRANSLATOR => self::USER_LEVEL_TRANSLATOR,
     ];
 
     public const FIELDS = [
@@ -44,6 +48,7 @@ class User extends Model implements AuthenticatableContract
         'login_string',
         'password_string',
         'owner_id_bigint',
+        'target_language'
     ];
 
     protected $table = 'comdef_users';
@@ -73,6 +78,11 @@ class User extends Model implements AuthenticatableContract
     public function isServiceBodyAdmin(): bool
     {
         return $this->user_level_tinyint == self::USER_LEVEL_SERVICE_BODY_ADMIN;
+    }
+
+    public function isTranslator(): bool
+    {
+        return $this->user_level_tinyint == self::USER_LEVEL_TRANSLATOR;
     }
 
     public function isDeactivated(): bool

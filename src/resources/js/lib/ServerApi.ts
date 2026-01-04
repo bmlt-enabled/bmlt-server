@@ -190,12 +190,27 @@ class ApiClientWrapper {
     };
     return this.api.getMeetings(params);
   }
-
+  async getTranslatedMeetings(lang: string, { meetingIds = '', days = '', serviceBodyIds = '', searchString = '' }: GetMeetingsRequest = {}): Promise<Meeting[]> {
+    const params = {
+      lang,
+      ...(searchString && { searchString }),
+      ...(days && { days }),
+      ...(meetingIds && { meetingIds }),
+      ...(serviceBodyIds && { serviceBodyIds })
+    };
+    return this.api.getTranslatedMeetings(params);
+  }
   async getMeeting(id: number): Promise<Meeting> {
     const params = { meetingId: id };
     return this.api.getMeeting(params);
   }
-
+  async getMeetingTranslation(lang: string, id: number): Promise<Meeting> {
+    const params = {
+      lang: lang,
+      meetingId: id
+    };
+    return this.api.getMeetingTranslation(params);
+  }
   async getMeetingChanges(id: number): Promise<Array<MeetingChangeResource>> {
     const params = { meetingId: id };
     return this.api.getMeetingChanges(params);
@@ -218,6 +233,15 @@ class ApiClientWrapper {
       ...(skipVenueTypeLocationValidation && { skipVenueTypeLocationValidation })
     };
     return this.api.patchMeeting(params);
+  }
+
+  async translateMeeting(id: number, lang: string, meeting: MeetingPartialUpdate): Promise<void> {
+    const params = {
+      lang: lang,
+      meetingId: id,
+      meetingPartialUpdate: meeting
+    };
+    return this.api.translateMeeting(params);
   }
 
   async deleteMeeting(id: number): Promise<void> {

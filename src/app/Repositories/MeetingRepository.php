@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class MeetingRepository implements MeetingRepositoryInterface
 {
+    private ?string $targetLanguage = null;
     private string $sqlDistanceFormula = "? * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(latitude)) * COS(RADIANS(?)) * COS(RADIANS(longitude) - RADIANS(?)) + SIN(RADIANS(latitude)) * SIN(RADIANS(?)))))";
 
     public function getSearchResults(
@@ -635,7 +636,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $t->lang_enum,
+                        'lang_enum' => file_config('language') ?: App::currentLocale(),
                         'data_blob' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -644,7 +645,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                         'meetingid_bigint' => $meeting->id_bigint,
                         'key' => $t->key,
                         'field_prompt' => $t->field_prompt,
-                        'lang_enum' => $t->lang_enum,
+                        'lang_enum' => file_config('language') ?: App::currentLocale(),
                         'data_string' => $fieldValue,
                         'visibility' => $t->visibility,
                     ]);
@@ -656,7 +657,58 @@ class MeetingRepository implements MeetingRepositoryInterface
             return $meeting;
         });
     }
-
+    private function getSystemLanguage(): string
+    {
+        return file_config('language') ?: config('app.locale');
+    }
+    public function setTargetLanguage($lang)
+    {
+        $this->targetLanguage = $lang;
+    }
+    private function getTargetLanguage(): string
+    {
+        return $this->targetLanguage ?? $this->getSystemLanguage();
+    }
+    public function translate(int $id, array $values): bool
+    {
+        $dataTemplates = $this->getDataTemplates();
+        return DB::transaction(function () use ($id, $values, $dataTemplates) {
+            $meeting = Meeting::find($id);
+            if (is_null($meeting)) {
+                return false;
+            }
+            MeetingData::query()->where('meetingid_bigint', $id)
+                ->where('lang_enum', $this->getTargetLanguage())
+                ->whereIn('key', array_keys($values))->delete();
+            MeetingLongData::query()->where('meetingid_bigint', $id)
+                ->where('lang_enum', $this->getTargetLanguage())
+                ->whereIn('key', array_keys($values))->delete();
+            foreach ($values as $fieldName => $fieldValue) {
+                $t = $dataTemplates->get($fieldName);
+                if (strlen($fieldValue) > 255) {
+                    MeetingLongData::create([
+                        'meetingid_bigint' => $meeting->id_bigint,
+                        'key' => $t->key,
+                        'field_prompt' => $t->field_prompt,
+                        'lang_enum' => $this->getTargetLanguage(),
+                        'data_blob' => $fieldValue,
+                        'visibility' => $t->visibility,
+                    ]);
+                } else {
+                    MeetingData::create([
+                        'meetingid_bigint' => $meeting->id_bigint,
+                        'key' => $t->key,
+                        'field_prompt' => $t->field_prompt,
+                        'lang_enum' => $this->getTargetLanguage(),
+                        'data_string' => $fieldValue,
+                        'visibility' => $t->visibility,
+                    ]);
+                }
+            }
+            return true;
+        });
+        return false;
+    }
     public function update(int $id, array $values): bool
     {
         $values = collect($values);
@@ -666,19 +718,37 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
             $meeting = Meeting::find($id);
-            $meeting->loadMissing(['data', 'longdata']);
+            //TODO: re-enable if needed
+            //$meeting->loadMissing(['data', 'longdata']);
+
             if (!is_null($meeting)) {
+                $meetingDataValues = collect($meeting)->reject(fn ($_, $fieldName) => empty($value) || !$dataTemplates->has($fieldName))
+                    ->toBase();
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
-                MeetingData::query()->where('meetingid_bigint', $id)->delete();
-                MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
+
+                $oldData = MeetingData::query()->where('meetingid_bigint', $id)
+                    ->where('lang_enum', $this->getSystemLanguage())
+                    ->whereIn('key', array_keys($dataValues->toArray()))->get()
+                    ->merge(
+                        MeetingLongData::query()->where('meetingid_bigint', $id)
+                            ->where('lang_enum', $this->getSystemLanguage())
+                            ->whereIn('key', array_keys($dataValues->toArray()))->get()
+                    )->keyby('key');
+                MeetingData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getSystemLanguage())->delete();
+                MeetingLongData::query()->where('meetingid_bigint', $id)->where('lang_enum', $this->getSystemLanguage())->delete();
                 foreach ($dataValues as $fieldName => $fieldValue) {
+                    if ($oldData->get($fieldName) != $fieldValue) {
+                        $meetingDataValues->forget($fieldName);
+                        MeetingData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                        MeetingLongData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                    }
                     $t = $dataTemplates->get($fieldName);
                     if (strlen($fieldValue) > 255) {
                         MeetingLongData::create([
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
+                            'lang_enum' => $this->getTargetLanguage(),
                             'data_blob' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
@@ -687,11 +757,15 @@ class MeetingRepository implements MeetingRepositoryInterface
                             'meetingid_bigint' => $meeting->id_bigint,
                             'key' => $t->key,
                             'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
+                            'lang_enum' => $this->getTargetLanguage(),
                             'data_string' => $fieldValue,
                             'visibility' => $t->visibility,
                         ]);
                     }
+                }
+                foreach ($meetingDataValues as $fieldName => $fieldValue) {
+                    MeetingData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
+                    MeetingLongData::query()->where('meetingid_bigint', $id)->where('key', $fieldName)->delete();
                 }
                 if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, Meeting::find($id));
@@ -861,11 +935,11 @@ class MeetingRepository implements MeetingRepositoryInterface
 
             if (is_null($db)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
-                $this->create($values);
+                $this->create($values, 'en');
                 $result->numCreated++;
             } else if (!$external->isEqual($db, $serviceBodyIdToSourceIdMap, $formatSharedIdToSourceIdMap)) {
                 $values = $this->externalMeetingToValuesArray($rootServerId, $serviceBodyId, $external, $formatSourceIdToSharedIdMap);
-                $this->update($db->id_bigint, $values);
+                $this->update($db->id_bigint, $values, 'en');
                 $result->numUpdated++;
             }
         }
