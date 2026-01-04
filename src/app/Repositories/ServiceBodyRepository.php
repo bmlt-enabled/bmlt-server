@@ -22,6 +22,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
     {
         $this->meetingRepository = $meetingRepository;
     }
+
     public function search(
         array $includeIds = [],
         array $excludeIds = [],
@@ -106,6 +107,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             return false;
         });
     }
+
     private function saveChange(?ServiceBody $beforeServiceBody, ?ServiceBody $afterServiceBody): void
     {
         $beforeObject = !is_null($beforeServiceBody) ? $this->serializeForChange($beforeServiceBody) : null;
