@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('comdef_meetings_data')->update(['lang_enum' => config('app.locale')]);
+        DB::table('comdef_meetings_longdata')->update(['lang_enum' => config('app.locale')]);
         Schema::table('comdef_users', function ($table) {
             $table->string('target_language', 10)->nullable();
         });
