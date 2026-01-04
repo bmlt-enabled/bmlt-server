@@ -86,12 +86,12 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
         });
     }
 
-    public function delete(int $id, bool $forceDelete = false): bool
+    public function delete(int $id, bool $force = false): bool
     {
-        return DB::transaction(function () use ($id, $forceDelete) {
+        return DB::transaction(function () use ($id, $force) {
             $serviceBody = ServiceBody::find($id);
             if (!is_null($serviceBody)) {
-                if ($forceDelete && $serviceBody->meetings()->exists()) {
+                if ($force) {
                     foreach ($serviceBody->meetings as $meeting) {
                         $this->meetingRepository->delete($meeting->id_bigint);
                     }
@@ -106,7 +106,6 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             return false;
         });
     }
-
     private function saveChange(?ServiceBody $beforeServiceBody, ?ServiceBody $afterServiceBody): void
     {
         $beforeObject = !is_null($beforeServiceBody) ? $this->serializeForChange($beforeServiceBody) : null;

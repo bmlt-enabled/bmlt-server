@@ -18,7 +18,7 @@ interface ServiceBodyRepositoryInterface
     ): Collection;
     public function create(array $values): ServiceBody;
     public function update(int $id, array $values): bool;
-    public function delete(int $id): bool;
+    public function delete(int $id, bool $force = false): bool;
     public function getAssignedServiceBodyIds(int $userId): Collection;
     public function getAdminServiceBodyIds(int $userId): Collection;
     public function getChildren(array $parents): array;

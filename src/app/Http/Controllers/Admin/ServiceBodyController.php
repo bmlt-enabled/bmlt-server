@@ -108,7 +108,7 @@ class ServiceBodyController extends ResourceController
 
     public function destroy(Request $request, ServiceBody $serviceBody)
     {
-        $forceDelete = $request->query('force', false) === 'true';
+        $force = $request->query('force', false) === 'true';
 
         if ($serviceBody->children()->exists()) {
             return new JsonResponse([
@@ -116,13 +116,13 @@ class ServiceBodyController extends ResourceController
             ], 409);
         }
 
-        if (!$forceDelete && $serviceBody->meetings()->exists()) {
+        if (!$force && $serviceBody->meetings()->exists()) {
             return new JsonResponse([
                 'message' => 'You cannot delete a service body while meetings are assigned to it.'
             ], 409);
         }
 
-        $this->serviceBodyRepository->delete($serviceBody->id_bigint, $forceDelete);
+        $this->serviceBodyRepository->delete($serviceBody->id_bigint, $force);
 
         return response()->noContent();
     }
