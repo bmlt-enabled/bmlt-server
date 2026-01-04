@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\MeetingRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
 use App\Models\RootServer;
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\DB;
 
 class ServiceBodyRepository implements ServiceBodyRepositoryInterface
 {
+    private MeetingRepositoryInterface $meetingRepository;
+
+    public function __construct(MeetingRepositoryInterface $meetingRepository)
+    {
+        $this->meetingRepository = $meetingRepository;
+    }
     public function search(
         array $includeIds = [],
         array $excludeIds = [],
@@ -79,11 +86,17 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
         });
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, bool $forceDelete = false): bool
     {
-        return DB::transaction(function () use ($id) {
+        return DB::transaction(function () use ($id, $forceDelete) {
             $serviceBody = ServiceBody::find($id);
             if (!is_null($serviceBody)) {
+                if ($forceDelete && $serviceBody->meetings()->exists()) {
+                    foreach ($serviceBody->meetings as $meeting) {
+                        $this->meetingRepository->delete($meeting->id_bigint);
+                    }
+                }
+
                 $serviceBody->delete();
                 if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($serviceBody, null);
