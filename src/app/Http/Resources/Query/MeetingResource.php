@@ -102,8 +102,8 @@ class MeetingResource extends JsonResource
 
     private function initializeRequest($request)
     {
-        $meetingRepository = new MeetingRepository();
-        $serviceBodyRepository = new ServiceBodyRepository();
+        $meetingRepository = app(MeetingRepository::class);
+        $serviceBodyRepository = app(ServiceBodyRepository::class);
 
         // Default duration time
         self::$defaultDurationTime = bmlt_config('defaultDurationTime');

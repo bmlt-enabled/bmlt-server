@@ -134,7 +134,7 @@ class ImportMeetingTest extends TestCase
         $extF2 = $this->externalFormat('501', 'en');
         $externalMeeting = $this->externalMeeting($extSb, [$extF1, $extF2]);
 
-        $sbRepository = new ServiceBodyRepository();
+        $sbRepository = app(ServiceBodyRepository::class);
         $sbRepository->import($rootServer1->id, collect([$extSb]));
         $fmtRepository = new FormatRepository();
         $fmtRepository->import($rootServer1->id, collect([$extF1, $extF2]));
@@ -163,7 +163,7 @@ class ImportMeetingTest extends TestCase
         $extF2 = $this->externalFormat('501', 'en');
         $externalMeeting = $this->externalMeeting($extSb, [$extF1, $extF2]);
 
-        $sbRepository = new ServiceBodyRepository();
+        $sbRepository = app(ServiceBodyRepository::class);
         $sbRepository->import($rootServer1->id, collect([$extSb]));
         $sbRepository->import($rootServer2->id, collect([$extSb]));
         $fmtRepository = new FormatRepository();
