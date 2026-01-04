@@ -202,6 +202,7 @@ export const frTranslations = {
   meetingUnpublishedNote: 'Note : dépublier une réunion indique une fermeture temporaire. Si cette réunion est définitivement fermée, veuillez la supprimer.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nom',
   nationTitle: 'Nation',
@@ -295,6 +296,10 @@ export const frTranslations = {
   serviceBodiesWithEditableMeetings: 'Cet utilisateur peut modifier les réunions dans les structures suivantes :',
   serviceBodyAdminTitle: 'Administrateur de la structure de service',
   serviceBodyDeleteConflictError: "Erreur : la structure de service n'a pas pu être supprimée car elle est toujours associée à des réunions ou est le parent d'autres structures de service.",
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Veuillez sélectionner une structure de service valide.',
   serviceBodyTitle: 'Structure de service',
   serviceBodyTypeTitle: 'Type de la structure de service',

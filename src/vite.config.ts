@@ -23,6 +23,6 @@ export default defineConfig({
     include: ['resources/js/**/*.{test,spec}.{js,ts}']
   },
   build: {
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1100
   }
 });

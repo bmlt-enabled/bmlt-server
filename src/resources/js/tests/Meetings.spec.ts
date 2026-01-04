@@ -21,8 +21,9 @@ describe('check content in Meetings tab when logged in as various users', () => 
     await waitFor(
       async () => {
         const cells = await screen.findAllByRole('cell');
-        expect(cells.length).toBe(20);
+        expect(cells.length).toBe(24);
         expect(screen.getByRole('cell', { name: 'Real Talk' })).toBeInTheDocument();
+        expect(screen.getByRole('cell', { name: 'Country Recovery' })).toBeInTheDocument();
         expect(screen.getByRole('cell', { name: 'Mountain Meeting' })).toBeInTheDocument();
         expect(screen.getByRole('cell', { name: 'River Reflections' })).toBeInTheDocument();
         expect(screen.getByRole('cell', { name: 'Small Beginnings' })).toBeInTheDocument();

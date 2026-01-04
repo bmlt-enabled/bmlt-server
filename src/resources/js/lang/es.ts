@@ -202,6 +202,7 @@ export const esTranslations = {
   meetingUnpublishedNote: 'Nota: Cancelar la publicación de este grupo indica un cierre temporal. Si este grupo se ha cerrado de forma permanente, elimínela.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nombre',
   nationTitle: 'Nación',
@@ -295,6 +296,10 @@ export const esTranslations = {
   serviceBodiesWithEditableMeetings: 'Este usuario puede editar reuniones en los siguientes organismos de servicio',
   serviceBodyAdminTitle: 'Administrador del organismo de servicio',
   serviceBodyDeleteConflictError: 'Error: No se pudo borrar el organismo de servicio porque sigue asociado a otros grupos o es padre de otros organismos de servicio',
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Seleccione un organismo de servicio válido',
   serviceBodyTitle: 'Organismo de servicio',
   serviceBodyTypeTitle: 'Tipo de organismo de servicio',

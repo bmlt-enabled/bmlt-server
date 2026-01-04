@@ -78,7 +78,7 @@ class MeetingChangeResource extends JsonResource
         $formatRepository = new FormatRepository();
         self::$allFormats = $formatRepository->search(showAll: true)->groupBy(['shared_id_bigint', 'lang_enum'], preserveKeys: true);
 
-        $serviceBodyRepository = new ServiceBodyRepository();
+        $serviceBodyRepository = app(ServiceBodyRepository::class);
         self::$allServiceBodies = $serviceBodyRepository->search()->mapWithKeys(fn ($sb) => [$sb->id_bigint => $sb]);
 
         // Permissions

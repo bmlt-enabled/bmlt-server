@@ -202,6 +202,7 @@ export const ptTranslations = {
   meetingUnpublishedNote: 'Nota: Despublicar uma reunião indica um fechamento temporário. Se esta reunião foi fechada permanentemente, por favor, apagá-la.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nome',
   nationTitle: 'Nação',
@@ -295,6 +296,10 @@ export const ptTranslations = {
   serviceBodiesWithEditableMeetings: 'Este usuário pode editar reuniões nos seguintes corpos de serviço:',
   serviceBodyAdminTitle: 'Administrador do corpo de serviço',
   serviceBodyDeleteConflictError: 'Erro: O corpo de serviço não pôde ser apagado porque ainda está associado a reuniões ou é pai de outros corpos de serviço',
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Por favor, selecione um corpo de serviço válido',
   serviceBodyTitle: 'Corpo de serviço',
   serviceBodyTypeTitle: 'Tipo de corpo de serviço',

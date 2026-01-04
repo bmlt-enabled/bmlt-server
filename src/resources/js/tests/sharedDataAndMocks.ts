@@ -371,6 +371,46 @@ export const ruralMeeting: Meeting = {
   worldId: 'G00212222'
 };
 
+export const ruralMeeting2: Meeting = {
+  busLines: '',
+  comments: '',
+  contactEmail1: '',
+  contactEmail2: '',
+  contactName1: '',
+  contactName2: '',
+  contactPhone1: '',
+  contactPhone2: '',
+  day: 2,
+  duration: '01:30',
+  email: '',
+  formatIds: [openFormat.id, basicTextFormat.id],
+  id: 1062,
+  latitude: 41.088456,
+  locationCitySubsection: '',
+  locationInfo: '',
+  locationMunicipality: 'Nyack',
+  locationNation: 'USA',
+  locationNeighborhood: '',
+  locationPostalCode1: '10960',
+  locationProvince: 'NY',
+  locationStreet: '100 S. Rural Dr',
+  locationSubProvince: 'Rockland',
+  locationText: 'Rural Community Hall',
+  longitude: -73.918978,
+  name: 'Country Recovery',
+  phoneMeetingNumber: '',
+  published: true,
+  serviceBodyId: ruralArea.id,
+  startTime: '18:00',
+  temporarilyVirtual: false,
+  timeZone: 'America/New_York',
+  trainLines: '',
+  venueType: 1,
+  virtualMeetingAdditionalInfo: '',
+  virtualMeetingLink: '',
+  worldId: 'G00212223'
+};
+
 export const mountainMeeting: Meeting = {
   busLines: '',
   comments: '',
@@ -551,7 +591,7 @@ export const allServiceBodies: ServiceBody[] = [northernZone, bigRegion, smallRe
 
 export const allFormats: Format[] = [agnosticFormat, basicTextFormat, beginnersFormat, closedFormat, discussionFormat, jtFormat, openFormat, virtualMeetingFormat];
 
-export const allMeetings: Meeting[] = [ruralMeeting, mountainMeeting, riverCityMeeting, bigRegionMeeting, smallRegionMeeting];
+export const allMeetings: Meeting[] = [ruralMeeting, ruralMeeting2, mountainMeeting, riverCityMeeting, bigRegionMeeting, smallRegionMeeting];
 
 const allUsersAndPasswords = [
   { user: serverAdmin, password: 'serveradmin-password' },
@@ -810,10 +850,17 @@ async function mockUpdateServiceBody({ serviceBodyId: _, serviceBodyUpdate: serv
   mockSavedServiceBodyUpdate = serviceBody;
 }
 
-async function mockDeleteServiceBody({ serviceBodyId: id }: { serviceBodyId: number }): Promise<void> {
+async function mockDeleteServiceBody({ serviceBodyId: id, force }: { serviceBodyId: number; force?: string }): Promise<void> {
+  const forceDelete = force === 'true';
+
   if (serviceBodyHasDependents(id)) {
     throw new ResponseError(makeResponse('Conflict', 409, 'Unauthorized'), 'Response returned an error code');
   }
+
+  if (!forceDelete && allMeetings.some((m) => m.serviceBodyId === id)) {
+    throw new ResponseError(makeResponse('Conflict', 409, 'Unauthorized'), 'Response returned an error code');
+  }
+
   mockDeletedServiceBodyId = id;
 }
 
@@ -893,13 +940,18 @@ async function mockGetMeeting(params: { meetingId: number }): Promise<Meeting> {
   throw new Error('unknown meeting -- something went wrong');
 }
 
-async function mockGetMeetings(): Promise<Meeting[]> {
+async function mockGetMeetings(params?: { serviceBodyIds?: string }): Promise<Meeting[]> {
   const userId = get(authenticatedUser)?.id;
   if (!userId) {
     throw new Error('internal error -- trying to get meetings when no simulated user is logged in');
-  } else {
-    return allMeetings;
   }
+
+  if (params?.serviceBodyIds) {
+    const serviceBodyIdList = params.serviceBodyIds.split(',').map((id: string) => parseInt(id.trim()));
+    return allMeetings.filter((m) => serviceBodyIdList.includes(m.serviceBodyId));
+  }
+
+  return allMeetings;
 }
 
 // mocks for editing, creating, and deleting a Meeting

@@ -35,7 +35,7 @@ class ImportServiceBodyTest extends TestCase
 
     private function create(int $rootServerId, int $sourceId): ServiceBody
     {
-        $repository = new ServiceBodyRepository();
+        $repository = app(ServiceBodyRepository::class);
         return $repository->create([
             'root_server_id' => $rootServerId,
             'source_id' => $sourceId,
@@ -56,7 +56,7 @@ class ImportServiceBodyTest extends TestCase
 
         $external = $this->external();
 
-        $repository = new ServiceBodyRepository();
+        $repository = app(ServiceBodyRepository::class);
         $repository->import($rootServer1->id, collect([$external]));
 
         $all = $repository->search();
@@ -78,7 +78,7 @@ class ImportServiceBodyTest extends TestCase
         $this->create($rootServer1->id, $external->id);
         $this->create($rootServer2->id, $external->id);
 
-        $repository = new ServiceBodyRepository();
+        $repository = app(ServiceBodyRepository::class);
         $repository->import($rootServer1->id, collect([$external]));
 
         $all = $repository->search();
@@ -109,7 +109,7 @@ class ImportServiceBodyTest extends TestCase
         $this->create($rootServer2->id, $external->id);
         $this->create($rootServer3->id, $external->id);
 
-        $repository = new ServiceBodyRepository();
+        $repository = app(ServiceBodyRepository::class);
         $repository->import($rootServer1->id, collect([$external]));
 
         $all = $repository->search();
@@ -156,7 +156,7 @@ class ImportServiceBodyTest extends TestCase
         $this->create($rootServer2->id, $externalMiddle->id);
         $this->create($rootServer2->id, $externalBottom->id);
 
-        $repository = new ServiceBodyRepository();
+        $repository = app(ServiceBodyRepository::class);
         $repository->import($rootServer1->id, collect([$externalTop, $externalMiddle, $externalBottom]));
 
         $all = $repository->search(rootServersInclude: [$rootServer1->id]);

@@ -838,7 +838,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         $formatSharedIdToSourceIdMap = $allFormats->mapWithKeys(fn ($formats, $sharedId) => [$sharedId => $formats->first()->source_id]);
         $formatSourceIdToSharedIdMap = $allFormats->mapWithKeys(fn ($formats, $sharedId) => [$formats->first()->source_id => $sharedId]);
 
-        $serviceBodyRepository = new ServiceBodyRepository();
+        $serviceBodyRepository = app(ServiceBodyRepository::class);
         $allServiceBodies = $serviceBodyRepository->search(rootServersInclude: [$rootServerId]);
         $serviceBodyIdToSourceIdMap = $allServiceBodies->mapWithKeys(fn ($sb, $_) => [$sb->id_bigint => $sb->source_id]);
         $serviceBodySourceIdToIdMap = $allServiceBodies->mapWithKeys(fn ($sb, $_) => [$sb->source_id => $sb->id_bigint]);

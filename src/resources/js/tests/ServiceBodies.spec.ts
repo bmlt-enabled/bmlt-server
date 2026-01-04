@@ -252,9 +252,19 @@ describe('check editing, adding, and deleting service bodies using the popup dia
   test('logged in as serveradmin; delete Small Region Service Body', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Small Region' }));
-    // TODO: see comment in Users.spec.ts test about finding the checkbox
-    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
-    await user.click(await screen.findByRole('checkbox'));
+
+    // Wait for meetings to load - Small Region has 1 meeting
+    await waitFor(() => {
+      expect(screen.getByText(/1 meetings will be deleted/)).toBeInTheDocument();
+    });
+
+    // Get all checkboxes (force delete + confirmation)
+    const checkboxes = await screen.findAllByRole('checkbox');
+
+    // Check both force delete and confirmation
+    await user.click(checkboxes[0]); // force delete
+    await user.click(checkboxes[1]); // confirmation
+
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(mockDeletedServiceBodyId).toBe(103);
     expect(mockSavedServiceBodyCreate).toBe(null);
@@ -265,12 +275,57 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     // this should fail because Big Region has children
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Big Region' }));
-    // TODO: see comment in Users.spec.ts test about finding the checkbox
-    // await user.click(await screen.findByRole('checkbox', { name: "Yes, I'm sure." }));
-    await user.click(await screen.findByRole('checkbox'));
+
+    // Wait for meetings to load - Big Region has 1 meeting
+    await waitFor(() => {
+      expect(screen.getByText(/1 meetings will be deleted/)).toBeInTheDocument();
+    });
+
+    // Get all checkboxes (force delete + confirmation)
+    const checkboxes = await screen.findAllByRole('checkbox');
+
+    // Check both force delete and confirmation
+    await user.click(checkboxes[0]); // force delete
+    await user.click(checkboxes[1]); // confirmation
+
     await user.click(await screen.findByRole('button', { name: 'Delete' }));
     expect(screen.getByText(/Error: The service body could not be deleted/)).toBeInTheDocument();
     expect(mockDeletedServiceBodyId).toBe(null);
+    expect(mockSavedServiceBodyCreate).toBe(null);
+    expect(mockSavedServiceBodyUpdate).toBe(null);
+  });
+
+  test('logged in as serveradmin; delete Rural Area Service Body with meetings shows meeting count and force delete option', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    await user.click(await screen.findByRole('button', { name: 'Delete Service Body Rural Area' }));
+
+    // Wait for meetings to load
+    await waitFor(() => {
+      expect(screen.getByText(/2 meetings will be deleted/)).toBeInTheDocument();
+    });
+
+    // Should show meeting names
+    expect(screen.getByText('Real Talk')).toBeInTheDocument();
+    expect(screen.getByText('Country Recovery')).toBeInTheDocument();
+
+    // Force delete checkbox should be present
+    const checkboxes = screen.getAllByRole('checkbox');
+    expect(checkboxes.length).toBe(2); // confirmation + force delete
+
+    // Delete button should be disabled until both checkboxes are checked
+    const deleteButton = screen.getByRole('button', { name: 'Delete' });
+    expect(deleteButton).toBeDisabled();
+
+    // Check the "Yes, I'm sure" checkbox - delete should still be disabled
+    await user.click(checkboxes[1]); // confirmation checkbox
+    expect(deleteButton).toBeDisabled();
+
+    // Check the force delete checkbox - now delete should be enabled
+    await user.click(checkboxes[0]); // force delete checkbox
+    expect(deleteButton).toBeEnabled();
+
+    await user.click(deleteButton);
+    expect(mockDeletedServiceBodyId).toBe(106); // Rural Area ID
     expect(mockSavedServiceBodyCreate).toBe(null);
     expect(mockSavedServiceBodyUpdate).toBe(null);
   });

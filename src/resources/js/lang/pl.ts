@@ -202,6 +202,7 @@ export const plTranslations = {
   meetingUnpublishedNote: 'Note: Unpublishing a meeting indicates a temporary closure. If this meeting has closed permanently, please delete it.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Name',
   nationTitle: 'Nation',
@@ -295,6 +296,10 @@ export const plTranslations = {
   serviceBodiesWithEditableMeetings: 'This user can edit meetings in these service bodies:',
   serviceBodyAdminTitle: 'Service Body Administrator',
   serviceBodyDeleteConflictError: 'Error: The service body could not be deleted because it is still associated with meetings or is a parent of other service bodies.',
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Please select a valid service body',
   serviceBodyTitle: 'Service Body',
   serviceBodyTypeTitle: 'Service Body Type',

@@ -148,6 +148,7 @@ export const deTranslations = {
     'Hinweis: Das Aufheben der Veröffentlichung eines Meetings bedeutet, dass es vorübergehend geschlossen wurde. Wenn dieses Meeting dauerhaft geschlossen wurde, lösch es bitte.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minuten',
+  more: 'more', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Name',
   nationTitle: 'Land',
@@ -241,6 +242,10 @@ export const deTranslations = {
   serviceBodiesWithEditableMeetings: 'Dieser Benutzer kann Meetings in diesen Service-Bodies bearbeiten:',
   serviceBodyAdminTitle: 'Service-Body Administrator*in',
   serviceBodyDeleteConflictError: 'Fehler: Der Service-Body konnte nicht gelöscht werden, da er noch mit Meetings verknüpft ist oder anderen Service-Bodies übergeordnet ist.',
+  serviceBodyDeleteForceWarning: 'This will permanently delete the service body and all of its meetings. This action cannot be undone.', // TODO: translate
+  serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
+  serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
+  serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
   serviceBodyInvalid: 'Bitte wähle einen gültigen service body aus',
   serviceBodyTitle: 'Service-Body',
   serviceBodyTypeTitle: 'Service-Body-Typ',
