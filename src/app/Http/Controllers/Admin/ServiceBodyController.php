@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Resources\Admin\ServiceBodyResource;
 use App\Http\Responses\JsonResponse;
+use App\Interfaces\MeetingRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\ServiceBody;
 use Illuminate\Http\Request;
@@ -13,10 +14,14 @@ use Illuminate\Validation\Rule;
 class ServiceBodyController extends ResourceController
 {
     private ServiceBodyRepositoryInterface $serviceBodyRepository;
+    private MeetingRepositoryInterface $meetingRepository;
 
-    public function __construct(ServiceBodyRepositoryInterface $serviceBodyRepository)
-    {
+    public function __construct(
+        ServiceBodyRepositoryInterface $serviceBodyRepository,
+        MeetingRepositoryInterface $meetingRepository
+    ) {
         $this->serviceBodyRepository = $serviceBodyRepository;
+        $this->meetingRepository = $meetingRepository;
         $this->authorizeResource(ServiceBody::class, 'serviceBody');
     }
 
@@ -124,7 +129,7 @@ class ServiceBodyController extends ResourceController
 
         if ($forceDelete && $serviceBody->meetings()->exists()) {
             foreach ($serviceBody->meetings as $meeting) {
-                $meeting->delete();
+                $this->meetingRepository->delete($meeting->id_bigint);
             }
         }
 
