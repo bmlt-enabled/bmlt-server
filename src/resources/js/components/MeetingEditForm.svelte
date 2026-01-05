@@ -1,5 +1,6 @@
 <script lang="ts">
   import { SvelteSet } from 'svelte/reactivity';
+  import type { ActionReturn } from 'svelte/action';
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Spinner, Tooltip } from 'flowbite-svelte';
@@ -504,6 +505,31 @@
   );
   const formatIdToFormatType = Object.fromEntries(filteredFormats.filter((f) => f !== null).map((f) => [f.id, f]));
 
+  function markDisabledFormatItems(node: HTMLElement): ActionReturn {
+    const observer = new MutationObserver(() => {
+      const dropdown = node.querySelector('div.absolute');
+      if (dropdown) {
+        dropdown.querySelectorAll('div.opacity-50').forEach((el) => {
+          const text = el.textContent?.trim() || '';
+          if (text.startsWith('(')) {
+            // It's a disabled format item, not a header
+            el.classList.add('disabled-format-item');
+          } else {
+            el.classList.remove('disabled-format-item');
+          }
+        });
+      }
+    });
+
+    observer.observe(node, { childList: true, subtree: true });
+
+    return {
+      destroy() {
+        observer.disconnect();
+      }
+    };
+  }
+
   function handleDelete(event: MouseEvent, meeting: Meeting) {
     event.stopPropagation();
     meetingToDelete = meeting;
@@ -965,13 +991,15 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
-      {#snippet children({ item, clear })}
-        <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
-          {item.name}
-        </Badge>
-      {/snippet}
-    </MultiSelect>
+    <div use:markDisabledFormatItems>
+      <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
+        {#snippet children({ item, clear })}
+          <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
+            {item.name}
+          </Badge>
+        {/snippet}
+      </MultiSelect>
+    </div>
     <!-- For some reason yup fills the errors store with empty objects for this array. The === 'string' ensures only server side errors will display. -->
     {#if $errors.formatIds && typeof $errors.formatIds[0] === 'string'}
       <Helper class="mt-2" color="red">
@@ -1411,10 +1439,20 @@
     color: rgb(31, 41, 55) !important; /* gray-800 */
   }
 
+  :global(#formatIds div.opacity-50.disabled-format-item) {
+    font-weight: normal !important;
+    font-size: inherit !important;
+    background-color: transparent !important;
+  }
+
   @media (prefers-color-scheme: dark) {
-    :global(#formatIds div[class*='opacity-50']) {
+    :global(#formatIds div.opacity-50) {
       background-color: rgb(17, 24, 39) !important; /* gray-900 */
       color: rgb(209, 213, 219) !important; /* gray-300 */
+    }
+
+    :global(#formatIds div.opacity-50.disabled-format-item) {
+      background-color: transparent !important;
     }
   }
 
