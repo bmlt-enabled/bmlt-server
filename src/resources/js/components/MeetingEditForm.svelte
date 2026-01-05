@@ -411,7 +411,7 @@
     { type: 'ALERT', name: $translations.formatTypeCode_ALERT, color: 'red' }
   ];
 
-  function createGroupedFormatItems(filteredFormats: any[]) {
+  function createGroupedFormatItems(filteredFormats: any[], selectedFormatIds: number[] = []) {
     const formatsByType = filteredFormats.filter(Boolean).reduce(
       (groups, format) => {
         (groups[format.type] ??= []).push(format);
@@ -420,17 +420,26 @@
       {} as Record<string, any[]>
     );
 
+    const openOrClosedFormats = formatsByType['OPEN_OR_CLOSED'] || [];
+    const selectedOpenOrClosedId = openOrClosedFormats.find((f: any) => selectedFormatIds.includes(f.id))?.id;
+
     const createGroupHeader = (type: string, name: string) => ({
       value: `_group_${type}_`,
       name: ` ${name} `,
       disabled: true
     });
 
-    const formatItem = (format: any) => ({
-      value: format.id,
-      name: `  (${format.key}) ${format.name}`,
-      type: format.type
-    });
+    const formatItem = (format: any) => {
+      const isOpenOrClosed = format.type === 'OPEN_OR_CLOSED';
+      const shouldDisable = isOpenOrClosed && selectedOpenOrClosedId && selectedOpenOrClosedId !== format.id;
+
+      return {
+        value: format.id,
+        name: `  (${format.key}) ${format.name}`,
+        type: format.type,
+        disabled: shouldDisable
+      };
+    };
 
     const sortAlphabetically = (items: any[]) => items.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -487,7 +496,12 @@
     return (group?.color ?? 'yellow') as BadgeColor;
   }
 
-  const formatItems = createGroupedFormatItems(filteredFormats.filter((f): f is NonNullable<typeof f> => f !== null));
+  let formatItems = $derived(
+    createGroupedFormatItems(
+      filteredFormats.filter((f): f is NonNullable<typeof f> => f !== null),
+      formatIdsSelected
+    )
+  );
   const formatIdToFormatType = Object.fromEntries(filteredFormats.filter((f) => f !== null).map((f) => [f.id, f]));
 
   function handleDelete(event: MouseEvent, meeting: Meeting) {
