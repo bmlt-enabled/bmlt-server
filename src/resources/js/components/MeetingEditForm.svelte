@@ -975,7 +975,7 @@
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
       {#if serviceBodies.length === 1}
         <Input type="text" value={serviceBodies[0].name} disabled />
-        <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} disabled={isTranslation()}/>
+        <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} disabled={isTranslation()} />
       {:else}
         <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} class="rounded-lg dark:bg-gray-600" disabled={isTranslation()} />
       {/if}
@@ -1045,44 +1045,44 @@
     </div>
   </div>
   {#if !isTranslation()}
-  <div class="mt-4 grid gap-4 md:grid-cols-2">
-    <div class="md:col-span-2">
-      <MapAccordion
-        title={$translations.locationMapTitle}
-        onToggle={(isOpen) => {
-          showMap.set(isOpen);
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <div class="md:col-span-2">
+        <MapAccordion
+          title={$translations.locationMapTitle}
+          onToggle={(isOpen) => {
+            showMap.set(isOpen);
 
-          if (isOpen) {
-            // ensure map is initialized or refreshed
-            setTimeout(() => {
-              if (mapInitialized && map) {
-                // If map already exists, just resize and recenter it
-                if ('invalidateSize' in map) {
-                  map.invalidateSize();
-                  if ('setView' in map) {
-                    map.setView([latitude, longitude]);
+            if (isOpen) {
+              // ensure map is initialized or refreshed
+              setTimeout(() => {
+                if (mapInitialized && map) {
+                  // If map already exists, just resize and recenter it
+                  if ('invalidateSize' in map) {
+                    map.invalidateSize();
+                    if ('setView' in map) {
+                      map.setView([latitude, longitude]);
+                    }
+                  } else if (isGoogleMap(map)) {
+                    map.setCenter({ lat: latitude, lng: longitude });
                   }
-                } else if (isGoogleMap(map)) {
-                  map.setCenter({ lat: latitude, lng: longitude });
+                } else {
+                  initializeMap();
                 }
-              } else {
-                initializeMap();
-              }
-            }, 200);
-          }
-        }}
-      >
-        <div id="locationMap" bind:this={mapElement} class="h-[300px]">
-          {#if mapError}
-            <div class="map-error rounded bg-gray-100 p-4 text-center dark:bg-gray-800">
-              <strong>{$translations.googleKeyProblemTitle}</strong><br />
-              {mapError}
-            </div>
-          {/if}
-        </div>
-      </MapAccordion>
+              }, 200);
+            }
+          }}
+        >
+          <div id="locationMap" bind:this={mapElement} class="h-[300px]">
+            {#if mapError}
+              <div class="map-error rounded bg-gray-100 p-4 text-center dark:bg-gray-800">
+                <strong>{$translations.googleKeyProblemTitle}</strong><br />
+                {mapError}
+              </div>
+            {/if}
+          </div>
+        </MapAccordion>
+      </div>
     </div>
-  </div>
   {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">

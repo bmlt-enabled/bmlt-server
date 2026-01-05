@@ -98,7 +98,7 @@ class MeetingResource extends JsonResource
             return $carry;
         }, [[], []])[0])->toBase()
             ->merge(
-                $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key.'|'.$data->lang_enum => $data->data_blob])->toBase()
+                $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key . '|' . $data->lang_enum => $data->data_blob])->toBase()
             );
         foreach (self::$meetingDataTemplates as $meetingDataTemplate) {
             if (self::$hasDataFieldKeys && !self::$dataFieldKeys->has($meetingDataTemplate->key)) {
