@@ -843,7 +843,7 @@
     {#if selectedMeeting}
       <div class="flex w-full items-center justify-between md:col-span-2">
         <div class="text-gray-700 dark:text-gray-300">
-          <strong>Meeting ID:</strong>
+          <strong>{$translations.meetingId}:</strong>
           {selectedMeeting.id}
         </div>
         <Button

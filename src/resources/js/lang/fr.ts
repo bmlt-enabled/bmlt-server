@@ -194,6 +194,7 @@ export const frTranslations = {
   meeting: 'réunion',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Onglets contenant une ou plusieurs erreurs :',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'La réunion est publiée',
   meetingListEditorsTitle: 'Rédacteurs de la liste des réunions',
   meetings: 'réunions',
@@ -303,6 +304,7 @@ export const frTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Veuillez sélectionner une structure de service valide.',
   serviceBodyTitle: 'Structure de service',
   serviceBodyTypeTitle: 'Type de la structure de service',
@@ -334,6 +336,7 @@ export const frTranslations = {
   updated: 'Mis à jour',
   updateWorldCommitteeCodes: 'Mettre à jour les codes du Comité mondial',
   userDeleteConflictError: "Erreur : l'utilisateur n'a pas pu être supprimé car il est toujours associé à au moins une structure de service ou est le parent d'un autre utilisateur.",
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: "L'utilisateur est désactivé.",
   usernameTitle: "Nom d'utilisateur",
   usersTitle: 'Utilisateurs',

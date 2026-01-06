@@ -139,6 +139,7 @@ export const deTranslations = {
   meeting: 'Meeting',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Tabs mit einem oder mehreren Fehlern:',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'Meeting ist veröffentlicht',
   meetingListEditorsTitle: 'Meetingsliste Editors', // TODO: check translation
   meetings: 'Meetings',
@@ -249,6 +250,7 @@ export const deTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Bitte wähle einen gültigen service body aus',
   serviceBodyTitle: 'Service-Body',
   serviceBodyTypeTitle: 'Service-Body-Typ',
@@ -280,6 +282,7 @@ export const deTranslations = {
   updated: 'Updated', // TODO: Translate
   updateWorldCommitteeCodes: 'Update World Committee Codes', // TODO: Translate
   userDeleteConflictError: 'Fehler: Der Benutzer konnte nicht gelöscht werden, da er noch mindestens einem Service-Body zugeordnet ist oder das übergeordnete Element eines anderen Benutzers ist.',
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: 'Benutzer ist deaktiviert.',
   usernameTitle: 'Benutzername',
   usersTitle: 'Benutzer',

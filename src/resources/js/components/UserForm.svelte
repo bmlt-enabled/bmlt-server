@@ -133,12 +133,22 @@
 </script>
 
 <form use:form>
-  {#if selectedUser?.lastLoginAt}
-    <div class="mb-4 text-sm">
-      <span class="font-medium">{$translations.lastLoginTitle}:</span>
-      <span class="ml-2 text-gray-600 dark:text-gray-400">
-        {new Date(selectedUser.lastLoginAt).toLocaleString()}
-      </span>
+  {#if selectedUser?.lastLoginAt || selectedUser?.id}
+    <div class="mb-4 flex items-center justify-between pr-8 text-sm">
+      {#if selectedUser?.lastLoginAt}
+        <div>
+          <span class="font-medium">{$translations.lastLoginTitle}:</span>
+          <span class="ml-2 text-gray-600 dark:text-gray-400">
+            {new Date(selectedUser.lastLoginAt).toLocaleString()}
+          </span>
+        </div>
+      {/if}
+      {#if selectedUser?.id}
+        <div class="ml-auto text-gray-700 dark:text-gray-300">
+          <span class="font-medium">{$translations.userId}:</span>
+          <span class="ml-2">{selectedUser.id}</span>
+        </div>
+      {/if}
     </div>
   {/if}
   <div class="grid gap-4 md:grid-cols-2">

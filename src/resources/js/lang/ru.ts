@@ -194,6 +194,7 @@ export const ruTranslations = {
   meeting: 'meeting',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Tabs with one or more errors:',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'Meeting is Published',
   meetingListEditorsTitle: 'Meeting List Editors',
   meetings: 'meetings',
@@ -303,6 +304,7 @@ export const ruTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Please select a valid service body',
   serviceBodyTitle: 'Service Body',
   serviceBodyTypeTitle: 'Service Body Type',
@@ -334,6 +336,7 @@ export const ruTranslations = {
   updated: 'Updated',
   updateWorldCommitteeCodes: 'Update World Committee Codes',
   userDeleteConflictError: 'Error: The user could not be deleted because it is still associated with at least one service body or is the parent of another user.',
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: 'User is deactivated.',
   usernameTitle: 'Username',
   usersTitle: 'Users',
