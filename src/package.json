@@ -29,7 +29,7 @@
         "eslint": "^9.39.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-svelte": "^3.13.0",
-        "globals": "^16.5.0",
+        "globals": "^17.0.0",
         "jest": "^30.2.0",
         "jsdom": "^27.2.0",
         "laravel-vite-plugin": "^2.0.1",
@@ -47,7 +47,7 @@
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.4",
         "vite": "^7.2.2",
-        "vite-tsconfig-paths": "^5.1.4",
+        "vite-tsconfig-paths": "^6.0.3",
         "vitest": "^4.0.9"
     },
     "dependencies": {
@@ -55,7 +55,7 @@
         "@googlemaps/js-api-loader": "^2.0.2",
         "@turf/boolean-point-in-polygon": "^7.2.0",
         "@turf/helpers": "^7.2.0",
-        "bmlt-server-client": "^2.0.3-beta.1",
+        "bmlt-server-client": "^2.0.3",
         "felte": "^1.3.0",
         "flowbite-svelte": "^1.28.0",
         "flowbite-svelte-icons": "^3.0.0",
@@ -63,7 +63,7 @@
         "leaflet": "^1.9.4",
         "localized-strings": "^2.0.3",
         "pbf": "^4.0.1",
-        "svelte-spa-router": "github:pjaudiomv/svelte-spa-router#ad110296d3d1942d0680acd6f6babb49408fc915",
+        "@bmlt-enabled/svelte-spa-router": "^5.0.0",
         "yup": "^1.7.1",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }

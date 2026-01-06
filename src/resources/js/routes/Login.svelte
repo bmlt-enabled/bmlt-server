@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { querystring, replace } from 'svelte-spa-router';
+  import { querystring, replace } from '@bmlt-enabled/svelte-spa-router';
 
   import { apiCredentials } from '../stores/apiCredentials';
   import LoginForm from '../components/LoginForm.svelte';

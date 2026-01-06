@@ -1,9 +1,9 @@
 <script lang="ts">
   import './app.css';
-  import Router from 'svelte-spa-router';
-  import { push } from 'svelte-spa-router';
-  import { wrap } from 'svelte-spa-router/wrap';
-  import type { ConditionsFailedEvent } from 'svelte-spa-router';
+  import Router from '@bmlt-enabled/svelte-spa-router';
+  import { push } from '@bmlt-enabled/svelte-spa-router';
+  import { wrap } from '@bmlt-enabled/svelte-spa-router/wrap';
+  import type { ConditionsFailedEvent } from '@bmlt-enabled/svelte-spa-router';
 
   import Account from './routes/Account.svelte';
   import Administration from './routes/Administration.svelte';
@@ -98,6 +98,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 </svelte:head>
 
-<Router {routes} restoreScrollState={true} onconditionsFailed={conditionsFailed} />
+<Router {routes} restoreScrollState={true} {conditionsFailed} />
 <SpinnerModal />
 <ErrorModal />

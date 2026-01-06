@@ -31,7 +31,7 @@ And an observer and a deactivated user:
 
 import { get } from 'svelte/store';
 import { render, screen } from '@testing-library/svelte';
-import { replace } from 'svelte-spa-router';
+import { replace } from '@bmlt-enabled/svelte-spa-router';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import { waitFor } from '@testing-library/svelte';
