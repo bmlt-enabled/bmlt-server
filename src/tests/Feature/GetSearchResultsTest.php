@@ -97,7 +97,45 @@ class GetSearchResultsTest extends TestCase
 
         return $meeting;
     }
+    private function addTranslationMeeting(Meeting $meeting, string $lang, array $dataFields = [], array $longDataFields = [])
+    {
+        static $dataFieldTemplates;
+        if (!isset($dataFieldTemplates)) {
+            $dataFieldTemplates = MeetingData::query()
+                ->where('meetingid_bigint', 0)
+                ->get()
+                ->mapWithKeys(fn ($value, $_) => [$value->key => $value]);
+        }
+        foreach ($dataFields as $fieldName => $fieldValue) {
+            $fieldTemplate = $dataFieldTemplates->get($fieldName);
+            if (is_null($fieldTemplate)) {
+                throw new \Exception("unknown field '$fieldName' specified in test meeting");
+            }
 
+            $meeting->data()->create([
+                'key' => $fieldName,
+                'field_prompt' => $fieldTemplate->field_prompt,
+                'lang_enum' => $lang,
+                'data_string' => $fieldValue,
+                'visibility' => $fieldTemplate->visibility,
+            ]);
+        }
+
+        foreach ($longDataFields as $fieldName => $fieldValue) {
+            $fieldTemplate = $dataFieldTemplates->get($fieldName);
+            if (is_null($fieldTemplate)) {
+                throw new \Exception("unknown field '$fieldName' specified in test meeting");
+            }
+
+            $meeting->longdata()->create([
+                'key' => $fieldName,
+                'field_prompt' => $fieldTemplate->field_prompt,
+                'lang_enum' => $lang,
+                'data_blob' => $fieldValue,
+                'visibility' => $fieldTemplate->visibility,
+            ]);
+        }
+    }
     private function createZone(string $name, string $description, ?string $uri = null, ?string $helpline = null, ?string $worldId = null, ?string $email = null, ?int $principalUserId = null, ?array $assignedUserIds = null)
     {
         return $this->createServiceBody($name, $description, 'ZF', 0, $uri, $helpline, $worldId, $email, $principalUserId, $assignedUserIds);
@@ -1327,7 +1365,22 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
             ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
     }
-
+    // translated data
+    //
+    //
+    public function testTranslatedData()
+    {
+        $meeting1 = $this->createMeeting([], ["meeting_name" => "original name", "location_street" => "original street"]);
+        $this->addTranslationMeeting($meeting1, 'de', ["meeting_name" => "translated name"]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['meeting_name' => 'original name']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&lang_enum=de")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['meeting_name' => 'translated name', "location_street" => "original street"]);
+    }
     // sort_key
     //
     //

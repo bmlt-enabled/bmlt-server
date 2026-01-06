@@ -100,7 +100,7 @@ class UserController extends ResourceController
                     } elseif ($fieldName == 'description_string') {
                         return ['description' => $request->has('description') ? $request->input('description') : $user->description_string];
                     } elseif ($fieldName == 'target_language') {
-                        return ['description' => $request->has('targetLanguage') ? $request->input('targetLanguage') : $user->target_language];
+                        return ['targetLanguage' => $request->has('targetLanguage') ? $request->input('targetLanguage') : $user->target_language];
                     } elseif ($fieldName == 'email_address_string') {
                         return ['email' => $request->has('email') ? $request->input('email') : $user->email_address_string];
                     } elseif ($fieldName == 'password_string') {
@@ -141,7 +141,7 @@ class UserController extends ResourceController
             'description' => 'nullable|string|max:1024',
             'email' => 'nullable|email',
             'ownerId' => 'nullable|present|int|exists:comdef_users,id_bigint',
-            'targetLanguage' => 'required_if:type,' . User::USER_TYPE_TRANSLATOR . '|string|max:10',
+            'targetLanguage' => 'required_if:type,' . User::USER_TYPE_TRANSLATOR,
         ]));
 
         $ownerId = $validated->get('ownerId');

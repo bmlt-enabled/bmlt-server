@@ -718,8 +718,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
             $meeting = Meeting::find($id);
-            //TODO: re-enable if needed
-            //$meeting->loadMissing(['data', 'longdata']);
+            $meeting->loadMissing(['data', 'longdata']);
 
             if (!is_null($meeting)) {
                 $meetingDataValues = collect($meeting)->reject(fn ($_, $fieldName) => empty($value) || !$dataTemplates->has($fieldName))

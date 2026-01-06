@@ -144,8 +144,7 @@ export const deTranslations = {
   meetingsPerPage: 'Meetings per page', // TODO: Translate
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Meeting',
-  meetingUnpublishedNote:
-    'Hinweis: Das Aufheben der Veröffentlichung eines Meetings bedeutet, dass es vorübergehend geschlossen wurde. Wenn dieses Meeting dauerhaft geschlossen wurde, lösch es bitte.',
+  meetingUnpublishedNote: 'Hinweis: Das Aufheben der Veröffentlichung eines Meetings bedeutet, dass es vorübergehend geschlossen wurde. Wenn dieses Meeting dauerhaft geschlossen wurde, lösch es bitte.',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minuten',
   myBmltServer: 'My BMLT Server', // TODO: Translate
