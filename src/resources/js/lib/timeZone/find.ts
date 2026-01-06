@@ -22,7 +22,10 @@ export function init(geoDataSource: GeoDataSource = settings.apiBaseUrl + '/time
     typeof geoDataSource === 'string'
       ? async (start: number, end: number) => {
           const response = await fetch(geoDataSource, {
-            headers: { Range: `bytes=${start}-${end}` }
+            headers: {
+              Range: `bytes=${start}-${end}`,
+              'Accept-Encoding': 'identity'
+            }
           });
           return await response.arrayBuffer();
         }

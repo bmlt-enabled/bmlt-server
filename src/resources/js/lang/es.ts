@@ -70,6 +70,7 @@ export const esTranslations = {
   addUser: 'Añadir usuario',
   administrationTitle: 'Administración',
   administratorTitle: 'Administrador',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'Administrador',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
@@ -140,6 +141,7 @@ export const esTranslations = {
   errorDownloading: 'Error al descargar',
   errors: 'Errores',
   extraInfoTitle: 'Información extra',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: '✓ Archivo procesado correctamente',
   filter: 'Filtro',
   formatDeleteConflictError: 'Error: El formato no pudo borrarse porque está asociado con algún grupo',
@@ -272,6 +274,7 @@ export const esTranslations = {
   passwordTitle: 'Contraseña',
   phoneMeetingTitle: 'Número de teléfono para la reunión telefónica',
   postMeridiem: 'PM',
+  private: 'Private', // TODO: translate
   processingFile: 'Procesando archivo…',
   published: 'Publicado',
   regionBias: 'Region Bias', // TODO: Translate

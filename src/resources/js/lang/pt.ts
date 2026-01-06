@@ -70,6 +70,7 @@ export const ptTranslations = {
   addUser: 'Adicionar usuário',
   administrationTitle: 'administração',
   administratorTitle: 'Administrador',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'Administrador',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
@@ -140,6 +141,7 @@ export const ptTranslations = {
   errorDownloading: 'Erro de baixamento',
   errors: 'Erros',
   extraInfoTitle: 'Informação extra',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: '✓ Arquivo processado com sucesso',
   filter: 'Filtro',
   formatDeleteConflictError: 'Erro: O formato não pôde ser apagado porque ainda está associado a reuniões.',
@@ -272,6 +274,7 @@ export const ptTranslations = {
   passwordTitle: 'Senha',
   phoneMeetingTitle: 'Número de telefone para reunião telefónica',
   postMeridiem: 'PM',
+  private: 'Private', // TODO: translate
   processingFile: 'Processando arquivo...',
   published: 'Publicado',
   regionBias: 'Region Bias', // TODO: Translate

@@ -70,6 +70,7 @@ export const svTranslations = {
   addUser: 'Add User',
   administrationTitle: 'Administration',
   administratorTitle: 'Administrator',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'Admin',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
@@ -140,6 +141,7 @@ export const svTranslations = {
   errorDownloading: 'Error Downloading',
   errors: 'Errors',
   extraInfoTitle: 'Extra Info',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: '✓ File Processed Successfully',
   filter: 'Filter',
   formatDeleteConflictError: 'Error: The format could not be deleted because it is still associated with meetings.',
@@ -272,6 +274,7 @@ export const svTranslations = {
   passwordTitle: 'Password',
   phoneMeetingTitle: 'Phone Meeting Dial-in Number',
   postMeridiem: 'PM',
+  private: 'Private', // TODO: translate
   processingFile: 'Processing file...',
   published: 'Published',
   regionBias: 'Region Bias', // TODO: Translate

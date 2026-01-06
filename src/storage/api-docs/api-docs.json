@@ -2610,6 +2610,10 @@
                         "type": "string",
                         "example": "string"
                     },
+                    "admin_notes": {
+                        "type": "string",
+                        "example": "string"
+                    },
                     "customFields": {
                         "type": "object",
                         "example": {

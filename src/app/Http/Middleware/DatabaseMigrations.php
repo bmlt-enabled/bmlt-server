@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2026_01_03_162404_update_meetings_email_contact_to_nullable')) {
+        if (!$this->migrationRepository->migrationExists('2026_01_02_182138_add_admin_notes_field_template')) {
             return true;
         }
 

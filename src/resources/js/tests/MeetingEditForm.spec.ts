@@ -64,13 +64,15 @@ describe('MeetingEditForm Component', () => {
         expect(screen.getByLabelText(translations.getString('zipCodeTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('nationTitle'))).toBeInTheDocument();
 
-        // Contact fields
+        // Other tab
         expect(screen.getByLabelText(translations.getString('contact1NameTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('contact1PhoneTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('contact1EmailTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('contact2NameTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('contact2PhoneTitle'))).toBeInTheDocument();
         expect(screen.getByLabelText(translations.getString('contact2EmailTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('commentsTitle'))).toBeInTheDocument();
+        expect(screen.getByLabelText(translations.getString('adminNotes'))).toBeInTheDocument();
         settings.customFields.forEach(({ name, displayName }) => {
           expect(screen.getByLabelText(displayName)).toBeInTheDocument();
           expect(screen.getByLabelText(displayName)).toHaveValue(selectedMeeting.customFields ? selectedMeeting.customFields[name] : '');
@@ -117,13 +119,15 @@ describe('MeetingEditForm Component', () => {
     expect(screen.getByLabelText(translations.getString('zipCodeTitle'))).toHaveValue(selectedMeeting.locationPostalCode1);
     expect(screen.getByLabelText(translations.getString('nationTitle'))).toHaveValue(selectedMeeting.locationNation);
 
-    // Contact fields
+    // Other Tab
     expect(screen.getByLabelText(translations.getString('contact1NameTitle'))).toHaveValue(selectedMeeting.contactName1);
     expect(screen.getByLabelText(translations.getString('contact1PhoneTitle'))).toHaveValue(selectedMeeting.contactPhone1);
     expect(screen.getByLabelText(translations.getString('contact1EmailTitle'))).toHaveValue(selectedMeeting.contactEmail1);
     expect(screen.getByLabelText(translations.getString('contact2NameTitle'))).toHaveValue(selectedMeeting.contactName2);
     expect(screen.getByLabelText(translations.getString('contact2PhoneTitle'))).toHaveValue(selectedMeeting.contactPhone2);
     expect(screen.getByLabelText(translations.getString('contact2EmailTitle'))).toHaveValue(selectedMeeting.contactEmail2);
+    expect(screen.getByLabelText(translations.getString('commentsTitle'))).toHaveValue(selectedMeeting.comments);
+    expect(screen.getByLabelText(translations.getString('adminNotes'))).toHaveValue(selectedMeeting.adminNotes);
   });
 
   test('test Ensure tabs are present for existing meetings', async () => {

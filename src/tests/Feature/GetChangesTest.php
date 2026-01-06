@@ -864,6 +864,7 @@ class GetChangesTest extends TestCase
             'contact_phone_1' => 'Contact 1 Phone',
             'contact_email_1' => 'Contact 1 Email',
             'contact_name_1' => 'Contact 1 Name',
+            'admin_notes' => 'Admin Notes',
         ];
 
         $user = $this->createUser();
@@ -908,6 +909,7 @@ class GetChangesTest extends TestCase
             'contact_phone_1' => 'Contact 1 Phone',
             'contact_email_1' => 'Contact 1 Email',
             'contact_name_1' => 'Contact 1 Name',
+            'admin_notes' => 'Admin Notes',
         ];
 
         $user = $this->createUser();
@@ -952,6 +954,7 @@ class GetChangesTest extends TestCase
             'contact_phone_1' => 'Contact 1 Phone',
             'contact_email_1' => 'Contact 1 Email',
             'contact_name_1' => 'Contact 1 Name',
+            'admin_notes' => 'Admin Notes',
         ];
 
         $user = $this->createUser();
@@ -1085,7 +1088,7 @@ class GetChangesTest extends TestCase
             ->assertJsonCount(1);
     }
 
-    public function testContactFieldsMaskedWhenUnauthenticated()
+    public function testSensitiveFieldsMaskedWhenUnauthenticated()
     {
         $user = $this->createUser();
         $afterValues = [
@@ -1095,6 +1098,7 @@ class GetChangesTest extends TestCase
             'contact_name_2' => 'Jane Smith',
             'contact_phone_2' => '555-5678',
             'contact_email_2' => 'jane@example.com',
+            'admin_notes' => 'Meeting may have moved',
             'meeting_name' => 'Test Meeting'
         ];
         $this->createChange(null, $afterValues, $user);
@@ -1110,11 +1114,12 @@ class GetChangesTest extends TestCase
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_name_2']);
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_phone_2']);
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_email_2']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['admin_notes']);
         // Non-contact fields should not be masked
         $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
     }
 
-    public function testContactFieldsVisibleWhenAuthenticatedAsAdmin()
+    public function testSensitiveFieldsVisibleWhenAuthenticatedAsAdmin()
     {
         $user = $this->createUser(User::USER_LEVEL_ADMIN);
 
@@ -1122,6 +1127,7 @@ class GetChangesTest extends TestCase
             'contact_name_1' => 'John Doe',
             'contact_phone_1' => '555-1234',
             'contact_email_1' => 'john@example.com',
+            'admin_notes' => 'Meeting may have moved',
             'meeting_name' => 'Test Meeting'
         ];
         $this->createChange(null, $afterValues, $user);
@@ -1133,10 +1139,11 @@ class GetChangesTest extends TestCase
         $this->assertEquals('John Doe', $response[0]['json_data']['after']['contact_name_1']);
         $this->assertEquals('555-1234', $response[0]['json_data']['after']['contact_phone_1']);
         $this->assertEquals('john@example.com', $response[0]['json_data']['after']['contact_email_1']);
+        $this->assertEquals('Meeting may have moved', $response[0]['json_data']['after']['admin_notes']);
         $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
     }
 
-    public function testContactFieldsVisibleForServiceBodyAdmin()
+    public function testSensitiveFieldsVisibleForServiceBodyAdmin()
     {
         $user = $this->createUser(User::USER_LEVEL_SERVICE_BODY_ADMIN);
 
@@ -1147,6 +1154,7 @@ class GetChangesTest extends TestCase
             'contact_name_1' => 'John Doe',
             'contact_phone_1' => '555-1234',
             'contact_email_1' => 'john@example.com',
+            'admin_notes' => 'Meeting may have moved',
             'meeting_name' => 'Test Meeting'
         ];
         $this->createChange(null, $afterValues, $user);
@@ -1158,9 +1166,10 @@ class GetChangesTest extends TestCase
         $this->assertEquals('John Doe', $response[0]['json_data']['after']['contact_name_1']);
         $this->assertEquals('555-1234', $response[0]['json_data']['after']['contact_phone_1']);
         $this->assertEquals('john@example.com', $response[0]['json_data']['after']['contact_email_1']);
+        $this->assertEquals('Meeting may have moved', $response[0]['json_data']['after']['admin_notes']);
     }
 
-    public function testContactFieldsMaskedForDifferentServiceBody()
+    public function testSensitiveFieldsMaskedForDifferentServiceBody()
     {
         $user = $this->createUser(User::USER_LEVEL_SERVICE_BODY_ADMIN);
 
@@ -1172,6 +1181,7 @@ class GetChangesTest extends TestCase
             'contact_name_1' => 'John Doe',
             'contact_phone_1' => '555-1234',
             'contact_email_1' => 'john@example.com',
+            'admin_notes' => 'Meeting may have moved',
             'meeting_name' => 'Test Meeting'
         ];
         $this->createChange(null, $afterValues, $user);
@@ -1183,6 +1193,7 @@ class GetChangesTest extends TestCase
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_name_1']);
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_phone_1']);
         $this->assertEquals('********', $response[0]['json_data']['after']['contact_email_1']);
+        $this->assertEquals('********', $response[0]['json_data']['after']['admin_notes']);
     }
 
     public function testEmptyContactFieldsNotMasked()
@@ -1201,13 +1212,14 @@ class GetChangesTest extends TestCase
         $this->assertEquals('Test Meeting', $response[0]['json_data']['after']['meeting_name']);
     }
 
-    public function testContactFieldsMaskedInBeforeObjectOnDelete()
+    public function testSensitiveFieldsMaskedInBeforeObjectOnDelete()
     {
         $user = $this->createUser();
         $beforeValues = [
             'contact_name_1' => 'John Doe',
             'contact_phone_1' => '555-1234',
             'contact_email_1' => 'john@example.com',
+            'admin_notes' => 'Meeting may have moved',
             'meeting_name' => 'Test Meeting'
         ];
         $this->createChange($beforeValues, null, $user);
@@ -1219,5 +1231,6 @@ class GetChangesTest extends TestCase
         $this->assertEquals('********', $response[0]['json_data']['before']['contact_name_1']);
         $this->assertEquals('********', $response[0]['json_data']['before']['contact_phone_1']);
         $this->assertEquals('********', $response[0]['json_data']['before']['contact_email_1']);
+        $this->assertEquals('********', $response[0]['json_data']['before']['admin_notes']);
     }
 }

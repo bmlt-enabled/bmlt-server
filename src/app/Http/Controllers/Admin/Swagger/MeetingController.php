@@ -43,6 +43,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="bus_lines", type="string", example="string"),
  *     @OA\Property(property="train_lines", type="string", example="string"),
  *     @OA\Property(property="comments", type="string", example="string"),
+ *     @OA\Property(property="admin_notes", type="string", example="string"),
  *     @OA\Property(property="customFields", type="object", example={"key1": "value1", "key2": "value2"},
  *         @OA\AdditionalProperties(type="string")
  *     ),

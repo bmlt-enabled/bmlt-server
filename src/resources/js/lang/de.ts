@@ -15,6 +15,7 @@ export const deTranslations = {
   addUser: 'Benutzer hinzufügen',
   administrationTitle: 'Administration',
   administratorTitle: 'Administrator*in',
+  adminNotes: 'Admin Notes', // TODO: translate
   adminTitle: 'Admin',
   advancedSettings: 'Advanced Settings', // TODO: Translate
   anteMeridiem: 'AM',
@@ -85,6 +86,7 @@ export const deTranslations = {
   errorDownloading: 'Error Downloading',
   errors: 'Fehler',
   extraInfoTitle: 'Weitere Informationen',
+  fieldVisibilityAuthenticatedOnly: 'These fields are only visible to authenticated users', // TODO: translate
   fileProcessedSuccessfully: '✓ File Processed Successfully', // TODO: translate
   filter: 'Filter',
   formatDeleteConflictError: 'Fehler: Das Format konnte nicht gelöscht werden, da es noch mit Meetings verknüpft ist.',
@@ -218,6 +220,7 @@ export const deTranslations = {
   passwordTitle: 'Passwort',
   phoneMeetingTitle: 'Telefonnummer für Telefonmeeting',
   postMeridiem: 'PM',
+  private: 'Private', // TODO: translate
   processingFile: 'Processing file...', // TODO: Translate
   published: 'Veröffentlicht',
   regionBias: 'Region Bias', // TODO: Translate

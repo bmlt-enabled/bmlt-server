@@ -1801,6 +1801,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
         $this->get("/client_interface/json/?switcher=GetSearchResults")
@@ -1814,6 +1815,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => '',
                 'contact_email_1' => '',
                 'contact_email_2' => '',
+                'admin_notes' => '',
         ]);
     }
 
@@ -1829,6 +1831,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
         $this->actingAs($user)
@@ -1846,6 +1849,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]);
     }
 
@@ -1868,6 +1872,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
         $meeting2 = $this->createMeeting(
@@ -1882,6 +1887,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
 
@@ -1902,6 +1908,7 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals('test', $meeting['contact_phone_2']);
         $this->assertEquals('test', $meeting['contact_email_1']);
         $this->assertEquals('test', $meeting['contact_email_2']);
+        $this->assertEquals('test', $meeting['admin_notes']);
 
         $meeting = $data->filter(fn ($meeting) => $meeting['id_bigint'] == $meeting2->id_bigint)->first();
         $this->assertEquals('', $meeting['email_contact']);
@@ -1911,6 +1918,7 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals('', $meeting['contact_phone_2']);
         $this->assertEquals('', $meeting['contact_email_1']);
         $this->assertEquals('', $meeting['contact_email_2']);
+        $this->assertEquals('', $meeting['admin_notes']);
     }
 
     public function testSensitiveFieldsServiceBodyAdminEditorsString()
@@ -1932,6 +1940,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
         $meeting2 = $this->createMeeting(
@@ -1946,6 +1955,7 @@ class GetSearchResultsTest extends TestCase
                 'contact_phone_2' => 'test',
                 'contact_email_1' => 'test',
                 'contact_email_2' => 'test',
+                'admin_notes' => 'test',
             ]
         );
 
@@ -1966,6 +1976,7 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals('test', $meeting['contact_phone_2']);
         $this->assertEquals('test', $meeting['contact_email_1']);
         $this->assertEquals('test', $meeting['contact_email_2']);
+        $this->assertEquals('test', $meeting['admin_notes']);
 
         $meeting = $data->filter(fn ($meeting) => $meeting['id_bigint'] == $meeting2->id_bigint)->first();
         $this->assertEquals('', $meeting['email_contact']);
@@ -1975,6 +1986,7 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals('', $meeting['contact_phone_2']);
         $this->assertEquals('', $meeting['contact_email_1']);
         $this->assertEquals('', $meeting['contact_email_2']);
+        $this->assertEquals('', $meeting['admin_notes']);
     }
 
     public function testGetUsedFormats()
