@@ -63,7 +63,7 @@
         "leaflet": "^1.9.4",
         "localized-strings": "^2.0.3",
         "pbf": "^4.0.1",
-        "@bmlt-enabled/svelte-spa-router": "^5.0.0",
+        "@bmlt-enabled/svelte-spa-router": "^5.0.1",
         "yup": "^1.7.1",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
