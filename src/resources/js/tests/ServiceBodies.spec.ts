@@ -443,4 +443,31 @@ describe('Spreadsheet download functionality', () => {
     const downloadButton = screen.queryByRole('button', { name: /Download Spreadsheet/i });
     expect(downloadButton).not.toBeInTheDocument();
   });
+
+  test('displays service body ID for existing service body', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    await user.click(await screen.findByRole('cell', { name: 'Rural Area' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Service Body ID:')).toBeInTheDocument();
+      expect(screen.getByText('106')).toBeInTheDocument(); // Rural Area ID
+    });
+  });
+
+  test('service body ID is displayed on the right side', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    await user.click(await screen.findByRole('cell', { name: 'Rural Area' }));
+
+    await waitFor(() => {
+      const serviceBodyIdElement = screen.getByText('Service Body ID:').closest('div');
+      expect(serviceBodyIdElement).toHaveClass('ml-auto');
+    });
+  });
+
+  test('service body ID is not displayed for new service body', async () => {
+    const user = await login('serveradmin', 'Service Bodies');
+    await user.click(await screen.findByRole('button', { name: 'Add Service Body' }));
+
+    expect(screen.queryByText('Service Body ID:')).not.toBeInTheDocument();
+  });
 });
