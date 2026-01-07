@@ -194,6 +194,7 @@ export const ptTranslations = {
   meeting: 'reunião',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Abas com um ou mais erros',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'A reunião está publicada.',
   meetingListEditorsTitle: 'Editores da lista de reuniões',
   meetings: 'reuniões',
@@ -303,6 +304,7 @@ export const ptTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Por favor, selecione um corpo de serviço válido',
   serviceBodyTitle: 'Corpo de serviço',
   serviceBodyTypeTitle: 'Tipo de corpo de serviço',
@@ -334,6 +336,7 @@ export const ptTranslations = {
   updated: 'Atualizado',
   updateWorldCommitteeCodes: 'Atualizar Códigos do Comitê Mundial',
   userDeleteConflictError: 'O usuário não pôde ser apagado porque ainda está associado a pelo menos um corpo de serviço ou é pai de outro usuário.',
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: 'Usuário está desativado',
   usernameTitle: 'Nome de usuário',
   usersTitle: 'Usuários',

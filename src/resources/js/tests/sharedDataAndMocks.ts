@@ -92,7 +92,8 @@ export const bigRegionAdmin: User = {
   id: 3,
   ownerId: northernZoneAdmin.id,
   type: 'serviceBodyAdmin',
-  username: 'BigRegion'
+  username: 'BigRegion',
+  lastLoginAt: new Date('2025-12-15T10:30:00Z')
 };
 
 export const smallRegionAdmin: User = {

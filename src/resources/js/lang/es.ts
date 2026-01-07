@@ -194,6 +194,7 @@ export const esTranslations = {
   meeting: 'grupo',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Pestañas con uno o más errores:',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'El grupo está publicado',
   meetingListEditorsTitle: 'Editores de la lista de grupos',
   meetings: 'grupos',
@@ -303,6 +304,7 @@ export const esTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Seleccione un organismo de servicio válido',
   serviceBodyTitle: 'Organismo de servicio',
   serviceBodyTypeTitle: 'Tipo de organismo de servicio',
@@ -334,6 +336,7 @@ export const esTranslations = {
   updated: 'Actualizado',
   updateWorldCommitteeCodes: 'Actualizar los códigos del Comité Mundial',
   userDeleteConflictError: 'Error: No se pudo borrar al usuario porque sigue asociado con al menos un organismo de servicio o es padre de otro usuario.',
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: 'El usuario está desactivado.',
   usernameTitle: 'Nombre de usuario',
   usersTitle: 'Usuarios',

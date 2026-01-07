@@ -386,4 +386,43 @@ describe('Spreadsheet download functionality', () => {
     const downloadButton = screen.queryByRole('button', { name: /Download Spreadsheet/i });
     expect(downloadButton).not.toBeInTheDocument();
   }, 15000);
+
+  test('displays last login and user ID for existing user', async () => {
+    const user = await login('serveradmin', 'Users');
+    await user.click(await screen.findByRole('cell', { name: 'Big Region' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Last Login:')).toBeInTheDocument();
+      expect(screen.getByText('User ID:')).toBeInTheDocument();
+    });
+  });
+
+  test('user ID is displayed on the right side', async () => {
+    const user = await login('serveradmin', 'Users');
+    await user.click(await screen.findByRole('cell', { name: 'Big Region' }));
+
+    await waitFor(() => {
+      const userIdElement = screen.getByText('User ID:').closest('div');
+      expect(userIdElement).toHaveClass('ml-auto');
+    });
+  });
+
+  test('last login and user ID are not displayed for new user', async () => {
+    const user = await login('serveradmin', 'Users');
+    await user.click(await screen.findByRole('button', { name: 'Add User' }));
+
+    expect(screen.queryByText('Last Login:')).not.toBeInTheDocument();
+    expect(screen.queryByText('User ID:')).not.toBeInTheDocument();
+  });
+
+  test('user ID is displayed even without last login', async () => {
+    const user = await login('serveradmin', 'Users');
+    // Small Region doesn't have lastLoginAt
+    await user.click(await screen.findByRole('cell', { name: 'Small Region' }));
+
+    await waitFor(() => {
+      expect(screen.queryByText('Last Login:')).not.toBeInTheDocument();
+      expect(screen.getByText('User ID:')).toBeInTheDocument();
+    });
+  });
 });

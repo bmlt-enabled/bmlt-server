@@ -194,6 +194,7 @@ export const itTranslations = {
   meeting: 'Riunione',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'Schede con uno o più errori:',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'La riunione è pubblicata',
   meetingListEditorsTitle: "Redattori dell'elenco delle riunioni",
   meetings: 'Riunioni',
@@ -303,6 +304,7 @@ export const itTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'Seleziona un ente di servizio valido',
   serviceBodyTitle: 'Ente di servizio',
   serviceBodyTypeTitle: 'Tipo di corpo di servizio',
@@ -334,6 +336,7 @@ export const itTranslations = {
   updated: 'Aggiornato',
   updateWorldCommitteeCodes: 'Aggiorna i codici del Comitato Mondiale',
   userDeleteConflictError: "Errore: l'utente non può essere eliminato perché è ancora associato ad almeno un ente di servizio o è assiociato ad un altro utente.",
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: "L'utente è disattivato",
   usernameTitle: 'Nome utente',
   usersTitle: 'Utenti',

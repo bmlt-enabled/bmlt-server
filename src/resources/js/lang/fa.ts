@@ -194,6 +194,7 @@ export const faTranslations = {
   meeting: 'جلسه',
   meetingCountiesSubProvinces: 'Meeting Counties/Sub-Provinces', // TODO: Translate
   meetingErrorsSomewhere: 'زبانه ها با یک یا چند خطای:',
+  meetingId: 'Meeting ID', // TODO: translate
   meetingIsPublishedTitle: 'جلسه منتشر شد',
   meetingListEditorsTitle: 'ویرایشگرهای لیست جلسه',
   meetings: 'جلسات',
@@ -303,6 +304,7 @@ export const faTranslations = {
   serviceBodyDeleteWithMeetings: 'This service body has meetings. You must force delete to remove both the service body and its meetings.', // TODO: translate
   serviceBodyForceDelete: 'Force delete (also deletes all meetings)', // TODO: translate
   serviceBodyHasMeetings: 'meetings will be deleted', // TODO: translate
+  serviceBodyId: 'Service Body ID', // TODO: translate
   serviceBodyInvalid: 'لطفاً یک بدنه خدماتی معتبر را انتخاب کنید',
   serviceBodyTitle: 'بدنه خدماتی',
   serviceBodyTypeTitle: 'نوع بدنه خدماتی',
@@ -334,6 +336,7 @@ export const faTranslations = {
   updated: 'به روز شد',
   updateWorldCommitteeCodes: 'کدهای کمیته جهانی را به روز کنید',
   userDeleteConflictError: 'خطا: کاربر نمی تواند حذف شود زیرا هنوز حداقل با یک بدنه خدماتی همراه است یا والد کاربر دیگری است.',
+  userId: 'User ID', // TODO: translate
   userIsDeactivated: 'کاربر غیرفعال شده است.',
   usernameTitle: 'نام کاربری',
   usersTitle: 'کاربران',

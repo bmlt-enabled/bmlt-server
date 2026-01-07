@@ -203,4 +203,37 @@ describe('MeetingEditForm Component', () => {
     // Verify that the form is still dirty (button should remain enabled)
     expect(applyChangesButton).not.toBeDisabled();
   });
+
+  test('displays meeting ID for existing meeting', async () => {
+    render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    await waitFor(() => {
+      expect(screen.getByText(`${translations.getString('meetingId')}:`)).toBeInTheDocument();
+      expect(screen.getByText(selectedMeeting.id.toString())).toBeInTheDocument();
+    });
+  });
+
+  test('meeting ID is not displayed for new meeting', async () => {
+    render(MeetingEditForm, { props: { selectedMeeting: null, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    await waitFor(() => {
+      expect(screen.queryByText(`${translations.getString('meetingId')}:`)).not.toBeInTheDocument();
+    });
+  });
+
+  test('meeting ID and delete button are in the same row', async () => {
+    render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    await waitFor(() => {
+      const meetingIdElement = screen.getByText(`${translations.getString('meetingId')}:`).closest('div');
+      const deleteButton = screen.getByRole('button', {
+        name: `${translations.getString('deleteMeeting')} ${selectedMeeting.id}`
+      });
+
+      // Both should be within the same flex container
+      const flexContainer = meetingIdElement?.parentElement;
+      expect(flexContainer).toHaveClass('flex');
+      expect(flexContainer).toContainElement(deleteButton);
+    });
+  });
 });

@@ -159,6 +159,14 @@
 </script>
 
 <form use:form>
+  {#if selectedServiceBody?.id}
+    <div class="mb-4 flex items-center justify-between pr-8 text-sm">
+      <div class="ml-auto text-gray-700 dark:text-gray-300">
+        <span class="font-medium">{$translations.serviceBodyId}:</span>
+        <span class="ml-2">{selectedServiceBody.id}</span>
+      </div>
+    </div>
+  {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="name" class="mb-2">{$translations.nameTitle}</Label>
