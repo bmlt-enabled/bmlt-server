@@ -5,6 +5,10 @@ import type { Token, User } from 'bmlt-server-client';
 
 import { spinner } from './spinner';
 import RootServerApi from '../lib/ServerApi';
+import { formatsState } from './formatsState';
+import { meetingsState } from './meetingsState';
+import { serviceBodiesState } from './serviceBodiesState';
+import { usersState } from './usersState';
 
 export const authenticatedUser: Writable<User | null> = writable(null);
 
@@ -36,6 +40,10 @@ export class ApiCredentialsStore {
 
   private clearInternal(): void {
     clearTimeout(this.refreshTokenTimeout);
+    formatsState.reset();
+    meetingsState.reset();
+    serviceBodiesState.reset();
+    usersState.reset();
     this.store.set(null);
     authenticatedUser.set(null);
     localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
