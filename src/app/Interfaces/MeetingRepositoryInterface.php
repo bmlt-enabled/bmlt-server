@@ -23,7 +23,7 @@ interface MeetingRepositoryInterface
         array $formatsExclude = null,
         string $formatsComparisonOperator = 'AND',
         string $meetingKey = null,
-        string $meetingKeyValue = null,
+        string|array $meetingKeyValue = null,
         string $startsAfter = null,
         string $startsBefore = null,
         string $endsBefore = null,

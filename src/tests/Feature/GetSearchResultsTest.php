@@ -982,6 +982,94 @@ class GetSearchResultsTest extends TestCase
         }
     }
 
+    // meeting_key/meeting_key_value[] - Array Support
+    //
+    //
+    public function testMeetingKeyValueArrayMainField()
+    {
+        $meeting1 = $this->createMeeting(['worldid_mixed' => 'worldid1']);
+        $meeting2 = $this->createMeeting(['worldid_mixed' => 'worldid2']);
+        $meeting3 = $this->createMeeting(['worldid_mixed' => 'worldid3']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=worldid_mixed&meeting_key_value[]=worldid1&meeting_key_value[]=worldid2")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['worldid_mixed' => 'worldid1'])
+            ->assertJsonFragment(['worldid_mixed' => 'worldid2']);
+    }
+
+    public function testMeetingKeyValueArrayDataField()
+    {
+        $meeting1 = $this->createMeeting(dataFields: ['location_municipality' => 'Edmonds']);
+        $meeting2 = $this->createMeeting(dataFields: ['location_municipality' => 'Everett']);
+        $meeting3 = $this->createMeeting(dataFields: ['location_municipality' => 'Seattle']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_municipality&meeting_key_value[]=Edmonds&meeting_key_value[]=Everett")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
+    }
+
+    public function testMeetingKeyValueArrayLongDataField()
+    {
+        $meeting1 = $this->createMeeting(longDataFields: ['location_info' => 'info1']);
+        $meeting2 = $this->createMeeting(longDataFields: ['location_info' => 'info2']);
+        $meeting3 = $this->createMeeting(longDataFields: ['location_info' => 'info3']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_info&meeting_key_value[]=info1&meeting_key_value[]=info2")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
+    }
+
+    public function testMeetingKeyValueArraySingleValue()
+    {
+        $meeting1 = $this->createMeeting(dataFields: ['location_municipality' => 'Edmonds']);
+        $meeting2 = $this->createMeeting(dataFields: ['location_municipality' => 'Everett']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_municipality&meeting_key_value[]=Edmonds")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+    }
+
+    public function testMeetingKeyValueArrayEmpty()
+    {
+        $meeting1 = $this->createMeeting(dataFields: ['location_municipality' => 'Edmonds']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_municipality&meeting_key_value[]=")
+            ->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+
+    public function testMeetingKeyValueArrayMixedCitiesAndCounties()
+    {
+        // Test multiple cities
+        $meeting1 = $this->createMeeting(dataFields: ['location_municipality' => 'Edmonds', 'location_sub_province' => 'Snohomish']);
+        $meeting2 = $this->createMeeting(dataFields: ['location_municipality' => 'Everett', 'location_sub_province' => 'Snohomish']);
+        $meeting3 = $this->createMeeting(dataFields: ['location_municipality' => 'Seattle', 'location_sub_province' => 'King']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_municipality&meeting_key_value[]=Edmonds&meeting_key_value[]=Everett")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
+
+        // Test multiple counties
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=location_sub_province&meeting_key_value[]=Snohomish&meeting_key_value[]=King")
+            ->assertStatus(200)
+            ->assertJsonCount(3);
+    }
+
+    public function testMeetingKeyValueArrayWeekday()
+    {
+        $meeting1 = $this->createMeeting(['weekday_tinyint' => 0]); // Sunday
+        $meeting2 = $this->createMeeting(['weekday_tinyint' => 1]); // Monday
+        $meeting3 = $this->createMeeting(['weekday_tinyint' => 2]); // Tuesday
+        // weekday values are 1-based in API (1=Sunday), but 0-based in DB
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=weekday_tinyint&meeting_key_value[]=1&meeting_key_value[]=2")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['weekday_tinyint' => '1'])
+            ->assertJsonFragment(['weekday_tinyint' => '2']);
+    }
+
     // StartsAfter
     //
     //

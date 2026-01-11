@@ -144,16 +144,22 @@ class SwitcherController extends Controller
         if (!is_null($meetingKey)) {
             $meetingKeyValue = $request->input('meeting_key_value');
             if (!is_null($meetingKeyValue)) {
+                $meetingKeyValues = is_array($meetingKeyValue) ? $meetingKeyValue : [$meetingKeyValue];
                 if ($meetingKey == 'weekday_tinyint') {
-                    $meetingKeyValue = strval(intval($meetingKeyValue) - 1);
+                    $meetingKeyValues = array_map(fn($v) => strval(intval($v) - 1), $meetingKeyValues);
                 } elseif ($meetingKey == 'start_time' || $meetingKey == 'duration_time') {
-                    $timePieces = explode(':', $meetingKeyValue);
-                    if (count($timePieces) >= 2) {
-                        $meetingKeyValue = build_time_string($timePieces[0], $timePieces[1]);
-                    }
+                    $meetingKeyValues = array_map(function ($v) {
+                        $timePieces = explode(':', $v);
+                        if (count($timePieces) >= 2) {
+                            return build_time_string($timePieces[0], $timePieces[1]);
+                        }
+                        return null;
+                    }, $meetingKeyValues);
+                    $meetingKeyValues = array_filter($meetingKeyValues, fn($v) => !is_null($v));
                 }
+                $meetingKeyValue = is_array($meetingKeyValue) ? $meetingKeyValues : ($meetingKeyValues[0] ?? null);
             }
-            if (is_null($meetingKeyValue)) {
+            if (is_null($meetingKeyValue) || (is_array($meetingKeyValue) && empty($meetingKeyValue))) {
                 return new JsonResponse([]);
             }
         }

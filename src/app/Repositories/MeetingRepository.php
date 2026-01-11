@@ -33,7 +33,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         array $formatsExclude = null,
         string $formatsComparisonOperator = 'AND',
         string $meetingKey = null,
-        string $meetingKeyValue = null,
+        string|array $meetingKeyValue = null,
         string $startsAfter = null,
         string $startsBefore = null,
         string $endsBefore = null,
@@ -144,20 +144,25 @@ class MeetingRepository implements MeetingRepositoryInterface
         }
 
         if (!is_null($meetingKey) && !is_null($meetingKeyValue)) {
-            if (in_array($meetingKey, Meeting::$mainFields)) {
+            $meetingKeyValues = is_array($meetingKeyValue) ? $meetingKeyValue : [$meetingKeyValue];
+            $meetingKeyValues = array_filter($meetingKeyValues, fn($v) => !is_null($v) && $v !== '');
+
+            if (empty($meetingKeyValues)) {
+                $meetings = $meetings->whereRaw('1 = 0');
+            } elseif (in_array($meetingKey, Meeting::$mainFields)) {
                 if ($meetingKey == 'formats' || $meetingKey == 'latitude' || $meetingKey == 'longitude') {
                     $meetings = $meetings->whereRaw('1 = 0');
                 } else {
-                    $meetings = $meetings->where($meetingKey, $meetingKeyValue);
+                    $meetings = $meetings->whereIn($meetingKey, $meetingKeyValues);
                 }
             } else {
-                $meetings = $meetings->where(function (Builder $query) use ($meetingKey, $meetingKeyValue) {
+                $meetings = $meetings->where(function (Builder $query) use ($meetingKey, $meetingKeyValues) {
                     $query
-                        ->whereHas('data', function (Builder $query) use ($meetingKey, $meetingKeyValue) {
-                            $query->where('key', $meetingKey)->where('data_string', $meetingKeyValue);
+                        ->whereHas('data', function (Builder $query) use ($meetingKey, $meetingKeyValues) {
+                            $query->where('key', $meetingKey)->whereIn('data_string', $meetingKeyValues);
                         })
-                        ->orWhereHas('longdata', function (Builder $query) use ($meetingKey, $meetingKeyValue) {
-                            $query->where('key', $meetingKey)->where('data_blob', $meetingKeyValue);
+                        ->orWhereHas('longdata', function (Builder $query) use ($meetingKey, $meetingKeyValues) {
+                            $query->where('key', $meetingKey)->whereIn('data_blob', $meetingKeyValues);
                         });
                 });
             }
