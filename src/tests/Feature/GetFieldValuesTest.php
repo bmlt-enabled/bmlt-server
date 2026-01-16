@@ -76,7 +76,7 @@ class GetFieldValuesTest extends TestCase
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetFieldValues&callback=asdf&meeting_key=meeting_name')
             ->assertStatus(200)
-            ->assertHeader('Content-Type', 'text/javascript; charset=UTF-8');
+            ->assertHeader('Content-Type', 'text/javascript; charset=utf-8');
         $this->assertEquals('/**/asdf([]);', $response->content());
     }
 

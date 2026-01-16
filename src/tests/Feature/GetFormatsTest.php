@@ -91,7 +91,7 @@ class GetFormatsTest extends TestCase
         Format::query()->delete();
         $response = $this->get('/client_interface/jsonp/?switcher=GetFormats&callback=asdf');
         $response->assertStatus(200);
-        $response->assertHeader('Content-Type', 'text/javascript; charset=UTF-8');
+        $response->assertHeader('Content-Type', 'text/javascript; charset=utf-8');
         $this->assertEquals('/**/asdf([]);', $response->content());
     }
 

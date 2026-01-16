@@ -197,7 +197,7 @@ class GetChangesTest extends TestCase
     {
         $response = $this->get('/client_interface/jsonp/?switcher=GetChanges&callback=asdf');
         $response->assertStatus(200);
-        $response->assertHeader('Content-Type', 'text/javascript; charset=UTF-8');
+        $response->assertHeader('Content-Type', 'text/javascript; charset=utf-8');
         $content = $response->content();
         $this->assertEquals('/**/asdf([]);', $content);
     }
