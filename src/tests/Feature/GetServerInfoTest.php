@@ -24,7 +24,7 @@ class GetServerInfoTest extends TestCase
     {
         $content = $this->get('/client_interface/jsonp/?switcher=GetServerInfo&callback=asdf')
             ->assertStatus(200)
-            ->assertHeader('Content-Type', 'text/javascript; charset=UTF-8')
+            ->assertHeader('Content-Type', 'text/javascript; charset=utf-8')
             ->content();
         $this->assertStringStartsWith('/**/asdf([', $content);
         $this->assertStringEndsWith(']);', $content);
