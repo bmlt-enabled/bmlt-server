@@ -325,6 +325,7 @@ export const faTranslations = {
   timeEvening: 'شب',
   timeMorning: 'صبح',
   timeZoneGeocodeError: 'تعیین منطقه زمانی از مختصات امکان پذیر نیست. لطفاً یک منطقه زمانی را به صورت دستی انتخاب کنید',
+  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'منطقه زمانی نامعتبر',
   timeZoneSelectPlaceholder: 'گزینه را انتخاب کنید (یا برای تشخیص خودکار از موقعیت مکانی، خالی بگذارید)',
   timeZoneTitle: 'منطقه زمانی',

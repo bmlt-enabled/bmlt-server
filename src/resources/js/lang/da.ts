@@ -325,6 +325,7 @@ export const daTranslations = {
   timeEvening: 'Evening',
   timeMorning: 'Morning',
   timeZoneGeocodeError: 'Unable to determine timezone from coordinates. Please select a timezone manually',
+  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Invalid time zone',
   timeZoneSelectPlaceholder: 'Choose option (or leave blank to auto-detect from location)',
   timeZoneTitle: 'Time Zone',

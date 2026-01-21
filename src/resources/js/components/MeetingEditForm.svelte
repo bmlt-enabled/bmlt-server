@@ -885,6 +885,10 @@
         <Helper class="mt-2" color="red">
           {$errors.timeZone}
         </Helper>
+      {:else if settings.regionBias?.toLowerCase() === 'us'}
+        <Helper class="mt-2">
+          {$translations.timeZoneHelperText}
+        </Helper>
       {/if}
     </div>
   </div>
