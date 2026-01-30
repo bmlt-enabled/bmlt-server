@@ -176,6 +176,12 @@ A convenient starting point for the spreadsheet file is to use the button `Downl
 php artisan translation:update-from-spreadsheet /path/to/italian-translations.xlsx it
 ````
 
+### Exporting Translations to a Spreadsheet
+This exports the frontend translation file for a given language to an XLSX spreadsheet. The spreadsheet has three columns: the translation key, the English text, and the target language text. Rows with `// TODO: Translate` comments are highlighted in green, making it easy to see which translations still need to be done.
+````
+php artisan translation:export-spreadsheet it /path/to/italian-translations.xlsx
+````
+
 ## Adding a New Language to the Server
 
 To add a new language (for example, Norwegian, which has [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) code `no`):
