@@ -262,17 +262,34 @@ class GetNawsExportTest extends TestCase
         $this->assertEquals(['G001', 'G002', 'G003', 'G004', 'G005'], $worldIds);
     }
 
-    // test that meetings in a service body with no NAWS world ID don't export
-    public function testMissingServiceBodyNawsId()
+    // test that meetings without a valid service body are not exported
+    // (this could happen if there is a server that was upgraded from version 3 or earlier and had an orphaned meeting at
+    // that time -- Version 4 of the server won't let you delete a service body that still has meetings associated with it)
+    public function testOrphanedMeeting()
     {
         $zone = $this->createZone('My Zone', 'A Zone of Some Kind', worldId: 'ZN42');
         $region1 = $this->createRegion('region1', 'region1', $zone->id_bigint, worldId: 'RG52');
         $area1 = $this->createArea('area1', 'area1', $region1->id_bigint);
-        $meeting1 = $this->createMeeting(['worldid_mixed' => 'G001', 'service_body_bigint' => $area1->id_bigint]);
+        $meeting1 = $this->createMeeting(['worldid_mixed' => 'G001', 'service_body_bigint' => 99999]);
         $csv = $this->get("/client_interface/csv/?switcher=GetNAWSDump&sb_id=$zone->id_bigint")->streamedContent();
         $reader = CsvReader::createFromString($csv);
         $reader->setHeaderOffset(0);
         $this->assertEquals(0, count($reader));  // should have 0 meetings
+    }
+
+    // test export when the service body has no World ID
+    public function testNoWorldId()
+    {
+        $area1 = $this->createArea('Seattle Area', 'sort of Seattle', 0, worldId: null);
+        $meetingMainFields = [
+            'service_body_bigint' => $area1->id_bigint
+        ];
+        $meeting1 = $this->createMeeting($meetingMainFields);
+        $csv = $this->get("/client_interface/csv/?switcher=GetNAWSDump&sb_id=$area1->id_bigint")->streamedContent();
+        $reader = CsvReader::createFromString($csv);
+        $reader->setHeaderOffset(0);
+        $row = iterator_to_array($reader)[1];
+        $this->assertEquals('WORLD_ID_MISSING', $row['AreaRegion']);
     }
 
     // test a meeting with more than 5 NAWS formats -- can't include them all since the spreadsheet is limited to 5 columns for this
@@ -548,6 +565,14 @@ class GetNawsExportTest extends TestCase
             ->assertDownload()
             ->headers->get('content-disposition');
         $this->assertEquals(1, preg_match('/^attachment; filename=BMLT_ZN42_my_zone_\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d.csv$/', $f));
+    }
+    public function testFileNameNoWorldId()
+    {
+        $zone = $this->createZone('My Zone', 'A Zone of Some Kind', worldId: null);
+        $f = $this->get("/client_interface/csv/?switcher=GetNAWSDump&sb_id=$zone->id_bigint")
+            ->assertDownload()
+            ->headers->get('content-disposition');
+        $this->assertEquals(1, preg_match('/^attachment; filename=BMLT_WORLD_ID_MISSING_my_zone_\d\d\d\d_\d\d_\d\d_\d\d_\d\d_\d\d.csv$/', $f));
     }
 
     // test that deleted meetings are in the export if they have a world_id, and that they are omitted if the world_id is empty or 'deleted'
