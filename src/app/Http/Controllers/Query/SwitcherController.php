@@ -606,7 +606,7 @@ class SwitcherController extends Controller
         $serviceBody =  ($this->serviceBodyRepository->search([$validated['sb_id']]))[0];
         // kind of a hack -- assume there is just one service body
         $serviceBodyName = $serviceBody->name_string;
-        $serviceBodyWorldId = $serviceBody->worldid_mixed;
+        $serviceBodyWorldId = $serviceBody->worldid_mixed ?? 'WORLD_ID_MISSING';
         $worldIdForFileName = preg_replace('|[\W]|', '_', strtoupper($serviceBodyWorldId));
         if (preg_match('|^_+$|', $worldIdForFileName)) {
             $worldIdForFileName = '';
@@ -717,9 +717,6 @@ class SwitcherController extends Controller
                 if ($isDeleted) {
                     $meetingData = $deletedMeetingData[$meeting->id_bigint];
                 } else {
-                    if (empty(trim($meeting?->serviceBody?->worldid_mixed ?? ''))) {
-                        continue;
-                    }
                     $meetingData = $meeting->data
                         ->mapWithKeys(fn($data, $_) => [$data->key => $data->data_string])->toBase()
                         ->merge($meeting->longdata->mapWithKeys(fn($data, $_) => [$data->key => $data->data_blob])->toBase());
@@ -767,6 +764,9 @@ class SwitcherController extends Controller
                             break;
                         case 'AreaRegion':
                             $row[] = $meeting->serviceBody->worldid_mixed;
+                            if (!$row[3]) {
+                                $row[3] = 'WORLD_ID_MISSING';
+                            }
                             break;
                         case 'ParentName':
                             $row[] = $meeting->serviceBody->name_string;
