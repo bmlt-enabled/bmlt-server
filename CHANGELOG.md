@@ -1,10 +1,22 @@
-## 4.1.0 (UNRELEASED)
+## 4.1.0 (February 1, 2026)
 * Settings Management UI:
     * All server settings (except database credentials) are now fully configurable through the
       Admin UI's Settings page. Settings are stored in the database and can also be managed via the Admin API (/api/v1/settings).
     * A migration was added to automatically seed settings from legacy `auto-config.inc.php` file on upgrade.
-* Fix location map errors when auto geocoding is disabled.
-* Fix duplicate format keys in the initial migrations schema and in existing databases
+* Other smaller features:
+    * Support creating custom queries with multiple cities/counties (intended for use with printable schedules)
+    * Add a private "Admin Notes" field on the "Other" tab
+    * Add a button to the Administration tab to download the laravel log file (useful for sending debugging information to the developers)
+    * Add a button to the Users tab to download a spreadsheet of users (including information on last login)
+    * Add a button to the Service Bodies tab to download a spreadsheet of service bodies
+    * Allow force delete of meetings when deleting a service body (requires confirmation before doing the force delete)
+* Bug fixes:
+    * Fix location map errors when auto geocoding is disabled.
+    * Fix duplicate format keys in the initial migrations schema and in existing databases
+    * Fix scrolling problem when searching for meetings (we needed to reset it to the first page of results)
+    * Fix issue with root server stats, so that they now return the latest results
+    * Clear cache of meetings when logging in as a different service body (previously, meetings for the old service body would be visible, although you still couldn't edit them)
+    * Better handling for NAWS export if a service body has no World ID
 
 ## 4.0.4 (November 26, 2025)
 * Modified the UI to hide the New Meeting button and show a helpful message when a user does not have editing privileges on any service bodies.
