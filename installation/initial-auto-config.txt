@@ -10,7 +10,6 @@ $dbUser = 'USERNAME'; // This is the SQL user that is authorized for the above d
 $dbPassword = 'USERPASSWORD'; // This is the password for the above authorized user. Make it a big, ugly hairy one. It is powerful, and there is no need to remember it.
 
 // OTHER DATABASE SETTINGS (CHANGE IF NEEDED, BUT THE DEFAULTS MAY BE OK AS IS)
-$dbType = 'mysql'; // This is the PHP PDO driver name for your database.
 $dbName = 'rootserver'; // This is the name of the database.
 $dbServer = 'localhost'; // This is the host/server for accessing the database.
 $dbPrefix = 'na'; // This is a table name prefix that can be used to differentiate tables used by different root server instances that share the same database.
