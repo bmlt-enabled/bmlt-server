@@ -955,7 +955,7 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
+    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-700" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
         <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
           {item.name}
