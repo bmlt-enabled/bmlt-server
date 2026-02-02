@@ -955,7 +955,7 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected}>
+    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-700" bind:value={formatIdsSelected}>
       {#snippet children({ item, clear })}
         <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
           {item.name}
@@ -1320,7 +1320,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="adminNotes" class="mt-2 mb-2">{$translations.adminNotes}</Label>
-      <Textarea id="adminNotes" name="adminNotes" rows={2} class="w-full" />
+      <Textarea id="adminNotes" name="adminNotes" rows={2} class="w-full bg-gray-50 dark:bg-gray-700" />
       {#if $errors.adminNotes}
         <Helper class="mt-2" color="red">
           {$errors.adminNotes}
