@@ -1320,7 +1320,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="adminNotes" class="mt-2 mb-2">{$translations.adminNotes}</Label>
-      <Textarea id="adminNotes" name="adminNotes" rows={2} class="bg-gray-50 dark:bg-gray-700 w-full" />
+      <Textarea id="adminNotes" name="adminNotes" rows={2} class="w-full bg-gray-50 dark:bg-gray-700" />
       {#if $errors.adminNotes}
         <Helper class="mt-2" color="red">
           {$errors.adminNotes}
