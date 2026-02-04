@@ -1,3 +1,6 @@
+## 4.1.1 (UNRELEASED)
+* Added Greek language translations.
+
 ## 4.1.0 (February 1, 2026)
 * Settings Management UI:
     * All server settings (except database credentials) are now fully configurable through the
