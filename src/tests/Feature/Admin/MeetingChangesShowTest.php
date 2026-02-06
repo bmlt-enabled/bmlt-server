@@ -56,6 +56,7 @@ class MeetingChangesShowTest extends TestCase
             'dateString',
             'userName',
             'serviceBodyName',
+            'changeDescription',
             'details',
         ];
 

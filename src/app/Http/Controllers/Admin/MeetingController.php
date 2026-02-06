@@ -69,7 +69,8 @@ class MeetingController extends ResourceController
     {
         $validated = $this->validateInputs($request);
         $values = $this->buildValuesArray($validated);
-        $meeting = $this->meetingRepository->create($values);
+        $changeDescription = $validated->pull('changeDescription');
+        $meeting = $this->meetingRepository->create($values, $changeDescription);
         return new MeetingResource($meeting);
     }
 
@@ -77,7 +78,8 @@ class MeetingController extends ResourceController
     {
         $validated = $this->validateInputs($request);
         $values = $this->buildValuesArray($validated);
-        $this->meetingRepository->update($meeting->id_bigint, $values);
+        $changeDescription = $validated->pull('changeDescription');
+        $this->meetingRepository->update($meeting->id_bigint, $values, $changeDescription);
         return response()->noContent();
     }
 
@@ -142,13 +144,18 @@ class MeetingController extends ResourceController
         $skipVenueTypeLocationValidation = $request->query('skipVenueTypeLocationValidation') == "true";
         $validated = $this->validateInputs($request, $skipVenueTypeLocationValidation);
         $values = $this->buildValuesArray($validated);
-        $this->meetingRepository->update($meeting->id_bigint, $values);
+        $changeDescription = $validated->pull('changeDescription');
+        $this->meetingRepository->update($meeting->id_bigint, $values, $changeDescription);
         return response()->noContent();
     }
 
-    public function destroy(Meeting $meeting)
+    public function destroy(Request $request, Meeting $meeting)
     {
-        $this->meetingRepository->delete($meeting->id_bigint);
+        $validated = $request->validate([
+            'changeDescription' => 'sometimes|nullable|string',
+        ]);
+        $changeDescription = $validated['changeDescription'] ?? null;
+        $this->meetingRepository->delete($meeting->id_bigint, $changeDescription);
         return response()->noContent();
     }
 
@@ -189,6 +196,7 @@ class MeetingController extends ResourceController
                 'worldId' => 'nullable|string|max:30',
                 'name' => 'required|string|max:128',
                 'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone()],
+                'changeDescription' => 'sometimes|nullable|string',
             ], $this->getDataFieldValidators($skipVenueTypeLocationValidation))
         ));
     }

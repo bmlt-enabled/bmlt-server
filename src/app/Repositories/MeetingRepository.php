@@ -623,7 +623,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         return ['nw' => $nw, 'se' => $se];
     }
 
-    public function create(array $values): Meeting
+    public function create(array $values, ?string $changeDescription = null): Meeting
     {
         $values = collect($values);
         $values->put('lang_enum', App::currentLocale());
@@ -631,7 +631,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $changeDescription) {
             $meeting = Meeting::create($mainValues);
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
@@ -656,20 +656,20 @@ class MeetingRepository implements MeetingRepositoryInterface
                 }
             }
             if (!file_config('aggregator_mode_enabled')) {
-                $this->saveChange(null, $meeting);
+                $this->saveChange(null, $meeting, $changeDescription);
             }
             return $meeting;
         });
     }
 
-    public function update(int $id, array $values): bool
+    public function update(int $id, array $values, ?string $changeDescription = null): bool
     {
         $values = collect($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $changeDescription) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
@@ -699,7 +699,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                     }
                 }
                 if (!file_config('aggregator_mode_enabled')) {
-                    $this->saveChange($meeting, Meeting::find($id));
+                    $this->saveChange($meeting, Meeting::find($id), $changeDescription);
                 }
                 return true;
             }
@@ -707,9 +707,9 @@ class MeetingRepository implements MeetingRepositoryInterface
         });
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, ?string $changeDescription = null): bool
     {
-        return DB::transaction(function () use ($id) {
+        return DB::transaction(function () use ($id, $changeDescription) {
             $meeting = Meeting::find($id);
             if (!is_null($meeting)) {
                 $meeting->loadMissing(['data', 'longdata']);
@@ -717,7 +717,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 MeetingLongData::query()->where('meetingid_bigint', $meeting->id_bigint)->delete();
                 Meeting::query()->where('id_bigint', $meeting->id_bigint)->delete();
                 if (!file_config('aggregator_mode_enabled')) {
-                    $this->saveChange($meeting, null);
+                    $this->saveChange($meeting, null, $changeDescription);
                 }
                 return true;
             }
@@ -725,7 +725,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         });
     }
 
-    private function saveChange(?Meeting $beforeMeeting, ?Meeting $afterMeeting): void
+    private function saveChange(?Meeting $beforeMeeting, ?Meeting $afterMeeting, ?string $changeDescription = null): void
     {
         $beforeObject = !is_null($beforeMeeting) ? $this->serializeForChange($beforeMeeting) : null;
         $afterObject = !is_null($afterMeeting) ? $this->serializeForChange($afterMeeting) : null;
@@ -746,6 +746,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             'after_id_bigint' => $afterMeeting?->id_bigint,
             'after_lang_enum' => !is_null($afterMeeting) ? $afterMeeting?->lang_enum ?: App::currentLocale() : null,
             'change_type_enum' => is_null($beforeMeeting) ? 'comdef_change_type_new' : (is_null($afterMeeting) ? 'comdef_change_type_delete' : 'comdef_change_type_change'),
+            'change_description_text' => $changeDescription,
             'before_object' => $beforeObject,
             'after_object' => $afterObject,
         ]);

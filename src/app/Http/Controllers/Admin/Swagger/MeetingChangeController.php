@@ -25,6 +25,13 @@ namespace App\Http\Controllers\Admin\Swagger;
  *         description="Name of the service body related to the meeting."
  *     ),
  *     @OA\Property(
+ *         property="changeDescription",
+ *         type="string",
+ *         nullable=true,
+ *         example="Created by workflow plugin user jdoe",
+ *         description="Optional free-text metadata describing the change."
+ *     ),
+ *     @OA\Property(
  *         property="details",
  *         type="array",
  *         @OA\Items(

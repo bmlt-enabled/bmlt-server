@@ -953,6 +953,25 @@
                         "example": "1"
                     }
                 ],
+                "requestBody": {
+                    "description": "Optional metadata for the change.",
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "changeDescription": {
+                                        "description": "Optional free-text metadata describing the change.",
+                                        "type": "string",
+                                        "example": "Deleted by workflow plugin user jdoe",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "204": {
                         "description": "Success."
@@ -2449,6 +2468,12 @@
                         "type": "string",
                         "example": "Bronx Area Service"
                     },
+                    "changeDescription": {
+                        "description": "Optional free-text metadata describing the change.",
+                        "type": "string",
+                        "example": "Created by workflow plugin user jdoe",
+                        "nullable": true
+                    },
                     "details": {
                         "description": "List of details about the changes.",
                         "type": "array",
@@ -2623,6 +2648,12 @@
                         "additionalProperties": {
                             "type": "string"
                         }
+                    },
+                    "changeDescription": {
+                        "description": "Optional free-text metadata describing the change.",
+                        "type": "string",
+                        "example": "Created by workflow plugin user jdoe",
+                        "nullable": true
                     }
                 },
                 "type": "object"

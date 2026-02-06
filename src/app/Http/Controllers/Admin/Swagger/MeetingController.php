@@ -47,6 +47,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="customFields", type="object", example={"key1": "value1", "key2": "value2"},
  *         @OA\AdditionalProperties(type="string")
  *     ),
+ *     @OA\Property(property="changeDescription", type="string", nullable=true, example="Created by workflow plugin user jdoe", description="Optional free-text metadata describing the change."),
  * ),
  * @OA\Schema(schema="Meeting", required={"id", "serviceBodyId", "formatIds", "venueType", "temporarilyVirtual", "day", "startTime", "duration", "timeZone", "latitude", "longitude", "published", "email", "worldId", "name"},
  *     @OA\Property(property="id", type="integer", example="0"),
@@ -204,6 +205,11 @@ class MeetingController extends Controller
      * @OA\Delete(path="/api/v1/meetings/{meetingId}", summary="Deletes a meeting", description="Deletes a meeting by id.", operationId="deleteMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
      *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
      *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\RequestBody(required=false, description="Optional metadata for the change.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="changeDescription", type="string", nullable=true, example="Deleted by workflow plugin user jdoe", description="Optional free-text metadata describing the change.")
+     *         ),
      *     ),
      *     @OA\Response(response=204, description="Success."),
      *     @OA\Response(response=401, description="Returns when user is not authenticated.",

@@ -49,8 +49,8 @@ interface MeetingRepositoryInterface
     public function getCustomFields(): Collection;
     public function getDataTemplates(): Collection;
     public function getBoundingBox(): array;
-    public function create(array $values): Meeting;
-    public function update(int $id, array $values): bool;
-    public function delete(int $id): bool;
+    public function create(array $values, ?string $changeDescription = null): Meeting;
+    public function update(int $id, array $values, ?string $changeDescription = null): bool;
+    public function delete(int $id, ?string $changeDescription = null): bool;
     public function import(int $rootServerId, Collection $externalObjects): MeetingImportResult;
 }

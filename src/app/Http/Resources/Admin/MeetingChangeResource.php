@@ -33,6 +33,7 @@ class MeetingChangeResource extends JsonResource
             'dateString' => date('g:i A, n/j/Y', strtotime($this->change_date)),
             'userName' => $this->user?->name_string ?? '',
             'serviceBodyName' => $this->serviceBody?->name_string ?? '',
+            'changeDescription' => $this->change_description_text,
             'details' => $this->getChangeDetails(asArray: true, ignoreVisibility: true),
         ];
     }

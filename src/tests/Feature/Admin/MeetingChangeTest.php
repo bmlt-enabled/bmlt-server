@@ -47,6 +47,7 @@ class MeetingChangeTest extends TestCase
             'phone_meeting_number' => '5555555555',
             'timeZone' => 'America/New_York',
             'worldId' => 'nice world id',
+            'changeDescription' => 'Created by workflow plugin user jdoe',
         ];
 
         $meeting = $this
@@ -56,6 +57,7 @@ class MeetingChangeTest extends TestCase
         $meeting = Meeting::query()->where('id_bigint', $meeting['id'])->first();
 
         $change = Change::query()->first();
+        $this->assertEquals('Created by workflow plugin user jdoe', $change->change_description_text);
         $this->assertEquals($user->id_bigint, $change->user_id_bigint);
         $this->assertEquals($meeting->service_body_bigint, $change->service_body_id_bigint);
         $this->assertEquals(App::currentLocale(), $change->lang_enum);
@@ -109,6 +111,40 @@ class MeetingChangeTest extends TestCase
         }
     }
 
+    public function testNewMeetingChangeWithoutDescription()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area = $this->createArea('area', 'area', 0);
+        $format1 = Format::query()->first();
+        $payload = [
+            'name' => 'Sunday Serenity',
+            'serviceBodyId' => $area->id_bigint,
+            'formatIds' => [$format1->shared_id_bigint],
+            'venueType' => Meeting::VENUE_TYPE_IN_PERSON,
+            'temporarilyVirtual' => false,
+            'day' => 0,
+            'startTime' => '20:00',
+            'duration' => '01:00',
+            'latitude' => 35.7079,
+            'longitude' => 79.8136,
+            'published' => true,
+            'email' => 'test@test.com',
+            'location_street' => '123 Main St',
+            'location_municipality' => 'Raleigh',
+            'location_province' => 'NC',
+            'location_postal_code_1' => '27610',
+        ];
+
+        $this
+            ->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/meetings', $payload)
+            ->assertStatus(201);
+
+        $change = Change::query()->first();
+        $this->assertNull($change->change_description_text);
+    }
+
     public function testChangeMeetingChange()
     {
         $user = $this->createAdminUser();
@@ -147,12 +183,14 @@ class MeetingChangeTest extends TestCase
         $meeting->loadMissing(['data', 'longdata']);
 
         $payload['name'] = 'new name';
+        $payload['changeDescription'] = 'Updated by workflow plugin user jdoe';
         $this
             ->withHeader('Authorization', "Bearer $token")
             ->put("/api/v1/meetings/{$meeting->id_bigint}", $payload)
             ->assertStatus(204);
 
         $change = Change::query()->orderBy('id_bigint', 'desc')->first();
+        $this->assertEquals('Updated by workflow plugin user jdoe', $change->change_description_text);
         $this->assertEquals($user->id_bigint, $change->user_id_bigint);
         $this->assertEquals($meeting->service_body_bigint, $change->service_body_id_bigint);
         $this->assertEquals(App::currentLocale(), $change->lang_enum);
@@ -290,10 +328,11 @@ class MeetingChangeTest extends TestCase
 
         $this
             ->withHeader('Authorization', "Bearer $token")
-            ->delete("/api/v1/meetings/{$meeting->id_bigint}")
+            ->delete("/api/v1/meetings/{$meeting->id_bigint}", ['changeDescription' => 'Deleted by workflow plugin user jdoe'])
             ->assertStatus(204);
 
         $change = Change::query()->orderBy('id_bigint', 'desc')->first();
+        $this->assertEquals('Deleted by workflow plugin user jdoe', $change->change_description_text);
         $this->assertEquals($user->id_bigint, $change->user_id_bigint);
         $this->assertEquals($meeting->service_body_bigint, $change->service_body_id_bigint);
         $this->assertEquals(App::currentLocale(), $change->lang_enum);
