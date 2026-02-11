@@ -1,5 +1,6 @@
 ## 4.1.1 (UNRELEASED)
 * Added Greek language translations.
+* Moved time zone setting to bottom of location tab.
 
 ## 4.1.0 (February 1, 2026)
 * Settings Management UI:
