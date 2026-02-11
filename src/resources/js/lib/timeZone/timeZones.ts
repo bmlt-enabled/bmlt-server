@@ -432,6 +432,30 @@ type TimeZoneGroup = {
   values: TimeZoneOption[];
 };
 
+/**
+ * Get UTC offset for a timezone in hours
+ */
+function getTimezoneOffset(timezone: string): string {
+  try {
+    const now = new Date();
+    const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    const offsetMinutes = (tzDate.getTime() - utcDate.getTime()) / (1000 * 60);
+    const offsetHours = offsetMinutes / 60;
+
+    if (offsetHours === 0) {
+      return 'UTC+0';
+    }
+
+    const sign = offsetHours >= 0 ? '+' : '';
+    // Handle half-hour offsets like UTC+5.5
+    const formatted = offsetHours % 1 === 0 ? offsetHours.toFixed(0) : offsetHours.toFixed(1);
+    return `UTC${sign}${formatted}`;
+  } catch (_) {
+    return '';
+  }
+}
+
 function createTimeZoneGroups(timeZones: string[]): TimeZoneGroup[] {
   const continents: Record<string, TimeZoneOption[]> = {};
 
@@ -460,10 +484,12 @@ function createTimeZoneGroups(timeZones: string[]): TimeZoneGroup[] {
     }
 
     const displayName = city.replace(/_/g, ' ').replace(/\//g, ' - ');
+    const offset = getTimezoneOffset(timezone);
+    const nameWithOffset = offset ? `${displayName} (${offset})` : displayName;
 
     continents[continent].push({
       value: timezone,
-      name: displayName
+      name: nameWithOffset
     });
   });
 
