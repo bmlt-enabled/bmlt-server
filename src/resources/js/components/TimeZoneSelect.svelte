@@ -6,9 +6,10 @@
 
   interface Props {
     value: string;
+    id?: string;
   }
 
-  let { value = $bindable() }: Props = $props();
+  let { value = $bindable(), id }: Props = $props();
 
   const allTimeZones = timeZoneGroups.flatMap((group) =>
     group.values.map((tz) => ({
@@ -83,7 +84,7 @@
 </script>
 
 <div class="relative">
-  <Input type="text" value={displayValue} oninput={onInput} placeholder={$translations.timeZoneSelectPlaceholder} onfocus={onFocus} onblur={onBlur} class="dark:bg-gray-600" />
+  <Input {id} type="text" value={displayValue} oninput={onInput} placeholder={$translations.timeZoneSelectPlaceholder} onfocus={onFocus} onblur={onBlur} class="dark:bg-gray-600" />
   {#if showDropdown && filteredTimeZones.length > 0}
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div

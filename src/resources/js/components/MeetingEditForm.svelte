@@ -1193,7 +1193,7 @@
       <div class="md:col-span-2">
         <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
         <input type="hidden" name="timeZone" bind:value={$data.timeZone} />
-        <TimeZoneSelect bind:value={$data.timeZone} />
+        <TimeZoneSelect id="timeZone" bind:value={$data.timeZone} />
         {#if $errors.timeZone}
           <Helper class="mt-2" color="red">
             {$errors.timeZone}

@@ -86,7 +86,7 @@ describe('MeetingEditForm Component', () => {
     render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
     // Basic fields
     expect(screen.getByLabelText(translations.getString('nameTitle'))).toHaveValue(selectedMeeting.name);
-    expect(screen.getByLabelText(translations.getString('timeZoneTitle'))).toHaveValue(selectedMeeting.timeZone);
+    expect(document.querySelector('input[name="timeZone"]')).toHaveValue(selectedMeeting.timeZone);
     expect(screen.getByLabelText(translations.getString('dayTitle'))).toHaveValue(selectedMeeting.day.toString());
     expect(screen.getByLabelText(translations.getString('startTimeTitle'))).toHaveValue(selectedMeeting.startTime);
     expect(screen.getByLabelText(translations.getString('hoursTitle'))).toHaveValue(selectedMeeting.duration.split(':')[0]);
