@@ -8,6 +8,8 @@ import {
   daYupLocale,
   deTranslations,
   deYupLocale,
+  elTranslations,
+  elYupLocale,
   enTranslations,
   enYupLocale,
   esTranslations,
@@ -32,6 +34,7 @@ import {
 const strings = new (LocalizedStrings as any)({
   da: daTranslations,
   de: deTranslations,
+  el: elTranslations,
   en: enTranslations,
   es: esTranslations,
   fa: faTranslations,
@@ -46,6 +49,7 @@ const strings = new (LocalizedStrings as any)({
 export const yupLocales: Record<string, LocaleObject> = {
   da: daYupLocale,
   de: deYupLocale,
+  el: elYupLocale,
   en: enYupLocale,
   es: esYupLocale,
   fa: faYupLocale,

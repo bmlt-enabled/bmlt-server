@@ -1,5 +1,6 @@
 export { daTranslations, daYupLocale } from './da';
 export { deTranslations, deYupLocale } from './de';
+export { elTranslations, elYupLocale } from './el';
 export { enTranslations, enYupLocale } from './en';
 export { esTranslations, esYupLocale } from './es';
 export { faTranslations, faYupLocale } from './fa';
