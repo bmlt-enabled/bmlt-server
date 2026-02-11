@@ -869,29 +869,6 @@
       {/if}
     </div>
   </div>
-  <div class="grid gap-4 md:grid-cols-2">
-    <div class="md:col-span-2">
-      <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-      <Select id="timeZone" name="timeZone" bind:value={$data.timeZone} class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
-        {#each timeZoneGroups as continent}
-          <optgroup label={continent.name}>
-            {#each continent.values as timezone}
-              <option value={timezone.value}>{timezone.name}</option>
-            {/each}
-          </optgroup>
-        {/each}
-      </Select>
-      {#if $errors.timeZone}
-        <Helper class="mt-2" color="red">
-          {$errors.timeZone}
-        </Helper>
-      {:else if settings.regionBias?.toLowerCase() === 'us'}
-        <Helper class="mt-2">
-          {$translations.timeZoneHelperText}
-        </Helper>
-      {/if}
-    </div>
-  </div>
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
@@ -1205,6 +1182,30 @@
           {$errors.virtualMeetingAdditionalInfo}
         </Helper>
       {/if}
+    </div>
+  </div>
+
+  <!-- Advanced Settings Section -->
+  <div class="mt-4 border-t border-gray-200 pt-3 dark:border-gray-700">
+    <span class="text-xs text-gray-400 dark:text-gray-500">{$translations.advancedSettings}</span>
+    <div class="mt-2 grid gap-4 md:grid-cols-2">
+      <div class="md:col-span-2">
+        <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
+        <Select id="timeZone" name="timeZone" bind:value={$data.timeZone} class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
+          {#each timeZoneGroups as continent}
+            <optgroup label={continent.name}>
+              {#each continent.values as timezone}
+                <option value={timezone.value}>{timezone.name}</option>
+              {/each}
+            </optgroup>
+          {/each}
+        </Select>
+        {#if $errors.timeZone}
+          <Helper class="mt-2" color="red">
+            {$errors.timeZone}
+          </Helper>
+        {/if}
+      </div>
     </div>
   </div>
 {/snippet}

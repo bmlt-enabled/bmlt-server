@@ -271,7 +271,6 @@ export const deTranslations = {
   timeEvening: 'Abend',
   timeMorning: 'Morgen',
   timeZoneGeocodeError: 'Koordinaten der Zeitzone nicht ermittelbar. Bitte wähle Zeitzone manuell aus.',
-  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Ungültige Zeitzone',
   timeZoneSelectPlaceholder: 'Option auswählen (oder leer lassen, um die automatische Erkennung anhand des Standorts zu aktivieren)',
   timeZoneTitle: 'Zeitzone',

@@ -325,7 +325,6 @@ export const esTranslations = {
   timeEvening: 'Por la noche',
   timeMorning: 'Por la mañana',
   timeZoneGeocodeError: 'No se pudo determinar la zona horaria a partir de las coordenadas. Seleccione una zona horaria manualmente.',
-  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Zona horaria inválida',
   timeZoneSelectPlaceholder: 'Seleccione una opción (o déjelo en blanco para que se detecte automáticamente desde la ubicación).',
   timeZoneTitle: 'Zona horaria',

@@ -325,7 +325,6 @@ export const frTranslations = {
   timeEvening: 'Soir',
   timeMorning: 'Matin',
   timeZoneGeocodeError: 'Impossible de déterminer le fuseau horaire à partir des coordonnées. Veuillez sélectionner un fuseau horaire manuellement.',
-  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Fuseau horaire non valide',
   timeZoneSelectPlaceholder: "Choisissez une option (ou laissez le champ vide pour une détection automatique à partir de l'emplacement)",
   timeZoneTitle: 'Fuseau horaire',

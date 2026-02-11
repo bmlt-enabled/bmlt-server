@@ -326,7 +326,6 @@ export const elTranslations = {
   timeEvening: 'Βράδυ',
   timeMorning: 'Πρωί',
   timeZoneGeocodeError: 'Δεν είναι δυνατό να προσδιοριστεί η ζώνη ώρας από τις συντεταγμένες. Επιλέξτε χειροκίνητα μια ζώνη ώρας.',
-  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Μη έγκυρη ζώνη ώρας',
   timeZoneSelectPlaceholder: 'Επιλέξτε (ή αφήστε το κενό για αυτόματη ανίχνευση από την τοποθεσία σας)',
   timeZoneTitle: 'Ζώνη ώρας',

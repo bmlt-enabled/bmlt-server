@@ -325,7 +325,6 @@ export const ptTranslations = {
   timeEvening: 'Noite',
   timeMorning: 'Manhã',
   timeZoneGeocodeError: 'Incapaz de determinar o fuso horário a partir das coordenadas. Por favor, selecione um fuso horário manualmente',
-  timeZoneHelperText: 'Common US zones: New York (Eastern), Chicago (Central), Denver (Mountain), Los Angeles (Pacific)', // TODO: translate
   timeZoneInvalid: 'Fuso horário inválido',
   timeZoneSelectPlaceholder: 'Escolha a opção (ou deixe em branco para detectar automaticamente a partir da localização)',
   timeZoneTitle: 'Fuso Horário',
