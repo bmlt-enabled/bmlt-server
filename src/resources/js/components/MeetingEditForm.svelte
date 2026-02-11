@@ -18,7 +18,8 @@
   import type { MeetingChangeResource } from 'bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
   import { formIsDirty, isDirty as globalIsDirty, stripLegacyFieldSeparator } from '../lib/utils';
-  import { timeZones, timeZoneGroups } from '../lib/timeZone/timeZones';
+  import { timeZones } from '../lib/timeZone/timeZones';
+  import TimeZoneSelect from './TimeZoneSelect.svelte';
   import { tzFind } from '../lib/timeZone/find';
   import { Geocoder } from '../lib/geocoder';
   import { initGoogleMaps } from '../lib/googleMapsLoader';
@@ -1191,15 +1192,8 @@
     <div class="mt-2 grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
         <Label for="timeZone" class="mt-2 mb-2">{$translations.timeZoneTitle}</Label>
-        <Select id="timeZone" name="timeZone" bind:value={$data.timeZone} class="rounded-lg dark:bg-gray-600" placeholder={$translations.timeZoneSelectPlaceholder}>
-          {#each timeZoneGroups as continent}
-            <optgroup label={continent.name}>
-              {#each continent.values as timezone}
-                <option value={timezone.value}>{timezone.name}</option>
-              {/each}
-            </optgroup>
-          {/each}
-        </Select>
+        <input type="hidden" name="timeZone" bind:value={$data.timeZone} />
+        <TimeZoneSelect bind:value={$data.timeZone} />
         {#if $errors.timeZone}
           <Helper class="mt-2" color="red">
             {$errors.timeZone}
