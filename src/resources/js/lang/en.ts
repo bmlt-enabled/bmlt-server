@@ -81,6 +81,7 @@ export const enTranslations = {
   by: 'by',
   cancel: 'Cancel',
   changeHistoryDepth: 'Change History Depth',
+  chooseOption: 'Choose option ...',
   chooseStartTime: 'Choose start time',
   cityTownTitle: 'City/Town',
   clearFormTitle: 'Clear Form',

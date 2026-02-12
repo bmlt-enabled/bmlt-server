@@ -873,7 +873,7 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} class="rounded-lg dark:bg-gray-600" />
+      <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
       {#if $errors.day}
         <Helper class="mt-2" color="red">
           {$errors.day}
@@ -906,7 +906,7 @@
         <Input type="text" value={serviceBodies[0].name} disabled />
         <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} />
       {:else}
-        <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} class="rounded-lg dark:bg-gray-600" />
+        <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
       {/if}
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
@@ -957,7 +957,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" bind:value={$data.venueType} class="rounded-lg dark:bg-gray-600" />
+      <Select id="venueType" items={venueTypeItems} name="venueType" bind:value={$data.venueType} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -1100,6 +1100,7 @@
           items={countiesAndSubProvincesChoices}
           name="locationSubProvince"
           bind:value={$data.locationSubProvince}
+          placeholder={$translations.chooseOption}
           class="rounded-lg dark:bg-gray-600"
           disabled={settings.countyAutoGeocodingEnabled}
         />
@@ -1120,7 +1121,14 @@
     <div class="w-full">
       <Label for="locationProvince" class="mt-2 mb-2">{$translations.stateTitle}</Label>
       {#if statesAndProvincesChoices.length > 0}
-        <Select id="locationProvince" items={statesAndProvincesChoices} name="locationProvince" bind:value={$data.locationProvince} class="rounded-lg dark:bg-gray-600" />
+        <Select
+          id="locationProvince"
+          items={statesAndProvincesChoices}
+          name="locationProvince"
+          bind:value={$data.locationProvince}
+          placeholder={$translations.chooseOption}
+          class="rounded-lg dark:bg-gray-600"
+        />
       {:else}
         <Input type="text" id="locationProvince" name="locationProvince" />
       {/if}

@@ -93,7 +93,7 @@
         {#if settings.isLanguageSelectorEnabled}
           <div class="mb-4">
             <Label for="languageSelection" class="mb-2">{$translations.languageSelectTitle}</Label>
-            <Select id="languageSelection" items={languageOptions} bind:value={selectedLanguage} onchange={() => translations.setLanguage(selectedLanguage)} />
+            <Select id="languageSelection" items={languageOptions} bind:value={selectedLanguage} onchange={() => translations.setLanguage(selectedLanguage)} placeholder={$translations.chooseOption} />
           </div>
         {/if}
         {#if errorMessage}

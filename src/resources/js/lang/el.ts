@@ -81,6 +81,7 @@ export const elTranslations = {
   by: 'κατά',
   cancel: 'Ακύρωση',
   changeHistoryDepth: '’λλαξε βάθος ιστορικού',
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'Επιλέξτε ώρα έναρξης',
   cityTownTitle: 'Πόλη',
   clearFormTitle: 'Καθαρισμός φόρμας',

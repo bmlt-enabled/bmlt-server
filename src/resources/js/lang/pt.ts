@@ -81,6 +81,7 @@ export const ptTranslations = {
   by: 'por',
   cancel: 'Cancelar',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'Escolher hora de início',
   cityTownTitle: 'Cidade/Município',
   clearFormTitle: 'Limpar formulário',

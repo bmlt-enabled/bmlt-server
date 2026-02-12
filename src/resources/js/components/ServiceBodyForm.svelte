@@ -179,7 +179,15 @@
     </div>
     <div class="md:col-span-2 {$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}">
       <Label for="adminUserId" class="mb-2">{$translations.adminTitle}</Label>
-      <Select id="adminUserId" items={adminUserItems} bind:value={$data.adminUserId} name="adminUserId" class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select
+        id="adminUserId"
+        items={adminUserItems}
+        bind:value={$data.adminUserId}
+        name="adminUserId"
+        placeholder={$translations.chooseOption}
+        class="rounded-lg dark:bg-gray-600"
+        disabled={$authenticatedUser?.type !== 'admin'}
+      />
       <Helper class="mt-2" color="red">
         {#if $errors.adminUserId}
           {$errors.adminUserId}
@@ -188,7 +196,15 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.serviceBodyTypeTitle}</Label>
-      <Select id="type" items={typeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select
+        id="type"
+        items={typeItems}
+        name="type"
+        bind:value={$data.type}
+        placeholder={$translations.chooseOption}
+        class="rounded-lg dark:bg-gray-600"
+        disabled={$authenticatedUser?.type !== 'admin'}
+      />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -197,7 +213,15 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="parentId" class="mb-2">{$translations.parentIdTitle}</Label>
-      <Select id="parentId" items={parentIdItems} name="parentId" bind:value={$data.parentId} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select
+        id="parentId"
+        items={parentIdItems}
+        name="parentId"
+        bind:value={$data.parentId}
+        placeholder={$translations.chooseOption}
+        class="rounded-lg dark:bg-gray-600"
+        disabled={$authenticatedUser?.type !== 'admin'}
+      />
       <Helper class="mt-2" color="red">
         {#if $errors.parentId}
           {$errors.parentId}

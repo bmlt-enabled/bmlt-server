@@ -476,7 +476,15 @@
           <span class="mx-2 text-gray-500 dark:text-gray-400">/</span>
           <span class="ml-4 flex items-center space-x-1">
             <Label for="itemsPerPage" class="text-sm font-medium text-gray-700 dark:text-gray-300">{$translations.meetingsPerPage}</Label>
-            <Select id="itemsPerPage" items={itemsPerPageItems} bind:value={itemsPerPage} onchange={handleItemsPerPageChange} name="itemsPerPage" class="w-20 rounded-lg dark:bg-gray-600" />
+            <Select
+              id="itemsPerPage"
+              items={itemsPerPageItems}
+              bind:value={itemsPerPage}
+              onchange={handleItemsPerPageChange}
+              name="itemsPerPage"
+              placeholder={$translations.chooseOption}
+              class="w-20 rounded-lg dark:bg-gray-600"
+            />
           </span>
         </span>
         <ButtonGroup>

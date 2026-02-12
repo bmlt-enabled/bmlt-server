@@ -50,11 +50,11 @@
 
 <div class="flex space-x-4">
   <div class="flex flex-col">
-    <Select id="hours" class="rounded-lg dark:bg-gray-600" items={hourOptions} bind:value={hours} onchange={handleHourChange} />
+    <Select id="hours" class="rounded-lg dark:bg-gray-600" items={hourOptions} bind:value={hours} onchange={handleHourChange} placeholder={$translations.chooseOption} />
     <Label for="hours" class="mt-2 text-sm font-semibold">{$translations.hoursTitle}</Label>
   </div>
   <div class="flex flex-col">
-    <Select id="minutes" class="rounded-lg dark:bg-gray-600" items={minuteOptions} bind:value={minutes} onchange={handleMinuteChange} />
+    <Select id="minutes" class="rounded-lg dark:bg-gray-600" items={minuteOptions} bind:value={minutes} onchange={handleMinuteChange} placeholder={$translations.chooseOption} />
     <Label for="minutes" class="mt-2 text-sm font-semibold">{$translations.minutesTitle}</Label>
   </div>
 </div>
