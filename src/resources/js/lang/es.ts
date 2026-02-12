@@ -169,8 +169,10 @@ export const esTranslations = {
   hideDetails: 'Ocultar detalles',
   homeTitle: 'Hogar',
   hoursTitle: 'Horas',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'Identificación',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Nombre de usuario o contraseña inválidos',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'Coloque una clave',
@@ -346,6 +348,7 @@ export const esTranslations = {
   userTitle: 'Usuario',
   userTypeTitle: 'Tipo de usuario',
   venueTypeTitle: 'Tipo de recinto',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Grupo virtual información adicional',
   virtualMeetingTitle: 'Enlace reunión virtual',
   websiteUrlTitle: 'Dirección URL del sitio web',

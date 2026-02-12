@@ -169,8 +169,10 @@ export const elTranslations = {
   hideDetails: 'Απόκρυψη πληροφοριών',
   homeTitle: 'Αρχική',
   hoursTitle: 'Ώρες',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'Αναγνωριστικός αριθμός(ID)',
   includeServiceBodyEmailInSemanticOutput: 'Να συμπεριληφθεί το email του σώματος υπηρεσιών στο αποτέλεσμα του Semantic',
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Λάθος όνομα ή κωδικός',
   keyAlreadyInUse: 'Η συντομογραφία χρησιμοποιείται ήδη σε άλλο θέμα ομάδας',
   keyIsRequired: 'Απαιτείται συντομογραφία',
@@ -347,6 +349,7 @@ export const elTranslations = {
   userTitle: 'Χρήστης',
   userTypeTitle: 'Τύπος χρήστη',
   venueTypeTitle: 'Τύπος ομάδας',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Επιπλέον πληροφορίες διαδικτυακής ομάδας',
   virtualMeetingTitle: 'Σύνδεσμος (link) "διαδικτυακής ομάδας"',
   websiteUrlTitle: 'Διεύθυνση ιστοσελίδας',

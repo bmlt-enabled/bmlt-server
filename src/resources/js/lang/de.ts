@@ -114,8 +114,10 @@ export const deTranslations = {
   hideDetails: 'Details ausblenden',
   homeTitle: 'Startseite',
   hoursTitle: 'Std.',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Ungültiger Benutzername oder Passwort.',
   keyAlreadyInUse: 'Schlüssel wird bereits für ein anderes Format verwendet',
   keyIsRequired: 'Schlüssel ist erforderlich',
@@ -292,6 +294,7 @@ export const deTranslations = {
   userTitle: 'Benutzer',
   userTypeTitle: 'Benutzertyp',
   venueTypeTitle: 'Art des Veranstaltungsortes',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Online-Meeting Weitere Informationen',
   virtualMeetingTitle: 'Online-Meeting URL',
   websiteUrlTitle: 'Website-URL',

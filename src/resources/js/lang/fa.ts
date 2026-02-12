@@ -169,8 +169,10 @@ export const faTranslations = {
   hideDetails: 'مخفی کردن جزئیات',
   homeTitle: 'خانه',
   hoursTitle: 'ساعت',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'شناسه',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'نام کاربری یا رمز عبور نامعتبر است.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'کلید لازم است',
@@ -346,6 +348,7 @@ export const faTranslations = {
   userTitle: 'کاربر',
   userTypeTitle: 'نوع کاربر',
   venueTypeTitle: 'نوع محل برگزاری',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'اطلاعات تکمیلی جلسه مجازی',
   virtualMeetingTitle: 'پیوند جلسه مجازی',
   websiteUrlTitle: 'آدرس سایت',

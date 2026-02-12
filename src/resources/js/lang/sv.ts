@@ -169,8 +169,10 @@ export const svTranslations = {
   hideDetails: 'Dölj detaljer',
   homeTitle: 'Home',
   hoursTitle: 'Hours',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Invalid username or password.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'key is required',
@@ -346,6 +348,7 @@ export const svTranslations = {
   userTitle: 'User',
   userTypeTitle: 'User Type',
   venueTypeTitle: 'Venue Type',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Virtual Meeting Additional Information',
   virtualMeetingTitle: 'Virtual Meeting Link',
   websiteUrlTitle: 'Web Site URL',
