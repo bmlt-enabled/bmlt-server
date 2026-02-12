@@ -163,7 +163,15 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="type" class="mb-2">{$translations.userTypeTitle}</Label>
-      <Select id="type" items={userTypeItems} name="type" bind:value={$data.type} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select
+        id="type"
+        items={userTypeItems}
+        name="type"
+        bind:value={$data.type}
+        placeholder={$translations.chooseOption}
+        class="rounded-lg dark:bg-gray-600"
+        disabled={$authenticatedUser?.type !== 'admin'}
+      />
       <Helper class="mt-2" color="red">
         {#if $errors.type}
           {$errors.type}
@@ -172,7 +180,15 @@
     </div>
     <div class={$authenticatedUser?.type !== 'admin' ? 'hidden' : ''}>
       <Label for="ownerId" class="mb-2">{$translations.ownedByTitle}</Label>
-      <Select id="ownerId" items={userOwnerItems} name="ownerId" bind:value={$data.ownerId} class="rounded-lg dark:bg-gray-600" disabled={$authenticatedUser?.type !== 'admin'} />
+      <Select
+        id="ownerId"
+        items={userOwnerItems}
+        name="ownerId"
+        bind:value={$data.ownerId}
+        placeholder={$translations.chooseOption}
+        class="rounded-lg dark:bg-gray-600"
+        disabled={$authenticatedUser?.type !== 'admin'}
+      />
       <Helper class="mt-2" color="red">
         {#if $errors.ownerId}
           {$errors.ownerId}

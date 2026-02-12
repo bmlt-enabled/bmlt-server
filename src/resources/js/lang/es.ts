@@ -81,6 +81,7 @@ export const esTranslations = {
   by: 'por',
   cancel: 'Cancelar',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'Escoger hora de comienzo',
   cityTownTitle: 'Ciudad/Pueblo',
   clearFormTitle: 'Borrar formulario',

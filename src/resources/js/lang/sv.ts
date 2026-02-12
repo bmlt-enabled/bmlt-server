@@ -81,6 +81,7 @@ export const svTranslations = {
   by: 'by',
   cancel: 'Cancel',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'Choose start time',
   cityTownTitle: 'City/Town',
   clearFormTitle: 'Clear Form',

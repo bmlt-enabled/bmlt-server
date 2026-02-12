@@ -26,6 +26,7 @@ export const deTranslations = {
   by: 'von',
   cancel: 'Stornieren',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'Startzeit wählen',
   cityTownTitle: 'Stadt',
   clearFormTitle: 'Formular löschen',

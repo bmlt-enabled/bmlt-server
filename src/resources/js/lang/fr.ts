@@ -81,6 +81,7 @@ export const frTranslations = {
   by: 'par',
   cancel: 'Annuler',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: "Choisir l'heure de début",
   cityTownTitle: 'Ville',
   clearFormTitle: 'Effacer le formulaire',

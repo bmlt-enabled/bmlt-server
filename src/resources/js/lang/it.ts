@@ -81,6 +81,7 @@ export const itTranslations = {
   by: 'di',
   cancel: 'Annulla',
   changeHistoryDepth: 'Profondità della cronologia delle modifiche',
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: "Scegli l'ora di inizio",
   cityTownTitle: 'Comune',
   clearFormTitle: 'Svuota modulo',

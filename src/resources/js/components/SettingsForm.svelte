@@ -185,7 +185,7 @@
         </div>
         <div>
           <Label for="language" class="mb-2">{$translations.defaultLanguage}</Label>
-          <Select id="language" items={languageItems} name="language" bind:value={$data.language} class="rounded-lg dark:bg-gray-600" />
+          <Select id="language" items={languageItems} name="language" bind:value={$data.language} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
           <Helper class="mt-2" color="red">
             {#if $errors.language}
               {$errors.language}
@@ -228,7 +228,7 @@
         </div>
         <div>
           <Label for="distanceUnits" class="mb-2">{$translations.distanceUnits}</Label>
-          <Select id="distanceUnits" items={distanceUnitsItems} name="distanceUnits" bind:value={$data.distanceUnits} class="rounded-lg dark:bg-gray-600" />
+          <Select id="distanceUnits" items={distanceUnitsItems} name="distanceUnits" placeholder={$translations.chooseOption} bind:value={$data.distanceUnits} class="rounded-lg dark:bg-gray-600" />
           <Helper class="mt-2" color="red">
             {#if $errors.distanceUnits}
               {$errors.distanceUnits}

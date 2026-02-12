@@ -81,6 +81,7 @@ export const faTranslations = {
   by: 'بوسیله',
   cancel: 'لغو',
   changeHistoryDepth: 'Change History Depth', // TODO: Translate
+  chooseOption: 'Choose option ...', // TODO: translate
   chooseStartTime: 'انتخاب زمان شروع',
   cityTownTitle: 'شهر/شهر',
   clearFormTitle: 'پاک کردن فرم',
