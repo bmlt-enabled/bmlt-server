@@ -68,9 +68,11 @@ class Translations {
 
   constructor() {
     const language = localStorage.getItem(LANGUAGE_STORAGE_KEY) || settings.defaultLanguage;
-    strings.setLanguage(language);
+    const availableLanguages = strings.getAvailableLanguages();
+    const validLanguage = availableLanguages.includes(language) ? language : 'en';
+    strings.setLanguage(validLanguage);
     this.store.set(strings);
-    setLocale(yupLocales[language] || yupLocales[settings.defaultLanguage]);
+    setLocale(yupLocales[validLanguage] || yupLocales['en']);
   }
 
   get subscribe(): (run: Subscriber<typeof strings>) => Unsubscriber {
