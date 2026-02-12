@@ -169,8 +169,10 @@ export const itTranslations = {
   hideDetails: 'Nascondi dettagli',
   homeTitle: 'Home',
   hoursTitle: 'Ore',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: "Includi email della struttura di servizio nell'output semantico",
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Nome utente o password non validi',
   keyAlreadyInUse: 'chiave già in uso per un altro formato',
   keyIsRequired: 'chiave obbligatoria',
@@ -181,6 +183,7 @@ export const itTranslations = {
   latitudeTitle: 'Latitudine',
   loadFile: 'Carica file',
   loading: 'caricamento in corso...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Mappa posizione', // TOFIX: translate
   locationStreetErrorMessage: 'Le riunioni ibride o in presenza devono avere un indirizzo.',
   locationTextTitle: 'Testo della posizione',
@@ -189,6 +192,7 @@ export const itTranslations = {
   logout: 'Esci',
   longitudeTitle: 'Longitudine',
   malformedRows: 'Righe malformate',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Posizione del centro della mappa',
   mapsAndGeocoding: 'Mappe e geocodifica',
   meeting: 'riunione',
@@ -293,6 +297,7 @@ export const itTranslations = {
   selectAllServiceBodies: 'Seleziona tutte le strutture di servizio',
   serverAdministratorTitle: 'Amministratore server principale',
   serverNotice: 'Avviso server',
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Server BMLT',
   serverTitleLabel: 'Titolo server',
   serviceBodiesNoParent: 'Nessun genitore (livello superiore)',
@@ -343,6 +348,7 @@ export const itTranslations = {
   userTitle: 'Utente',
   userTypeTitle: 'Tipo utente',
   venueTypeTitle: 'Tipo di struttura',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Informazioni aggiuntive della riunione online',
   virtualMeetingTitle: 'Link della riunione online',
   websiteUrlTitle: 'URL sito web',

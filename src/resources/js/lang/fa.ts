@@ -169,8 +169,10 @@ export const faTranslations = {
   hideDetails: 'مخفی کردن جزئیات',
   homeTitle: 'خانه',
   hoursTitle: 'ساعت',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'شناسه',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'نام کاربری یا رمز عبور نامعتبر است.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'کلید لازم است',
@@ -181,6 +183,7 @@ export const faTranslations = {
   latitudeTitle: 'عرض جغرافیایی',
   loadFile: 'بارگیری پرونده',
   loading: 'بارگیری ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'نقشه مکان',
   locationStreetErrorMessage: 'جلسات ترکیبی یا حضوری باید آدرس خیابان داشته باشند.',
   locationTextTitle: 'متن مکان',
@@ -189,6 +192,7 @@ export const faTranslations = {
   logout: 'ورود به سیستم',
   longitudeTitle: 'طول جغرافیایی',
   malformedRows: 'ردیف های ناقص',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'جلسه',
@@ -293,6 +297,7 @@ export const faTranslations = {
   selectAllServiceBodies: 'انتخاب تمام نهادهای خدماتی',
   serverAdministratorTitle: 'مدیر سرور اصلی',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'سرور BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'بدون والد(سطح بالا)',
@@ -343,6 +348,7 @@ export const faTranslations = {
   userTitle: 'کاربر',
   userTypeTitle: 'نوع کاربر',
   venueTypeTitle: 'نوع محل برگزاری',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'اطلاعات تکمیلی جلسه مجازی',
   virtualMeetingTitle: 'پیوند جلسه مجازی',
   websiteUrlTitle: 'آدرس سایت',

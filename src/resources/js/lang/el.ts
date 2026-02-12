@@ -169,8 +169,10 @@ export const elTranslations = {
   hideDetails: 'Απόκρυψη πληροφοριών',
   homeTitle: 'Αρχική',
   hoursTitle: 'Ώρες',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'Αναγνωριστικός αριθμός(ID)',
   includeServiceBodyEmailInSemanticOutput: 'Να συμπεριληφθεί το email του σώματος υπηρεσιών στο αποτέλεσμα του Semantic',
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Λάθος όνομα ή κωδικός',
   keyAlreadyInUse: 'Η συντομογραφία χρησιμοποιείται ήδη σε άλλο θέμα ομάδας',
   keyIsRequired: 'Απαιτείται συντομογραφία',
@@ -181,6 +183,7 @@ export const elTranslations = {
   latitudeTitle: 'Γεωγραφικό πλάτος (Latitude)',
   loadFile: 'Φόρτωση αρχείου',
   loading: 'Φορτώνει',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Τοποθεσία στον χάρτη', // TOFIX: translate
   locationStreetErrorMessage: 'Οι φυσικές ή υβριδικές ομάδες πρέπει να έχουν διεύθυνση',
   locationTextTitle: 'Περιγραφή τοποθεσίας',
@@ -189,6 +192,7 @@ export const elTranslations = {
   logout: 'Αποσύνδεση',
   longitudeTitle: 'Γεωγραφικό μήκος(Longitude)',
   malformedRows: 'Κακή μορφή γραμμών',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Επιλογή κεντρικής τοποθεσίας χάρτη',
   mapsAndGeocoding: 'Χάρτες και γεωκωδικοποίηση(Geocoding)',
   meeting: 'Ομάδα',
@@ -294,6 +298,7 @@ export const elTranslations = {
   selectAllServiceBodies: 'Επιλέξτε όλα τα σώματα υπηρεσιών',
   serverAdministratorTitle: 'Διαχειριστής διακομιστή(server)',
   serverNotice: 'Σημείωση διακομιστή(server)',
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Διακομιστής(server) BMLT',
   serverTitleLabel: 'Όνομα διακομιστή(server)',
   serviceBodiesNoParent: 'Δεν ανήκει κάπου (είναι η ΕΥΔ)',
@@ -344,6 +349,7 @@ export const elTranslations = {
   userTitle: 'Χρήστης',
   userTypeTitle: 'Τύπος χρήστη',
   venueTypeTitle: 'Τύπος ομάδας',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Επιπλέον πληροφορίες διαδικτυακής ομάδας',
   virtualMeetingTitle: 'Σύνδεσμος (link) "διαδικτυακής ομάδας"',
   websiteUrlTitle: 'Διεύθυνση ιστοσελίδας',

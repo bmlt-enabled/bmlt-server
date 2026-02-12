@@ -103,9 +103,9 @@
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
   const venueTypeItems = [
-    { value: VENUE_TYPE_IN_PERSON, name: 'In-Person' },
-    { value: VENUE_TYPE_VIRTUAL, name: 'Virtual' },
-    { value: VENUE_TYPE_HYBRID, name: 'Hybrid' }
+    { value: VENUE_TYPE_IN_PERSON, name: $translations.inPerson },
+    { value: VENUE_TYPE_VIRTUAL, name: $translations.virtual },
+    { value: VENUE_TYPE_HYBRID, name: $translations.hybrid }
   ];
 
   const defaultLatLng = { lat: Number(settings.centerLatitude ?? -79.793701171875), lng: Number(settings.centerLongitude ?? 36.065752051707) };

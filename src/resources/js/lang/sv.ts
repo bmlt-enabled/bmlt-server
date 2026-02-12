@@ -169,8 +169,10 @@ export const svTranslations = {
   hideDetails: 'Dölj detaljer',
   homeTitle: 'Home',
   hoursTitle: 'Hours',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Invalid username or password.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'key is required',
@@ -181,6 +183,7 @@ export const svTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Load file',
   loading: 'loading ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Hybrid or In-person meetings must have a street address.',
   locationTextTitle: 'Location Text',
@@ -189,6 +192,7 @@ export const svTranslations = {
   logout: 'Logout',
   longitudeTitle: 'Longitude',
   malformedRows: 'Malformed rows',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'meeting',
@@ -293,6 +297,7 @@ export const svTranslations = {
   selectAllServiceBodies: 'Select All Service Bodies',
   serverAdministratorTitle: 'Main Server Administrator',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'BMLT Server',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'No Parent (Top-Level)',
@@ -343,6 +348,7 @@ export const svTranslations = {
   userTitle: 'User',
   userTypeTitle: 'User Type',
   venueTypeTitle: 'Venue Type',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Virtual Meeting Additional Information',
   virtualMeetingTitle: 'Virtual Meeting Link',
   websiteUrlTitle: 'Web Site URL',

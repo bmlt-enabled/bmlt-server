@@ -114,8 +114,10 @@ export const deTranslations = {
   hideDetails: 'Details ausblenden',
   homeTitle: 'Startseite',
   hoursTitle: 'Std.',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Ungültiger Benutzername oder Passwort.',
   keyAlreadyInUse: 'Schlüssel wird bereits für ein anderes Format verwendet',
   keyIsRequired: 'Schlüssel ist erforderlich',
@@ -126,6 +128,7 @@ export const deTranslations = {
   latitudeTitle: 'Breitengrad',
   loadFile: 'Load file', // TODO: translate
   loading: 'loading ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Lageplan',
   locationStreetErrorMessage: 'Für Hybrid- oder Präsenz-Meetings muss eine Straßenadresse angegeben werden.',
   locationTextTitle: 'Standorttext',
@@ -134,6 +137,7 @@ export const deTranslations = {
   logout: 'Abmelden',
   longitudeTitle: 'Längengrad',
   malformedRows: 'Malformed rows', // TODO: Translate
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'Meeting',
@@ -239,6 +243,7 @@ export const deTranslations = {
   selectAllServiceBodies: 'Select All Service Bodies', // TODO: Translate
   serverAdministratorTitle: 'Hauptserveradministrator*in',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'BMLT-Server',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Kein übergeordnetes Element (oberste Ebene)',
@@ -289,6 +294,7 @@ export const deTranslations = {
   userTitle: 'Benutzer',
   userTypeTitle: 'Benutzertyp',
   venueTypeTitle: 'Art des Veranstaltungsortes',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Online-Meeting Weitere Informationen',
   virtualMeetingTitle: 'Online-Meeting URL',
   websiteUrlTitle: 'Website-URL',

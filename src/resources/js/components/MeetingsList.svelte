@@ -394,7 +394,7 @@
   <TableHead>
     {#if meetings.length}
       <TableHeadCell padding="px-4 py-3 whitespace-nowrap" scope="col" onclick={() => handleSort('day')}>
-        Day
+        {$translations.day}
         {#if sortColumn === 'day'}
           {#if sortDirection === 'asc'}
             <ChevronUpOutline class="ml-1 inline-block h-3 w-3" />
@@ -404,7 +404,7 @@
         {/if}
       </TableHeadCell>
       <TableHeadCell padding="px-4 py-3 whitespace-nowrap" scope="col" onclick={() => handleSort('startTime')}>
-        Time
+        {$translations.time}
         {#if sortColumn === 'startTime'}
           {#if sortDirection === 'asc'}
             <ChevronUpOutline class="ml-1 inline-block h-3 w-3" />
@@ -414,7 +414,7 @@
         {/if}
       </TableHeadCell>
       <TableHeadCell padding="px-4 py-3" scope="col" onclick={() => handleSort('name')}>
-        Meeting
+        {$translations.meeting}
         {#if sortColumn === 'name'}
           {#if sortDirection === 'asc'}
             <ChevronUpOutline class="ml-1 inline-block h-3 w-3" />
@@ -424,7 +424,7 @@
         {/if}
       </TableHeadCell>
       <TableHeadCell padding="px-4 py-3" scope="col" onclick={() => handleSort('locationStreet')}>
-        Location
+        {$translations.location}
         {#if sortColumn === 'locationStreet'}
           {#if sortDirection === 'asc'}
             <ChevronUpOutline class="ml-1 inline-block h-3 w-3" />

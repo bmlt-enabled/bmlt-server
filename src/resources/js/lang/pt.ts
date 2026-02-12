@@ -169,8 +169,10 @@ export const ptTranslations = {
   hideDetails: 'Ocultar detalhes',
   homeTitle: 'Início',
   hoursTitle: 'Horas',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Nome de usuário ou senha inválidos.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'chave é obrigatória',
@@ -181,6 +183,7 @@ export const ptTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Carregar arquivo',
   loading: 'carregando ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Reuniões híbridas ou presenciais devem ter um endereço de rua.',
   locationTextTitle: 'Texto de localização',
@@ -189,6 +192,7 @@ export const ptTranslations = {
   logout: 'Sair',
   longitudeTitle: 'Longitude',
   malformedRows: 'Linhas malformadas',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'reunião',
@@ -293,6 +297,7 @@ export const ptTranslations = {
   selectAllServiceBodies: 'Selecionar todos os corpos de serviço',
   serverAdministratorTitle: 'Administrador principal do servidor',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Servidor BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Sem Pai (Nível Superior)',
@@ -343,6 +348,7 @@ export const ptTranslations = {
   userTitle: 'Usuário',
   userTypeTitle: 'Tipo de usuário',
   venueTypeTitle: 'Tipo de local',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Informações adicionais da reunião virtual',
   virtualMeetingTitle: 'Link da reunião virtual',
   websiteUrlTitle: 'URL do site',

@@ -169,8 +169,10 @@ export const frTranslations = {
   hideDetails: 'Masquer les détails',
   homeTitle: 'Accueil',
   hoursTitle: 'Horaires',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'Identifiant',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Nom d’utilisateur ou mot de passe incorrect.',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'Ce champ est obligatoire.',
@@ -181,6 +183,7 @@ export const frTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Charger le fichier',
   loading: 'chargement...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Les réunions hybrides ou en présentiel doivent avoir une adresse postale.',
   locationTextTitle: 'Texte de la localisation',
@@ -189,6 +192,7 @@ export const frTranslations = {
   logout: 'Déconnexion',
   longitudeTitle: 'Longitude',
   malformedRows: 'Format de ligne invalide',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'réunion',
@@ -293,6 +297,7 @@ export const frTranslations = {
   selectAllServiceBodies: 'Sélectionner toutes les structures de service',
   serverAdministratorTitle: 'Administrateur principal du serveur',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Serveur BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Aucun parent (niveau supérieur)',
@@ -343,6 +348,7 @@ export const frTranslations = {
   userTitle: 'Utilisateur',
   userTypeTitle: "Type d'utilisateur",
   venueTypeTitle: 'Type de lieu',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Informations supplémentaires de la réunion en ligne',
   virtualMeetingTitle: 'Lien de la réunion en ligne',
   websiteUrlTitle: 'URL du site Web',

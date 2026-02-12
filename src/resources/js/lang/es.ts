@@ -169,8 +169,10 @@ export const esTranslations = {
   hideDetails: 'Ocultar detalles',
   homeTitle: 'Hogar',
   hoursTitle: 'Horas',
+  hybrid: 'Hybrid', // TODO: translate
   idTitle: 'Identificación',
   includeServiceBodyEmailInSemanticOutput: 'Include Service Body Email in Semantic Output', // TODO: Translate
+  inPerson: 'In-Person', // TODO: translate
   invalidUsernameOrPassword: 'Nombre de usuario o contraseña inválidos',
   keyAlreadyInUse: 'key already in use for another format',
   keyIsRequired: 'Coloque una clave',
@@ -181,6 +183,7 @@ export const esTranslations = {
   latitudeTitle: 'Latitud',
   loadFile: 'Cargar archivo',
   loading: 'cargando…',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Para los gupos híbridos o presenciales, hace falta una dirección',
   locationTextTitle: 'Texto de ubicación',
@@ -189,6 +192,7 @@ export const esTranslations = {
   logout: 'Cerrar sesión',
   longitudeTitle: 'Longitud',
   malformedRows: 'Filas malformadas',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'grupo',
@@ -293,6 +297,7 @@ export const esTranslations = {
   selectAllServiceBodies: 'Seleccionar todas las áreas de servicio',
   serverAdministratorTitle: 'Administrador principal del servidor',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Servidor de BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Sin padre (nivel superior)',
@@ -343,6 +348,7 @@ export const esTranslations = {
   userTitle: 'Usuario',
   userTypeTitle: 'Tipo de usuario',
   venueTypeTitle: 'Tipo de recinto',
+  virtual: 'Virtual', // TODO: translate
   virtualMeetingAdditionalInfoTitle: 'Grupo virtual información adicional',
   virtualMeetingTitle: 'Enlace reunión virtual',
   websiteUrlTitle: 'Dirección URL del sitio web',
