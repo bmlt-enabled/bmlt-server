@@ -64,7 +64,7 @@
 
 <Modal bind:open={showModal} size="lg" oncancel={handleModalCancel} outsideclose={true} class="modal-content">
   <div class="p-2">
-    <h2 class="mb-4 text-xl font-semibold dark:text-white">Server Settings</h2>
+    <h2 class="mb-4 text-xl font-semibold dark:text-white">{$translations.serverSettings}</h2>
     {#key showModal}
       {#if showModal}
         <SettingsForm {serverSettings} {onSaveSuccess} />

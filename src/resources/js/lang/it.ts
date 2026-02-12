@@ -189,6 +189,7 @@ export const itTranslations = {
   logout: 'Esci',
   longitudeTitle: 'Longitudine',
   malformedRows: 'Righe malformate',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Posizione del centro della mappa',
   mapsAndGeocoding: 'Mappe e geocodifica',
   meeting: 'riunione',
@@ -293,6 +294,7 @@ export const itTranslations = {
   selectAllServiceBodies: 'Seleziona tutte le strutture di servizio',
   serverAdministratorTitle: 'Amministratore server principale',
   serverNotice: 'Avviso server',
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Server BMLT',
   serverTitleLabel: 'Titolo server',
   serviceBodiesNoParent: 'Nessun genitore (livello superiore)',

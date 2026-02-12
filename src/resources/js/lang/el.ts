@@ -189,6 +189,7 @@ export const elTranslations = {
   logout: 'Αποσύνδεση',
   longitudeTitle: 'Γεωγραφικό μήκος(Longitude)',
   malformedRows: 'Κακή μορφή γραμμών',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Επιλογή κεντρικής τοποθεσίας χάρτη',
   mapsAndGeocoding: 'Χάρτες και γεωκωδικοποίηση(Geocoding)',
   meeting: 'Ομάδα',
@@ -294,6 +295,7 @@ export const elTranslations = {
   selectAllServiceBodies: 'Επιλέξτε όλα τα σώματα υπηρεσιών',
   serverAdministratorTitle: 'Διαχειριστής διακομιστή(server)',
   serverNotice: 'Σημείωση διακομιστή(server)',
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Διακομιστής(server) BMLT',
   serverTitleLabel: 'Όνομα διακομιστή(server)',
   serviceBodiesNoParent: 'Δεν ανήκει κάπου (είναι η ΕΥΔ)',

@@ -189,6 +189,7 @@ export const faTranslations = {
   logout: 'ورود به سیستم',
   longitudeTitle: 'طول جغرافیایی',
   malformedRows: 'ردیف های ناقص',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'جلسه',
@@ -293,6 +294,7 @@ export const faTranslations = {
   selectAllServiceBodies: 'انتخاب تمام نهادهای خدماتی',
   serverAdministratorTitle: 'مدیر سرور اصلی',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'سرور BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'بدون والد(سطح بالا)',

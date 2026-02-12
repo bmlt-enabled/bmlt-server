@@ -458,8 +458,8 @@
   {#if serverSettingsLoaded}
     <Card class="mx-auto my-8 w-full max-w-lg bg-white p-8 text-center shadow-lg dark:bg-gray-800">
       <div class="p-4">
-        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">Server Settings</Heading>
-        <Button onclick={() => (showSettingsModal = true)} color="primary" class="w-full">Manage Server Settings</Button>
+        <Heading tag="h1" class="mb-4 text-2xl dark:text-white">{$translations.serverSettings}</Heading>
+        <Button onclick={() => (showSettingsModal = true)} color="primary" class="w-full">{$translations.manageServerSettings}</Button>
       </div>
     </Card>
   {/if}

@@ -189,6 +189,7 @@ export const ptTranslations = {
   logout: 'Sair',
   longitudeTitle: 'Longitude',
   malformedRows: 'Linhas malformadas',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'reunião',
@@ -293,6 +294,7 @@ export const ptTranslations = {
   selectAllServiceBodies: 'Selecionar todos os corpos de serviço',
   serverAdministratorTitle: 'Administrador principal do servidor',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Servidor BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Sem Pai (Nível Superior)',

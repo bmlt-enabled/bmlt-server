@@ -134,6 +134,7 @@ export const deTranslations = {
   logout: 'Abmelden',
   longitudeTitle: 'Längengrad',
   malformedRows: 'Malformed rows', // TODO: Translate
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'Meeting',
@@ -239,6 +240,7 @@ export const deTranslations = {
   selectAllServiceBodies: 'Select All Service Bodies', // TODO: Translate
   serverAdministratorTitle: 'Hauptserveradministrator*in',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'BMLT-Server',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Kein übergeordnetes Element (oberste Ebene)',

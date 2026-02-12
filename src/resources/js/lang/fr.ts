@@ -189,6 +189,7 @@ export const frTranslations = {
   logout: 'Déconnexion',
   longitudeTitle: 'Longitude',
   malformedRows: 'Format de ligne invalide',
+  manageServerSettings: 'Manage Server Settings', // TODO: translate
   mapCenterLocation: 'Map Center Location', // TODO: Translate
   mapsAndGeocoding: 'Maps & Geocoding', // TODO: Translate
   meeting: 'réunion',
@@ -293,6 +294,7 @@ export const frTranslations = {
   selectAllServiceBodies: 'Sélectionner toutes les structures de service',
   serverAdministratorTitle: 'Administrateur principal du serveur',
   serverNotice: 'Server Notice', // TODO: Translate
+  serverSettings: 'Server Settings', // TODO: translate
   serverTitle: 'Serveur BMLT',
   serverTitleLabel: 'Server Title', // TODO: Translate
   serviceBodiesNoParent: 'Aucun parent (niveau supérieur)',
