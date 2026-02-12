@@ -2,6 +2,7 @@
   import { Modal } from 'flowbite-svelte';
   import { get } from 'svelte/store';
 
+  import { translations } from '../stores/localization';
   import SettingsForm from './SettingsForm.svelte';
   import { isDirty } from '../lib/utils';
   import UnsavedChangesModal from './UnsavedChangesModal.svelte';

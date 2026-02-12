@@ -181,6 +181,7 @@ export const elTranslations = {
   latitudeTitle: 'Γεωγραφικό πλάτος (Latitude)',
   loadFile: 'Φόρτωση αρχείου',
   loading: 'Φορτώνει',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Τοποθεσία στον χάρτη', // TOFIX: translate
   locationStreetErrorMessage: 'Οι φυσικές ή υβριδικές ομάδες πρέπει να έχουν διεύθυνση',
   locationTextTitle: 'Περιγραφή τοποθεσίας',

@@ -181,6 +181,7 @@ export const ptTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Carregar arquivo',
   loading: 'carregando ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Reuniões híbridas ou presenciais devem ter um endereço de rua.',
   locationTextTitle: 'Texto de localização',

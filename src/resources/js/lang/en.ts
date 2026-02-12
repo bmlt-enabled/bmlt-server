@@ -181,6 +181,7 @@ export const enTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Load file',
   loading: 'loading ...',
+  location: 'Location',
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Hybrid or In-person meetings must have a street address.',
   locationTextTitle: 'Location Text',

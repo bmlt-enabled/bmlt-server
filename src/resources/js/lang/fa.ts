@@ -181,6 +181,7 @@ export const faTranslations = {
   latitudeTitle: 'عرض جغرافیایی',
   loadFile: 'بارگیری پرونده',
   loading: 'بارگیری ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'نقشه مکان',
   locationStreetErrorMessage: 'جلسات ترکیبی یا حضوری باید آدرس خیابان داشته باشند.',
   locationTextTitle: 'متن مکان',

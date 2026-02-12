@@ -181,6 +181,7 @@ export const itTranslations = {
   latitudeTitle: 'Latitudine',
   loadFile: 'Carica file',
   loading: 'caricamento in corso...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Mappa posizione', // TOFIX: translate
   locationStreetErrorMessage: 'Le riunioni ibride o in presenza devono avere un indirizzo.',
   locationTextTitle: 'Testo della posizione',

@@ -126,6 +126,7 @@ export const deTranslations = {
   latitudeTitle: 'Breitengrad',
   loadFile: 'Load file', // TODO: translate
   loading: 'loading ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Lageplan',
   locationStreetErrorMessage: 'Für Hybrid- oder Präsenz-Meetings muss eine Straßenadresse angegeben werden.',
   locationTextTitle: 'Standorttext',

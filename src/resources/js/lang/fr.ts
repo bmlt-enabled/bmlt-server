@@ -181,6 +181,7 @@ export const frTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Charger le fichier',
   loading: 'chargement...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Les réunions hybrides ou en présentiel doivent avoir une adresse postale.',
   locationTextTitle: 'Texte de la localisation',

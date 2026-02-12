@@ -181,6 +181,7 @@ export const daTranslations = {
   latitudeTitle: 'Latitude',
   loadFile: 'Load file',
   loading: 'loading ...',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Hybrid or In-person meetings must have a street address.',
   locationTextTitle: 'Location Text',

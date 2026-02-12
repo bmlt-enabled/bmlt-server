@@ -181,6 +181,7 @@ export const esTranslations = {
   latitudeTitle: 'Latitud',
   loadFile: 'Cargar archivo',
   loading: 'cargando…',
+  location: 'Location', // TODO: translate
   locationMapTitle: 'Location Map', // TOFIX: translate
   locationStreetErrorMessage: 'Para los gupos híbridos o presenciales, hace falta una dirección',
   locationTextTitle: 'Texto de ubicación',
