@@ -20,7 +20,7 @@ export const elYupLocale: LocaleObject = {
     notOneOf: '${path} must not be one of the following values: ${values}',
     notType: '${path} must be a valid type',
     oneOf: '${path} must be one of the following values: ${values}',
-    required: '${path} is a required field'
+    required: 'πρέπει να συμπληρωθεί το πεδίο ${path}'
   },
   number: {
     integer: '${path} must be an integer',
@@ -78,10 +78,10 @@ export const elTranslations = {
   automaticallyCalculatedOnSave: 'Αυτόματος υπολογισμός κατά την αποθήκευση',
   boroughTitle: 'Δήμος',
   busLinesTitle: 'Δρομολόγια λεωφορείων',
-  by: 'κατά',
+  by: 'από',
   cancel: 'Ακύρωση',
-  changeHistoryDepth: '’λλαξε βάθος ιστορικού',
-  chooseOption: 'Choose option ...', // TODO: translate
+  changeHistoryDepth: 'Άλλαξε βάθος ιστορικού',
+  chooseOption: 'Επιλέξτε...',
   chooseStartTime: 'Επιλέξτε ώρα έναρξης',
   cityTownTitle: 'Πόλη',
   clearFormTitle: 'Καθαρισμός φόρμας',
@@ -170,10 +170,10 @@ export const elTranslations = {
   hideDetails: 'Απόκρυψη πληροφοριών',
   homeTitle: 'Αρχική',
   hoursTitle: 'Ώρες',
-  hybrid: 'Hybrid', // TODO: translate
+  hybrid: 'Υβριδική',
   idTitle: 'Αναγνωριστικός αριθμός(ID)',
   includeServiceBodyEmailInSemanticOutput: 'Να συμπεριληφθεί το email του σώματος υπηρεσιών στο αποτέλεσμα του Semantic',
-  inPerson: 'In-Person', // TODO: translate
+  inPerson: 'Φυσική',
   invalidUsernameOrPassword: 'Λάθος όνομα ή κωδικός',
   keyAlreadyInUse: 'Η συντομογραφία χρησιμοποιείται ήδη σε άλλο θέμα ομάδας',
   keyIsRequired: 'Απαιτείται συντομογραφία',
@@ -184,16 +184,16 @@ export const elTranslations = {
   latitudeTitle: 'Γεωγραφικό πλάτος (Latitude)',
   loadFile: 'Φόρτωση αρχείου',
   loading: 'Φορτώνει',
-  location: 'Location', // TODO: translate
+  location: 'ΤΟΠΟΘΕΣΙΑ',
   locationMapTitle: 'Τοποθεσία στον χάρτη', // TOFIX: translate
   locationStreetErrorMessage: 'Οι φυσικές ή υβριδικές ομάδες πρέπει να έχουν διεύθυνση',
   locationTextTitle: 'Περιγραφή τοποθεσίας',
   loginTitle: 'Σύνδεση',
-  loginVerb: 'Συνδέομαι',
+  loginVerb: 'Σύνδεση',
   logout: 'Αποσύνδεση',
   longitudeTitle: 'Γεωγραφικό μήκος(Longitude)',
   malformedRows: 'Κακή μορφή γραμμών',
-  manageServerSettings: 'Manage Server Settings', // TODO: translate
+  manageServerSettings: 'Διαχείριση ρυθμίσεων διακομιστή(server)',
   mapCenterLocation: 'Επιλογή κεντρικής τοποθεσίας χάρτη',
   mapsAndGeocoding: 'Χάρτες και γεωκωδικοποίηση(Geocoding)',
   meeting: 'Ομάδα',
@@ -271,7 +271,7 @@ export const elTranslations = {
   noWhitespaceInKey: 'Δεν επιτρέπεται κενό στη συντομογραφία',
   numberOfMeetingsForAutoSearch: 'Αριθμός ομάδων για την αυτόματη αναζήτηση',
   numberOfMeetingsForAutoSearchHelperText:
-    'Προσδιορίστε τον αριθμό των ομάδων που θέλετε να βρείτε όταν πραγματοποιείτε αναζήτηση με βάση τη διεύθυνση χωρίς ακτίνα αναζήτησης. Όταν ο αριθμός αυτός είναι μεγαλύτερος των ομάδων που υπάρχουν εκεί',
+    'Προσδιορίστε τον αριθμό των ομάδων στην αναζήτηση με βάση τη διεύθυνση. Αν ο αριθμός είναι μεγαλύτερος των ομάδων που υπάρχουν εκεί, τότε μεγαλώνει η ακτίνα αναζήτησης για να συμπληρωθούν οι ομάδες.',
   observerTitle: 'Παρατηρητής σώματος υπηρεσιών',
   occurredAt: 'Συνέβει στο',
   ownedByTitle: 'Ανήκει σε',
@@ -299,7 +299,7 @@ export const elTranslations = {
   selectAllServiceBodies: 'Επιλέξτε όλα τα σώματα υπηρεσιών',
   serverAdministratorTitle: 'Διαχειριστής διακομιστή(server)',
   serverNotice: 'Σημείωση διακομιστή(server)',
-  serverSettings: 'Server Settings', // TODO: translate
+  serverSettings: 'Ρυθμίσεις διακομιστή(server)',
   serverTitle: 'Διακομιστής(server) BMLT',
   serverTitleLabel: 'Όνομα διακομιστή(server)',
   serviceBodiesNoParent: 'Δεν ανήκει κάπου (είναι η ΕΥΔ)',
@@ -350,11 +350,11 @@ export const elTranslations = {
   userTitle: 'Χρήστης',
   userTypeTitle: 'Τύπος χρήστη',
   venueTypeTitle: 'Τύπος ομάδας',
-  virtual: 'Virtual', // TODO: translate
+  virtual: 'Διαδικτυακή',
   virtualMeetingAdditionalInfoTitle: 'Επιπλέον πληροφορίες διαδικτυακής ομάδας',
   virtualMeetingTitle: 'Σύνδεσμος (link) "διαδικτυακής ομάδας"',
   websiteUrlTitle: 'Διεύθυνση ιστοσελίδας',
-  welcome: 'Καλως ήρθατε',
+  welcome: 'Καλώς ήρθατε',
   worldIdTitle: 'Κωδικός για Επιτροπή Παγκοσμίου',
   youHaveUnsavedChanges: 'Έχετε μη αποθηκευμένες αλλαγές. Σίγουρα θέλετε να κλείσετε',
   yourGoogleMapsApiKey: 'Το API κλειδί σας των χαρτών Google',

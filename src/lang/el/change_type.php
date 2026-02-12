@@ -2,7 +2,7 @@
 
 return [
     'meeting_changed' => 'The meeting was changed.',
-    'meeting_created' => 'The meeting was created.',
+    'meeting_created' => 'Η ομάδα δημιουργήθηκε.',
     'meeting_deleted' => 'The meeting was deleted.',
     'meeting_rolled_back' => 'The meeting was rolled back to a previous version.',
 
