@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\MeetingChangeController;
 use App\Http\Controllers\Admin\RootServerController;
 use App\Http\Controllers\Admin\ServiceBodyController;
+use App\Http\Controllers\Admin\MeetingTranslationController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SwaggerController;
@@ -38,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);
     Route::patch('/meetings/{meeting}', [MeetingController::class, 'partialUpdate']);
+    Route::post('/meetings/{meeting}/translate', [MeetingTranslationController::class, 'translate']);
     Route::apiResource('meetings.changes', MeetingChangeController::class)->only([ 'index' ]);
     Route::apiResource('servicebodies', ServiceBodyController::class, ['parameters' => ['servicebodies' => 'serviceBody']]);
     Route::patch('/servicebodies/{serviceBody}', [ServiceBodyController::class, 'partialUpdate']);

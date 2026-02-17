@@ -28,7 +28,8 @@
             meetingCountiesAndSubProvinces: {!! json_encode($meetingCountiesAndSubProvinces) !!},
             regionBias: '{{ $regionBias }}',
             version: '{{ $version }}',
-            zipAutoGeocodingEnabled: {{ $zipAutoGeocodingEnabled ? 'true' : 'false' }}
+            zipAutoGeocodingEnabled: {{ $zipAutoGeocodingEnabled ? 'true' : 'false' }},
+            multiLingualEnabled: {{ $multiLingualEnabled ? 'true' : 'false' }}
         };
     </script>
 

@@ -226,6 +226,26 @@ class ApiClientWrapper {
     return this.api.deleteMeeting(params);
   }
 
+  async translateMeetingLocation(meetingId: number, targetLanguages: string[], sourceLanguage: string, sourceTexts?: Record<string, string>): Promise<Record<string, Record<string, string>>> {
+    const body: Record<string, any> = { targetLanguages, sourceLanguage };
+    if (sourceTexts) {
+      body.sourceTexts = sourceTexts;
+    }
+    const response = await fetch(`${this.api.configuration.basePath}/api/v1/meetings/${meetingId}/translate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${this.api.token?.accessToken ?? ''}`
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+      throw new Error(`Translation failed: ${response.statusText}`);
+    }
+    return response.json();
+  }
+
   async getServiceBodies(): Promise<ServiceBody[]> {
     return this.api.getServiceBodies();
   }

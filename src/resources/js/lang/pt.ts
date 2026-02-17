@@ -76,6 +76,8 @@ export const ptTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Aplicar alterações',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'Bairro/Subseção da cidade',
   busLinesTitle: 'Linhas de ônibus',
   by: 'por',
@@ -137,6 +139,7 @@ export const ptTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Erro',
   errorDownloading: 'Erro de baixamento',
@@ -211,6 +214,7 @@ export const ptTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nome',
   nationTitle: 'Nação',
@@ -257,6 +261,7 @@ export const ptTranslations = {
   neighborhoodTitle: 'Vizinhança',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Pelo menos uma tradução é necessária.',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'Nenhum registro encontrado',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: 'Nenhum',
@@ -325,6 +330,7 @@ export const ptTranslations = {
   tabsChanges: 'Alterações',
   tabsLocation: 'Localização',
   tabsOther: 'Outro',
+  tabsTranslations: 'Translations',
   technicalDetails: 'Detalhes técnicos',
   time: 'Hora',
   timeAfternoon: 'Tarde',
@@ -336,6 +342,8 @@ export const ptTranslations = {
   timeZoneTitle: 'Fuso Horário',
   totalRows: 'Total de linhas (excluindo cabeçalho)',
   trainLinesTitle: 'Linhas de metrô',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'Não publicado',
   unselectAllDays: 'Desmarcar todos os dias',
   unselectAllServiceBodies: 'Desmarcar todos os corpos de serviço',

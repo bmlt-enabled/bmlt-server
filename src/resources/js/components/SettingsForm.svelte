@@ -51,7 +51,8 @@
     numberOfMeetingsForAuto: serverSettings.numberOfMeetingsForAuto ?? 10,
     changeDepthForMeetings: serverSettings.changeDepthForMeetings ?? 0,
     defaultSortKey: serverSettings.defaultSortKey ?? '',
-    includeServiceBodyEmailInSemantic: serverSettings.includeServiceBodyEmailInSemantic ?? false
+    includeServiceBodyEmailInSemantic: serverSettings.includeServiceBodyEmailInSemantic ?? false,
+    multiLingualEnabled: serverSettings.multiLingualEnabled ?? false
   };
 
   const { data, errors, form, isDirty } = createForm({
@@ -107,7 +108,8 @@
         numberOfMeetingsForAuto: yup.number().min(0).required(),
         changeDepthForMeetings: yup.number().min(0).required(),
         defaultSortKey: yup.string().max(255),
-        includeServiceBodyEmailInSemantic: yup.boolean()
+        includeServiceBodyEmailInSemantic: yup.boolean(),
+        multiLingualEnabled: yup.boolean()
       }),
       castValues: true
     })
@@ -339,6 +341,11 @@
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">{$translations.advancedSettings}</h3>
       <div class="space-y-4">
         <Checkbox name="includeServiceBodyEmailInSemantic" bind:checked={$data.includeServiceBodyEmailInSemantic}>{$translations.includeServiceBodyEmailInSemanticOutput}</Checkbox>
+
+        <div>
+          <Checkbox name="multiLingualEnabled" bind:checked={$data.multiLingualEnabled}>{$translations.enableMultiLingual}</Checkbox>
+          <Helper class="mt-2">{$translations.multiLingualHelperText}</Helper>
+        </div>
 
         <MapAccordion title={$translations.formatLangNames}>
           <KeyValueEditor bind:value={formatLangNames} helperText={$translations.formatLangNamesHelperText} keyPlaceholder="ga" valuePlaceholder="Gaelic" />

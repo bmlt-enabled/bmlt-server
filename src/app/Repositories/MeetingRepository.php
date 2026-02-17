@@ -16,6 +16,18 @@ use Illuminate\Support\Facades\DB;
 
 class MeetingRepository implements MeetingRepositoryInterface
 {
+    public const TRANSLATABLE_LOCATION_FIELDS = [
+        'location_text',
+        'location_info',
+        'location_street',
+        'location_neighborhood',
+        'location_city_subsection',
+        'location_municipality',
+        'location_sub_province',
+        'location_province',
+        'location_nation',
+    ];
+
     private string $sqlDistanceFormula = "? * DEGREES(ACOS(LEAST(1.0, COS(RADIANS(latitude)) * COS(RADIANS(?)) * COS(RADIANS(longitude) - RADIANS(?)) + SIN(RADIANS(latitude)) * SIN(RADIANS(?)))))";
 
     public function getSearchResults(
@@ -625,13 +637,16 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function create(array $values): Meeting
     {
+        $locationTranslations = $values['_locationTranslations'] ?? null;
+        unset($values['_locationTranslations']);
+
         $values = collect($values);
         $values->put('lang_enum', App::currentLocale());
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $locationTranslations) {
             $meeting = Meeting::create($mainValues);
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
@@ -655,6 +670,9 @@ class MeetingRepository implements MeetingRepositoryInterface
                     ]);
                 }
             }
+            if (!empty($locationTranslations)) {
+                $this->saveLocationTranslations($meeting->id_bigint, $locationTranslations, $dataTemplates);
+            }
             if (!file_config('aggregator_mode_enabled')) {
                 $this->saveChange(null, $meeting);
             }
@@ -664,15 +682,32 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function update(int $id, array $values): bool
     {
+        $locationTranslations = $values['_locationTranslations'] ?? null;
+        $hasLocationTranslations = array_key_exists('_locationTranslations', $values);
+        unset($values['_locationTranslations']);
+
         $values = collect($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $locationTranslations, $hasLocationTranslations) {
             $meeting = Meeting::find($id);
             $meeting->loadMissing(['data', 'longdata']);
             if (!is_null($meeting)) {
+                // Preserve existing translation rows if locationTranslations was not provided
+                $preservedTranslationRows = [];
+                if (!$hasLocationTranslations) {
+                    $primaryLangEnum = $meeting->lang_enum ?: App::currentLocale();
+                    $preservedTranslationRows = MeetingData::query()
+                        ->where('meetingid_bigint', $id)
+                        ->whereIn('key', self::TRANSLATABLE_LOCATION_FIELDS)
+                        ->where('lang_enum', '!=', $primaryLangEnum)
+                        ->get()
+                        ->map(fn ($row) => $row->toArray())
+                        ->toArray();
+                }
+
                 Meeting::query()->where('id_bigint', $id)->update($mainValues);
                 MeetingData::query()->where('meetingid_bigint', $id)->delete();
                 MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
@@ -698,6 +733,19 @@ class MeetingRepository implements MeetingRepositoryInterface
                         ]);
                     }
                 }
+
+                if ($hasLocationTranslations) {
+                    if (!empty($locationTranslations)) {
+                        $this->saveLocationTranslations($meeting->id_bigint, $locationTranslations, $dataTemplates);
+                    }
+                } else {
+                    // Re-insert preserved translation rows
+                    foreach ($preservedTranslationRows as $row) {
+                        unset($row['id']);
+                        MeetingData::create($row);
+                    }
+                }
+
                 if (!file_config('aggregator_mode_enabled')) {
                     $this->saveChange($meeting, Meeting::find($id));
                 }
@@ -823,6 +871,32 @@ class MeetingRepository implements MeetingRepositoryInterface
                     ->toArray()
             ),
         ]);
+    }
+
+    private function saveLocationTranslations(int $meetingId, array $translations, Collection $dataTemplates): void
+    {
+        foreach ($translations as $langEnum => $fields) {
+            foreach ($fields as $fieldName => $fieldValue) {
+                if (!in_array($fieldName, self::TRANSLATABLE_LOCATION_FIELDS)) {
+                    continue;
+                }
+                if (is_null($fieldValue) || $fieldValue === '') {
+                    continue;
+                }
+                $t = $dataTemplates->get($fieldName);
+                if (is_null($t)) {
+                    continue;
+                }
+                MeetingData::create([
+                    'meetingid_bigint' => $meetingId,
+                    'key' => $t->key,
+                    'field_prompt' => $t->field_prompt,
+                    'lang_enum' => $langEnum,
+                    'data_string' => $fieldValue,
+                    'visibility' => $t->visibility,
+                ]);
+            }
+        }
     }
 
     public function import(int $rootServerId, Collection $externalObjects): MeetingImportResult

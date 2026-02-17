@@ -130,7 +130,8 @@ describe('MeetingEditForm Component', () => {
     expect(screen.getByLabelText(translations.getString('adminNotes'))).toHaveValue(selectedMeeting.adminNotes);
   });
 
-  test('test Ensure tabs are present for existing meetings', async () => {
+  test('test Ensure tabs are present for existing meetings (multiLingual disabled)', async () => {
+    settings.multiLingualEnabled = false;
     render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
 
     const tabs = [translations.getString('tabsBasic'), translations.getString('tabsLocation'), translations.getString('tabsOther'), translations.getString('tabsChanges')];
@@ -138,13 +139,47 @@ describe('MeetingEditForm Component', () => {
       tabs.forEach((tab) => {
         expect(screen.getByText(tab)).toBeInTheDocument();
       });
+      expect(screen.queryByText(translations.getString('tabsTranslations'))).not.toBeInTheDocument();
     });
   });
 
-  test('test Ensure tabs are present for new meetings', async () => {
+  test('test Ensure tabs are present for existing meetings (multiLingual enabled)', async () => {
+    settings.multiLingualEnabled = true;
+    render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    const tabs = [
+      translations.getString('tabsBasic'),
+      translations.getString('tabsLocation'),
+      translations.getString('tabsOther'),
+      translations.getString('tabsTranslations'),
+      translations.getString('tabsChanges')
+    ];
+    await waitFor(() => {
+      tabs.forEach((tab) => {
+        expect(screen.getByText(tab)).toBeInTheDocument();
+      });
+    });
+  });
+
+  test('test Ensure tabs are present for new meetings (multiLingual disabled)', async () => {
+    settings.multiLingualEnabled = false;
     render(MeetingEditForm, { props: { selectedMeeting: null, serviceBodies, formats, onSaved, onClosed, onDeleted } });
 
     const tabs = [translations.getString('tabsBasic'), translations.getString('tabsLocation'), translations.getString('tabsOther')];
+    await waitFor(() => {
+      tabs.forEach((tab) => {
+        expect(screen.getByText(tab)).toBeInTheDocument();
+      });
+      expect(screen.queryByText(translations.getString('tabsTranslations'))).not.toBeInTheDocument();
+      expect(screen.queryByText(translations.getString('tabsChanges'))).not.toBeInTheDocument();
+    });
+  });
+
+  test('test Ensure tabs are present for new meetings (multiLingual enabled)', async () => {
+    settings.multiLingualEnabled = true;
+    render(MeetingEditForm, { props: { selectedMeeting: null, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    const tabs = [translations.getString('tabsBasic'), translations.getString('tabsLocation'), translations.getString('tabsOther'), translations.getString('tabsTranslations')];
     await waitFor(() => {
       tabs.forEach((tab) => {
         expect(screen.getByText(tab)).toBeInTheDocument();

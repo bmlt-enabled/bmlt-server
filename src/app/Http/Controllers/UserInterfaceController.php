@@ -44,6 +44,7 @@ class UserInterfaceController extends Controller
             'regionBias' => bmlt_config('regionBias'),
             'version' => config('app.version'),
             'zipAutoGeocodingEnabled' => bmlt_config('zipAutoGeocodingEnabled'),
+            'multiLingualEnabled' => bmlt_config('multiLingualEnabled'),
         ]);
     }
 

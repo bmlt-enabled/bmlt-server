@@ -3,7 +3,8 @@
   import { validator } from '@felte/validator-yup';
   import { createForm } from 'felte';
   import { Button, Checkbox, Hr, Label, Input, Helper, Select, MultiSelect, Badge, Spinner, Textarea, Tooltip } from 'flowbite-svelte';
-  import { LockOutline } from 'flowbite-svelte-icons';
+  import { LockOutline, GlobeOutline } from 'flowbite-svelte-icons';
+  import BasicAccordion from './BasicAccordion.svelte';
   import * as yup from 'yup';
   import L from 'leaflet';
   import { writable } from 'svelte/store';
@@ -43,10 +44,17 @@
 
   const daysOfWeek: string[] = [$translations.day0, $translations.day1, $translations.day2, $translations.day3, $translations.day4, $translations.day5, $translations.day6];
 
-  const tabs = selectedMeeting
-    ? [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther, $translations.tabsChanges]
-    : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
-  const CHANGES_TAB_INDEX = 3;
+  const multiLingualEnabled = settings.multiLingualEnabled;
+  const baseTabs = [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
+  const tabs = multiLingualEnabled
+    ? selectedMeeting
+      ? [...baseTabs, $translations.tabsTranslations, $translations.tabsChanges]
+      : [...baseTabs, $translations.tabsTranslations]
+    : selectedMeeting
+      ? [...baseTabs, $translations.tabsChanges]
+      : [...baseTabs];
+  const TRANSLATIONS_TAB_INDEX = multiLingualEnabled ? 3 : -1;
+  const CHANGES_TAB_INDEX = multiLingualEnabled ? 4 : 3;
   const seenNames = new SvelteSet<string>();
   const ignoredFormats = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
@@ -178,6 +186,70 @@
   let changesLoading = $state(false);
   let saveAsCopy = $state(false);
 
+  // Translation state
+  const translatableFields = [
+    { key: 'location_text', label: $translations.locationTextTitle },
+    { key: 'location_info', label: $translations.extraInfoTitle },
+    { key: 'location_street', label: $translations.streetTitle },
+    { key: 'location_neighborhood', label: $translations.neighborhoodTitle },
+    { key: 'location_city_subsection', label: $translations.boroughTitle },
+    { key: 'location_municipality', label: $translations.cityTownTitle },
+    { key: 'location_sub_province', label: $translations.countySubProvinceTitle },
+    { key: 'location_province', label: $translations.stateTitle },
+    { key: 'location_nation', label: $translations.nationTitle }
+  ];
+
+  const currentLanguage = translations.getLanguage();
+  const translationLanguages = Object.entries(settings.languageMapping)
+    .filter(([code]) => code !== currentLanguage)
+    .sort(([, a], [, b]) => a.localeCompare(b));
+
+  // Initialize locationTranslations from the meeting's existing translations
+  let locationTranslations: Record<string, Record<string, string>> = $state(
+    Object.fromEntries(
+      translationLanguages.map(([code]) => [code, Object.fromEntries(translatableFields.map(({ key }) => [key, (selectedMeeting as any)?.locationTranslations?.[code]?.[key] ?? '']))])
+    )
+  );
+
+  let isTranslating = $state(false);
+  let translateError: string | null = $state(null);
+
+  async function autoTranslate() {
+    if (!settings.googleApiKey) {
+      translateError = $translations.noGoogleApiKeyForTranslation;
+      return;
+    }
+
+    isTranslating = true;
+    translateError = null;
+
+    try {
+      const sourceTexts: Record<string, string> = {};
+      for (const { key } of translatableFields) {
+        const camelKey = key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+        sourceTexts[key] = ($data as any)[camelKey] ?? '';
+      }
+
+      const targetLangs = translationLanguages.map(([code]) => code);
+      const meetingId = selectedMeeting?.id ?? 0;
+
+      const result = await RootServerApi.translateMeetingLocation(meetingId, targetLangs, currentLanguage, sourceTexts);
+
+      for (const [lang, fields] of Object.entries(result)) {
+        if (locationTranslations[lang]) {
+          for (const [field, value] of Object.entries(fields)) {
+            locationTranslations[lang][field] = value;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Auto-translate error:', error);
+      translateError = $translations.autoTranslateError;
+    } finally {
+      isTranslating = false;
+    }
+  }
+
   function shouldGeocode(initialValues: MeetingPartialUpdate, values: MeetingPartialUpdate, isNewMeeting: boolean) {
     if (isNewMeeting && values.venueType != VENUE_TYPE_VIRTUAL) {
       return true;
@@ -262,17 +334,27 @@
         }
       }
 
+      // Filter out empty translation entries
+      const filteredTranslations: Record<string, Record<string, string>> = {};
+      for (const [lang, fields] of Object.entries(locationTranslations)) {
+        const nonEmpty = Object.fromEntries(Object.entries(fields).filter(([, v]) => v && v.trim() !== ''));
+        if (Object.keys(nonEmpty).length > 0) {
+          filteredTranslations[lang] = nonEmpty;
+        }
+      }
+      const valuesWithTranslations = { ...values, locationTranslations: filteredTranslations };
+
       if (selectedMeeting && saveAsCopy) {
         const copyData = {
-          ...values,
+          ...valuesWithTranslations,
           worldId: ''
         };
         savedMeeting = await RootServerApi.createMeeting(copyData);
       } else if (selectedMeeting) {
-        await RootServerApi.updateMeeting(selectedMeeting.id, values);
+        await RootServerApi.updateMeeting(selectedMeeting.id, valuesWithTranslations);
         savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
       } else {
-        savedMeeting = await RootServerApi.createMeeting(values);
+        savedMeeting = await RootServerApi.createMeeting(valuesWithTranslations);
       }
     },
     onError: async (error) => {
@@ -1337,6 +1419,40 @@
   </div>
 {/snippet}
 
+{#snippet translationsTabContent()}
+  <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
+    {$translations.translationsTabDescription}
+  </p>
+  <div class="mb-4">
+    <Button color="light" size="sm" onclick={autoTranslate} disabled={isTranslating}>
+      <GlobeOutline class="mr-2 h-4 w-4" />
+      {#if isTranslating}
+        <Spinner size="4" class="mr-2" />
+        {$translations.translating}
+      {:else}
+        {$translations.autoTranslateButton}
+      {/if}
+    </Button>
+  </div>
+  {#if translateError}
+    <Helper class="mt-2 mb-4" color="red">
+      {translateError}
+    </Helper>
+  {/if}
+  {#each translationLanguages as [langCode, langName] (langCode)}
+    <BasicAccordion header={langName} open={false} label={'Toggle ' + langName + ' translations'}>
+      <div class="grid gap-3">
+        {#each translatableFields as { key, label } (key)}
+          <div>
+            <Label for="trans_{langCode}_{key}" class="mb-1 text-sm">{label}</Label>
+            <Input type="text" id="trans_{langCode}_{key}" bind:value={locationTranslations[langCode][key]} />
+          </div>
+        {/each}
+      </div>
+    </BasicAccordion>
+  {/each}
+{/snippet}
+
 {#snippet changesTabContent()}
   {#if changesLoading}
     <div class="text-center"><Spinner /></div>
@@ -1372,7 +1488,9 @@
   <BasicTabs
     {tabs}
     {errorTabs}
-    tabsSnippets={[basicTabContent, locationTabContent, otherTabContent, changesTabContent]}
+    tabsSnippets={multiLingualEnabled
+      ? [basicTabContent, locationTabContent, otherTabContent, translationsTabContent, changesTabContent]
+      : [basicTabContent, locationTabContent, otherTabContent, changesTabContent]}
     onTabChange={(index) => {
       if (selectedMeeting && index === CHANGES_TAB_INDEX && changesLoadedForMeetingId !== selectedMeeting.id) {
         getChanges(selectedMeeting.id);

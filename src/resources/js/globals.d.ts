@@ -23,6 +23,7 @@ declare global {
     regionBias: string;
     version: string;
     zipAutoGeocodingEnabled: false;
+    multiLingualEnabled: boolean;
   };
 }
 

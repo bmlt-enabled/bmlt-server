@@ -48,7 +48,10 @@ class MeetingResource extends JsonResource
             self::$isRequestInitialized = true;
         }
 
+        $primaryLangEnum = $this->lang_enum ?: app()->getLocale();
+
         $meetingData = $this->data
+            ->filter(fn ($data) => $data->lang_enum === $primaryLangEnum || !in_array($data->key, MeetingRepository::TRANSLATABLE_LOCATION_FIELDS))
             ->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])
             ->toBase()
             ->merge(
@@ -56,6 +59,13 @@ class MeetingResource extends JsonResource
                     ->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_blob])
                     ->toBase()
             );
+
+        // Build locationTranslations from non-primary-language rows
+        $locationTranslations = $this->data
+            ->filter(fn ($data) => $data->lang_enum !== $primaryLangEnum && in_array($data->key, MeetingRepository::TRANSLATABLE_LOCATION_FIELDS))
+            ->groupBy('lang_enum')
+            ->map(fn ($rows) => $rows->mapWithKeys(fn ($row) => [$row->key => $row->data_string])->toArray())
+            ->toArray();
 
         $formatIds = empty($this->formats) ? collect([]) : collect(explode(',', $this->formats))
             ->map(fn ($id) => intval($id))
@@ -88,7 +98,8 @@ class MeetingResource extends JsonResource
                 'customFields' => self::$dataTemplates
                     ->reject(fn ($t, $_) => !self::$customFields->contains($t->key))
                     ->mapWithKeys(fn ($t, $_) => [$t->key => $meetingData->get($t->key) ?: null])
-                    ->toArray()
+                    ->toArray(),
+                'locationTranslations' => (object) $locationTranslations,
             ],
         );
     }

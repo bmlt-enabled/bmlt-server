@@ -29,7 +29,8 @@ global.settings = {
   meetingCountiesAndSubProvinces: [],
   regionBias: 'us',
   version: '1.0.0',
-  zipAutoGeocodingEnabled: false
+  zipAutoGeocodingEnabled: false,
+  multiLingualEnabled: false
 };
 
 global.window.matchMedia = vi.fn().mockImplementation((query) => ({

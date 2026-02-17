@@ -47,6 +47,11 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="customFields", type="object", example={"key1": "value1", "key2": "value2"},
  *         @OA\AdditionalProperties(type="string")
  *     ),
+ *     @OA\Property(property="locationTranslations", type="object", description="Translations of location fields keyed by language code.", example={"es": {"location_text": "Centro Comunitario", "location_street": "Calle Principal 123"}, "fr": {"location_text": "Centre Communautaire"}},
+ *         @OA\AdditionalProperties(type="object",
+ *             @OA\AdditionalProperties(type="string")
+ *         )
+ *     ),
  * ),
  * @OA\Schema(schema="Meeting", required={"id", "serviceBodyId", "formatIds", "venueType", "temporarilyVirtual", "day", "startTime", "duration", "timeZone", "latitude", "longitude", "published", "email", "worldId", "name"},
  *     @OA\Property(property="id", type="integer", example="0"),
@@ -218,6 +223,48 @@ class MeetingController extends Controller
      * )
      */
     public function destroy()
+    {
+    }
+
+    /**
+     * @OA\Post(path="/api/v1/meetings/{meetingId}/translate", summary="Translates meeting location fields", description="Uses Google Translate to translate a meeting's location fields into the specified target languages. Returns translated values without saving them.", operationId="translateMeeting", tags={"rootServer"}, security={{"bmltToken":{}}},
+     *     @OA\Parameter(description="ID of meeting", in="path", name="meetingId", required=true, example="1",
+     *         @OA\Schema(type="integer", format="int64")
+     *     ),
+     *     @OA\RequestBody(required=true, description="Translation request parameters",
+     *         @OA\JsonContent(
+     *             required={"targetLanguages", "sourceLanguage"},
+     *             @OA\Property(property="targetLanguages", type="array", description="Language codes to translate into", example={"es", "fr"},
+     *                 @OA\Items(type="string")
+     *             ),
+     *             @OA\Property(property="sourceLanguage", type="string", description="Source language code", example="en"),
+     *             @OA\Property(property="sourceTexts", type="object", description="Optional source texts to translate instead of using the meeting's saved values.", example={"location_text": "Community Center", "location_street": "123 Main St"},
+     *                 @OA\AdditionalProperties(type="string")
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(response=200, description="Translated location fields keyed by language code.",
+     *         @OA\JsonContent(type="object", example={"es": {"location_text": "Centro Comunitario", "location_street": "Calle Principal 123"}, "fr": {"location_text": "Centre Communautaire"}},
+     *             @OA\AdditionalProperties(type="object",
+     *                 @OA\AdditionalProperties(type="string")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
+     *     ),
+     *     @OA\Response(response=403, description="Returns when user is unauthorized to perform action.",
+     *         @OA\JsonContent(ref="#/components/schemas/AuthorizationError")
+     *     ),
+     *     @OA\Response(response=404, description="Returns when no meeting exists.",
+     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
+     *     ),
+     *     @OA\Response(response=422, description="Validation error (e.g., missing Google API key).",
+     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     *     ),
+     * )
+     */
+    public function translate()
     {
     }
 }

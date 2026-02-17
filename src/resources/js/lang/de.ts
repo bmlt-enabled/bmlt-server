@@ -21,6 +21,8 @@ export const deTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Änderung anwenden',
   automaticallyCalculatedOnSave: 'Wird automatisch beim Speichern berechnet',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'Stadtviertel', // TODO: check this - English is Borough/City Subsection
   busLinesTitle: 'Buslinien',
   by: 'von',
@@ -82,6 +84,7 @@ export const deTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Fehler',
   errorDownloading: 'Error Downloading',
@@ -157,6 +160,7 @@ export const deTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minuten',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Name',
   nationTitle: 'Land',
@@ -203,6 +207,7 @@ export const deTranslations = {
   neighborhoodTitle: 'Nachbarschaft',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Es ist mindestens eine Übersetzung erforderlich.',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'Keine Log-Einträge gefunden',
   nominatimGeocodingFailed: 'Nominatim-geocoding Fehler: keine Ergebnisse gefunden',
   none: '- Keine -',
@@ -271,6 +276,7 @@ export const deTranslations = {
   tabsChanges: 'Änderungen',
   tabsLocation: 'Standort',
   tabsOther: 'Andere',
+  tabsTranslations: 'Translations',
   technicalDetails: 'Technische Details',
   time: 'Zeit',
   timeAfternoon: 'Nachmittag',
@@ -282,6 +288,8 @@ export const deTranslations = {
   timeZoneTitle: 'Zeitzone',
   totalRows: 'Total rows (excluding header)', // TODO: Translate
   trainLinesTitle: 'Zuglinien',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'Unveröffentlicht',
   unselectAllDays: 'Auswahl für „Alle Tage“ aufheben',
   unselectAllServiceBodies: 'Unselect All Service Bodies', // TODO: Translate

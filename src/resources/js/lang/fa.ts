@@ -76,6 +76,8 @@ export const faTranslations = {
   anteMeridiem: 'ق.ظ',
   applyChangesTitle: 'ذخیره تغییرات',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'بخش منطقه/شهر',
   busLinesTitle: 'خطوط اتوبوس',
   by: 'بوسیله',
@@ -137,6 +139,7 @@ export const faTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'خطا',
   errorDownloading: 'Error Downloading',
@@ -211,6 +214,7 @@ export const faTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'دقیقه',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'نام',
   nationTitle: 'ملیت',
@@ -257,6 +261,7 @@ export const faTranslations = {
   neighborhoodTitle: 'محله',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'حداقل یک ترجمه لازم است.',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'هیچ گزارشی یافت نشد',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: '- هیچ کدام -',
@@ -325,6 +330,7 @@ export const faTranslations = {
   tabsChanges: 'تغییرات',
   tabsLocation: 'مکان',
   tabsOther: 'دیگر',
+  tabsTranslations: 'Translations',
   technicalDetails: 'جزئیات فنی',
   time: 'زمان',
   timeAfternoon: 'بعد از ظهر',
@@ -336,6 +342,8 @@ export const faTranslations = {
   timeZoneTitle: 'منطقه زمانی',
   totalRows: 'مجموع ردیف‌ها (به استثنای سربرگ)',
   trainLinesTitle: 'خطوط قطار',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'منتشر نشده',
   unselectAllDays: 'لغو انتخاب همه روزها',
   unselectAllServiceBodies: 'همه بدنه های خدماتی را انتخاب نکنید',

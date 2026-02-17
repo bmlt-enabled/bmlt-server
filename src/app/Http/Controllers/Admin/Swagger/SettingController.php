@@ -24,6 +24,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="defaultClosedStatus", type="boolean"),
  *     @OA\Property(property="enableLanguageSelector", type="boolean"),
  *     @OA\Property(property="includeServiceBodyEmailInSemantic", type="boolean"),
+ *     @OA\Property(property="multiLingualEnabled", type="boolean"),
  *     @OA\Property(property="bmltTitle", type="string"),
  *     @OA\Property(property="bmltNotice", type="string"),
  *     @OA\Property(property="formatLangNames", type="object")
@@ -48,6 +49,7 @@ namespace App\Http\Controllers\Admin\Swagger;
  *     @OA\Property(property="defaultClosedStatus", type="boolean", example=true),
  *     @OA\Property(property="enableLanguageSelector", type="boolean", example=false),
  *     @OA\Property(property="includeServiceBodyEmailInSemantic", type="boolean", example=false),
+ *     @OA\Property(property="multiLingualEnabled", type="boolean", example=false),
  *     @OA\Property(property="bmltTitle", type="string", example=""),
  *     @OA\Property(property="bmltNotice", type="string", example=""),
  *     @OA\Property(property="formatLangNames", type="object", example={})

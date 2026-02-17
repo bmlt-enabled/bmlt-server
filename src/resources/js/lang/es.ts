@@ -76,6 +76,8 @@ export const esTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Aplicar cambios',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'Barrio/subdivisión de la ciudad',
   busLinesTitle: 'Líneas de autobuses',
   by: 'por',
@@ -137,6 +139,7 @@ export const esTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Error',
   errorDownloading: 'Error al descargar',
@@ -211,6 +214,7 @@ export const esTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nombre',
   nationTitle: 'Nación',
@@ -257,6 +261,7 @@ export const esTranslations = {
   neighborhoodTitle: 'Barrio/vecindario',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Se requiere por lo menos una traducción',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'Los registros no se encuentran',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: 'Ninguno',
@@ -325,6 +330,7 @@ export const esTranslations = {
   tabsChanges: 'Cambios',
   tabsLocation: 'Ubicación',
   tabsOther: 'Otro',
+  tabsTranslations: 'Translations',
   technicalDetails: 'Detalles técnicos',
   time: 'Hora',
   timeAfternoon: 'Por la tarde',
@@ -336,6 +342,8 @@ export const esTranslations = {
   timeZoneTitle: 'Zona horaria',
   totalRows: 'Total de filas (excluyendo el encabezado)',
   trainLinesTitle: 'Líneas de tren/metro',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'No publicado',
   unselectAllDays: 'Deseleccionar todos los días',
   unselectAllServiceBodies: 'Deseleccionar todos los organismos de servicio',

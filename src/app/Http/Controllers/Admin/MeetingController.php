@@ -140,8 +140,9 @@ class MeetingController extends ResourceController
         );
 
         $skipVenueTypeLocationValidation = $request->query('skipVenueTypeLocationValidation') == "true";
+        $hasLocationTranslations = $request->has('locationTranslations');
         $validated = $this->validateInputs($request, $skipVenueTypeLocationValidation);
-        $values = $this->buildValuesArray($validated);
+        $values = $this->buildValuesArray($validated, $hasLocationTranslations);
         $this->meetingRepository->update($meeting->id_bigint, $values);
         return response()->noContent();
     }
@@ -189,6 +190,9 @@ class MeetingController extends ResourceController
                 'worldId' => 'nullable|string|max:30',
                 'name' => 'required|string|max:128',
                 'timeZone' => ['nullable', 'string', 'max:40', new IANATimeZone()],
+                'locationTranslations' => 'sometimes|array',
+                'locationTranslations.*' => 'array',
+                'locationTranslations.*.*' => 'nullable|string|max:512',
             ], $this->getDataFieldValidators($skipVenueTypeLocationValidation))
         ));
     }
@@ -255,7 +259,7 @@ class MeetingController extends ResourceController
         return collect($formatIds)->sort()->unique()->join(',');
     }
 
-    private function buildValuesArray(Collection $validated): array
+    private function buildValuesArray(Collection $validated, bool $includeLocationTranslations = true): array
     {
         $values = [
             'service_body_bigint' => $validated['serviceBodyId'],
@@ -272,6 +276,10 @@ class MeetingController extends ResourceController
             'worldid_mixed' => $validated['worldId'] ?? null,
             'meeting_name' => $validated['name'],
         ];
+
+        if ($includeLocationTranslations && $validated->has('locationTranslations')) {
+            $values['_locationTranslations'] = $validated['locationTranslations'];
+        }
 
         $customFields = $this->getCustomFields();
 

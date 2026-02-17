@@ -76,6 +76,8 @@ export const daTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Apply Changes',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'Borough/City Subsection',
   busLinesTitle: 'Bus Lines',
   by: 'by',
@@ -137,6 +139,7 @@ export const daTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Error',
   errorDownloading: 'Error Downloading',
@@ -211,6 +214,7 @@ export const daTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Name',
   nationTitle: 'Nation',
@@ -257,6 +261,7 @@ export const daTranslations = {
   neighborhoodTitle: 'Neighborhood',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'At least one translation is required.',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'No logs found',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: '- None -',
@@ -325,6 +330,7 @@ export const daTranslations = {
   tabsChanges: 'Changes',
   tabsLocation: 'Location',
   tabsOther: 'Other',
+  tabsTranslations: 'Translations',
   technicalDetails: 'Tekniske detaljer',
   time: 'Time',
   timeAfternoon: 'Afternoon',
@@ -336,6 +342,8 @@ export const daTranslations = {
   timeZoneTitle: 'Time Zone',
   totalRows: 'Total rows (excluding header)',
   trainLinesTitle: 'Train Lines',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'Unpublished',
   unselectAllDays: 'Unselect All Days',
   unselectAllServiceBodies: 'Unselect All Service Bodies',

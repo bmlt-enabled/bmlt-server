@@ -1087,6 +1087,145 @@
                 ]
             }
         },
+        "/api/v1/meetings/{meetingId}/translate": {
+            "post": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Translates meeting location fields",
+                "description": "Uses Google Translate to translate a meeting's location fields into the specified target languages. Returns translated values without saving them.",
+                "operationId": "translateMeeting",
+                "parameters": [
+                    {
+                        "name": "meetingId",
+                        "in": "path",
+                        "description": "ID of meeting",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Translation request parameters",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "targetLanguages",
+                                    "sourceLanguage"
+                                ],
+                                "properties": {
+                                    "targetLanguages": {
+                                        "description": "Language codes to translate into",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "example": [
+                                            "es",
+                                            "fr"
+                                        ]
+                                    },
+                                    "sourceLanguage": {
+                                        "description": "Source language code",
+                                        "type": "string",
+                                        "example": "en"
+                                    },
+                                    "sourceTexts": {
+                                        "description": "Optional source texts to translate instead of using the meeting's saved values.",
+                                        "type": "object",
+                                        "example": {
+                                            "location_text": "Community Center",
+                                            "location_street": "123 Main St"
+                                        },
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Translated location fields keyed by language code.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "example": {
+                                    "es": {
+                                        "location_text": "Centro Comunitario",
+                                        "location_street": "Calle Principal 123"
+                                    },
+                                    "fr": {
+                                        "location_text": "Centre Communautaire"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is unauthorized to perform action.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Returns when no meeting exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error (e.g., missing Google API key).",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/rootservers": {
             "get": {
                 "tags": [
@@ -2623,6 +2762,25 @@
                         "additionalProperties": {
                             "type": "string"
                         }
+                    },
+                    "locationTranslations": {
+                        "description": "Translations of location fields keyed by language code.",
+                        "type": "object",
+                        "example": {
+                            "es": {
+                                "location_text": "Centro Comunitario",
+                                "location_street": "Calle Principal 123"
+                            },
+                            "fr": {
+                                "location_text": "Centre Communautaire"
+                            }
+                        },
+                        "additionalProperties": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 },
                 "type": "object"
@@ -3026,6 +3184,9 @@
                     "includeServiceBodyEmailInSemantic": {
                         "type": "boolean"
                     },
+                    "multiLingualEnabled": {
+                        "type": "boolean"
+                    },
                     "bmltTitle": {
                         "type": "string"
                     },
@@ -3122,6 +3283,10 @@
                         "example": false
                     },
                     "includeServiceBodyEmailInSemantic": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "multiLingualEnabled": {
                         "type": "boolean",
                         "example": false
                     },

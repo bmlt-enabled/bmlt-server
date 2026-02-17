@@ -76,6 +76,8 @@ export const frTranslations = {
   anteMeridiem: 'Matin',
   applyChangesTitle: 'Appliquer les modifications',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  autoTranslateButton: 'Auto-Translate',
+  autoTranslateError: 'Auto-translate failed. Please try again or enter translations manually.',
   boroughTitle: 'Arrondissement',
   busLinesTitle: 'Lignes de bus',
   by: 'par',
@@ -137,6 +139,7 @@ export const frTranslations = {
   enableAutoGeocoding: 'Enable Auto Geocoding', // TODO: Translate
   enableCountyAutoGeocoding: 'Enable County Auto Geocoding', // TODO: Translate
   enableLanguageSelector: 'Enable Language Selector', // TODO: Translate
+  enableMultiLingual: 'Enable Multi-Lingual Meeting Location Translations', // TODO: translate
   enableZipAutoGeocoding: 'Enable ZIP Auto Geocoding', // TODO: Translate
   error: 'Erreur',
   errorDownloading: 'Erreur lors du téléchargement',
@@ -211,6 +214,7 @@ export const frTranslations = {
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
   more: 'more', // TODO: translate
+  multiLingualHelperText: 'The Cloud Translation API must be enabled on your Google API key for auto-translate to work.', // TODO: translate
   myBmltServer: 'My BMLT Server', // TODO: Translate
   nameTitle: 'Nom',
   nationTitle: 'Nation',
@@ -257,6 +261,7 @@ export const frTranslations = {
   neighborhoodTitle: 'Quartier',
   noChangesFound: 'No changes found',
   noFormatTranslationsError: 'Au moins une traduction est requise.',
+  noGoogleApiKeyForTranslation: 'Google API key is required for auto-translation. Please configure it in settings.',
   noLogsFound: 'Aucun journal trouvé',
   nominatimGeocodingFailed: 'Nominatim geocoding failed: no results found',
   none: '- Aucun -',
@@ -325,6 +330,7 @@ export const frTranslations = {
   tabsChanges: 'Changements',
   tabsLocation: 'Emplacement',
   tabsOther: 'Autre',
+  tabsTranslations: 'Translations',
   technicalDetails: 'Détails techniques',
   time: 'Heure',
   timeAfternoon: 'Après-midi',
@@ -336,6 +342,8 @@ export const frTranslations = {
   timeZoneTitle: 'Fuseau horaire',
   totalRows: 'Nombre total de lignes (hors en-tête)',
   trainLinesTitle: 'Lignes de train',
+  translating: 'Translating...',
+  translationsTabDescription: 'Translate meeting location fields into other languages so members can find meetings in their preferred language.',
   unpublished: 'Non publié',
   unselectAllDays: 'Désélectionner tous les jours',
   unselectAllServiceBodies: 'Désélectionner toutes les structures de service',
