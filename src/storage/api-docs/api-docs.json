@@ -2242,11 +2242,11 @@
                     },
                     "arbitrary_int": {
                         "type": "integer",
-                        "example": "123"
+                        "example": 123
                     },
                     "force_server_error": {
                         "type": "boolean",
-                        "example": "true"
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -2392,7 +2392,7 @@
                         "properties": {
                             "id": {
                                 "type": "integer",
-                                "example": "0"
+                                "example": 0
                             }
                         },
                         "type": "object"
@@ -2464,7 +2464,7 @@
                 "properties": {
                     "serviceBodyId": {
                         "type": "integer",
-                        "example": "0"
+                        "example": 0
                     },
                     "formatIds": {
                         "type": "array",
@@ -2474,15 +2474,15 @@
                     },
                     "venueType": {
                         "type": "integer",
-                        "example": "1"
+                        "example": 1
                     },
                     "temporarilyVirtual": {
                         "type": "boolean",
-                        "example": "false"
+                        "example": false
                     },
                     "day": {
                         "type": "integer",
-                        "example": "0"
+                        "example": 0
                     },
                     "startTime": {
                         "type": "string",
@@ -2499,16 +2499,16 @@
                     "latitude": {
                         "type": "number",
                         "format": "float",
-                        "example": "35.698741"
+                        "example": 35.698741
                     },
                     "longitude": {
                         "type": "number",
                         "format": "float",
-                        "example": "-81.26273"
+                        "example": -81.26273
                     },
                     "published": {
                         "type": "boolean",
-                        "example": "true"
+                        "example": true
                     },
                     "email": {
                         "type": "string",
@@ -2654,7 +2654,7 @@
                         "properties": {
                             "id": {
                                 "type": "integer",
-                                "example": "0"
+                                "example": 0
                             }
                         },
                         "type": "object"
@@ -2716,7 +2716,7 @@
                 "properties": {
                     "sourceId": {
                         "type": "integer",
-                        "example": "0"
+                        "example": 0
                     },
                     "name": {
                         "type": "string",
@@ -2742,19 +2742,19 @@
                                 "properties": {
                                     "numZones": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numRegions": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numAreas": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numGroups": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     }
                                 },
                                 "type": "object"
@@ -2770,23 +2770,23 @@
                                 "properties": {
                                     "numTotal": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numInPerson": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numVirtual": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numHybrid": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     },
                                     "numUnknown": {
                                         "type": "integer",
-                                        "example": "0"
+                                        "example": 0
                                     }
                                 },
                                 "type": "object"
@@ -2823,7 +2823,7 @@
                         "properties": {
                             "id": {
                                 "type": "integer",
-                                "example": "0"
+                                "example": 0
                             }
                         },
                         "type": "object"
@@ -2840,8 +2840,8 @@
                 "properties": {
                     "parentId": {
                         "type": "integer",
-                        "example": "0",
-                        "nullable": "true"
+                        "example": 0,
+                        "nullable": true
                     },
                     "name": {
                         "type": "string",
@@ -2857,13 +2857,13 @@
                     },
                     "adminUserId": {
                         "type": "integer",
-                        "example": "0"
+                        "example": 0
                     },
                     "assignedUserIds": {
                         "type": "array",
                         "items": {
                             "type": "integer",
-                            "example": "0"
+                            "example": 0
                         }
                     },
                     "url": {
@@ -2908,7 +2908,7 @@
                         "properties": {
                             "id": {
                                 "type": "integer",
-                                "example": "0"
+                                "example": 0
                             }
                         },
                         "type": "object"
@@ -3162,7 +3162,7 @@
                     },
                     "expires_at": {
                         "type": "integer",
-                        "example": "1667342171"
+                        "example": 1667342171
                     },
                     "token_type": {
                         "type": "string",
@@ -3170,7 +3170,7 @@
                     },
                     "user_id": {
                         "type": "integer",
-                        "example": "1"
+                        "example": 1
                     }
                 },
                 "type": "object"
@@ -3218,7 +3218,7 @@
                     },
                     "ownerId": {
                         "type": "integer",
-                        "example": "0"
+                        "example": 0
                     }
                 },
                 "type": "object"
@@ -3242,7 +3242,7 @@
                         "properties": {
                             "id": {
                                 "type": "integer",
-                                "example": "0"
+                                "example": 0
                             },
                             "lastLoginAt": {
                                 "type": "string",

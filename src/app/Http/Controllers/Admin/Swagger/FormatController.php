@@ -2,176 +2,188 @@
 
 namespace App\Http\Controllers\Admin\Swagger;
 
-/**
- * @OA\Schema(schema="FormatBase",
- *     @OA\Property(property="worldId", type="string", example="string"),
- *     @OA\Property(property="type", type="string", example="string"),
- *     @OA\Property(property="translations", type="array",
- *         @OA\Items(ref="#/components/schemas/FormatTranslation")
- *     ),
- * ),
- * @OA\Schema(schema="FormatTranslation", required={"key", "name", "description", "language"},
- *     @OA\Property(property="key", type="string"),
- *     @OA\Property(property="name", type="string"),
- *     @OA\Property(property="description", type="string"),
- *     @OA\Property(property="language", type="string")
- * ),
- * @OA\Schema(schema="Format", required={"id", "worldId", "type", "translations"},
- *     @OA\Property(property="id", type="integer", example="0"),
- *     allOf={ @OA\Schema(ref="#/components/schemas/FormatBase") }
- * ),
- * @OA\Schema(schema="FormatCreate", required={"translations"},
- *     allOf={ @OA\Schema(ref="#/components/schemas/FormatBase") }
- * ),
- * @OA\Schema(schema="FormatUpdate", required={"translations"},
- *     allOf={ @OA\Schema(ref="#/components/schemas/FormatBase") }
- * ),
- * @OA\Schema(schema="FormatPartialUpdate",
- *     allOf={ @OA\Schema(ref="#/components/schemas/FormatBase") }
- * ),
- * @OA\Schema(schema="FormatCollection", type="array",
- *     @OA\Items(ref="#/components/schemas/Format")
- * ),
- */
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: 'FormatBase',
+    properties: [
+        new OA\Property(property: 'worldId', type: 'string', example: 'string'),
+        new OA\Property(property: 'type', type: 'string', example: 'string'),
+        new OA\Property(property: 'translations', type: 'array', items: new OA\Items(ref: '#/components/schemas/FormatTranslation')),
+    ]
+)]
+#[OA\Schema(
+    schema: 'FormatTranslation',
+    required: ['key', 'name', 'description', 'language'],
+    properties: [
+        new OA\Property(property: 'key', type: 'string'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'language', type: 'string'),
+    ]
+)]
+#[OA\Schema(
+    schema: 'Format',
+    required: ['id', 'worldId', 'type', 'translations'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 0),
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')]
+)]
+#[OA\Schema(
+    schema: 'FormatCreate',
+    required: ['translations'],
+    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')]
+)]
+#[OA\Schema(
+    schema: 'FormatUpdate',
+    required: ['translations'],
+    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')]
+)]
+#[OA\Schema(
+    schema: 'FormatPartialUpdate',
+    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')]
+)]
+#[OA\Schema(
+    schema: 'FormatCollection',
+    type: 'array',
+    items: new OA\Items(ref: '#/components/schemas/Format')
+)]
 class FormatController extends Controller
 {
-    /**
-     * @OA\Get(path="/api/v1/formats", summary="Retrieves formats", description="Retrieve formats", operationId="getFormats", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\Response(response=200, description="Returns when user is authenticated.",
-     *         @OA\JsonContent(ref="#/components/schemas/FormatCollection")
-     *     ),
-     *     @OA\Response(response=401, description="Returns when not authenticated",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/api/v1/formats',
+        operationId: 'getFormats',
+        description: 'Retrieve formats',
+        summary: 'Retrieves formats',
+        security: [['bmltToken' => []]],
+        tags: ['rootServer'],
+        responses: [
+            new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/FormatCollection')),
+            new OA\Response(response: 401, description: 'Returns when not authenticated', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+        ]
+    )]
     public function index()
     {
     }
 
-    /**
-     * @OA\Get(path="/api/v1/formats/{formatId}", summary="Retrieves a format", description="Retrieve a format", operationId="getFormat", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\Parameter(description="ID of format", in="path", name="formatId", required=true, example="1",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\Response(response=200, description="Returns when user is authenticated.",
-     *         @OA\JsonContent(ref="#/components/schemas/Format")
-     *     ),
-     *     @OA\Response(response=401, description="Returns when not authenticated.",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=404, description="Returns when no format exists.",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
-     *     )
-     * )
-     */
+    #[OA\Get(
+        path: '/api/v1/formats/{formatId}',
+        operationId: 'getFormat',
+        description: 'Retrieve a format',
+        summary: 'Retrieves a format',
+        security: [['bmltToken' => []]],
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/Format')),
+            new OA\Response(response: 401, description: 'Returns when not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 404, description: 'Returns when no format exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+        ]
+    )]
     public function show()
     {
     }
 
-    /**
-     * @OA\Post(path="/api/v1/formats", summary="Creates a format", description="Creates a format.", operationId="createFormat", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\RequestBody(required=true, description="Pass in format object",
-     *         @OA\JsonContent(ref="#/components/schemas/FormatCreate"),
-     *     ),
-     *     @OA\Response(response=201, description="Returns when POST is successful.",
-     *         @OA\JsonContent(ref="#/components/schemas/Format")
-     *     ),
-     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=403, description="Returns when user is unauthorized to perform action.",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=404, description="Returns when no format exists.",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
-     *     ),
-     *     @OA\Response(response=422, description="Validation error.",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     * )
-     */
+    #[OA\Post(
+        path: '/api/v1/formats',
+        operationId: 'createFormat',
+        description: 'Creates a format.',
+        summary: 'Creates a format',
+        security: [['bmltToken' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'Pass in format object',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/FormatCreate')
+        ),
+        tags: ['rootServer'],
+        responses: [
+            new OA\Response(response: 201, description: 'Returns when POST is successful.', content: new OA\JsonContent(ref: '#/components/schemas/Format')),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when user is unauthorized to perform action.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 404, description: 'Returns when no format exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
     public function store()
     {
     }
 
-    /**
-     * @OA\Put( path="/api/v1/formats/{formatId}", summary="Updates a format", description="Updates a format.", operationId="updateFormat", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\Parameter(description="ID of format", in="path", name="formatId", required=true, example="1",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\RequestBody(required=true, description="Pass in format object",
-     *         @OA\JsonContent(ref="#/components/schemas/FormatUpdate"),
-     *     ),
-     *     @OA\Response(response=204, description="Success."),
-     *     @OA\Response(response=401, description="Returns when user is not authenticated.",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=403, description="Returns when user is unauthorized to perform action.",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=404, description="Returns when no format exists.",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
-     *     ),
-     *     @OA\Response(response=422, description="Validation error.",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     * )
-     */
+    #[OA\Put(
+        path: '/api/v1/formats/{formatId}',
+        operationId: 'updateFormat',
+        description: 'Updates a format.',
+        summary: 'Updates a format',
+        security: [['bmltToken' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'Pass in format object',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/FormatUpdate')
+        ),
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Success.'),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when user is unauthorized to perform action.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 404, description: 'Returns when no format exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
     public function update()
     {
     }
 
-    /**
-     * @OA\Patch(path="/api/v1/formats/{formatId}", summary="Patches a format", description="Patches a single format by id.", operationId="patchFormat", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\Parameter(description="ID of format", in="path", name="formatId", required=true, example="1",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\RequestBody(required=true, description="Pass in fields you want to update.",
-     *         @OA\JsonContent(ref="#/components/schemas/FormatPartialUpdate"),
-     *     ),
-     *     @OA\Response(response=204, description="Success."),
-     *     @OA\Response(response=401,description="Returns when not authenticated",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=403, description="Returns when unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthorizationError")
-     *     ),
-     *     @OA\Response(response=404, description="Returns when no format exists.",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
-     *     ),
-     *     @OA\Response(response=422, description="Validation error.",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     * )
-     */
+    #[OA\Patch(
+        path: '/api/v1/formats/{formatId}',
+        operationId: 'patchFormat',
+        description: 'Patches a single format by id.',
+        summary: 'Patches a format',
+        security: [['bmltToken' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'Pass in fields you want to update.',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/FormatPartialUpdate')
+        ),
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Success.'),
+            new OA\Response(response: 401, description: 'Returns when not authenticated', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when unauthorized', content: new OA\JsonContent(ref: '#/components/schemas/AuthorizationError')),
+            new OA\Response(response: 404, description: 'Returns when no format exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
     public function partialUpdate()
     {
     }
 
-    /**
-     * @OA\Delete(path="/api/v1/formats/{formatId}", summary="Deletes a format", description="Deletes a format by id.", operationId="deleteFormat", tags={"rootServer"}, security={{"bmltToken":{}}},
-     *     @OA\Parameter(description="ID of format", in="path", name="formatId", required=true, example="1",
-     *         @OA\Schema(type="integer", format="int64")
-     *     ),
-     *     @OA\Response(response=204, description="Success."),
-     *     @OA\Response(response=401,description="Returns when not authenticated",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthenticationError")
-     *     ),
-     *     @OA\Response(response=403, description="Returns when unauthorized",
-     *         @OA\JsonContent(ref="#/components/schemas/AuthorizationError")
-     *     ),
-     *     @OA\Response(response=404, description="Returns when no format exists.",
-     *         @OA\JsonContent(ref="#/components/schemas/NotFoundError")
-     *     ),
-     *     @OA\Response(response=409, description="Returns when format has meetings assigned.",
-     *         @OA\JsonContent(ref="#/components/schemas/ConflictError")
-     *     ),
-     *     @OA\Response(response=422, description="Validation error.",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     * )
-     */
+    #[OA\Delete(
+        path: '/api/v1/formats/{formatId}',
+        operationId: 'deleteFormat',
+        description: 'Deletes a format by id.',
+        summary: 'Deletes a format',
+        security: [['bmltToken' => []]],
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Success.'),
+            new OA\Response(response: 401, description: 'Returns when not authenticated', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when unauthorized', content: new OA\JsonContent(ref: '#/components/schemas/AuthorizationError')),
+            new OA\Response(response: 404, description: 'Returns when no format exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+            new OA\Response(response: 409, description: 'Returns when format has meetings assigned.', content: new OA\JsonContent(ref: '#/components/schemas/ConflictError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
     public function destroy()
     {
     }
