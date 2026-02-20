@@ -6,33 +6,33 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: 'MeetingChangeResource',
-    type: 'object',
     properties: [
         new OA\Property(
             property: 'dateString',
-            type: 'string',
             description: 'Human-readable date and time.',
+            type: 'string',
             example: '3:35 PM, 10/14/2024'
         ),
         new OA\Property(
             property: 'userName',
-            type: 'string',
             description: 'Name of the user who made the change.',
+            type: 'string',
             example: 'Greater New York Regional Administrator'
         ),
         new OA\Property(
             property: 'serviceBodyName',
-            type: 'string',
             description: 'Name of the service body related to the meeting.',
+            type: 'string',
             example: 'Bronx Area Service'
         ),
         new OA\Property(
             property: 'details',
-            type: 'array',
             description: 'List of details about the changes.',
+            type: 'array',
             items: new OA\Items(type: 'string', example: 'email_contact was deleted.')
         ),
-    ]
+    ],
+    type: 'object'
 )]
 class MeetingChangeController extends Controller
 {
@@ -46,11 +46,11 @@ class MeetingChangeController extends Controller
         parameters: [
             new OA\Parameter(
                 name: 'meetingId',
-                in: 'path',
                 description: 'ID of the meeting',
+                in: 'path',
                 required: true,
-                example: '1',
-                schema: new OA\Schema(type: 'integer', format: 'int64')
+                schema: new OA\Schema(type: 'integer', format: 'int64'),
+                example: '1'
             ),
         ],
         responses: [

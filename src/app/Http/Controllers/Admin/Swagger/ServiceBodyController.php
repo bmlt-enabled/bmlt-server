@@ -22,10 +22,10 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'ServiceBody',
     required: ['id', 'parentId', 'name', 'description', 'type', 'adminUserId', 'assignedUserIds', 'url', 'helpline', 'email', 'worldId'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/ServiceBodyBase')],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 0),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/ServiceBodyBase')]
 )]
 #[OA\Schema(
     schema: 'ServiceBodyCreate',
@@ -72,7 +72,7 @@ class ServiceBodyController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'serviceBodyId', in: 'path', description: 'ID of service body', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'serviceBodyId', description: 'ID of service body', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/ServiceBody')),
@@ -121,7 +121,7 @@ class ServiceBodyController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'serviceBodyId', in: 'path', description: 'ID of service body', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'serviceBodyId', description: 'ID of service body', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -148,7 +148,7 @@ class ServiceBodyController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'serviceBodyId', in: 'path', description: 'ID of service body', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'serviceBodyId', description: 'ID of service body', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -170,8 +170,8 @@ class ServiceBodyController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'serviceBodyId', in: 'path', description: 'ID of service body', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
-            new OA\Parameter(name: 'force', in: 'query', description: 'Force deletion of service body and all associated meetings', required: false, example: 'false', schema: new OA\Schema(type: 'string', enum: ['true', 'false'], default: 'false')),
+            new OA\Parameter(name: 'serviceBodyId', description: 'ID of service body', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+            new OA\Parameter(name: 'force', description: 'Force deletion of service body and all associated meetings', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['true', 'false'], default: 'false'), example: 'false'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),

@@ -36,7 +36,7 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: 'googleApiKey', type: 'string', example: ''),
         new OA\Property(property: 'changeDepthForMeetings', type: 'integer', example: 0),
-        new OA\Property(property: 'defaultSortKey', type: 'string', nullable: true, example: null),
+        new OA\Property(property: 'defaultSortKey', type: 'string', example: null, nullable: true),
         new OA\Property(property: 'language', type: 'string', example: 'en'),
         new OA\Property(property: 'defaultDurationTime', type: 'string', example: '01:00'),
         new OA\Property(property: 'regionBias', type: 'string', example: 'us'),

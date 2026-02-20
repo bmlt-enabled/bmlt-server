@@ -18,34 +18,34 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'User',
     required: ['id', 'username', 'type', 'displayName', 'description', 'email', 'ownerId'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 0),
-        new OA\Property(property: 'lastLoginAt', type: 'string', format: 'date-time', nullable: true, example: '2019-05-02T05:05:00.000000Z'),
-    ]
+        new OA\Property(property: 'lastLoginAt', type: 'string', format: 'date-time', example: '2019-05-02T05:05:00.000000Z', nullable: true),
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')]
 )]
 #[OA\Schema(
     schema: 'UserCreate',
     required: ['username', 'password', 'type', 'displayName'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')],
     properties: [
         new OA\Property(property: 'password', type: 'string', example: 'string'),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')]
 )]
 #[OA\Schema(
     schema: 'UserUpdate',
     required: ['username', 'type', 'displayName'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')],
     properties: [
         new OA\Property(property: 'password', type: 'string', example: 'string'),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')]
 )]
 #[OA\Schema(
     schema: 'UserPartialUpdate',
-    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')],
     properties: [
         new OA\Property(property: 'password', type: 'string', example: 'string'),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/UserBase')]
 )]
 #[OA\Schema(
     schema: 'UserCollection',
@@ -78,7 +78,7 @@ class UserController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'userId', in: 'path', description: 'ID of user', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'userId', description: 'ID of user', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/User')),
@@ -127,7 +127,7 @@ class UserController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'userId', in: 'path', description: 'ID of user', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'userId', description: 'ID of user', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -154,7 +154,7 @@ class UserController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'userId', in: 'path', description: 'ID of user', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'userId', description: 'ID of user', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -176,7 +176,7 @@ class UserController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'userId', in: 'path', description: 'ID of user', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'userId', description: 'ID of user', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),

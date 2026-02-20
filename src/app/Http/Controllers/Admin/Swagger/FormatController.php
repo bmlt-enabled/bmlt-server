@@ -25,10 +25,10 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'Format',
     required: ['id', 'worldId', 'type', 'translations'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 0),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/FormatBase')]
 )]
 #[OA\Schema(
     schema: 'FormatCreate',
@@ -75,7 +75,7 @@ class FormatController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'formatId', in: 'path', description: 'ID of format', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/Format')),
@@ -124,7 +124,7 @@ class FormatController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'formatId', in: 'path', description: 'ID of format', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -151,7 +151,7 @@ class FormatController extends Controller
         ),
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'formatId', in: 'path', description: 'ID of format', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),
@@ -173,7 +173,7 @@ class FormatController extends Controller
         security: [['bmltToken' => []]],
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'formatId', in: 'path', description: 'ID of format', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'formatId', description: 'ID of format', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 204, description: 'Success.'),

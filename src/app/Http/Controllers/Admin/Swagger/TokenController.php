@@ -29,12 +29,12 @@ class TokenController extends Controller
         operationId: 'authToken',
         description: 'Exchange credentials for a new token',
         summary: 'Creates a token',
-        tags: ['rootServer'],
         requestBody: new OA\RequestBody(
             description: 'User credentials',
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/TokenCredentials')
         ),
+        tags: ['rootServer'],
         responses: [
             new OA\Response(response: 200, description: 'Returns when POST is successful.', content: new OA\JsonContent(ref: '#/components/schemas/Token')),
             new OA\Response(response: 401, description: 'Returns when credentials are incorrect.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),

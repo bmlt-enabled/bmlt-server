@@ -12,23 +12,21 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'url', type: 'string', example: 'https://example.com/main_server'),
         new OA\Property(
             property: 'statistics',
-            type: 'object',
             required: ['serviceBodies', 'meetings'],
             properties: [
                 new OA\Property(
                     property: 'serviceBodies',
-                    type: 'object',
                     required: ['numZones', 'numRegions', 'numAreas', 'numGroups'],
                     properties: [
                         new OA\Property(property: 'numZones', type: 'integer', example: 0),
                         new OA\Property(property: 'numRegions', type: 'integer', example: 0),
                         new OA\Property(property: 'numAreas', type: 'integer', example: 0),
                         new OA\Property(property: 'numGroups', type: 'integer', example: 0),
-                    ]
+                    ],
+                    type: 'object'
                 ),
                 new OA\Property(
                     property: 'meetings',
-                    type: 'object',
                     required: ['numTotal', 'numInPerson', 'numVirtual', 'numHybrid', 'numUnknown'],
                     properties: [
                         new OA\Property(property: 'numTotal', type: 'integer', example: 0),
@@ -36,9 +34,11 @@ use OpenApi\Attributes as OA;
                         new OA\Property(property: 'numVirtual', type: 'integer', example: 0),
                         new OA\Property(property: 'numHybrid', type: 'integer', example: 0),
                         new OA\Property(property: 'numUnknown', type: 'integer', example: 0),
-                    ]
+                    ],
+                    type: 'object'
                 ),
-            ]
+            ],
+            type: 'object'
         ),
         new OA\Property(property: 'serverInfo', type: 'string', example: 'string'),
         new OA\Property(property: 'lastSuccessfulImport', type: 'string', format: 'date-time', example: '2022-11-25 04:16:26'),
@@ -47,10 +47,10 @@ use OpenApi\Attributes as OA;
 #[OA\Schema(
     schema: 'RootServer',
     required: ['id', 'sourceId', 'name', 'url', 'lastSuccessfulImport'],
-    allOf: [new OA\Schema(ref: '#/components/schemas/RootServerBase')],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 0),
-    ]
+    ],
+    allOf: [new OA\Schema(ref: '#/components/schemas/RootServerBase')]
 )]
 #[OA\Schema(
     schema: 'RootServerCollection',
@@ -81,7 +81,7 @@ class RootServerController extends Controller
         summary: 'Retrieves a root server',
         tags: ['rootServer'],
         parameters: [
-            new OA\Parameter(name: 'rootServerId', in: 'path', description: 'ID of root server', required: true, example: '1', schema: new OA\Schema(type: 'integer', format: 'int64')),
+            new OA\Parameter(name: 'rootServerId', description: 'ID of root server', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Successful response.', content: new OA\JsonContent(ref: '#/components/schemas/RootServer')),
