@@ -205,10 +205,12 @@
     .sort(([, a], [, b]) => a.localeCompare(b));
 
   // Initialize locationTranslations from the meeting's existing translations
+  const initialLocationTranslations = Object.fromEntries(
+    translationLanguages.map(([code]) => [code, Object.fromEntries(translatableFields.map(({ key }) => [key, (selectedMeeting as any)?.locationTranslations?.[code]?.[key] ?? '']))])
+  );
+  const initialLocationTranslationsJson = JSON.stringify(initialLocationTranslations);
   let locationTranslations: Record<string, Record<string, string>> = $state(
-    Object.fromEntries(
-      translationLanguages.map(([code]) => [code, Object.fromEntries(translatableFields.map(({ key }) => [key, (selectedMeeting as any)?.locationTranslations?.[code]?.[key] ?? '']))])
-    )
+    JSON.parse(initialLocationTranslationsJson)
   );
 
   let isTranslating = $state(false);
@@ -869,7 +871,7 @@
   let errorTabs: string[] = $derived((hasBasicErrors($errors) ? [tabs[0]] : []).concat(hasLocationErrors($errors) ? [tabs[1]] : []).concat(hasOtherErrors($errors) ? [tabs[2]] : []));
 
   $effect(() => {
-    const dirty = formIsDirty(initialValues, $data);
+    const dirty = formIsDirty(initialValues, $data) || (multiLingualEnabled && JSON.stringify(locationTranslations) !== initialLocationTranslationsJson);
     globalIsDirty.set(dirty);
     isDirty.set(dirty);
   });

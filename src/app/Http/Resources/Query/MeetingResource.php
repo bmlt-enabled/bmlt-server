@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Repositories\MeetingRepository;
 use App\Repositories\ServiceBodyRepository;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 
 class MeetingResource extends JsonResource
 {
@@ -24,6 +25,9 @@ class MeetingResource extends JsonResource
 
     private static bool $isAggregatorModeEnabled = false;
 
+    private static ?string $requestedLangEnum = null;
+    private static bool $includeLocationTranslations = false;
+
     // Allows tests to reset state
     public static function resetStaticVariables()
     {
@@ -36,6 +40,8 @@ class MeetingResource extends JsonResource
         self::$userIsAdmin = false;
         self::$defaultDurationTime = null;
         self::$isAggregatorModeEnabled = false;
+        self::$requestedLangEnum = null;
+        self::$includeLocationTranslations = false;
     }
 
     /**
@@ -76,11 +82,35 @@ class MeetingResource extends JsonResource
             'root_server_id' => $this->getRootServerId(),
         ];
 
-        // data table keys
-        $meetingData = $this->data->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])->toBase()
+        // data table keys — filter out translation rows for translatable location fields
+        // so that only primary language data is returned
+        $primaryLangEnum = $this->lang_enum ?: App::currentLocale();
+        $meetingData = $this->data
+            ->filter(fn ($data) => $data->lang_enum === $primaryLangEnum || !in_array($data->key, MeetingRepository::TRANSLATABLE_LOCATION_FIELDS))
+            ->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_string])
+            ->toBase()
             ->merge(
                 $this->longdata->mapWithKeys(fn ($data, $_) => [$data->key => $data->data_blob])->toBase()
             );
+
+        // Build location translations from non-primary-language rows
+        $needsTranslations = self::$includeLocationTranslations
+            || (self::$requestedLangEnum && self::$requestedLangEnum !== $primaryLangEnum);
+        $allTranslations = [];
+        if ($needsTranslations) {
+            $allTranslations = $this->data
+                ->filter(fn ($data) => $data->lang_enum !== $primaryLangEnum && in_array($data->key, MeetingRepository::TRANSLATABLE_LOCATION_FIELDS))
+                ->groupBy('lang_enum')
+                ->map(fn ($rows) => $rows->mapWithKeys(fn ($row) => [$row->key => $row->data_string])->toArray())
+                ->toArray();
+        }
+
+        // If lang_enum param requests a different language, swap translated values into meetingData
+        if (self::$requestedLangEnum && self::$requestedLangEnum !== $primaryLangEnum && isset($allTranslations[self::$requestedLangEnum])) {
+            foreach ($allTranslations[self::$requestedLangEnum] as $key => $value) {
+                $meetingData[$key] = $value;
+            }
+        }
 
         foreach (self::$meetingDataTemplates as $meetingDataTemplate) {
             if (self::$hasDataFieldKeys && !self::$dataFieldKeys->has($meetingDataTemplate->key)) {
@@ -95,6 +125,22 @@ class MeetingResource extends JsonResource
             }
 
             $meeting[$meetingDataTemplate->key] = $meetingData->get($meetingDataTemplate->key, '') ?? '';
+        }
+
+        // Append locationTranslations if requested
+        if (self::$includeLocationTranslations && !empty($allTranslations)) {
+            $translations = $allTranslations;
+            if (self::$hasDataFieldKeys) {
+                // Filter each language's fields to only those in the requested data_field_key list
+                $translations = array_map(function ($fields) {
+                    return array_filter($fields, fn ($key) => self::$dataFieldKeys->has($key), ARRAY_FILTER_USE_KEY);
+                }, $translations);
+                // Remove languages with no remaining fields
+                $translations = array_filter($translations, fn ($fields) => !empty($fields));
+            }
+            if (!empty($translations)) {
+                $meeting['locationTranslations'] = $translations;
+            }
         }
 
         return $meeting;
@@ -127,21 +173,28 @@ class MeetingResource extends JsonResource
             }
         }
 
+        // Lang enum parameter
+        self::$requestedLangEnum = $request->input('lang_enum');
+
         // Data field keys
-        $dataFieldKeys = $request->input('data_field_key');
-        $dataFieldKeys = collect(!is_null($dataFieldKeys) ? explode(',', $dataFieldKeys) : []);
-        if ($dataFieldKeys->isNotEmpty()) {
+        $rawDataFieldKeys = $request->input('data_field_key');
+        $rawDataFieldKeys = collect(!is_null($rawDataFieldKeys) ? explode(',', $rawDataFieldKeys) : []);
+        $requestedLocationTranslations = $rawDataFieldKeys->contains('locationTranslations');
+        if ($rawDataFieldKeys->isNotEmpty()) {
             $dataFieldKeys = self::$meetingDataTemplates
                 ->mapWithKeys(fn($data, $_) => [$data->key => $data->data_string])
                 ->keys()
                 ->merge($meetingRepository->getMainFields())
-                ->merge(['published', 'root_server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km'])
-                ->intersect($dataFieldKeys)
+                ->merge(['published', 'root_server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km', 'locationTranslations'])
+                ->intersect($rawDataFieldKeys)
                 ->mapWithKeys(fn($key, $_) => [$key => $key]);
 
             self::$hasDataFieldKeys = $dataFieldKeys->isNotEmpty();
             self::$dataFieldKeys = $dataFieldKeys;
         }
+
+        // Include locationTranslations when data_field_key is absent or explicitly includes it
+        self::$includeLocationTranslations = $rawDataFieldKeys->isEmpty() || $requestedLocationTranslations;
     }
 
     private function getIdBigint()

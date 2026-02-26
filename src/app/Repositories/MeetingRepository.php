@@ -842,6 +842,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             ]),
             'data_table_values' => serialize(
                 $meeting->data
+                    ->filter(fn ($data) => $data->lang_enum === ($meeting->lang_enum ?: App::currentLocale()) || !in_array($data->key, self::TRANSLATABLE_LOCATION_FIELDS))
                     ->map(fn ($data) => [
                         'meetingid_bigint' => $data->meetingid_bigint,
                         'lang_enum' => $data->lang_enum,

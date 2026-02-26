@@ -2474,4 +2474,184 @@ class GetSearchResultsTest extends TestCase
         $this->assertArrayHasKey('coordinates', $meetingData);
         $this->assertNull($meetingData['coordinates']);
     }
+
+    public function testTranslationsDontOverwritePrimaryLocationData()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_municipality' => 'Raleigh']
+        );
+
+        // Add translation rows for a different language
+        $template = MeetingData::query()->where('meetingid_bigint', 0)->where('key', 'location_text')->first();
+        MeetingData::create([
+            'meetingid_bigint' => $meeting->id_bigint,
+            'key' => 'location_text',
+            'field_prompt' => $template->field_prompt,
+            'lang_enum' => 'es',
+            'data_string' => 'Centro Comunitario',
+            'visibility' => $template->visibility,
+        ]);
+
+        $template = MeetingData::query()->where('meetingid_bigint', 0)->where('key', 'location_municipality')->first();
+        MeetingData::create([
+            'meetingid_bigint' => $meeting->id_bigint,
+            'key' => 'location_municipality',
+            'field_prompt' => $template->field_prompt,
+            'lang_enum' => 'es',
+            'data_string' => 'Raleigh-es',
+            'visibility' => $template->visibility,
+        ]);
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertEquals('Community Center', $data[0]['location_text']);
+        $this->assertEquals('Raleigh', $data[0]['location_municipality']);
+    }
+
+    private function createTranslationRow(int $meetingId, string $key, string $langEnum, string $value)
+    {
+        $template = MeetingData::query()->where('meetingid_bigint', 0)->where('key', $key)->first();
+        MeetingData::create([
+            'meetingid_bigint' => $meetingId,
+            'key' => $key,
+            'field_prompt' => $template->field_prompt,
+            'lang_enum' => $langEnum,
+            'data_string' => $value,
+            'visibility' => $template->visibility,
+        ]);
+    }
+
+    public function testLocationTranslationsInResponse()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_street' => '123 Main St']
+        );
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+        $this->createTranslationRow($meeting->id_bigint, 'location_street', 'es', 'Calle Principal 123');
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'fr', 'Centre Communautaire');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertArrayHasKey('locationTranslations', $data[0]);
+        $translations = $data[0]['locationTranslations'];
+        $this->assertArrayHasKey('es', $translations);
+        $this->assertArrayHasKey('fr', $translations);
+        $this->assertEquals('Centro Comunitario', $translations['es']['location_text']);
+        $this->assertEquals('Calle Principal 123', $translations['es']['location_street']);
+        $this->assertEquals('Centre Communautaire', $translations['fr']['location_text']);
+    }
+
+    public function testLocationTranslationsAbsentWhenNone()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center']
+        );
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertArrayNotHasKey('locationTranslations', $data[0]);
+    }
+
+    public function testLangEnumSwapsLocationValues()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_street' => '123 Main St']
+        );
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+        $this->createTranslationRow($meeting->id_bigint, 'location_street', 'es', 'Calle Principal 123');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}&lang_enum=es")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertEquals('Centro Comunitario', $data[0]['location_text']);
+        $this->assertEquals('Calle Principal 123', $data[0]['location_street']);
+    }
+
+    public function testLangEnumFallsBackForMissingTranslation()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_street' => '123 Main St']
+        );
+        // Only translate location_text, not location_street
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}&lang_enum=es")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertEquals('Centro Comunitario', $data[0]['location_text']);
+        $this->assertEquals('123 Main St', $data[0]['location_street']);
+    }
+
+    public function testLangEnumMatchingPrimaryNoSwap()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_street' => '123 Main St']
+        );
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}&lang_enum=en")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertEquals('Community Center', $data[0]['location_text']);
+        $this->assertEquals('123 Main St', $data[0]['location_street']);
+    }
+
+    public function testDataFieldKeyIncludesLocationTranslations()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center', 'location_street' => '123 Main St']
+        );
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+        $this->createTranslationRow($meeting->id_bigint, 'location_street', 'es', 'Calle Principal 123');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}&data_field_key=id_bigint,location_text,locationTranslations")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertArrayHasKey('locationTranslations', $data[0]);
+        $translations = $data[0]['locationTranslations'];
+        $this->assertArrayHasKey('es', $translations);
+        // Only location_text should be in translations since location_street wasn't in data_field_key
+        $this->assertArrayHasKey('location_text', $translations['es']);
+        $this->assertArrayNotHasKey('location_street', $translations['es']);
+    }
+
+    public function testDataFieldKeyExcludesLocationTranslations()
+    {
+        $meeting = $this->createMeeting(
+            ['lang_enum' => 'en'],
+            ['location_text' => 'Community Center']
+        );
+        $this->createTranslationRow($meeting->id_bigint, 'location_text', 'es', 'Centro Comunitario');
+
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_ids[]={$meeting->id_bigint}&data_field_key=id_bigint")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertCount(1, $data);
+        $this->assertArrayNotHasKey('locationTranslations', $data[0]);
+    }
 }

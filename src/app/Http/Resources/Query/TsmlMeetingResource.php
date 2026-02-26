@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources\Query;
 
+use App\Repositories\MeetingRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\App;
 use Carbon\Carbon;
 
 class TsmlMeetingResource extends JsonResource
@@ -64,7 +66,11 @@ class TsmlMeetingResource extends JsonResource
             'Y' => 'Y',
         ];
 
-        $data = $this->data->mapWithKeys(fn ($d) => [$d->key => $d->data_string])->toArray();
+        $primaryLangEnum = $this->lang_enum ?: App::currentLocale();
+        $data = $this->data
+            ->filter(fn ($d) => $d->lang_enum === $primaryLangEnum || !in_array($d->key, MeetingRepository::TRANSLATABLE_LOCATION_FIELDS))
+            ->mapWithKeys(fn ($d) => [$d->key => $d->data_string])
+            ->toArray();
         $longdata = $this->longdata->mapWithKeys(fn ($d) => [$d->key => $d->data_blob])->toArray();
         $allData = array_merge($data, $longdata);
 
