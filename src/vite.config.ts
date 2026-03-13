@@ -23,6 +23,12 @@ export default defineConfig({
     include: ['resources/js/**/*.{test,spec}.{js,ts}']
   },
   build: {
-    chunkSizeWarningLimit: 1100
+    chunkSizeWarningLimit: 1100,
+    rolldownOptions: {
+      checks: {
+        // Removes warning that builds take long :) https://rolldown.rs/options/checks#plugintimings
+        pluginTimings: false
+      }
+    }
   }
 });

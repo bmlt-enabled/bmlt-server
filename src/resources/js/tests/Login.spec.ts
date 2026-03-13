@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
-import { replace } from 'svelte-spa-router';
+import { replace } from '@bmlt-enabled/svelte-spa-router';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 

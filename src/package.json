@@ -14,8 +14,8 @@
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@sveltejs/vite-plugin-svelte": "^6.2.1",
-        "@tailwindcss/vite": "^4.1.17",
+        "@sveltejs/vite-plugin-svelte": "^7.0.0",
+        "@tailwindcss/vite": "^4.2.2",
         "@testing-library/dom": "^10.4.1",
         "@testing-library/jest-dom": "^6.9.1",
         "@testing-library/svelte": "^5.2.9",
@@ -29,11 +29,11 @@
         "autoprefixer": "^10.4.22",
         "eslint": "^10.0.0",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-svelte": "^3.13.0",
+        "eslint-plugin-svelte": "^3.15.2",
         "globals": "^17.0.0",
         "jest": "^30.2.0",
-        "jsdom": "^28.1.0",
-        "laravel-vite-plugin": "^2.0.1",
+        "jsdom": "^29.0.0",
+        "laravel-vite-plugin": "^3.0.0",
         "postcss": "^8.5.6",
         "prettier": "^3.6.2",
         "prettier-plugin-svelte": "^3.4.0",
@@ -47,7 +47,7 @@
         "tslib": "^2.8.1",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.4",
-        "vite": "^7.2.2",
+        "vite": "^8.0.0",
         "vite-tsconfig-paths": "^6.0.3",
         "vitest": "^4.0.9"
     },
@@ -64,7 +64,7 @@
         "leaflet": "^1.9.4",
         "localized-strings": "^2.0.3",
         "pbf": "^4.0.1",
-        "svelte-spa-router": "github:pjaudiomv/svelte-spa-router#ad110296d3d1942d0680acd6f6babb49408fc915",
+        "@bmlt-enabled/svelte-spa-router": "^5.0.7",
         "yup": "^1.7.1",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
