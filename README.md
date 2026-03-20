@@ -2,7 +2,7 @@
 
 <h1 style="text-align: center;">
 <a href="https://github.com/bmlt-enabled/bmlt-server/releases/latest"><img src="https://img.shields.io/github/v/release/bmlt-enabled/bmlt-server"></a>
-<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.2-8892BF.svg" alt="PHP Programming Language"></a>
+<a href="https://php.net"><img src="https://img.shields.io/badge/php-%5E8.3-8892BF.svg" alt="PHP Programming Language"></a>
 <a href="https://raw.githubusercontent.com/bmlt-enabled/bmlt-server/main/LICENSE"><img src="https://img.shields.io/github/license/bmlt-enabled/bmlt-server"></a>
 <a href="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/test.yml"><img src="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
 <a href="https://github.com/bmlt-enabled/bmlt-server/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/bmlt-enabled/bmlt-server/main.yml?branch=main&logo=github&style=flat-square" alt="Build Status"></a>
@@ -27,7 +27,7 @@ You can find out more about the BMLT on the [website](https://bmlt.app).
 REQUIREMENTS
 ------------
 
-The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.2 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" page in your browser when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
+The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.3 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" page in your browser when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
 
 For more information about server requirements, see the "Things You Will Need Before You Install" section of
 [Installing a New Server](https://bmlt.app/setting-up-the-bmlt/).

@@ -1,6 +1,6 @@
 COMMIT := $(shell git rev-parse --short=8 HEAD)
 BASE_IMAGE := bmltenabled/bmlt-server-base
-BASE_IMAGE_TAG := 8.2
+BASE_IMAGE_TAG := 8.3
 BASE_IMAGE_BUILD_TAG := $(COMMIT)-$(shell date +%s)
 SEMANTIC_HTML := src/public/semantic/index.html
 TIMEZONE_ASSETS := src/public/timezones-1970.geojson.index.json

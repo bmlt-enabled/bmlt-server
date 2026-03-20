@@ -1,6 +1,8 @@
 ## 4.1.1 (UNRELEASED)
 * Added Greek language translations.
 * Moved time zone setting to bottom of location tab.
+* Added support for PHP 8.5.
+* PHP 8.3 and higher are now required. PHP 8.2 is no longer supported.
 
 ## 4.1.0 (February 1, 2026)
 * Settings Management UI:

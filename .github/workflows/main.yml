@@ -14,9 +14,9 @@ jobs:
       fail-fast: false
       matrix:
         php:
-          - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         db:
           - "10.2"
           - "latest"
@@ -33,7 +33,7 @@ jobs:
         options: --health-cmd="${{ (matrix.db == 'latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
@@ -67,7 +67,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: node 22 ❇️
         uses: actions/setup-node@v6
@@ -98,7 +98,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout 🛒
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: php 8.2 🐘
         id: setup-php
@@ -133,7 +133,7 @@ jobs:
           make zip
 
       - name: Configure S3 AWS Credentials 🪪
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-s3-artifact
           role-session-name: gh-actions
@@ -145,14 +145,14 @@ jobs:
 
       - name: Configure AWS Credentials 🪪
         if: contains(github.ref_name, 'main') || contains(github.ref_name, 'unstable')
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-tf-bmlt-rs
           role-session-name: gh-actions-bmlt
           aws-region: us-east-1
 
       - name: Login to Docker Hub 🎫
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -201,10 +201,10 @@ jobs:
           - "unstable"
     steps:
       - name: Checkout 🛒
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Configure AWS Credentials 🪪
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions/gh-ci-tf-bmlt-rs
           role-session-name: gh-actions-bmlt
