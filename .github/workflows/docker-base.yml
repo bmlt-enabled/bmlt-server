@@ -38,7 +38,7 @@ jobs:
           images: bmltenabled/bmlt-server-base
           tags: |
             type=raw,value=${{ matrix.php_version }}
-            type=raw,value=latest,enable=${{ matrix.php_version == '8.2' }}
+            type=raw,value=latest,enable=${{ matrix.php_version == '8.3' }}
           labels: |
             org.opencontainers.image.title=BMLT Server Base (PHP ${{ matrix.php_version }})
             org.opencontainers.image.description=Base image for BMLT Server with PHP ${{ matrix.php_version }}

@@ -100,12 +100,12 @@ jobs:
       - name: Checkout 🛒
         uses: actions/checkout@v6
 
-      - name: php 8.2 🐘
+      - name: php 8.3 🐘
         id: setup-php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          tools: composer:v2.8.12
+          php-version: '8.3'
+          tools: composer:v2.9.5
 
       - name: make composer 🎼
         run: |
@@ -171,7 +171,7 @@ jobs:
       - name: Generate Release Notes 📝
         if: github.ref_type == 'tag'
         run: |
-          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/master/gh-release-notes.sh
+          curl -LO https://raw.githubusercontent.com/bmlt-enabled/release-notes-tool/main/gh-release-notes.sh
           chmod +x gh-release-notes.sh
           ./gh-release-notes.sh CHANGELOG.md "##"
           RELEASE_TYPE=$(if [[ "$GITHUB_REF_NAME" =~ -(beta|rc) ]]; then echo "true"; else echo "false"; fi)
