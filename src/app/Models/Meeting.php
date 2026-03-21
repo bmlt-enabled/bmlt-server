@@ -10,6 +10,21 @@ class Meeting extends Model
     protected $table = 'comdef_meetings_main';
     protected $primaryKey = 'id_bigint';
     public $timestamps = false;
+
+    protected function casts(): array
+    {
+        return [
+            'published' => 'integer',
+            'weekday_tinyint' => 'integer',
+            'venue_type' => 'integer',
+            'service_body_bigint' => 'integer',
+            'root_server_id' => 'integer',
+            'source_id' => 'integer',
+            'longitude' => 'float',
+            'latitude' => 'float',
+        ];
+    }
+
     protected $fillable = [
         'root_server_id',
         'source_id',

@@ -9,6 +9,16 @@ class Format extends Model
 {
     protected $table = 'comdef_formats';
     public $timestamps = false;
+
+    protected function casts(): array
+    {
+        return [
+            'shared_id_bigint' => 'integer',
+            'root_server_id' => 'integer',
+            'source_id' => 'integer',
+        ];
+    }
+
     protected $fillable = [
         'root_server_id',
         'source_id',
