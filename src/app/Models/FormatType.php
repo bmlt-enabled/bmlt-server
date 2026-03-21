@@ -9,6 +9,14 @@ class FormatType extends Model
 {
     protected $table = 'comdef_format_types';
     public $timestamps = false;
+
+    protected function casts(): array
+    {
+        return [
+            'position' => 'integer',
+        ];
+    }
+
     protected $fillable = [
         'key_string',
         'api_enum',

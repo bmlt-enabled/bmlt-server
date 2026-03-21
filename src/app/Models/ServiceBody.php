@@ -45,6 +45,17 @@ class ServiceBody extends Model
     protected $table = 'comdef_service_bodies';
     protected $primaryKey = 'id_bigint';
     public $timestamps = false;
+
+    protected function casts(): array
+    {
+        return [
+            'root_server_id' => 'integer',
+            'source_id' => 'integer',
+            'sb_owner' => 'integer',
+            'principal_user_bigint' => 'integer',
+        ];
+    }
+
     protected $fillable = self::FIELDS;
 
     public function rootServer()

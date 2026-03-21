@@ -51,9 +51,14 @@ class User extends Model implements AuthenticatableContract
     public $timestamps = false;
     protected $fillable = self::FIELDS;
 
-    protected $casts = [
-        'last_access_datetime' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'last_access_datetime' => 'datetime',
+            'user_level_tinyint' => 'integer',
+            'owner_id_bigint' => 'integer',
+        ];
+    }
 
     public function getAuthPassword()
     {
