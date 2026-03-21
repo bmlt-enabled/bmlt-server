@@ -27,11 +27,20 @@ You can find out more about the BMLT on the [website](https://bmlt.app).
 REQUIREMENTS
 ------------
 
-The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and PHP 8.3 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `mysql`, `dom`, `xml`, and `zip`). There are a variety of MySQL modules for PHP, and others will probably work as a substitute for `mysql`. If you see a "500 Server Error" page in your browser when you first try to access a newly installed server, it's probably because you're missing one of these modules or settings.
+The server requires Apache2 (with the `php` and `rewrite` mods loaded and `AllowOverride All` for the document root
+directory), MySQL 5.7 database or higher (with communication enabled via localhost network not just sockets), and
+PHP 8.3 or higher (with installed modules `curl`, `gd`, `intl`, `mbstring`, `dom`, `xml`, and `zip`).
+
+For the MySQL PHP driver, `nd_pdo_mysql` is recommended as it uses the mysqlnd backend and correctly returns native
+PHP types (integers, floats, etc.) from query results. The `pdo_mysql` extension will appear to work but returns all values
+as strings by default, which will cause unexpected behavior (Meetings appearing as unpublished in UI).
+
+If you see a "500 Server Error" page in your browser when you first try to access a newly installed server, it's probably because
+you're missing one of these modules or settings.
 
 For more information about server requirements, see the "Things You Will Need Before You Install" section of
 [Installing a New Server](https://bmlt.app/setting-up-the-bmlt/).
- 
+
 INSTALLATION
 ------------
 
