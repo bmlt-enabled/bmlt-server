@@ -23,6 +23,8 @@ class ExternalMeetingTest extends TestCase
             'start_time' => '20:00:00',
             'duration_time' => '01:00:00',
             'time_zone' => 'America/New_York',
+            'lang_enum' => 'en',
+            'email_contact' => 'test@example.com',
             'longitude' => '-84.4661174',
             'latitude' => '33.8658047',
             'comments' => 'comments',
@@ -58,6 +60,8 @@ class ExternalMeetingTest extends TestCase
             'start_time' => $validValues['start_time'],
             'duration_time' => $validValues['duration_time'],
             'time_zone' => $validValues['time_zone'],
+            'lang_enum' => $validValues['lang_enum'],
+            'email_contact' => $validValues['email_contact'],
             'longitude' => $validValues['longitude'],
             'latitude' => $validValues['latitude'],
             'worldid_mixed' => $validValues['worldid_mixed'],
@@ -115,6 +119,8 @@ class ExternalMeetingTest extends TestCase
         $this->assertEquals($values['start_time'], $meeting->startTime);
         $this->assertEquals($values['duration_time'], $meeting->durationTime);
         $this->assertEquals($values['time_zone'], $meeting->timeZone);
+        $this->assertEquals($values['lang_enum'], $meeting->langEnum);
+        $this->assertEquals($values['email_contact'], $meeting->emailContact);
         $this->assertEquals($values['latitude'], $meeting->latitude);
         $this->assertEquals($values['longitude'], $meeting->longitude);
         $this->assertEquals($values['meeting_name'], $meeting->name);
@@ -165,6 +171,8 @@ class ExternalMeetingTest extends TestCase
         $values['train_lines'] = '';
         $values['venue_type'] = '';
         $values['time_zone'] = '';
+        $values['lang_enum'] = '';
+        $values['email_contact'] = '';
         $values['latitude'] = '';
         $values['longitude'] = '';
         $values['format_shared_id_list'] = '';
@@ -180,6 +188,8 @@ class ExternalMeetingTest extends TestCase
         $this->assertNull($meeting->longitude);
         $this->assertNull($meeting->venueType);
         $this->assertNull($meeting->timeZone);
+        $this->assertNull($meeting->langEnum);
+        $this->assertNull($meeting->emailContact);
         $this->assertNull($meeting->worldId);
         $this->assertNull($meeting->comments);
         $this->assertNull($meeting->virtualMeetingAdditionalInfo);
@@ -223,6 +233,8 @@ class ExternalMeetingTest extends TestCase
         $values['train_lines'] = null;
         $values['venue_type'] = null;
         $values['time_zone'] = null;
+        $values['lang_enum'] = null;
+        $values['email_contact'] = null;
         $values['latitude'] = null;
         $values['longitude'] = null;
         $values['format_shared_id_list'] = null;
@@ -238,6 +250,8 @@ class ExternalMeetingTest extends TestCase
         $this->assertNull($meeting->longitude);
         $this->assertNull($meeting->venueType);
         $this->assertNull($meeting->timeZone);
+        $this->assertNull($meeting->langEnum);
+        $this->assertNull($meeting->emailContact);
         $this->assertNull($meeting->worldId);
         $this->assertNull($meeting->comments);
         $this->assertNull($meeting->virtualMeetingAdditionalInfo);
@@ -281,6 +295,8 @@ class ExternalMeetingTest extends TestCase
         unset($values['train_lines']);
         unset($values['venue_type']);
         unset($values['time_zone']);
+        unset($values['lang_enum']);
+        unset($values['email_contact']);
         unset($values['latitude']);
         unset($values['longitude']);
         unset($values['format_shared_id_list']);
@@ -296,6 +312,8 @@ class ExternalMeetingTest extends TestCase
         $this->assertNull($meeting->longitude);
         $this->assertNull($meeting->venueType);
         $this->assertNull($meeting->timeZone);
+        $this->assertNull($meeting->langEnum);
+        $this->assertNull($meeting->emailContact);
         $this->assertNull($meeting->worldId);
         $this->assertNull($meeting->comments);
         $this->assertNull($meeting->virtualMeetingAdditionalInfo);

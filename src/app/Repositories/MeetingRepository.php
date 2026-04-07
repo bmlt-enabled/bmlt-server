@@ -902,6 +902,8 @@ class MeetingRepository implements MeetingRepositoryInterface
             'start_time' => $externalMeeting->startTime,
             'duration_time' => $externalMeeting->durationTime,
             'time_zone' => $externalMeeting->timeZone,
+            'lang_enum' => $externalMeeting->langEnum,
+            'email_contact' => $externalMeeting->emailContact,
             'latitude' => $externalMeeting->latitude,
             'longitude' => $externalMeeting->longitude,
             'published' => $externalMeeting->published ? 1 : 0,

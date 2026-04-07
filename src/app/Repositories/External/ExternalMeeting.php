@@ -14,6 +14,8 @@ class ExternalMeeting extends ExternalObject
     public string $startTime;
     public string $durationTime;
     public ?string $timeZone;
+    public ?string $langEnum;
+    public ?string $emailContact;
     public ?float $latitude;
     public ?float $longitude;
     public string $name;
@@ -46,6 +48,8 @@ class ExternalMeeting extends ExternalObject
         $this->startTime = $this->validateTime($values, 'start_time');
         $this->durationTime = $this->validateTime($values, 'duration_time');
         $this->timeZone = $this->validateNullableString($values, 'time_zone');
+        $this->langEnum = $this->validateNullableString($values, 'lang_enum');
+        $this->emailContact = $this->validateNullableString($values, 'email_contact');
         $this->latitude = $this->validateNullableFloat($values, 'latitude');
         $this->longitude = $this->validateNullableFloat($values, 'longitude');
         $this->name = $this->validateString($values, 'meeting_name');
@@ -94,6 +98,12 @@ class ExternalMeeting extends ExternalObject
             return false;
         }
         if ($this->timeZone != $meeting->time_zone) {
+            return false;
+        }
+        if ($this->langEnum != $meeting->lang_enum) {
+            return false;
+        }
+        if ($this->emailContact != $meeting->email_contact) {
             return false;
         }
         if ($this->latitude != $meeting->latitude) {
