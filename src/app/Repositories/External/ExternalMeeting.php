@@ -13,6 +13,7 @@ class ExternalMeeting extends ExternalObject
     public ?int $venueType;
     public string $startTime;
     public string $durationTime;
+    public ?string $timeZone;
     public ?float $latitude;
     public ?float $longitude;
     public string $name;
@@ -44,6 +45,7 @@ class ExternalMeeting extends ExternalObject
         $this->venueType = $this->validateNullableInt($values, 'venue_type');
         $this->startTime = $this->validateTime($values, 'start_time');
         $this->durationTime = $this->validateTime($values, 'duration_time');
+        $this->timeZone = $this->validateNullableString($values, 'time_zone');
         $this->latitude = $this->validateNullableFloat($values, 'latitude');
         $this->longitude = $this->validateNullableFloat($values, 'longitude');
         $this->name = $this->validateString($values, 'meeting_name');
@@ -89,6 +91,9 @@ class ExternalMeeting extends ExternalObject
             return false;
         }
         if ($this->durationTime != $meeting->duration_time) {
+            return false;
+        }
+        if ($this->timeZone != $meeting->time_zone) {
             return false;
         }
         if ($this->latitude != $meeting->latitude) {
