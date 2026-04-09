@@ -48,9 +48,13 @@
     : [$translations.tabsBasic, $translations.tabsLocation, $translations.tabsOther];
   const CHANGES_TAB_INDEX = 3;
   const seenNames = new SvelteSet<string>();
-  const ignoredFormats = ['VM', 'HY', 'TC'];
+  const ignoredFormatKeys = ['VM', 'HY', 'TC'];
   const filteredFormats = formats
     .map((format) => {
+      const en_translation = format.translations.find((t) => t.language === 'en');
+      if (en_translation && ignoredFormatKeys.includes(en_translation.key)) {
+        return null;
+      }
       const translation = format.translations.find((t) => t.language === translations.getLanguage());
       if (translation) {
         return {
@@ -64,9 +68,6 @@
     })
     .filter((format) => {
       if (!format) return false;
-      if (ignoredFormats.some((ignored) => format.key.includes(ignored))) {
-        return false;
-      }
       if (seenNames.has(format.name)) return false;
       seenNames.add(format.name);
       return true;
