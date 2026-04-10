@@ -1,8 +1,11 @@
-## 4.1.1 (UNRELEASED)
-* Added Greek language translations.
-* Moved time zone setting to bottom of location tab.
+## 4.2.0 (April 10, 2026)
 * Added support for PHP 8.5.
 * PHP 8.3 and higher are now required. PHP 8.2 is no longer supported.
+* Added Greek language translations.
+* Moved time zone setting to bottom of location tab.
+* Fix bug with showing reserved formats (HY, TC, and VM) in the list of available formats on the meeting edit form. (Previously,
+    other formats that included a reserved format key as a substring were being excluded, and reserved formats were appearing when
+    using a language other than English if they had a different key.)
 
 ## 4.1.0 (February 1, 2026)
 * Settings Management UI:
