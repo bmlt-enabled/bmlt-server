@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Change;
 use App\Models\ServiceBody;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ServiceBodyPartialUpdateTest extends TestCase
@@ -492,6 +493,43 @@ class ServiceBodyPartialUpdateTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->patch("/api/v1/servicebodies/$zone->id_bigint", $data)
             ->assertStatus(204);
+    }
+
+    public function testPartialUpdateServiceBodyAsServiceBodyAdminPreservesHiddenEditors()
+    {
+        // sb admin should not be able to accidentally wipe out editors they can't see.
+        $sbAdmin = $this->createServiceBodyAdminUser();
+        $token = $sbAdmin->createToken('test')->plainTextToken;
+
+        // user not owned by sbAdmin that won't appear in sbAdmin's user list
+        $hiddenEditor = User::create([
+            'user_level_tinyint' => User::USER_LEVEL_SERVICE_BODY_ADMIN,
+            'name_string' => 'hidden editor',
+            'description_string' => '',
+            'email_address_string' => '',
+            'login_string' => 'hidden_editor',
+            'password_string' => password_hash($this->userPassword, PASSWORD_BCRYPT),
+        ]);
+
+        // sb has sbAdmin as its admin and hiddenEditor as an assigned user
+        $region = $this->createRegion('region', 'region', sbOwner: 0, adminUserId: $sbAdmin->id_bigint, assignedUserIds: [$hiddenEditor->id_bigint]);
+
+        // only changing description, omitting assignedUserIds entirely
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$region->id_bigint", ['description' => 'updated'])
+            ->assertStatus(204);
+
+        $region->refresh();
+        // hiddenEditor should still be in the editors list
+        $this->assertStringContainsString($hiddenEditor->id_bigint, $region->editors_string);
+
+        // explicitly submit empty assignedUserIds, hidden editors should still be preserved
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$region->id_bigint", ['assignedUserIds' => []])
+            ->assertStatus(204);
+
+        $region->refresh();
+        $this->assertStringContainsString($hiddenEditor->id_bigint, $region->editors_string);
     }
 
     public function testPartialUpdateNoChangeCreatesNoChangeRecord()
