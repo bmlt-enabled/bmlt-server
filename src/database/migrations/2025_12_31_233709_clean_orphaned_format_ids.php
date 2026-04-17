@@ -8,7 +8,7 @@ return new class extends Migration
     /**
      * This migration cleans up orphaned format IDs from the meetings table.
      *
-     * The `formats` column in comdef_meetings_main stores a comma-separated list of format IDs.
+     * The `formats` column in comdef_meetings_main stores a comma-separated list of format IDs (shared_id_bigint).
      * Over time, if formats are deleted from comdef_formats, meetings may still reference
      * those deleted format IDs. This migration identifies and removes those orphaned references.
      *
@@ -19,7 +19,7 @@ return new class extends Migration
     public function up(): void
     {
         $validFormatIds = DB::table('comdef_formats')
-            ->pluck('id')
+            ->pluck('shared_id_bigint')
             ->map(fn($id) => (string)$id)
             ->flip();
 
