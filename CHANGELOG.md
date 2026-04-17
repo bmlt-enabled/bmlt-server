@@ -1,3 +1,6 @@
+## 4.2.1 (April 17, 2026)
+* Fix a nasty bug in the orphaned-format cleanup migration (added in 4.1.0) that could strip valid format codes from meetings.
+
 ## 4.2.0 (April 10, 2026)
 * Added support for PHP 8.5.
 * PHP 8.3 and higher are now required. PHP 8.2 is no longer supported.
