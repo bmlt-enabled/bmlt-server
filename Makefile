@@ -72,7 +72,9 @@ $(ZIP_FILE): $(VENDOR_AUTOLOAD) $(FRONTEND) $(SEMANTIC_HTML) $(TIMEZONE_ASSETS)
 		-x main_server/.nvmrc \
 		-x main_server/.phpcs.xml \
 		-x main_server/.phpstan.neon \
+		-x main_server/.mcp.json \
 		-x main_server/app.html \
+		-x main_server/boost.json \
 		-x main_server/coverage.xml \
 		-x main_server/eslint.config.js \
 		-x main_server/node_modules/\* \
