@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2026_01_02_182138_add_admin_notes_field_template')) {
+        if (!$this->migrationRepository->migrationExists('2026_04_18_000000_clean_orphaned_format_ids_rerun')) {
             return true;
         }
 
