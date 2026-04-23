@@ -736,7 +736,6 @@
     return Boolean(
       errors.published ||
       errors.name ||
-      errors.timeZone ||
       errors.day ||
       errors.startTime ||
       errors.duration ||
@@ -751,6 +750,7 @@
     return Boolean(
       errors.venueType ||
       errors.temporarilyVirtual ||
+      errors.timeZone ||
       errors.longitude ||
       errors.latitude ||
       errors.locationText ||
