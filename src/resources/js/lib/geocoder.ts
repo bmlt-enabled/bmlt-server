@@ -13,7 +13,7 @@ export type GeocodeResult = {
 
 type GeocodeResponse = {
   results: google.maps.GeocoderResult[] | null;
-  status: google.maps.GeocoderStatus;
+  status: google.maps.GeocoderStatusString;
 };
 
 const POSTAL_CODE_TYPE = 'postal_code';

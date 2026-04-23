@@ -39,7 +39,16 @@ export function init(geoDataSource: GeoDataSource = settings.apiBaseUrl + '/time
           if (tzDataPromise) {
             return await tzDataPromise;
           }
-          const promise = fetch(tzDataSource).then((response) => response.json());
+          const promise = fetch(tzDataSource).then(async (response) => {
+            if (!response.ok) {
+              throw new Error(`Timezone index fetch failed: ${response.status} ${response.statusText} from ${tzDataSource}`);
+            }
+            const contentType = response.headers.get('content-type') ?? '';
+            if (!contentType.includes('json')) {
+              throw new Error(`Timezone index fetch returned ${contentType || 'no content-type'} (status ${response.status}) from ${tzDataSource} - expected JSON.`);
+            }
+            return response.json();
+          });
           tzDataPromise = promise;
           return await promise;
         }
