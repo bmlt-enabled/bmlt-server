@@ -47,11 +47,17 @@
     { value: 'ZF', name: 'Zonal Forum' },
     { value: 'WS', name: 'World Service Conference' }
   ];
+  let assignedUserIdsSelected: number[] = $state((selectedServiceBody?.assignedUserIds ?? []).filter((userId) => userId in userIdToUser));
+  // If the user is logged in as a service body admin (as opposed to the server admin), then we only want to show meeting editors that the
+  // service body admin has access to.  However, the selected service body might have additional editors.  Save those away in hiddenUserIds,
+  // so that we can make sure they are still in the list of meeting list editors if the user edits the list.  hiddenUserIds is just a const,
+  // since it won't change during the editing interaction.
+  const hiddenUserIds: number[] = (selectedServiceBody?.assignedUserIds ?? []).filter((userId) => !(userId in userIdToUser));
   const initialValues = {
     adminUserId: selectedServiceBody?.adminUserId ?? -1,
     type: selectedServiceBody?.type ?? SB_TYPE_AREA,
     parentId: selectedServiceBody?.parentId ?? -1,
-    assignedUserIds: selectedServiceBody?.assignedUserIds ?? [],
+    assignedUserIds: assignedUserIdsSelected,
     name: selectedServiceBody?.name ?? '',
     email: selectedServiceBody?.email ?? '',
     description: selectedServiceBody?.description ?? '',
@@ -60,7 +66,6 @@
     worldId: selectedServiceBody?.worldId ?? ''
   };
 
-  let assignedUserIdsSelected: number[] = $state((selectedServiceBody?.assignedUserIds ?? []).filter((userId) => userId in userIdToUser));
   let savedServiceBody: ServiceBody;
 
   const { data, errors, form, setData } = createForm({
@@ -72,6 +77,7 @@
         // the api expects those with no parent to be null
         ...{ parentId: values.parentId !== -1 ? values.parentId : null }
       };
+      serviceBody.assignedUserIds.push(...hiddenUserIds);
       if (selectedServiceBody) {
         await RootServerApi.updateServiceBody(selectedServiceBody.id, serviceBody);
         savedServiceBody = await RootServerApi.getServiceBody(selectedServiceBody.id);

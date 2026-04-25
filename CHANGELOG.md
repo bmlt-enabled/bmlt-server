@@ -1,3 +1,7 @@
+## 4.2.2 (UNRELEASED)
+* Bug fixes:
+    * Preserve hidden service body editors when non-admin updates a service body
+
 ## 4.2.1 (April 17, 2026)
 * Fix a nasty bug in the orphaned-format cleanup migration (added in 4.1.0) that could strip valid format codes from meetings.
 
@@ -6,9 +10,7 @@
 * PHP 8.3 and higher are now required. PHP 8.2 is no longer supported.
 * Added Greek language translations.
 * Moved time zone setting to bottom of location tab.
-* Fix bug with showing reserved formats (HY, TC, and VM) in the list of available formats on the meeting edit form. (Previously,
-    other formats that included a reserved format key as a substring were being excluded, and reserved formats were appearing when
-    using a language other than English if they had a different key.)
+* Fix bug with showing reserved formats (HY, TC, and VM) in the list of available formats on the meeting edit form. (Previously, other formats that included a reserved format key as a substring were being excluded, and reserved formats were appearing when using a language other than English if they had a different key.)
 
 ## 4.1.0 (February 1, 2026)
 * Settings Management UI:
