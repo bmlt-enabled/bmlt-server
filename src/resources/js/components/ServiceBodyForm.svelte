@@ -172,8 +172,11 @@
       return;
     }
     try {
+      // "Hidden" in the form sense means the editor isn't in the visible users list -- which can happen because the
+      // caller can't manage them through /users (readOnly), or because the frontend filters them out (e.g. the caller
+      // themselves is excluded from the editor multi-select). Use the editors API only to look up display names.
       const editors = await RootServerApi.getServiceBodyEditors(selectedServiceBody.id);
-      hiddenEditors = editors.filter((e) => e.readOnly).map((e) => ({ userId: e.userId, displayName: e.displayName }));
+      hiddenEditors = editors.filter((e) => !(e.userId in userIdToUser)).map((e) => ({ userId: e.userId, displayName: e.displayName }));
     } catch (error) {
       await RootServerApi.handleErrors(error as Error);
     }

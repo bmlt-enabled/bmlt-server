@@ -276,6 +276,19 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(mockSavedServiceBodyUpdate?.assignedUserIds).toEqual(expect.arrayContaining([2]));
   });
 
+  test('logged in as Northern Zone; edit Mountain Area Service Body shows self in Other Meeting Editors', async () => {
+    // Northern Zone Admin is explicitly listed as an editor of Mountain Area but the editor multi-select filters out
+    // the logged-in user. Without the visibility-based hidden-editors check, Northern Zone Admin would not appear in
+    // either list even though they're a real editor of this service body.
+    const user = await login('NorthernZone', 'Service Bodies');
+    await user.click(await screen.findByRole('cell', { name: 'Mountain Area' }));
+    const hiddenSelect = document.querySelector('select[name="assignedUserIds"]') as HTMLSelectElement;
+    expect(Array.from(hiddenSelect.selectedOptions).map((o) => o.value)).toEqual([]);
+    const otherEditorsLabel = await screen.findByText('Other Meeting Editors');
+    const otherEditorsBadges = otherEditorsLabel.parentElement as HTMLElement;
+    expect(within(otherEditorsBadges).getByText('Northern Zone')).toBeInTheDocument();
+  });
+
   test('logged in as serveradmin; delete Small Region Service Body', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Small Region' }));
