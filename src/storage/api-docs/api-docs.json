@@ -1587,6 +1587,76 @@
                 ]
             }
         },
+        "/api/v1/servicebodies/{serviceBodyId}/editors": {
+            "get": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Retrieves the editors assigned to a service body",
+                "description": "Retrieve the meeting list editors assigned to a service body. Each editor includes a readOnly flag that is true when the calling user does not otherwise have access to manage that user via the users API.",
+                "operationId": "getServiceBodyEditors",
+                "parameters": [
+                    {
+                        "name": "serviceBodyId",
+                        "in": "path",
+                        "description": "ID of service body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns when user is authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServiceBodyEditorCollection"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when user is unauthorized to perform action.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Returns when no service body exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/settings": {
             "get": {
                 "tags": [
@@ -2956,6 +3026,34 @@
                 "type": "array",
                 "items": {
                     "$ref": "#/components/schemas/ServiceBody"
+                }
+            },
+            "ServiceBodyEditor": {
+                "required": [
+                    "userId",
+                    "displayName",
+                    "readOnly"
+                ],
+                "properties": {
+                    "userId": {
+                        "type": "integer",
+                        "example": 0
+                    },
+                    "displayName": {
+                        "type": "string",
+                        "example": "string"
+                    },
+                    "readOnly": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "ServiceBodyEditorCollection": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/ServiceBodyEditor"
                 }
             },
             "SettingsBase": {

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Resources\Admin\ServiceBodyResource;
 use App\Http\Responses\JsonResponse;
 use App\Interfaces\ServiceBodyRepositoryInterface;
+use App\Interfaces\UserRepositoryInterface;
 use App\Models\ServiceBody;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
@@ -13,10 +15,12 @@ use Illuminate\Validation\Rule;
 class ServiceBodyController extends ResourceController
 {
     private ServiceBodyRepositoryInterface $serviceBodyRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(ServiceBodyRepositoryInterface $serviceBodyRepository)
+    public function __construct(ServiceBodyRepositoryInterface $serviceBodyRepository, UserRepositoryInterface $userRepository)
     {
         $this->serviceBodyRepository = $serviceBodyRepository;
+        $this->userRepository = $userRepository;
         $this->authorizeResource(ServiceBody::class, 'serviceBody');
     }
 
@@ -39,6 +43,47 @@ class ServiceBodyController extends ResourceController
     public function show(ServiceBody $serviceBody)
     {
         return new ServiceBodyResource($serviceBody);
+    }
+
+    public function editors(Request $request, ServiceBody $serviceBody)
+    {
+        $this->authorize('viewEditors', $serviceBody);
+
+        $editorIds = collect(explode(',', $serviceBody->editors_string ?? ''))
+            ->filter(fn ($v) => $v !== '')
+            ->map(fn ($v) => intval($v))
+            ->unique()
+            ->values();
+
+        if ($editorIds->isEmpty()) {
+            return new JsonResponse([]);
+        }
+
+        $caller = $request->user();
+        $byId = $this->userRepository->search(includeIds: $editorIds->all())->keyBy('id_bigint');
+
+        $result = $editorIds
+            ->map(fn ($id) => $byId->get($id))
+            ->filter()
+            ->map(fn (User $u) => [
+                'userId' => $u->id_bigint,
+                'displayName' => $u->name_string,
+                'readOnly' => !$this->callerCanManage($caller, $u),
+            ])
+            ->values();
+
+        return new JsonResponse($result);
+    }
+
+    private function callerCanManage(User $caller, User $editor): bool
+    {
+        if ($caller->isAdmin()) {
+            return true;
+        }
+        if ($caller->id_bigint === $editor->id_bigint) {
+            return true;
+        }
+        return $caller->isServiceBodyAdmin() && $editor->owner_id_bigint === $caller->id_bigint;
     }
 
     public function store(Request $request)

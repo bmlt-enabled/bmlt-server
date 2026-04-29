@@ -47,6 +47,7 @@ import type {
   MeetingUpdate,
   ServiceBody,
   ServiceBodyCreate,
+  ServiceBodyEditor,
   ServiceBodyUpdate,
   SettingsBase,
   SettingsUpdate,
@@ -856,6 +857,26 @@ async function mockUpdateServiceBody({ serviceBodyId: _, serviceBodyUpdate: serv
   mockSavedServiceBodyUpdate = serviceBody;
 }
 
+async function mockGetServiceBodyEditors({ serviceBodyId }: { serviceBodyId: number }): Promise<ServiceBodyEditor[]> {
+  const sb = allServiceBodies.find((s) => s.id === serviceBodyId);
+  if (!sb) {
+    throw new ResponseError(makeResponse('Not Found', 404, 'Not Found'), 'Response returned an error code');
+  }
+  const caller = get(authenticatedUser);
+  if (!caller) {
+    throw new Error('internal error -- trying to get editors when no simulated user is logged in');
+  }
+  const callerCanManage = (u: User): boolean => {
+    if (caller.type === 'admin') return true;
+    if (u.id === caller.id) return true;
+    return caller.type === 'serviceBodyAdmin' && u.ownerId === caller.id;
+  };
+  return sb.assignedUserIds
+    .map((id) => allUsers.find((u) => u.id === id))
+    .filter((u): u is User => Boolean(u))
+    .map((u) => ({ userId: u.id, displayName: u.displayName, readOnly: !callerCanManage(u) }));
+}
+
 async function mockDeleteServiceBody({ serviceBodyId: id, force }: { serviceBodyId: number; force?: string }): Promise<void> {
   const forceDelete = force === 'true';
 
@@ -1106,6 +1127,7 @@ export function sharedBeforeAll() {
   vi.spyOn(ApiClientWrapper.api, 'createServiceBody').mockImplementation(mockCreateServiceBody);
   vi.spyOn(ApiClientWrapper.api, 'updateServiceBody').mockImplementation(mockUpdateServiceBody);
   vi.spyOn(ApiClientWrapper.api, 'deleteServiceBody').mockImplementation(mockDeleteServiceBody);
+  vi.spyOn(ApiClientWrapper.api, 'getServiceBodyEditors').mockImplementation(mockGetServiceBodyEditors);
   vi.spyOn(ApiClientWrapper.api, 'getFormat').mockImplementation(mockGetFormat);
   vi.spyOn(ApiClientWrapper.api, 'getFormats').mockImplementation(mockGetFormats);
   vi.spyOn(ApiClientWrapper.api, 'createFormat').mockImplementation(mockCreateFormat);

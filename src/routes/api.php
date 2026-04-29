@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('meetings.changes', MeetingChangeController::class)->only([ 'index' ]);
     Route::apiResource('servicebodies', ServiceBodyController::class, ['parameters' => ['servicebodies' => 'serviceBody']]);
     Route::patch('/servicebodies/{serviceBody}', [ServiceBodyController::class, 'partialUpdate']);
+    Route::get('/servicebodies/{serviceBody}/editors', [ServiceBodyController::class, 'editors']);
     Route::apiResource('users', UserController::class);
     Route::patch('/users/{user}', [UserController::class, 'partialUpdate']);
     Route::get('/settings', [SettingController::class, 'index']);

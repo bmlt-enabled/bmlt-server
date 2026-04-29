@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, test, vi, type MockInstance } from 'vitest';
-import { screen, waitFor } from '@testing-library/svelte';
+import { screen, waitFor, within } from '@testing-library/svelte';
 import '@testing-library/jest-dom';
 import { login, mockDeletedServiceBodyId, mockSavedServiceBodyCreate, mockSavedServiceBodyUpdate, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 import userEvent from '@testing-library/user-event';
@@ -262,6 +262,11 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     const hiddenSelect = document.querySelector('select[name="assignedUserIds"]') as HTMLSelectElement;
     const initialSelectedOptions = Array.from(hiddenSelect.selectedOptions).map((option) => option.value);
     expect(initialSelectedOptions).toEqual([]); // Northern Zone Admin shouldn't be visible
+    // The "Other Meeting Editors" section should list Northern Zone (the hidden editor) by display name
+    // so the service body admin is aware they exist even though they can't be removed.
+    const otherEditorsLabel = await screen.findByText('Other Meeting Editors');
+    const otherEditorsBadges = otherEditorsLabel.parentElement as HTMLElement;
+    expect(within(otherEditorsBadges).getByText('Northern Zone')).toBeInTheDocument();
     // make a random change, save the service body, and make sure that the Northern Zone admin is still in the list of meeting editors
     const email = screen.getByRole('textbox', { name: 'Email' }) as HTMLInputElement;
     await user.clear(email);

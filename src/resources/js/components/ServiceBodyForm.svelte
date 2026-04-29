@@ -4,6 +4,8 @@
   import { Badge, Button, Helper, Input, Label, MultiSelect, Select, Textarea } from 'flowbite-svelte';
   import * as yup from 'yup';
 
+  import { onMount } from 'svelte';
+
   import { spinner } from '../stores/spinner';
   import RootServerApi from '../lib/ServerApi';
   import { isDirty, formIsDirty } from '../lib/utils';
@@ -53,6 +55,8 @@
   // so that we can make sure they are still in the list of meeting list editors if the user edits the list.  hiddenUserIds is just a const,
   // since it won't change during the editing interaction.
   const hiddenUserIds: number[] = (selectedServiceBody?.assignedUserIds ?? []).filter((userId) => !(userId in userIdToUser));
+  // Display names for hidden editors are loaded from the dedicated /editors endpoint, which exposes only userId, displayName, and readOnly.
+  let hiddenEditors: { userId: number; displayName: string }[] = $state([]);
   const initialValues = {
     adminUserId: selectedServiceBody?.adminUserId ?? -1,
     type: selectedServiceBody?.type ?? SB_TYPE_AREA,
@@ -162,6 +166,18 @@
   $effect(() => {
     setData('assignedUserIds', assignedUserIdsSelected);
   });
+
+  onMount(async () => {
+    if (!selectedServiceBody?.id) {
+      return;
+    }
+    try {
+      const editors = await RootServerApi.getServiceBodyEditors(selectedServiceBody.id);
+      hiddenEditors = editors.filter((e) => e.readOnly).map((e) => ({ userId: e.userId, displayName: e.displayName }));
+    } catch (error) {
+      await RootServerApi.handleErrors(error as Error);
+    }
+  });
 </script>
 
 <form use:form>
@@ -249,6 +265,16 @@
           {$errors.assignedUserIds}
         {/if}
       </Helper>
+      {#if hiddenEditors.length > 0}
+        <div class="mt-3">
+          <Label class="mb-2">{$translations.otherMeetingEditorsTitle}</Label>
+          <div class="flex flex-wrap gap-2">
+            {#each hiddenEditors as editor (editor.userId)}
+              <Badge rounded color="gray">{editor.displayName}</Badge>
+            {/each}
+          </div>
+        </div>
+      {/if}
     </div>
     <div class="md:col-span-2">
       <Label for="email" class="mb-2">{$translations.emailTitle}</Label>

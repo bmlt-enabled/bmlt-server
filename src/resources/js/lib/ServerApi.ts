@@ -19,6 +19,7 @@ import {
   type NotFoundError,
   type ServiceBody,
   type ServiceBodyCreate,
+  type ServiceBodyEditor,
   type ServiceBodyPartialUpdate,
   type ServiceBodyUpdate,
   type Token,
@@ -29,6 +30,8 @@ import {
   type ValidationError
 } from 'bmlt-server-client';
 import { errorModal } from '../stores/errorModal';
+
+export type { ServiceBodyEditor };
 
 class ApiClient extends RootServerApi {
   private authorizationHeader: string | null = null;
@@ -253,6 +256,11 @@ class ApiClientWrapper {
   async deleteServiceBody(id: number, force: boolean = false): Promise<void> {
     const params = { serviceBodyId: id, force: force ? DeleteServiceBodyForceEnum.True : DeleteServiceBodyForceEnum.False };
     return this.api.deleteServiceBody(params);
+  }
+
+  async getServiceBodyEditors(id: number): Promise<ServiceBodyEditor[]> {
+    const params = { serviceBodyId: id };
+    return this.api.getServiceBodyEditors(params);
   }
 
   async getFormats(): Promise<Format[]> {

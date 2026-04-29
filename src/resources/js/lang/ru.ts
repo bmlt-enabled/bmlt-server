@@ -273,6 +273,7 @@ export const ruTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'Service Body Observer',
   occurredAt: 'Произошло в',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'Owned By',
   paginationOf: 'of',
   paginationShowing: 'Showing',

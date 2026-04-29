@@ -219,6 +219,7 @@ export const deTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'Service-Body Beobachter',
   occurredAt: 'Aufgetreten um',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'Gehört',
   paginationOf: 'von',
   paginationShowing: 'Zeigt',
