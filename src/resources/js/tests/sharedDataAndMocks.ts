@@ -238,7 +238,7 @@ export const mountainArea: ServiceBody = {
   adminUserId: mountainAreaAdmin.id,
   type: 'AS',
   parentId: bigRegion.id,
-  assignedUserIds: [],
+  assignedUserIds: [northernZoneAdmin.id], // the Northern Zone admin can edit this service body anyway -- this is here to test whether hidden editors are handled correctly
   email: 'mountain@bmlt.app',
   description: 'Mountain Area Description',
   url: 'https://mountainarea.example.com',

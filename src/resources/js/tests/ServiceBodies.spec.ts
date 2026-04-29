@@ -249,6 +249,28 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeEnabled();
   });
 
+  test('logged in as Big Region; edit Mountain Area Service Body', async () => {
+    // Check that issue 1488 is fixed ("Preserve hidden service body editors when non-admin updates a service body").
+    // Mountain Area Service Body has Northern Zone Admin listed explicitly as a meeting list editor.  Northern Zone Admin shouldn't
+    // be in the list of meeting editors when we are logged in as Big Region, but it shouldn't get erased if we make an edit.
+    const user = await login('BigRegion', 'Service Bodies');
+    await user.click(await screen.findByRole('cell', { name: 'Mountain Area' }));
+    // The applyChanges button should be disabled at this point since there haven't been any edits.
+    // (Before the issue was fixed, the UI thought the form was dirty on startup and applyChanges was enabled.)
+    const b = screen.getByRole('button', { name: 'Apply Changes' });
+    expect(b).toBeDisabled();
+    const hiddenSelect = document.querySelector('select[name="assignedUserIds"]') as HTMLSelectElement;
+    const initialSelectedOptions = Array.from(hiddenSelect.selectedOptions).map((option) => option.value);
+    expect(initialSelectedOptions).toEqual([]); // Northern Zone Admin shouldn't be visible
+    // make a random change, save the service body, and make sure that the Northern Zone admin is still in the list of meeting editors
+    const email = screen.getByRole('textbox', { name: 'Email' }) as HTMLInputElement;
+    await user.clear(email);
+    await user.type(email, 'morerural@bmlt.app');
+    const applyChanges = screen.getByRole('button', { name: 'Apply Changes' });
+    await user.click(applyChanges);
+    expect(mockSavedServiceBodyUpdate?.assignedUserIds).toEqual(expect.arrayContaining([2]));
+  });
+
   test('logged in as serveradmin; delete Small Region Service Body', async () => {
     const user = await login('serveradmin', 'Service Bodies');
     await user.click(await screen.findByRole('button', { name: 'Delete Service Body Small Region' }));
