@@ -273,6 +273,7 @@ export const faTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'ناظر بدنه خدماتی',
   occurredAt: 'رخ داده در',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'متعلق به',
   paginationOf: 'از',
   paginationShowing: 'نشان',

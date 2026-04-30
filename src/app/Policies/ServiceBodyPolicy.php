@@ -33,6 +33,11 @@ class ServiceBodyPolicy
         return $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->contains($serviceBody->id_bigint);
     }
 
+    public function viewEditors(User $user, ServiceBody $serviceBody)
+    {
+        return $this->view($user, $serviceBody);
+    }
+
     public function create(User $user)
     {
         if (file_config('aggregator_mode_enabled')) {

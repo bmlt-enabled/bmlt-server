@@ -274,6 +274,7 @@ export const elTranslations = {
     'Προσδιορίστε τον αριθμό των ομάδων στην αναζήτηση με βάση τη διεύθυνση. Αν ο αριθμός είναι μεγαλύτερος των ομάδων που υπάρχουν εκεί, τότε μεγαλώνει η ακτίνα αναζήτησης για να συμπληρωθούν οι ομάδες.',
   observerTitle: 'Παρατηρητής σώματος υπηρεσιών',
   occurredAt: 'Συνέβει στο',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'Ανήκει σε',
   paginationOf: 'από',
   paginationShowing: 'Εμφανίζονται',

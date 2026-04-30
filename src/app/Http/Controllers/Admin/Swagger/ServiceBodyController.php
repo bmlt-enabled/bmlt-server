@@ -46,6 +46,20 @@ use OpenApi\Attributes as OA;
     type: 'array',
     items: new OA\Items(ref: '#/components/schemas/ServiceBody')
 )]
+#[OA\Schema(
+    schema: 'ServiceBodyEditor',
+    required: ['userId', 'displayName', 'readOnly'],
+    properties: [
+        new OA\Property(property: 'userId', type: 'integer', example: 0),
+        new OA\Property(property: 'displayName', type: 'string', example: 'string'),
+        new OA\Property(property: 'readOnly', type: 'boolean', example: false),
+    ]
+)]
+#[OA\Schema(
+    schema: 'ServiceBodyEditorCollection',
+    type: 'array',
+    items: new OA\Items(ref: '#/components/schemas/ServiceBodyEditor')
+)]
 class ServiceBodyController extends Controller
 {
     #[OA\Get(
@@ -81,6 +95,27 @@ class ServiceBodyController extends Controller
         ]
     )]
     public function show()
+    {
+    }
+
+    #[OA\Get(
+        path: '/api/v1/servicebodies/{serviceBodyId}/editors',
+        operationId: 'getServiceBodyEditors',
+        description: 'Retrieve the meeting list editors assigned to a service body. Each editor includes a readOnly flag that is true when the calling user does not otherwise have access to manage that user via the users API.',
+        summary: 'Retrieves the editors assigned to a service body',
+        security: [['bmltToken' => []]],
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'serviceBodyId', description: 'ID of service body', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/ServiceBodyEditorCollection')),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when user is unauthorized to perform action.', content: new OA\JsonContent(ref: '#/components/schemas/AuthorizationError')),
+            new OA\Response(response: 404, description: 'Returns when no service body exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+        ]
+    )]
+    public function editors()
     {
     }
 

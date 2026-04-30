@@ -273,6 +273,7 @@ export const itTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Numero di riunioni da trovare quando si cerca per indirizzo senza raggio. Valori più alti espandono il raggio di ricerca per trovare più riunioni.',
   observerTitle: 'Osservatore della struttura di servizio',
   occurredAt: 'Avvenuto alle',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'Di proprietà di',
   paginationOf: 'di',
   paginationShowing: 'Mostra',

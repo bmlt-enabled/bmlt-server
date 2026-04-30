@@ -273,6 +273,7 @@ export const enTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Target number of meetings to find when searching by address without a radius. Higher values expand the search radius to find more meetings.',
   observerTitle: 'Service Body Observer',
   occurredAt: 'Occurred at',
+  otherMeetingEditorsTitle: 'Other Meeting Editors',
   ownedByTitle: 'Owned By',
   paginationOf: 'of',
   paginationShowing: 'Showing',

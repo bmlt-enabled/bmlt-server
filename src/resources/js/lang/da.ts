@@ -273,6 +273,7 @@ export const daTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Number of meetings to use when automatically calculating search radius',
   observerTitle: 'Service Body Observer',
   occurredAt: 'Skete på',
+  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
   ownedByTitle: 'Owned By',
   paginationOf: 'of',
   paginationShowing: 'Showing',
