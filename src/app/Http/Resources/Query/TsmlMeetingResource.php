@@ -68,8 +68,8 @@ class TsmlMeetingResource extends JsonResource
         $longdata = $this->longdata->mapWithKeys(fn ($d) => [$d->key => $d->data_blob])->toArray();
         $allData = array_merge($data, $longdata);
 
-        $meetingFormats = explode(',', $this->formats ?? '');
-        $virtualOnly = in_array('VM', $meetingFormats) && !in_array('HY', $meetingFormats);
+        $meetingFormatIds = $this->getFormatSharedIds();
+        $virtualOnly = in_array('VM', $meetingFormatIds->all()) && !in_array('HY', $meetingFormatIds->all());
 
         return [
             'day' => isset($this->weekday_tinyint) ? intval($this->weekday_tinyint)  : null,
@@ -83,8 +83,7 @@ class TsmlMeetingResource extends JsonResource
             'state' => $allData['location_province'] ?? '',
             'postal_code' => $allData['location_postal_code_1'] ?? '',
             'country' => $allData['location_nation'] ?? '',
-            'types' => collect($this->formats ? explode(',', $this->formats) : [])
-                ->map(fn($id) => intval($id))
+            'types' => $meetingFormatIds
                 ->filter(fn($id) => isset($formatsById[$id]) && !empty($formatsById[$id]->worldid_mixed))
                 ->map(fn($id) => $worldIdToTsmlTypes[$formatsById[$id]->worldid_mixed] ?? null)
                 ->filter()

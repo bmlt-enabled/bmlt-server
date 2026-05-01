@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\FromFileConfig;
 use App\Models\Format;
+use App\Models\FormatShared;
 use App\Models\Meeting;
 use App\Models\RootServer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -39,23 +40,24 @@ class GetFormatsTest extends TestCase
 
     private function createFormat(int $sharedId, string $keyString, string $nameString, ?string $description = null, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
+        FormatShared::updateOrCreate(
+            ['shared_id_bigint' => $sharedId],
+            ['worldid_mixed' => $worldId, 'format_type_enum' => $formatTypeEnum],
+        );
         return Format::create([
             'shared_id_bigint' => $sharedId,
             'key_string' => $keyString,
             'name_string' => $nameString,
             'lang_enum' => $langEnum,
             'description_string' => $description,
-            'worldid_mixed' => $worldId,
-            'format_type_enum' => $formatTypeEnum,
-        ]);
+        ])->load('shared');
     }
 
     private function createMeeting(array $formatIds)
     {
-        return Meeting::create([
-            'service_body_bigint' => 1,
-            'formats' => implode(',', $formatIds),
-        ]);
+        $meeting = Meeting::create(['service_body_bigint' => 1]);
+        $meeting->formats()->sync($formatIds);
+        return $meeting;
     }
 
     private function allFormatsInArray($expectedItems, $array): bool
@@ -88,7 +90,7 @@ class GetFormatsTest extends TestCase
 
     public function testJsonp()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $response = $this->get('/client_interface/jsonp/?switcher=GetFormats&callback=asdf');
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'text/javascript; charset=utf-8');
@@ -97,7 +99,7 @@ class GetFormatsTest extends TestCase
 
     public function testNone()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $this->createFormat1();
         $this->get('/client_interface/json/?switcher=GetFormats')
             ->assertStatus(200)
@@ -107,7 +109,7 @@ class GetFormatsTest extends TestCase
 
     public function testNoneShowAll()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $this->get('/client_interface/json/?switcher=GetFormats&show_all=1')
             ->assertStatus(200)
             ->assertHeader('Content-Type', 'application/json')
@@ -116,7 +118,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneUsed()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createFormat2();
         $this->createFormat3();
@@ -132,7 +134,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleUsed()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $this->createFormat3();
@@ -149,7 +151,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneShowAll()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $response = $this->get('/client_interface/json/?switcher=GetFormats&show_all=1')
             ->assertStatus(200)
@@ -162,7 +164,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleShowAll()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -179,7 +181,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneKeyStrings()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -197,7 +199,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleKeyStrings()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -215,7 +217,7 @@ class GetFormatsTest extends TestCase
 
     public function testOneLangEnum()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -233,7 +235,7 @@ class GetFormatsTest extends TestCase
 
     public function testMultipleLangEnums()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2();
         $format3 = $this->createFormat3();
@@ -251,7 +253,7 @@ class GetFormatsTest extends TestCase
 
     public function testLangEnumAndKeyString()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1('it');
         $format2 = $this->createFormat2('it');
         $format3 = $this->createFormat3();
@@ -272,10 +274,10 @@ class GetFormatsTest extends TestCase
         FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer);
+        $format1->shared->save();
         $format1->refresh();
         $this->createMeeting([$format1->shared_id_bigint]);
         $response = $this->get("/client_interface/json/?switcher=GetFormats")
@@ -291,10 +293,10 @@ class GetFormatsTest extends TestCase
         FromFileConfig::set('aggregator_mode_enabled', true);
 
         $rootServer = $this->createRootServer(1);
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer);
+        $format1->shared->save();
         $format1->refresh();
         $this->createMeeting([$format1->shared_id_bigint]);
         $response = $this->get("/client_interface/json/?switcher=GetFormats")
@@ -310,7 +312,7 @@ class GetFormatsTest extends TestCase
     //
     public function testIncludeFormatIdsNone()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $badId = $format1->shared_id_bigint + 1;
@@ -322,7 +324,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeOne()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -335,7 +337,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeTwoWithArray()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -350,7 +352,7 @@ class GetFormatsTest extends TestCase
 
     public function testIncludeFormatIdsIncludeTwoWithCommas()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -365,7 +367,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeOne()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -379,7 +381,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeTwoWithArray()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -395,7 +397,7 @@ class GetFormatsTest extends TestCase
 
     public function testExcludeFormatIdsExcludeTwoWithCommas()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $format1 = $this->createFormat1();
         $this->createMeeting([$format1->shared_id_bigint]);
         $format2 = $this->createFormat2();
@@ -414,11 +416,11 @@ class GetFormatsTest extends TestCase
     //
     public function testRootServerIdsWithAggregatorDisabled()
     {
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $badId = $rootServer1->id + 1;
@@ -432,11 +434,11 @@ class GetFormatsTest extends TestCase
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
 
-        Format::query()->delete();
+        FormatShared::query()->delete();
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $badId = $rootServer1->id + 1;
@@ -449,17 +451,18 @@ class GetFormatsTest extends TestCase
     public function testRootServerIdsIncludeOne()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $rootServer2 = $this->createRootServer(2);
         $format2 = $this->createFormat2();
-        $format2->rootServer()->associate($rootServer2);
-        $format2->save();
+        $format2->shared->rootServer()->associate($rootServer2);
+        $format2->shared->save();
         $this->createMeeting([$format2->shared_id_bigint]);
 
         $this->get("/client_interface/json/?switcher=GetFormats&root_server_ids=$rootServer1->id")
@@ -472,23 +475,24 @@ class GetFormatsTest extends TestCase
     public function testRootServerIdsIncludeTwo()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $rootServer2 = $this->createRootServer(2);
         $format2 = $this->createFormat2();
-        $format2->rootServer()->associate($rootServer2);
-        $format2->save();
+        $format2->shared->rootServer()->associate($rootServer2);
+        $format2->shared->save();
         $this->createMeeting([$format2->shared_id_bigint]);
 
         $rootServer3 = $this->createRootServer(3);
         $format3 = $this->createFormat3();
-        $format3->rootServer()->associate($rootServer3);
-        $format3->save();
+        $format3->shared->rootServer()->associate($rootServer3);
+        $format3->shared->save();
         $this->createMeeting([$format3->shared_id_bigint]);
 
         $this->get("/client_interface/json/?switcher=GetFormats&root_server_ids[]=$rootServer1->id&root_server_ids[]=$rootServer2->id")
@@ -502,17 +506,18 @@ class GetFormatsTest extends TestCase
     public function testRootServerIdsExcludeOne()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $rootServer2 = $this->createRootServer(2);
         $format2 = $this->createFormat2();
-        $format2->rootServer()->associate($rootServer2);
-        $format2->save();
+        $format2->shared->rootServer()->associate($rootServer2);
+        $format2->shared->save();
         $this->createMeeting([$format2->shared_id_bigint]);
 
         $this->get("/client_interface/json/?switcher=GetFormats&root_server_ids=-$rootServer2->id")
@@ -525,23 +530,24 @@ class GetFormatsTest extends TestCase
     public function testRootServerIdsExcludeTwo()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
         $format1 = $this->createFormat1();
-        $format1->rootServer()->associate($rootServer1);
-        $format1->save();
+        $format1->shared->rootServer()->associate($rootServer1);
+        $format1->shared->save();
         $this->createMeeting([$format1->shared_id_bigint]);
 
         $rootServer2 = $this->createRootServer(2);
         $format2 = $this->createFormat2();
-        $format2->rootServer()->associate($rootServer2);
-        $format2->save();
+        $format2->shared->rootServer()->associate($rootServer2);
+        $format2->shared->save();
         $this->createMeeting([$format2->shared_id_bigint]);
 
         $rootServer3 = $this->createRootServer(3);
         $format3 = $this->createFormat3();
-        $format3->rootServer()->associate($rootServer3);
-        $format3->save();
+        $format3->shared->rootServer()->associate($rootServer3);
+        $format3->shared->save();
         $this->createMeeting([$format3->shared_id_bigint]);
 
         $this->get("/client_interface/json/?switcher=GetFormats&root_server_ids[]=-$rootServer2->id&root_server_ids[]=-$rootServer3->id")

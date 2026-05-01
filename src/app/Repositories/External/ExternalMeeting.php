@@ -124,7 +124,7 @@ class ExternalMeeting extends ExternalObject
             return false;
         }
 
-        $formatSourceIds = collect(explode(',', $meeting->formats ?? ''))
+        $formatSourceIds = $meeting->getFormatSharedIds()
             ->map(fn ($id) => $formatSharedIdToSourceIdMap->get(intval($id)))
             ->reject(fn ($format) => is_null($format))
             ->sort()

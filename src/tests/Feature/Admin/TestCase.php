@@ -52,7 +52,13 @@ class TestCase extends BaseTestCase
             ->get()
             ->mapWithKeys(fn ($value, $_) => [$value->key => $value]);
 
-        $meeting = Meeting::create(array_merge(self::$meetingMainFieldDefaults, $mainFields));
+        $values = array_merge(self::$meetingMainFieldDefaults, $mainFields);
+        $formatIds = isset($values['formats'])
+            ? array_filter(array_map('intval', explode(',', $values['formats'])))
+            : [];
+        unset($values['formats']);
+        $meeting = Meeting::create($values);
+        $meeting->formats()->sync($formatIds);
 
         $dataFields = array_merge(self::$meetingDataFieldDefaults, $dataFields);
         foreach (array_keys($longDataFields) as $fieldName) {

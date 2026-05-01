@@ -82,7 +82,7 @@ class MeetingChangeTest extends TestCase
         $this->assertEquals($meeting->longitude, $mainTableValues['longitude']);
         $this->assertEquals($meeting->latitude, $mainTableValues['latitude']);
         $this->assertEquals($meeting->published, $mainTableValues['published']);
-        $this->assertEquals($meeting->formats, $mainTableValues['formats']);
+        $this->assertEquals($meeting->getFormatSharedIds()->join(","), $mainTableValues["formats"]);
         $dataTableValues = $object['data_table_values'];
         $this->assertEquals(count($meeting->data), count($dataTableValues));
         foreach ($meeting->data as $data) {
@@ -180,7 +180,7 @@ class MeetingChangeTest extends TestCase
         $this->assertEquals($meeting->longitude, $mainTableValues['longitude']);
         $this->assertEquals($meeting->latitude, $mainTableValues['latitude']);
         $this->assertEquals($meeting->published, $mainTableValues['published']);
-        $this->assertEquals($meeting->formats, $mainTableValues['formats']);
+        $this->assertEquals($meeting->getFormatSharedIds()->join(","), $mainTableValues["formats"]);
         $dataTableValues = $object['data_table_values'];
         $this->assertEquals(count($meeting->data), count($dataTableValues));
         foreach ($meeting->data as $data) {
@@ -224,7 +224,7 @@ class MeetingChangeTest extends TestCase
         $this->assertEquals($meeting->longitude, $mainTableValues['longitude']);
         $this->assertEquals($meeting->latitude, $mainTableValues['latitude']);
         $this->assertEquals($meeting->published, $mainTableValues['published']);
-        $this->assertEquals($meeting->formats, $mainTableValues['formats']);
+        $this->assertEquals($meeting->getFormatSharedIds()->join(","), $mainTableValues["formats"]);
         $dataTableValues = $object['data_table_values'];
         $this->assertEquals(count($meeting->data), count($dataTableValues));
         foreach ($meeting->data as $data) {
@@ -321,7 +321,7 @@ class MeetingChangeTest extends TestCase
         $this->assertEquals($meeting->longitude, $mainTableValues['longitude']);
         $this->assertEquals($meeting->latitude, $mainTableValues['latitude']);
         $this->assertEquals($meeting->published, $mainTableValues['published']);
-        $this->assertEquals($meeting->formats, $mainTableValues['formats']);
+        $this->assertEquals($meeting->getFormatSharedIds()->join(","), $mainTableValues["formats"]);
         $dataTableValues = $object['data_table_values'];
         $this->assertEquals(count($meeting->data), count($dataTableValues));
         foreach ($meeting->data as $data) {

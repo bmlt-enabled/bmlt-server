@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Format;
+use App\Models\FormatShared;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\External\InvalidFormatException;
 use PHPUnit\Framework\TestCase;
@@ -24,15 +25,18 @@ class ExternalFormatTest extends TestCase
 
     private function getModel(array $validValues): Format
     {
-        return new Format([
-            'source_id' => $validValues['id'],
+        $format = new Format([
             'key_string' => $validValues['key_string'],
             'name_string' => $validValues['name_string'],
             'description_string' => $validValues['description_string'],
             'lang_enum' => $validValues['lang'],
+        ]);
+        $format->setRelation('shared', new FormatShared([
+            'source_id' => $validValues['id'],
             'format_type_enum' => $validValues['format_type_enum'],
             'worldid_mixed' => $validValues['world_id'],
-        ]);
+        ]));
+        return $format;
     }
 
     public function testValidWithoutNulls()
@@ -205,7 +209,7 @@ class ExternalFormatTest extends TestCase
         $values = $this->validValues('en');
         $external = new ExternalFormat($values);
         $db = $this->getModel($values);
-        $db->source_id = $external->id + 1;
+        $db->shared->source_id = $external->id + 1;
         $this->assertFalse($external->isEqual($db));
     }
 
@@ -250,7 +254,7 @@ class ExternalFormatTest extends TestCase
         $values = $this->validValues('en');
         $external = new ExternalFormat($values);
         $db = $this->getModel($values);
-        $db->format_type_enum = 'changed';
+        $db->shared->format_type_enum = 'changed';
         $this->assertFalse($external->isEqual($db));
     }
 
@@ -259,7 +263,7 @@ class ExternalFormatTest extends TestCase
         $values = $this->validValues('en');
         $external = new ExternalFormat($values);
         $db = $this->getModel($values);
-        $db->worldid_mixed = 'changed';
+        $db->shared->worldid_mixed = 'changed';
         $this->assertFalse($external->isEqual($db));
     }
 }

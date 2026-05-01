@@ -639,10 +639,11 @@ class SwitcherController extends Controller
             $meetings = $this->meetingRepository->getSearchResults(servicesInclude: $allServices, published: null, eagerServiceBodies: true, sortKeys: ['lang_enum', 'weekday_tinyint', 'start_time', 'id_bigint']);
             $existingMeetingIds = $meetings->map(fn ($meeting) => $meeting->id_bigint);
             $deletedMeetingData = [];
+            $deletedMeetingFormatIds = [];
             $seenDeletedMeetingIds = [];
             $deletedMeetings = $this->changeRepository->getMeetingChanges(serviceBodyId: $validated['sb_id'], changeTypes: [Change::CHANGE_TYPE_DELETE])
                 ->sortByDesc(fn ($meetingChange) => $meetingChange->id_bigint)
-                ->map(function ($meetingChange) use (&$existingMeetingIds, &$deletedMeetingData, &$seenDeletedMeetingIds) {
+                ->map(function ($meetingChange) use (&$existingMeetingIds, &$deletedMeetingData, &$deletedMeetingFormatIds, &$seenDeletedMeetingIds) {
                     $serializedMeeting = $meetingChange->before_object;
                     if (is_null($serializedMeeting)) {
                         // This should only occur if the database is messed up, and given the difficulty of setting up a test case
@@ -695,6 +696,13 @@ class SwitcherController extends Controller
                         ->mapWithKeys(fn ($data, $_) => [$data['key'] => $data['data_string'] ?? strval($data['data_bigint'])])
                         ->merge(collect($serializedMeeting['longdata_table_values'])->mapWithKeys(fn ($data, $_) => [$data['key'] => $data['data_blob']]));
 
+                    $serializedFormats = $serializedMeeting['main_table_values']['formats'] ?? '';
+                    $deletedMeetingFormatIds[$meeting->id_bigint] = collect(explode(',', $serializedFormats))
+                        ->map(fn ($id) => trim($id))
+                        ->reject(fn ($id) => $id === '')
+                        ->map(fn ($id) => intval($id))
+                        ->values();
+
                     return $meeting;
                 })
                 ->reject(fn ($meeting) => is_null($meeting));
@@ -722,7 +730,9 @@ class SwitcherController extends Controller
                         ->merge($meeting->longdata->mapWithKeys(fn($data, $_) => [$data->key => $data->data_blob])->toBase());
                 }
 
-                $allMeetingFormatIds = collect(explode(',', $meeting->formats ?? ''));
+                $allMeetingFormatIds = $isDeleted
+                    ? ($deletedMeetingFormatIds[$meeting->id_bigint] ?? collect())
+                    : $meeting->getFormatSharedIds();
                 // list of format world ids
                 $allNawsMeetingFormats = $allMeetingFormatIds
                     ->map(fn ($id) => $formatIdToWorldId->get(intval($id)))

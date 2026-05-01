@@ -6,6 +6,7 @@ use App\FromFileConfig;
 use App\Http\Resources\Query\MeetingResource;
 use App\FromDatabaseConfig;
 use App\Models\Format;
+use App\Models\FormatShared;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
@@ -58,7 +59,13 @@ class GetSearchResultsTest extends TestCase
                 ->mapWithKeys(fn ($value, $_) => [$value->key => $value]);
         }
 
-        $meeting = Meeting::create(array_merge(self::$mainFieldDefaults, $mainFields));
+        $values = array_merge(self::$mainFieldDefaults, $mainFields);
+        $formatIds = isset($values['formats'])
+            ? array_filter(array_map('intval', explode(',', $values['formats'])))
+            : [];
+        unset($values['formats']);
+        $meeting = Meeting::create($values);
+        $meeting->formats()->sync($formatIds);
 
         $dataFields = array_merge(self::$dataFieldDefaults, $dataFields);
         foreach (array_keys($longDataFields) as $fieldName) {
@@ -146,15 +153,17 @@ class GetSearchResultsTest extends TestCase
 
     private function createFormat(int $sharedId, string $keyString, string $nameString, ?string $description = null, string $langEnum = 'en', ?string $worldId = null, string $formatTypeEnum = 'FC')
     {
+        FormatShared::updateOrCreate(
+            ['shared_id_bigint' => $sharedId],
+            ['worldid_mixed' => $worldId, 'format_type_enum' => $formatTypeEnum],
+        );
         return Format::create([
             'shared_id_bigint' => $sharedId,
             'key_string' => $keyString,
             'name_string' => $nameString,
             'lang_enum' => $langEnum,
             'description_string' => $description,
-            'worldid_mixed' => $worldId,
-            'format_type_enum' => $formatTypeEnum,
-        ]);
+        ])->load('shared');
     }
 
     private string $userPassword = 'goodpassword';
@@ -2381,7 +2390,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            'formats' => '',
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,
         ], [
@@ -2451,7 +2460,7 @@ class GetSearchResultsTest extends TestCase
             'weekday_tinyint' => 2,
             'start_time' => '10:00:00',
             'duration_time' => '01:30:00',
-            'formats' => '999',
+            'formats' => '',
             'venue_type' => 2,
             'longitude' => -118.5635721,
             'latitude' => 34.2359759,

@@ -312,9 +312,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingInPersonTemporarilyVirtualCheckFormats()
@@ -343,9 +343,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingVirtualNotTemporaryCheckFormats()
@@ -373,9 +373,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingVirtualButTemporaryCheckFormats()
@@ -404,9 +404,9 @@ class MeetingCreateTest extends TestCase
         $this->assertTrue($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingHybridCheckFormats()
@@ -434,9 +434,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingHybridTemporarilyVirtualCheckFormats()
@@ -465,9 +465,9 @@ class MeetingCreateTest extends TestCase
         $this->assertFalse($data['temporarilyVirtual']);
 
         $meeting = Meeting::find($data['id']);
-        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertContains(strval($hybridFormat->shared_id_bigint), explode(',', $meeting->formats));
-        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), explode(',', $meeting->formats));
+        $this->assertNotContains(strval($virtualFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertContains(strval($hybridFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
+        $this->assertNotContains(strval($temporarilyClosedFormat->shared_id_bigint), $meeting->getFormatSharedIds()->map(fn ($id) => strval($id))->all());
     }
 
     public function testStoreMeetingValidateServiceBodyId()

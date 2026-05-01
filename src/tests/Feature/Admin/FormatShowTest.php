@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
+use App\Models\FormatShared;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FormatShowTest extends TestCase
@@ -11,15 +12,26 @@ class FormatShowTest extends TestCase
 
     private function createFormat(array $values): Format
     {
-        return Format::create(array_merge([
-            'shared_id_bigint' => Format::query()->max('shared_id_bigint') + 1,
+        $merged = array_merge([
+            'shared_id_bigint' => FormatShared::query()->max('shared_id_bigint') + 1,
             'key_string' => 'T',
             'worldid_mixed' => 'test',
             'lang_enum' => 'en',
             'name_string' => 'test',
             'description_string' => 'test',
             'format_type_enum' => 'FC1',
-        ], $values));
+        ], $values);
+        FormatShared::updateOrCreate(
+            ['shared_id_bigint' => $merged['shared_id_bigint']],
+            ['worldid_mixed' => $merged['worldid_mixed'], 'format_type_enum' => $merged['format_type_enum']],
+        );
+        return Format::create([
+            'shared_id_bigint' => $merged['shared_id_bigint'],
+            'key_string' => $merged['key_string'],
+            'lang_enum' => $merged['lang_enum'],
+            'name_string' => $merged['name_string'],
+            'description_string' => $merged['description_string'],
+        ])->load('shared');
     }
 
     public function testShowFormatWorldIdNotNull()

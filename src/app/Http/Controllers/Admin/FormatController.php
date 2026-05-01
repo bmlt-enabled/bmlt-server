@@ -88,7 +88,7 @@ class FormatController extends ResourceController
             $this->formatRepository->getHybridFormat()->shared_id_bigint,
         ])]]);
 
-        if ($format->meetings()->exists()) {
+        if ($format->shared->meetings()->exists()) {
             return new JsonResponse([
                 'message' => 'You cannot delete a format while meetings are using it.'
             ], 409);

@@ -176,14 +176,14 @@ class MeetingPartialUpdateTest extends TestCase
             ->patch("/api/v1/meetings/$meeting->id_bigint", $payload)
             ->assertStatus(204);
         $meeting->refresh();
-        $this->assertEquals('', $meeting->formats);
+        $this->assertEquals('', $meeting->getFormatSharedIds()->join(','));
 
         $payload = ['formatIds' => [$format->shared_id_bigint]];
         $this->withHeader('Authorization', "Bearer $token")
             ->patch("/api/v1/meetings/$meeting->id_bigint", $payload)
             ->assertStatus(204);
         $meeting->refresh();
-        $this->assertEquals(strval($format->shared_id_bigint), $meeting->formats);
+        $this->assertEquals(strval($format->shared_id_bigint), $meeting->getFormatSharedIds()->join(','));
     }
 
     public function testPartialUpdateMeetingValidateServiceBodyId()

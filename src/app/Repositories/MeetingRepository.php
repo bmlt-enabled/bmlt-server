@@ -53,7 +53,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         int $pageSize = null,
         int $pageNum = null,
     ): Collection {
-        $eagerLoadRelations = ['data', 'longdata'];
+        $eagerLoadRelations = ['data', 'longdata', 'formats'];
         if ($eagerServiceBodies) {
             $eagerLoadRelations[] = 'serviceBody';
         }
@@ -110,37 +110,21 @@ class MeetingRepository implements MeetingRepositoryInterface
         if (!is_null($formatsInclude)) {
             if ($formatsComparisonOperator == 'AND') {
                 foreach ($formatsInclude as $formatId) {
-                    $meetings = $meetings->where(function (Builder $query) use ($formatId) {
-                        $query
-                            ->orWhere('formats', "$formatId")
-                            ->orWhere('formats', 'LIKE', "$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                            ->orWhere('formats', 'LIKE', "%,$formatId");
+                    $meetings = $meetings->whereHas('formats', function (Builder $query) use ($formatId) {
+                        $query->where('shared_id_bigint', $formatId);
                     });
                 }
             } else {
-                $meetings = $meetings->where(function (Builder $query) use ($formatsInclude) {
-                    foreach ($formatsInclude as $formatId) {
-                        $query->orWhere(function (Builder $query) use ($formatId) {
-                            $query
-                                ->orWhere('formats', "$formatId")
-                                ->orWhere('formats', 'LIKE', "$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                                ->orWhere('formats', 'LIKE', "%,$formatId");
-                        });
-                    }
+                $meetings = $meetings->whereHas('formats', function (Builder $query) use ($formatsInclude) {
+                    $query->whereIn('shared_id_bigint', $formatsInclude);
                 });
             }
         }
 
         if (!is_null($formatsExclude)) {
-            foreach ($formatsExclude as $formatId) {
-                $meetings = $meetings
-                    ->whereNot('formats', "$formatId")
-                    ->whereNot('formats', 'LIKE', "$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId,%")
-                    ->whereNot('formats', 'LIKE', "%,$formatId");
-            }
+            $meetings = $meetings->whereDoesntHave('formats', function (Builder $query) use ($formatsExclude) {
+                $query->whereIn('shared_id_bigint', $formatsExclude);
+            });
         }
 
         if (!is_null($meetingKey) && !is_null($meetingKeyValue)) {
@@ -149,8 +133,10 @@ class MeetingRepository implements MeetingRepositoryInterface
 
             if (empty($meetingKeyValues)) {
                 $meetings = $meetings->whereRaw('1 = 0');
+            } elseif ($meetingKey == 'formats') {
+                $meetings = $meetings->whereRaw('1 = 0');
             } elseif (in_array($meetingKey, Meeting::$mainFields)) {
-                if ($meetingKey == 'formats' || $meetingKey == 'latitude' || $meetingKey == 'longitude') {
+                if ($meetingKey == 'latitude' || $meetingKey == 'longitude') {
                     $meetings = $meetings->whereRaw('1 = 0');
                 } else {
                     $meetings = $meetings->whereIn($meetingKey, $meetingKeyValues);
@@ -446,41 +432,48 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getFieldValues(string $fieldName, array $specificFormats = [], bool $allFormats = false): Collection
     {
-        if (in_array($fieldName, Meeting::$mainFields)) {
+        if ($fieldName == 'formats') {
+            $specificFormats = array_map(fn ($id) => intval($id), $specificFormats);
             $meetingIdsByValue = Meeting::query()
                 ->where('published', 1)
+                ->with('formats')
                 ->get()
-                ->mapToGroups(function ($meeting, $_) use ($fieldName, $specificFormats, $allFormats) {
-                    $value = $meeting->{$fieldName};
-                    $value = $fieldName == 'worldid_mixed' && $value ? trim($value) : $value;
+                ->mapToGroups(function ($meeting, $_) use ($specificFormats, $allFormats) {
+                    $meetingFormatIds = $meeting->getFormatSharedIds()->all();
 
-                    if ($fieldName == 'formats' && $specificFormats && $value) {
-                        $meetingFormatIds = explode(',', $value);
-                        $commonFormatIds = array_intersect($meetingFormatIds, $specificFormats);
+                    if ($specificFormats && $meetingFormatIds) {
+                        $commonFormatIds = array_values(array_intersect($meetingFormatIds, $specificFormats));
                         if (!$commonFormatIds) {
                             return [null => (string)$meeting->id_bigint];
                         }
-
-                        if ($allFormats) {
-                            if (array_diff($specificFormats, $commonFormatIds)) {
-                                return [null => (string)$meeting->id_bigint];
-                            }
+                        if ($allFormats && array_diff($specificFormats, $commonFormatIds)) {
+                            return [null => (string)$meeting->id_bigint];
                         }
-
                         sort($commonFormatIds, SORT_NUMERIC);
-
                         $value = implode(',', $commonFormatIds);
-                    } elseif ($fieldName == 'weekday_tinyint' && !is_null($value)) {
+                    } else {
+                        $value = implode(',', $meetingFormatIds);
+                    }
+
+                    return [strval($value) => (string)$meeting->id_bigint];
+                })
+                ->reject(fn ($meetingIds, $value) => $specificFormats && $value == '');
+        } elseif (in_array($fieldName, Meeting::$mainFields)) {
+            $meetingIdsByValue = Meeting::query()
+                ->where('published', 1)
+                ->get()
+                ->mapToGroups(function ($meeting, $_) use ($fieldName) {
+                    $value = $meeting->{$fieldName};
+                    $value = $fieldName == 'worldid_mixed' && $value ? trim($value) : $value;
+
+                    if ($fieldName == 'weekday_tinyint' && !is_null($value)) {
                         $value += 1;
                     }
 
                     return [strval($value) => (string)$meeting->id_bigint];
                 })
-                ->reject(function ($meetingIds, $value) use ($fieldName, $specificFormats) {
-                    if (($fieldName == 'duration_time' || $fieldName == 'start_time') && empty($value)) {
-                        return true;
-                    }
-                    return $fieldName == 'formats' && $specificFormats && $value == '';
+                ->reject(function ($meetingIds, $value) use ($fieldName) {
+                    return ($fieldName == 'duration_time' || $fieldName == 'start_time') && empty($value);
                 });
         } else {
             $meetingIdsByValue = MeetingData::query()
@@ -519,7 +512,7 @@ class MeetingRepository implements MeetingRepositoryInterface
 
     public function getMainFields(): Collection
     {
-        return collect(Meeting::$mainFields);
+        return collect(Meeting::$mainFields)->push('formats');
     }
 
     public function getCustomFields(): Collection
@@ -627,12 +620,14 @@ class MeetingRepository implements MeetingRepositoryInterface
     {
         $values = collect($values);
         $values->put('lang_enum', App::currentLocale());
+        $formatIds = $this->extractFormatIds($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($mainValues, $dataValues, $dataTemplates, $formatIds) {
             $meeting = Meeting::create($mainValues);
+            $meeting->formats()->sync($formatIds);
             foreach ($dataValues as $fieldName => $fieldValue) {
                 $t = $dataTemplates->get($fieldName);
                 if (strlen($fieldValue) > 255) {
@@ -665,46 +660,63 @@ class MeetingRepository implements MeetingRepositoryInterface
     public function update(int $id, array $values): bool
     {
         $values = collect($values);
+        $formatIds = $this->extractFormatIds($values);
         $mainValues = $values->reject(fn ($_, $fieldName) => !in_array($fieldName, Meeting::$mainFields))->toArray();
         $dataTemplates = $this->getDataTemplates();
         $dataValues = $values->reject(fn ($_, $fieldName) => !$dataTemplates->has($fieldName));
 
-        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates) {
+        return DB::transaction(function () use ($id, $mainValues, $dataValues, $dataTemplates, $formatIds) {
             $meeting = Meeting::find($id);
-            $meeting->loadMissing(['data', 'longdata']);
-            if (!is_null($meeting)) {
-                Meeting::query()->where('id_bigint', $id)->update($mainValues);
-                MeetingData::query()->where('meetingid_bigint', $id)->delete();
-                MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
-                foreach ($dataValues as $fieldName => $fieldValue) {
-                    $t = $dataTemplates->get($fieldName);
-                    if (strlen($fieldValue) > 255) {
-                        MeetingLongData::create([
-                            'meetingid_bigint' => $meeting->id_bigint,
-                            'key' => $t->key,
-                            'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
-                            'data_blob' => $fieldValue,
-                            'visibility' => $t->visibility,
-                        ]);
-                    } else {
-                        MeetingData::create([
-                            'meetingid_bigint' => $meeting->id_bigint,
-                            'key' => $t->key,
-                            'field_prompt' => $t->field_prompt,
-                            'lang_enum' => $t->lang_enum,
-                            'data_string' => $fieldValue,
-                            'visibility' => $t->visibility,
-                        ]);
-                    }
-                }
-                if (!file_config('aggregator_mode_enabled')) {
-                    $this->saveChange($meeting, Meeting::find($id));
-                }
-                return true;
+            if (is_null($meeting)) {
+                return false;
             }
-            return false;
+            $meeting->loadMissing(['data', 'longdata', 'formats']);
+            Meeting::query()->where('id_bigint', $id)->update($mainValues);
+            $meeting->formats()->sync($formatIds);
+            MeetingData::query()->where('meetingid_bigint', $id)->delete();
+            MeetingLongData::query()->where('meetingid_bigint', $id)->delete();
+            foreach ($dataValues as $fieldName => $fieldValue) {
+                $t = $dataTemplates->get($fieldName);
+                if (strlen($fieldValue) > 255) {
+                    MeetingLongData::create([
+                        'meetingid_bigint' => $meeting->id_bigint,
+                        'key' => $t->key,
+                        'field_prompt' => $t->field_prompt,
+                        'lang_enum' => $t->lang_enum,
+                        'data_blob' => $fieldValue,
+                        'visibility' => $t->visibility,
+                    ]);
+                } else {
+                    MeetingData::create([
+                        'meetingid_bigint' => $meeting->id_bigint,
+                        'key' => $t->key,
+                        'field_prompt' => $t->field_prompt,
+                        'lang_enum' => $t->lang_enum,
+                        'data_string' => $fieldValue,
+                        'visibility' => $t->visibility,
+                    ]);
+                }
+            }
+            if (!file_config('aggregator_mode_enabled')) {
+                $this->saveChange($meeting, Meeting::with(['data', 'longdata', 'formats'])->find($id));
+            }
+            return true;
         });
+    }
+
+    private function extractFormatIds(Collection $values): array
+    {
+        $formatIds = $values->pull('formats', []);
+        if (is_null($formatIds)) {
+            return [];
+        }
+        return collect($formatIds)
+            ->map(fn ($id) => intval($id))
+            ->reject(fn ($id) => $id <= 0)
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
     }
 
     public function delete(int $id): bool
@@ -790,7 +802,7 @@ class MeetingRepository implements MeetingRepositoryInterface
                 'longitude' => $meeting->longitude,
                 'latitude' => $meeting->latitude,
                 'published' => $meeting->published,
-                'formats' => $meeting->formats,
+                'formats' => $meeting->getFormatSharedIds()->join(','),
             ]),
             'data_table_values' => serialize(
                 $meeting->data
@@ -893,10 +905,11 @@ class MeetingRepository implements MeetingRepositoryInterface
             'formats' => collect($externalMeeting->formatIds)
                 ->map(fn ($id) => $formatSourceIdToSharedIdMap->get($id))
                 ->reject(fn ($id) => is_null($id))
-                ->sort()
+                ->map(fn ($id) => intval($id))
                 ->unique()
+                ->sort()
                 ->values()
-                ->join(','),
+                ->all(),
             'venue_type' => $externalMeeting->venueType,
             'weekday_tinyint' => $externalMeeting->weekdayId - 1,
             'start_time' => $externalMeeting->startTime,

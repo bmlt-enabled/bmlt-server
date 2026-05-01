@@ -57,8 +57,7 @@ class MeetingResource extends JsonResource
                     ->toBase()
             );
 
-        $formatIds = empty($this->formats) ? collect([]) : collect(explode(',', $this->formats))
-            ->map(fn ($id) => intval($id))
+        $formatIds = $this->resource->getFormatSharedIds()
             ->reject(fn ($id) => !self::$formatsById->has($id))
             ->sort();
 

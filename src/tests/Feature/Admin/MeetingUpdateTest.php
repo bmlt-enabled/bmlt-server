@@ -59,8 +59,7 @@ class MeetingUpdateTest extends TestCase
                     ->toBase()
             );
 
-        $formatIds = empty($this->formats) ? collect([]) : collect(explode(',', $this->formats))
-            ->map(fn ($id) => intval($id))
+        $formatIds = $meeting->getFormatSharedIds()
             ->reject(fn ($id) => !self::$formatsById->has($id))
             ->sort();
 

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Interfaces\FormatRepositoryInterface;
 use App\Interfaces\MeetingRepositoryInterface;
+use App\Models\FormatShared;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -36,22 +37,23 @@ class MergeFormats extends Command
 
         $meetings = $meetingRepository->getSearchResults(formatsInclude: $formatIds, formatsComparisonOperator: 'OR');
 
-        DB::transaction(function () use ($meetings, $formatIds, $targetFormatId, $formats) {
+        DB::transaction(function () use ($meetings, $formatIds, $targetFormatId) {
             foreach ($meetings as $meeting) {
-                $newFormats = collect(explode(',', $meeting->formats))
-                    ->map(fn ($formatId) => intval($formatId))
-                    ->reject(fn($formatId) => in_array($formatId, $formatIds))
+                $oldIds = $meeting->getFormatSharedIds()->all();
+                $newIds = collect($oldIds)
+                    ->reject(fn ($id) => in_array($id, $formatIds))
                     ->concat([$targetFormatId])
                     ->unique()
                     ->sort()
-                    ->join(',');
-                $this->info("$meeting->id_bigint: $meeting->formats -> $newFormats");
-                $meeting->update(['formats' => $newFormats]);
+                    ->values()
+                    ->all();
+                $this->info("$meeting->id_bigint: " . implode(',', $oldIds) . " -> " . implode(',', $newIds));
+                $meeting->formats()->sync($newIds);
             }
 
-            foreach ($formats as $format) {
-                $format->delete();
-                $this->info("deleted format $format->shared_id_bigint");
+            FormatShared::query()->whereIn('shared_id_bigint', $formatIds)->delete();
+            foreach ($formatIds as $formatId) {
+                $this->info("deleted format $formatId");
             }
         });
     }

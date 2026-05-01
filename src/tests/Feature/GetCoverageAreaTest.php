@@ -40,7 +40,13 @@ class GetCoverageAreaTest extends TestCase
                 ->mapWithKeys(fn ($value, $_) => [$value->key => $value]);
         }
 
-        $meeting = Meeting::create(array_merge(self::$mainFieldDefaults, $mainFields));
+        $values = array_merge(self::$mainFieldDefaults, $mainFields);
+        $formatIds = isset($values['formats'])
+            ? array_filter(array_map('intval', explode(',', $values['formats'])))
+            : [];
+        unset($values['formats']);
+        $meeting = Meeting::create($values);
+        $meeting->formats()->sync($formatIds);
 
         $dataFields = array_merge(self::$dataFieldDefaults, $dataFields);
         foreach (array_keys($longDataFields) as $fieldName) {

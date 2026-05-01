@@ -35,7 +35,6 @@ class Meeting extends Model
         'start_time',
         'duration_time',
         'time_zone',
-        'formats',
         'lang_enum',
         'longitude',
         'latitude',
@@ -52,7 +51,6 @@ class Meeting extends Model
         'start_time',
         'duration_time',
         'time_zone',
-        'formats',
         'lang_enum',
         'longitude',
         'latitude',
@@ -97,6 +95,23 @@ class Meeting extends Model
         return $this->hasMany(MeetingLongData::class, 'meetingid_bigint');
     }
 
+    public function formats()
+    {
+        return $this->belongsToMany(
+            FormatShared::class,
+            'comdef_meetings_formats',
+            'meeting_id_bigint',
+            'format_shared_id_bigint',
+            'id_bigint',
+            'shared_id_bigint',
+        );
+    }
+
+    public function getFormatSharedIds(): Collection
+    {
+        return $this->formats->pluck('shared_id_bigint')->sort()->values();
+    }
+
     private ?string $calculatedFormatKeys = null;
     private function setCalculatedFormatKeys(string $formatKeyStrings)
     {
@@ -121,11 +136,10 @@ class Meeting extends Model
 
     public function calculateFormatsFields(Collection $formatsById)
     {
-        if (is_null($this->formats) || $this->formats == '') {
+        $formatIds = $this->getFormatSharedIds();
+        if ($formatIds->isEmpty()) {
             return;
         }
-
-        $formatIds = explode(',', $this->formats);
 
         $calculatedFormats = [];
         foreach ($formatIds as $formatId) {

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Format extends Model
@@ -14,21 +14,15 @@ class Format extends Model
     {
         return [
             'shared_id_bigint' => 'integer',
-            'root_server_id' => 'integer',
-            'source_id' => 'integer',
         ];
     }
 
     protected $fillable = [
-        'root_server_id',
-        'source_id',
         'shared_id_bigint',
         'key_string',
-        'worldid_mixed',
         'lang_enum',
         'name_string',
         'description_string',
-        'format_type_enum',
     ];
 
     public function getRouteKeyName()
@@ -36,9 +30,9 @@ class Format extends Model
         return 'shared_id_bigint';
     }
 
-    public function rootServer()
+    public function shared()
     {
-        return $this->belongsTo(RootServer::class, 'root_server_id');
+        return $this->belongsTo(FormatShared::class, 'shared_id_bigint', 'shared_id_bigint');
     }
 
     public function translations()
@@ -48,16 +42,28 @@ class Format extends Model
             ->orderBy('lang_enum');
     }
 
-    public function meetings()
+    protected function rootServerId(): Attribute
     {
-        // TODO once we fix the database schema, these will be proper fks, and we can simply do a $this->hasMany
-        $formatId = $this->attributes['shared_id_bigint'];
-        return Meeting::query()->where(function (Builder $query) use ($formatId) {
-            $query
-                ->orWhere('formats', "$formatId")
-                ->orWhere('formats', 'LIKE', "$formatId,%")
-                ->orWhere('formats', 'LIKE', "%,$formatId,%")
-                ->orWhere('formats', 'LIKE', "%,$formatId");
-        });
+        return Attribute::get(fn () => $this->shared?->root_server_id);
+    }
+
+    protected function sourceId(): Attribute
+    {
+        return Attribute::get(fn () => $this->shared?->source_id);
+    }
+
+    protected function worldidMixed(): Attribute
+    {
+        return Attribute::get(fn () => $this->shared?->worldid_mixed);
+    }
+
+    protected function iconBlob(): Attribute
+    {
+        return Attribute::get(fn () => $this->shared?->icon_blob);
+    }
+
+    protected function formatTypeEnum(): Attribute
+    {
+        return Attribute::get(fn () => $this->shared?->format_type_enum);
     }
 }

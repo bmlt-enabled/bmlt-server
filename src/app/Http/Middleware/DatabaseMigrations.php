@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2026_04_18_000000_clean_orphaned_format_ids_rerun')) {
+        if (!$this->migrationRepository->migrationExists('2026_04_30_000000_normalize_formats')) {
             return true;
         }
 

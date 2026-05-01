@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Models\Format;
+use App\Models\FormatShared;
 use App\Models\Meeting;
 use App\Models\MeetingData;
 use App\Models\MeetingLongData;
@@ -66,8 +66,10 @@ class ExternalMeetingTest extends TestCase
             'latitude' => $validValues['latitude'],
             'worldid_mixed' => $validValues['worldid_mixed'],
             'published' => $validValues['published'],
-            'formats' => implode(',', $formatSharedIds),
         ]);
+        $meeting->setRelation('formats', collect($formatSharedIds)->map(
+            fn ($id) => new FormatShared(['shared_id_bigint' => intval($id)])
+        ));
 
         $meeting->data = collect($validValues)
             ->reject(fn ($value, $fieldName) => !in_array($fieldName, MeetingData::STOCK_FIELDS) || strlen($value) > 255)
@@ -99,11 +101,11 @@ class ExternalMeetingTest extends TestCase
         return $serviceBody;
     }
 
-    private function getFormat(int $sharedId, int $sourceId): Format
+    private function getFormat(int $sharedId, int $sourceId): FormatShared
     {
-        return new Format([
-            'source_id' => $sourceId,
+        return new FormatShared([
             'shared_id_bigint' => $sharedId,
+            'source_id' => $sourceId,
         ]);
     }
 

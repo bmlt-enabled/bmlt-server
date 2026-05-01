@@ -3,6 +3,7 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Format;
+use App\Models\FormatShared;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
@@ -44,17 +45,20 @@ class FormatUpdateTest extends TestCase
 
     private function createFormats(): Collection
     {
-        $nextId = Format::query()->max('shared_id_bigint') + 1;
+        $nextId = FormatShared::query()->max('shared_id_bigint') + 1;
+        FormatShared::create([
+            'shared_id_bigint' => $nextId,
+            'worldid_mixed' => 'OPENen',
+            'format_type_enum' => 'FC3',
+        ]);
         return collect(['en', 'es'])->map(function ($lang) use ($nextId) {
             return Format::create([
                 'shared_id_bigint' => $nextId,
                 'key_string' => 'O' . $lang,
                 'name_string' => 'Open' . $lang,
                 'description_string' => 'Open Description' . $lang,
-                'worldid_mixed' => 'OPEN' . $lang,
-                'format_type_enum' => 'FC3',
                 'lang_enum' => $lang,
-            ]);
+            ])->load('shared');
         });
     }
 

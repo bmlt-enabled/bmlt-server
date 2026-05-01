@@ -4,6 +4,7 @@ namespace Tests\Feature\Aggregator;
 
 use App\FromFileConfig;
 use App\Models\Format;
+use App\Models\FormatShared;
 use App\Repositories\External\ExternalFormat;
 use App\Repositories\FormatRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,7 +52,7 @@ class ImportFormatTest extends TestCase
     public function testCreate()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
-        Format::query()->delete();
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
 
@@ -78,7 +79,7 @@ class ImportFormatTest extends TestCase
     public function testUpdate()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
-        Format::query()->delete();
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
         $rootServer2 = $this->createRootServer(2);
@@ -119,7 +120,7 @@ class ImportFormatTest extends TestCase
     public function testDelete()
     {
         FromFileConfig::set('aggregator_mode_enabled', true);
-        Format::query()->delete();
+        FormatShared::query()->delete();
 
         $rootServer1 = $this->createRootServer(1);
 

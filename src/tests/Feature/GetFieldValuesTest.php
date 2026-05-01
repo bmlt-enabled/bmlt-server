@@ -14,13 +14,14 @@ class GetFieldValuesTest extends TestCase
 
     private function createMeeting($fieldName, $fieldValue)
     {
-        $fields = array_merge(
-            [
-                'published' => 1,
-                'service_body_bigint' => 1
-            ],
-            [$fieldName => $fieldValue],
-        );
+        $fields = ['published' => 1, 'service_body_bigint' => 1];
+        if ($fieldName === 'formats') {
+            $meeting = Meeting::create($fields);
+            $formatIds = is_null($fieldValue) ? [] : array_filter(array_map('intval', explode(',', $fieldValue)));
+            $meeting->formats()->sync($formatIds);
+            return $meeting;
+        }
+        $fields[$fieldName] = $fieldValue;
         return Meeting::create($fields);
     }
 
@@ -94,7 +95,7 @@ class GetFieldValuesTest extends TestCase
 
     public function testStringMainFields()
     {
-        $mainFields = ['worldid_mixed', 'time_zone', 'lang_enum', 'formats'];
+        $mainFields = ['worldid_mixed', 'time_zone', 'lang_enum'];
 
         foreach ($mainFields as $fieldName) {
             try {
