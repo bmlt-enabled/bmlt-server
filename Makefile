@@ -139,8 +139,8 @@ coverage-serve:  ## Serves HTML Coverage Report
 	python3 -m http.server 8100 --directory src/tests/reports/coverage
 
 .PHONY: generate-api-json
-generate-api-json: ## Generates Open API JSON
-	$(TEST_PREFIX) php artisan l5-swagger:generate
+generate-api-json: ## Generates Open API JSON (admin + semantic docs)
+	$(TEST_PREFIX) php artisan l5-swagger:generate --all
 
 .PHONY: lint
 lint:  ## PHP Lint

@@ -1,0 +1,1370 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "BMLT Semantic API",
+        "description": "OpenAPI description of the BMLT Semantic Interface (the read-only meeting-query API) for the JSON data format.\n\nThe semantic interface dispatches all operations from a single endpoint (`/client_interface/json/`) using a `switcher` query parameter. To keep each operation discoverable, this spec models each `switcher` value as a distinct path key with the query string baked in. Tools such as Swagger UI, Redoc, and openapi-generator handle these path keys correctly even though the OpenAPI spec technically expects unique URL paths.\n\n### Things that do not map cleanly onto OpenAPI\n\n- **PHP array syntax** — repeatable array parameters use trailing `[]` in the name (`weekdays[]=2&weekdays[]=3`).\n- **Sign-as-operator** — many filters (`formats`, `services`, `weekdays`, `venue_types`, `meeting_ids`, `root_server_ids`, `format_ids`) use *positive* values to include and *negative* values to exclude. JSON Schema cannot enforce that semantics; it is documented per parameter.\n- **Cross-parameter constraints** — in aggregator mode `GetSearchResults` requires at least one filter parameter. Invalid combinations typically return an empty array `[]` instead of an HTTP error.\n- **Empty-array errors** — many endpoints return `[]` for invalid input rather than a 4xx response body.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "L5_SWAGGER_CONST_HOST",
+            "description": "this server"
+        }
+    ],
+    "paths": {
+        "/client_interface/json/?switcher=GetFieldKeys": {
+            "get": {
+                "tags": [
+                    "Fields"
+                ],
+                "summary": "Get all available field keys",
+                "operationId": "getFieldKeys",
+                "responses": {
+                    "200": {
+                        "description": "List of field key descriptors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "key": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetFieldValues": {
+            "get": {
+                "tags": [
+                    "Fields"
+                ],
+                "summary": "Get distinct values for a field",
+                "operationId": "getFieldValues",
+                "parameters": [
+                    {
+                        "name": "meeting_key",
+                        "in": "query",
+                        "description": "Field key whose distinct values should be returned.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "location_municipality"
+                        }
+                    },
+                    {
+                        "name": "specific_formats",
+                        "in": "query",
+                        "description": "Comma-separated list of format IDs to limit the field values to.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "all_formats",
+                        "in": "query",
+                        "description": "Set to `1` to include all formats (not just `specific_formats`).",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "0",
+                                "1"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of distinct values with usage counts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "ids": {
+                                                "type": "string"
+                                            },
+                                            "meeting_key_value": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/SemBadRequest"
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetFormats": {
+            "get": {
+                "tags": [
+                    "Formats"
+                ],
+                "summary": "Get meeting formats",
+                "operationId": "getSemanticFormats",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SemLangEnum"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemShowAll"
+                    },
+                    {
+                        "name": "format_ids",
+                        "in": "query",
+                        "description": "Format IDs to include (positive) or exclude (negative). Comma-separated.",
+                        "schema": {
+                            "type": "string",
+                            "example": "1,2,-3"
+                        }
+                    },
+                    {
+                        "name": "key_strings",
+                        "in": "query",
+                        "description": "Format key strings to filter by. Comma-separated.",
+                        "schema": {
+                            "type": "string",
+                            "example": "O,C"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of formats",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SemanticFormat"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetSearchResults": {
+            "get": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Search for meetings",
+                "description": "Search meetings with extensive filtering (location, day, time, format, service body, text). In aggregator mode at least one filter parameter is required, otherwise the response will be an empty array.",
+                "operationId": "getSearchResults",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SemMeetingIds"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMeetingIdsArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemWeekdays"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemWeekdaysArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemVenueTypes"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemVenueTypesArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemFormats"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemFormatsArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemFormatsComparisonOperator"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemServices"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemServicesArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRecursive"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemGetUsedFormats"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemGetFormatsOnly"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemSearchString"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemStringSearchIsAnAddress"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemSearchStringRadius"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemStartsAfterH"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemStartsAfterM"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemStartsBeforeH"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemStartsBeforeM"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemEndsBeforeH"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemEndsBeforeM"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMinDurationH"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMinDurationM"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMaxDurationH"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMaxDurationM"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemLatVal"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemLongVal"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemGeoWidth"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemGeoWidthKm"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemSortResultsByDistance"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMeetingKeyFilter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemMeetingKeyValue"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemDataFieldKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemSortKeys"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemSortKey"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemPageSize"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemPageNum"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemAdvancedPublished"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemLangEnum"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRootServerIds"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRootServerIdsArray"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Meeting search results. May be a bare array of meetings, an array of formats when `get_formats_only=1`, or a `{meetings, formats}` envelope when `get_used_formats=1`.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SemanticMeeting"
+                                            }
+                                        },
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SemanticFormat"
+                                            }
+                                        },
+                                        {
+                                            "properties": {
+                                                "meetings": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/SemanticMeeting"
+                                                    }
+                                                },
+                                                "formats": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/SemanticFormat"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/SemBadRequest"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/SemServerError"
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetChanges": {
+            "get": {
+                "tags": [
+                    "Meetings"
+                ],
+                "summary": "Get meeting changes within a date range",
+                "operationId": "getChanges",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "Start date (inclusive) in YYYY-MM-DD format.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "End date (inclusive) in YYYY-MM-DD format.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "meeting_id",
+                        "in": "query",
+                        "description": "Restrict to changes for a single meeting.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "service_body_id",
+                        "in": "query",
+                        "description": "Restrict to changes within a single service body.",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of meeting changes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SemanticMeetingChange"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetServerInfo": {
+            "get": {
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Get server information",
+                "operationId": "getSemanticServerInfo",
+                "responses": {
+                    "200": {
+                        "description": "Server metadata such as version, language, semantic admin URL, etc.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SemanticServerInfo"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetCoverageArea": {
+            "get": {
+                "tags": [
+                    "Server"
+                ],
+                "summary": "Get the geographic coverage bounding box for this server",
+                "operationId": "getCoverageArea",
+                "responses": {
+                    "200": {
+                        "description": "Bounding box for the area covered by this server's meetings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "nw_corner_longitude": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "nw_corner_latitude": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "se_corner_longitude": {
+                                            "type": "number",
+                                            "format": "float"
+                                        },
+                                        "se_corner_latitude": {
+                                            "type": "number",
+                                            "format": "float"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client_interface/json/?switcher=GetServiceBodies": {
+            "get": {
+                "tags": [
+                    "Service Bodies"
+                ],
+                "summary": "Get service bodies",
+                "operationId": "getSemanticServiceBodies",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/SemServices"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemServicesArray"
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRecursive"
+                    },
+                    {
+                        "name": "parents",
+                        "in": "query",
+                        "description": "Set to `1` to include parent service bodies in the result.",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "0",
+                                "1"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of service bodies",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SemanticServiceBody"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "SemanticMeeting": {
+                "description": "A meeting record. The actual field set depends on the server's enabled fields and the `data_field_key` parameter.",
+                "properties": {
+                    "id_bigint": {
+                        "description": "Numeric meeting ID, returned as a string.",
+                        "type": "string"
+                    },
+                    "worldid_mixed": {
+                        "description": "NAWS world committee code.",
+                        "type": "string"
+                    },
+                    "shared_group_id_bigint": {
+                        "type": "string"
+                    },
+                    "service_body_bigint": {
+                        "type": "string"
+                    },
+                    "weekday_tinyint": {
+                        "description": "1=Sunday … 7=Saturday.",
+                        "type": "string"
+                    },
+                    "venue_type": {
+                        "description": "1=In-person, 2=Virtual, 3=Hybrid.",
+                        "type": "string"
+                    },
+                    "start_time": {
+                        "description": "Local start time, HH:MM:SS.",
+                        "type": "string"
+                    },
+                    "duration_time": {
+                        "description": "Duration, HH:MM:SS.",
+                        "type": "string"
+                    },
+                    "time_zone": {
+                        "type": "string"
+                    },
+                    "formats": {
+                        "description": "Comma-separated format key strings.",
+                        "type": "string"
+                    },
+                    "lang_enum": {
+                        "type": "string"
+                    },
+                    "longitude": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": "string"
+                    },
+                    "distance_in_km": {
+                        "description": "Present only when sorting by distance.",
+                        "type": "string"
+                    },
+                    "distance_in_miles": {
+                        "description": "Present only when sorting by distance.",
+                        "type": "string"
+                    },
+                    "meeting_name": {
+                        "type": "string"
+                    },
+                    "location_text": {
+                        "type": "string"
+                    },
+                    "location_info": {
+                        "type": "string"
+                    },
+                    "location_street": {
+                        "type": "string"
+                    },
+                    "location_city_subsection": {
+                        "type": "string"
+                    },
+                    "location_neighborhood": {
+                        "type": "string"
+                    },
+                    "location_municipality": {
+                        "type": "string"
+                    },
+                    "location_sub_province": {
+                        "type": "string"
+                    },
+                    "location_province": {
+                        "type": "string"
+                    },
+                    "location_postal_code_1": {
+                        "type": "string"
+                    },
+                    "location_nation": {
+                        "type": "string"
+                    },
+                    "comments": {
+                        "type": "string"
+                    },
+                    "train_lines": {
+                        "type": "string"
+                    },
+                    "bus_lines": {
+                        "type": "string"
+                    },
+                    "phone_meeting_number": {
+                        "type": "string"
+                    },
+                    "virtual_meeting_link": {
+                        "type": "string"
+                    },
+                    "virtual_meeting_additional_info": {
+                        "type": "string"
+                    },
+                    "contact_name_1": {
+                        "type": "string"
+                    },
+                    "contact_phone_1": {
+                        "type": "string"
+                    },
+                    "contact_email_1": {
+                        "type": "string"
+                    },
+                    "root_server_id": {
+                        "description": "Aggregator mode only — ID of the root server this meeting came from.",
+                        "type": "string"
+                    },
+                    "root_server_uri": {
+                        "type": "string"
+                    },
+                    "format_shared_id_list": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            },
+            "SemanticFormat": {
+                "properties": {
+                    "key_string": {
+                        "type": "string"
+                    },
+                    "name_string": {
+                        "type": "string"
+                    },
+                    "description_string": {
+                        "type": "string"
+                    },
+                    "lang": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "world_id": {
+                        "type": "string"
+                    },
+                    "root_server_id": {
+                        "description": "Aggregator mode only.",
+                        "type": "string"
+                    },
+                    "root_server_uri": {
+                        "description": "Aggregator mode only.",
+                        "type": "string"
+                    },
+                    "format_type_enum": {
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            },
+            "SemanticServiceBody": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "parent_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "helpline": {
+                        "type": "string"
+                    },
+                    "world_id": {
+                        "type": "string"
+                    },
+                    "root_server_id": {
+                        "description": "Aggregator mode only.",
+                        "type": "string"
+                    },
+                    "root_server_uri": {
+                        "description": "Aggregator mode only.",
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            },
+            "SemanticMeetingChange": {
+                "properties": {
+                    "date_int": {
+                        "description": "Unix timestamp of the change.",
+                        "type": "string"
+                    },
+                    "date_string": {
+                        "type": "string"
+                    },
+                    "change_type": {
+                        "description": "e.g. comdef_change_type_change, comdef_change_type_new, comdef_change_type_delete.",
+                        "type": "string"
+                    },
+                    "meeting_id": {
+                        "type": "string"
+                    },
+                    "meeting_name": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "user_name": {
+                        "type": "string"
+                    },
+                    "service_body_id": {
+                        "type": "string"
+                    },
+                    "service_body_name": {
+                        "type": "string"
+                    },
+                    "details": {
+                        "description": "Per-field before/after values for change events.",
+                        "type": "object",
+                        "additionalProperties": true
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            },
+            "SemanticServerInfo": {
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "versionInt": {
+                        "type": "string"
+                    },
+                    "langs": {
+                        "description": "Comma-separated language codes.",
+                        "type": "string"
+                    },
+                    "nativeLang": {
+                        "type": "string"
+                    },
+                    "centerLongitude": {
+                        "type": "string"
+                    },
+                    "centerLatitude": {
+                        "type": "string"
+                    },
+                    "centerZoom": {
+                        "type": "string"
+                    },
+                    "defaultDuration": {
+                        "type": "string"
+                    },
+                    "regionBias": {
+                        "type": "string"
+                    },
+                    "charSet": {
+                        "type": "string"
+                    },
+                    "distanceUnits": {
+                        "type": "string",
+                        "enum": [
+                            "mi",
+                            "km"
+                        ]
+                    },
+                    "semanticAdmin": {
+                        "type": "string"
+                    },
+                    "emailEnabled": {
+                        "type": "string"
+                    },
+                    "emailIncludesServiceBodies": {
+                        "type": "string"
+                    },
+                    "changesPerMeeting": {
+                        "type": "string"
+                    },
+                    "meeting_states_and_provinces": {
+                        "type": "string"
+                    },
+                    "meeting_counties_and_sub_provinces": {
+                        "type": "string"
+                    },
+                    "available_keys": {
+                        "description": "Comma-separated list of field keys exposed by this server.",
+                        "type": "string"
+                    },
+                    "google_api_key": {
+                        "type": "string"
+                    },
+                    "aggregator_mode_enabled": {
+                        "description": "`1` / `true` if this server is running in aggregator mode.",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            },
+            "SemanticError": {
+                "properties": {
+                    "error": {
+                        "description": "Human-readable error message.",
+                        "type": "string"
+                    }
+                },
+                "type": "object",
+                "additionalProperties": true
+            }
+        },
+        "responses": {
+            "SemBadRequest": {
+                "description": "Bad request — usually a missing required parameter.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/SemanticError"
+                        }
+                    }
+                }
+            },
+            "SemServerError": {
+                "description": "Internal server error — for example, a geocoding failure when `StringSearchIsAnAddress=1`.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/SemanticError"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "SemMeetingIds": {
+                "name": "meeting_ids",
+                "in": "query",
+                "description": "Comma-separated meeting IDs. Positive values include, negative values exclude (e.g. `123,456,-789`).",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemMeetingIdsArray": {
+                "name": "meeting_ids[]",
+                "in": "query",
+                "description": "Repeatable form of `meeting_ids`. Positive includes, negative excludes.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "SemWeekdays": {
+                "name": "weekdays",
+                "in": "query",
+                "description": "Days of week as comma-separated values. 1=Sunday … 7=Saturday. Negative values exclude.",
+                "schema": {
+                    "type": "string",
+                    "example": "2,3,4"
+                }
+            },
+            "SemWeekdaysArray": {
+                "name": "weekdays[]",
+                "in": "query",
+                "description": "Repeatable form of `weekdays`. 1=Sunday … 7=Saturday. Negative values exclude.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "maximum": 7,
+                        "minimum": -7
+                    }
+                }
+            },
+            "SemVenueTypes": {
+                "name": "venue_types",
+                "in": "query",
+                "description": "Venue type filter, comma-separated. 1=In-person, 2=Virtual, 3=Hybrid. Negative values exclude.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemVenueTypesArray": {
+                "name": "venue_types[]",
+                "in": "query",
+                "description": "Repeatable form of `venue_types`. Negative values exclude.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "enum": [
+                            -3,
+                            -2,
+                            -1,
+                            1,
+                            2,
+                            3
+                        ]
+                    }
+                }
+            },
+            "SemFormats": {
+                "name": "formats",
+                "in": "query",
+                "description": "Format IDs as comma-separated values. Positive includes, negative excludes.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemFormatsArray": {
+                "name": "formats[]",
+                "in": "query",
+                "description": "Repeatable form of `formats`. Positive includes, negative excludes.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "SemFormatsComparisonOperator": {
+                "name": "formats_comparison_operator",
+                "in": "query",
+                "description": "Logical operator for combining multiple `formats` values. Defaults to AND.",
+                "schema": {
+                    "type": "string",
+                    "default": "AND",
+                    "enum": [
+                        "AND",
+                        "OR"
+                    ]
+                }
+            },
+            "SemServices": {
+                "name": "services",
+                "in": "query",
+                "description": "Service body IDs as comma-separated values. Positive includes, negative excludes.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemServicesArray": {
+                "name": "services[]",
+                "in": "query",
+                "description": "Repeatable form of `services`. Positive includes, negative excludes.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "SemRecursive": {
+                "name": "recursive",
+                "in": "query",
+                "description": "Set to `1` to include child service bodies when filtering by `services`.",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemGetUsedFormats": {
+                "name": "get_used_formats",
+                "in": "query",
+                "description": "Set to `1` to also return the formats used by the matched meetings (alters response shape to `{meetings, formats}`).",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemGetFormatsOnly": {
+                "name": "get_formats_only",
+                "in": "query",
+                "description": "Set to `1` to return only the formats and omit the meetings (requires `get_used_formats=1`).",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemSearchString": {
+                "name": "SearchString",
+                "in": "query",
+                "description": "Free-text search string. URL-encode the value.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemStringSearchIsAnAddress": {
+                "name": "StringSearchIsAnAddress",
+                "in": "query",
+                "description": "Set to `1` to interpret `SearchString` as an address to geocode. Requires a Google API key on the server.",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemSearchStringRadius": {
+                "name": "SearchStringRadius",
+                "in": "query",
+                "description": "Radius for address searches. Positive = distance (miles or km depending on server). Negative integer = auto-radius.",
+                "schema": {
+                    "type": "number"
+                }
+            },
+            "SemStartsAfterH": {
+                "name": "StartsAfterH",
+                "in": "query",
+                "description": "Earliest start hour (0–23).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 23,
+                    "minimum": 0
+                }
+            },
+            "SemStartsAfterM": {
+                "name": "StartsAfterM",
+                "in": "query",
+                "description": "Earliest start minute (0–59).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0
+                }
+            },
+            "SemStartsBeforeH": {
+                "name": "StartsBeforeH",
+                "in": "query",
+                "description": "Latest start hour (0–23).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 23,
+                    "minimum": 0
+                }
+            },
+            "SemStartsBeforeM": {
+                "name": "StartsBeforeM",
+                "in": "query",
+                "description": "Latest start minute (0–59).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0
+                }
+            },
+            "SemEndsBeforeH": {
+                "name": "EndsBeforeH",
+                "in": "query",
+                "description": "Latest end hour (0–23).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 23,
+                    "minimum": 0
+                }
+            },
+            "SemEndsBeforeM": {
+                "name": "EndsBeforeM",
+                "in": "query",
+                "description": "Latest end minute (0–59).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0
+                }
+            },
+            "SemMinDurationH": {
+                "name": "MinDurationH",
+                "in": "query",
+                "description": "Minimum duration, hours portion.",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "SemMinDurationM": {
+                "name": "MinDurationM",
+                "in": "query",
+                "description": "Minimum duration, minutes portion (0–59).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0
+                }
+            },
+            "SemMaxDurationH": {
+                "name": "MaxDurationH",
+                "in": "query",
+                "description": "Maximum duration, hours portion.",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "SemMaxDurationM": {
+                "name": "MaxDurationM",
+                "in": "query",
+                "description": "Maximum duration, minutes portion (0–59).",
+                "schema": {
+                    "type": "integer",
+                    "maximum": 59,
+                    "minimum": 0
+                }
+            },
+            "SemLatVal": {
+                "name": "lat_val",
+                "in": "query",
+                "description": "Latitude for geographic search.",
+                "schema": {
+                    "type": "number",
+                    "format": "float",
+                    "maximum": 90,
+                    "minimum": -90
+                }
+            },
+            "SemLongVal": {
+                "name": "long_val",
+                "in": "query",
+                "description": "Longitude for geographic search.",
+                "schema": {
+                    "type": "number",
+                    "format": "float",
+                    "maximum": 180,
+                    "minimum": -180
+                }
+            },
+            "SemGeoWidth": {
+                "name": "geo_width",
+                "in": "query",
+                "description": "Search radius in miles. Negative integer = auto-radius.",
+                "schema": {
+                    "type": "number"
+                }
+            },
+            "SemGeoWidthKm": {
+                "name": "geo_width_km",
+                "in": "query",
+                "description": "Search radius in kilometers. Negative integer = auto-radius.",
+                "schema": {
+                    "type": "number"
+                }
+            },
+            "SemSortResultsByDistance": {
+                "name": "sort_results_by_distance",
+                "in": "query",
+                "description": "Set to `1` to sort results by distance from `lat_val`/`long_val`.",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemMeetingKeyFilter": {
+                "name": "meeting_key",
+                "in": "query",
+                "description": "Field key to filter on (used with `meeting_key_value`).",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemMeetingKeyValue": {
+                "name": "meeting_key_value",
+                "in": "query",
+                "description": "Value to match against the field named by `meeting_key`.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemDataFieldKey": {
+                "name": "data_field_key",
+                "in": "query",
+                "description": "Comma-separated list of fields to include in each returned meeting (whitelist).",
+                "schema": {
+                    "type": "string",
+                    "example": "id_bigint,meeting_name,weekday_tinyint,start_time"
+                }
+            },
+            "SemSortKeys": {
+                "name": "sort_keys",
+                "in": "query",
+                "description": "Comma-separated list of fields to sort by.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemSortKey": {
+                "name": "sort_key",
+                "in": "query",
+                "description": "Predefined sort alias.",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "weekday",
+                        "time",
+                        "town",
+                        "state",
+                        "weekday_state"
+                    ]
+                }
+            },
+            "SemPageSize": {
+                "name": "page_size",
+                "in": "query",
+                "description": "Number of results per page.",
+                "schema": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "SemPageNum": {
+                "name": "page_num",
+                "in": "query",
+                "description": "Page number, 1-based. Only meaningful when `page_size` is set.",
+                "schema": {
+                    "type": "integer",
+                    "default": 1,
+                    "minimum": 1
+                }
+            },
+            "SemAdvancedPublished": {
+                "name": "advanced_published",
+                "in": "query",
+                "description": "Published-status filter. Omit to return only published meetings. `0` returns both. `-1` returns only unpublished (requires authentication).",
+                "schema": {
+                    "type": "integer",
+                    "enum": [
+                        -1,
+                        0
+                    ]
+                }
+            },
+            "SemLangEnum": {
+                "name": "lang_enum",
+                "in": "query",
+                "description": "Language code for translated format names (en, de, fr, es, it, pl, pt, sv, dk, fa).",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemShowAll": {
+                "name": "show_all",
+                "in": "query",
+                "description": "Set to `1` to include all formats (including ones not currently used by any meeting).",
+                "schema": {
+                    "type": "string",
+                    "enum": [
+                        "0",
+                        "1"
+                    ]
+                }
+            },
+            "SemRootServerIds": {
+                "name": "root_server_ids",
+                "in": "query",
+                "description": "Aggregator mode only. Comma-separated root server IDs. Positive includes, negative excludes.",
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "SemRootServerIdsArray": {
+                "name": "root_server_ids[]",
+                "in": "query",
+                "description": "Aggregator mode only. Repeatable form of `root_server_ids`. Positive includes, negative excludes.",
+                "style": "form",
+                "explode": true,
+                "schema": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    },
+    "security": [],
+    "tags": [
+        {
+            "name": "Meetings",
+            "description": "Meeting search and change history"
+        },
+        {
+            "name": "Formats",
+            "description": "Meeting format metadata"
+        },
+        {
+            "name": "Service Bodies",
+            "description": "Service body (region/area) metadata"
+        },
+        {
+            "name": "Fields",
+            "description": "Schema introspection"
+        },
+        {
+            "name": "Server",
+            "description": "Server information and coverage"
+        }
+    ]
+}
