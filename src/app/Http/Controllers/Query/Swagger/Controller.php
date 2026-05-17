@@ -17,7 +17,6 @@ The semantic interface dispatches all operations from a single endpoint (`/clien
 
 ### Things that do not map cleanly onto OpenAPI
 
-- **PHP array syntax** — repeatable array parameters use trailing `[]` in the name (`weekdays[]=2&weekdays[]=3`).
 - **Sign-as-operator** — many filters (`formats`, `services`, `weekdays`, `venue_types`, `meeting_ids`, `root_server_ids`, `format_ids`) use *positive* values to include and *negative* values to exclude. JSON Schema cannot enforce that semantics; it is documented per parameter.
 - **Cross-parameter constraints** — in aggregator mode `GetSearchResults` requires at least one filter parameter. Invalid combinations typically return an empty array `[]` instead of an HTTP error.
 - **Empty-array errors** — many endpoints return `[]` for invalid input rather than a 4xx response body.

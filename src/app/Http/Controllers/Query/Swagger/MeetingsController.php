@@ -14,16 +14,11 @@ class MeetingsController extends Controller
         tags: ['Meetings'],
         parameters: [
             new OA\Parameter(ref: '#/components/parameters/SemMeetingIds'),
-            new OA\Parameter(ref: '#/components/parameters/SemMeetingIdsArray'),
             new OA\Parameter(ref: '#/components/parameters/SemWeekdays'),
-            new OA\Parameter(ref: '#/components/parameters/SemWeekdaysArray'),
             new OA\Parameter(ref: '#/components/parameters/SemVenueTypes'),
-            new OA\Parameter(ref: '#/components/parameters/SemVenueTypesArray'),
             new OA\Parameter(ref: '#/components/parameters/SemFormats'),
-            new OA\Parameter(ref: '#/components/parameters/SemFormatsArray'),
             new OA\Parameter(ref: '#/components/parameters/SemFormatsComparisonOperator'),
             new OA\Parameter(ref: '#/components/parameters/SemServices'),
-            new OA\Parameter(ref: '#/components/parameters/SemServicesArray'),
             new OA\Parameter(ref: '#/components/parameters/SemRecursive'),
             new OA\Parameter(ref: '#/components/parameters/SemGetUsedFormats'),
             new OA\Parameter(ref: '#/components/parameters/SemGetFormatsOnly'),
@@ -55,7 +50,6 @@ class MeetingsController extends Controller
             new OA\Parameter(ref: '#/components/parameters/SemAdvancedPublished'),
             new OA\Parameter(ref: '#/components/parameters/SemLangEnum'),
             new OA\Parameter(ref: '#/components/parameters/SemRootServerIds'),
-            new OA\Parameter(ref: '#/components/parameters/SemRootServerIdsArray'),
         ],
         responses: [
             new OA\Response(

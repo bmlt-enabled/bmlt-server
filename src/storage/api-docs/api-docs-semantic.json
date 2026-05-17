@@ -2,7 +2,7 @@
     "openapi": "3.1.0",
     "info": {
         "title": "BMLT Semantic API",
-        "description": "OpenAPI description of the BMLT Semantic Interface (the read-only meeting-query API) for the JSON data format.\n\nThe semantic interface dispatches all operations from a single endpoint (`/client_interface/json/`) using a `switcher` query parameter. To keep each operation discoverable, this spec models each `switcher` value as a distinct path key with the query string baked in. Tools such as Swagger UI, Redoc, and openapi-generator handle these path keys correctly even though the OpenAPI spec technically expects unique URL paths.\n\n### Things that do not map cleanly onto OpenAPI\n\n- **PHP array syntax** — repeatable array parameters use trailing `[]` in the name (`weekdays[]=2&weekdays[]=3`).\n- **Sign-as-operator** — many filters (`formats`, `services`, `weekdays`, `venue_types`, `meeting_ids`, `root_server_ids`, `format_ids`) use *positive* values to include and *negative* values to exclude. JSON Schema cannot enforce that semantics; it is documented per parameter.\n- **Cross-parameter constraints** — in aggregator mode `GetSearchResults` requires at least one filter parameter. Invalid combinations typically return an empty array `[]` instead of an HTTP error.\n- **Empty-array errors** — many endpoints return `[]` for invalid input rather than a 4xx response body.",
+        "description": "OpenAPI description of the BMLT Semantic Interface (the read-only meeting-query API) for the JSON data format.\n\nThe semantic interface dispatches all operations from a single endpoint (`/client_interface/json/`) using a `switcher` query parameter. To keep each operation discoverable, this spec models each `switcher` value as a distinct path key with the query string baked in. Tools such as Swagger UI, Redoc, and openapi-generator handle these path keys correctly even though the OpenAPI spec technically expects unique URL paths.\n\n### Things that do not map cleanly onto OpenAPI\n\n- **Sign-as-operator** — many filters (`formats`, `services`, `weekdays`, `venue_types`, `meeting_ids`, `root_server_ids`, `format_ids`) use *positive* values to include and *negative* values to exclude. JSON Schema cannot enforce that semantics; it is documented per parameter.\n- **Cross-parameter constraints** — in aggregator mode `GetSearchResults` requires at least one filter parameter. Invalid combinations typically return an empty array `[]` instead of an HTTP error.\n- **Empty-array errors** — many endpoints return `[]` for invalid input rather than a 4xx response body.",
         "version": "1.0.0"
     },
     "servers": [
@@ -174,34 +174,19 @@
                         "$ref": "#/components/parameters/SemMeetingIds"
                     },
                     {
-                        "$ref": "#/components/parameters/SemMeetingIdsArray"
-                    },
-                    {
                         "$ref": "#/components/parameters/SemWeekdays"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SemWeekdaysArray"
                     },
                     {
                         "$ref": "#/components/parameters/SemVenueTypes"
                     },
                     {
-                        "$ref": "#/components/parameters/SemVenueTypesArray"
-                    },
-                    {
                         "$ref": "#/components/parameters/SemFormats"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SemFormatsArray"
                     },
                     {
                         "$ref": "#/components/parameters/SemFormatsComparisonOperator"
                     },
                     {
                         "$ref": "#/components/parameters/SemServices"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SemServicesArray"
                     },
                     {
                         "$ref": "#/components/parameters/SemRecursive"
@@ -295,9 +280,6 @@
                     },
                     {
                         "$ref": "#/components/parameters/SemRootServerIds"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SemRootServerIdsArray"
                     }
                 ],
                 "responses": {
@@ -483,9 +465,6 @@
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/SemServices"
-                    },
-                    {
-                        "$ref": "#/components/parameters/SemServicesArray"
                     },
                     {
                         "$ref": "#/components/parameters/SemRecursive"
@@ -889,19 +868,6 @@
                     "type": "string"
                 }
             },
-            "SemMeetingIdsArray": {
-                "name": "meeting_ids[]",
-                "in": "query",
-                "description": "Repeatable form of `meeting_ids`. Positive includes, negative excludes.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            },
             "SemWeekdays": {
                 "name": "weekdays",
                 "in": "query",
@@ -909,21 +875,6 @@
                 "schema": {
                     "type": "string",
                     "example": "2,3,4"
-                }
-            },
-            "SemWeekdaysArray": {
-                "name": "weekdays[]",
-                "in": "query",
-                "description": "Repeatable form of `weekdays`. 1=Sunday … 7=Saturday. Negative values exclude.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer",
-                        "maximum": 7,
-                        "minimum": -7
-                    }
                 }
             },
             "SemVenueTypes": {
@@ -934,46 +885,12 @@
                     "type": "string"
                 }
             },
-            "SemVenueTypesArray": {
-                "name": "venue_types[]",
-                "in": "query",
-                "description": "Repeatable form of `venue_types`. Negative values exclude.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer",
-                        "enum": [
-                            -3,
-                            -2,
-                            -1,
-                            1,
-                            2,
-                            3
-                        ]
-                    }
-                }
-            },
             "SemFormats": {
                 "name": "formats",
                 "in": "query",
                 "description": "Format IDs as comma-separated values. Positive includes, negative excludes.",
                 "schema": {
                     "type": "string"
-                }
-            },
-            "SemFormatsArray": {
-                "name": "formats[]",
-                "in": "query",
-                "description": "Repeatable form of `formats`. Positive includes, negative excludes.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             },
             "SemFormatsComparisonOperator": {
@@ -995,19 +912,6 @@
                 "description": "Service body IDs as comma-separated values. Positive includes, negative excludes.",
                 "schema": {
                     "type": "string"
-                }
-            },
-            "SemServicesArray": {
-                "name": "services[]",
-                "in": "query",
-                "description": "Repeatable form of `services`. Positive includes, negative excludes.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             },
             "SemRecursive": {
@@ -1327,19 +1231,6 @@
                 "description": "Aggregator mode only. Comma-separated root server IDs. Positive includes, negative excludes.",
                 "schema": {
                     "type": "string"
-                }
-            },
-            "SemRootServerIdsArray": {
-                "name": "root_server_ids[]",
-                "in": "query",
-                "description": "Aggregator mode only. Repeatable form of `root_server_ids`. Positive includes, negative excludes.",
-                "style": "form",
-                "explode": true,
-                "schema": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         }
