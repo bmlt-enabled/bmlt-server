@@ -43,6 +43,49 @@ return [
                 ],
 
             ],
+
+            'scanOptions' => [
+                'exclude' => [
+                    base_path('app/Http/Controllers/Query/Swagger'),
+                ],
+                'open_api_spec_version' => env('L5_SWAGGER_OPEN_API_SPEC_VERSION', \L5Swagger\Generator::OPEN_API_DEFAULT_SPEC_VERSION),
+            ],
+        ],
+
+        'semantic' => [
+            'api' => [
+                'title' => 'BMLT Semantic API',
+            ],
+
+            'routes' => [
+                'api' => 'api/v1/documentation/semantic',
+                /*
+                 * Must differ from `default`'s docs route (which inherits the global
+                 * default `docs`) — otherwise the two documentations collide on the
+                 * same URL and only the last-registered one wins.
+                 */
+                'docs' => 'docs/semantic',
+                'oauth2_callback' => 'api/oauth2-callback-semantic',
+            ],
+
+            'paths' => [
+                'use_absolute_path' => env('L5_SWAGGER_USE_ABSOLUTE_PATH', true),
+                'docs_json' => 'api-docs-semantic.json',
+                'docs_yaml' => 'api-docs-semantic.yaml',
+                'format_to_use_for_docs' => env('L5_FORMAT_TO_USE_FOR_DOCS', 'json'),
+
+                /*
+                 * Scope the scan to only the semantic stub classes so we don't pick up
+                 * the admin attributes (which live under app/Http/Controllers/Admin/Swagger).
+                 */
+                'annotations' => [
+                    base_path('app/Http/Controllers/Query/Swagger'),
+                ],
+            ],
+
+            'scanOptions' => [
+                'open_api_spec_version' => '3.1.0',
+            ],
         ],
     ],
     'defaults' => [

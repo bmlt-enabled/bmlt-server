@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ServiceBodyController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SwaggerController;
+use App\Http\Controllers\Query\SwaggerController as SemanticSwaggerController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\SettingController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/openapi.json', [SwaggerController::class, 'openapi'])->name('openapi');
+Route::get('/openapi-semantic.json', [SemanticSwaggerController::class, 'openapi'])->name('openapi-semantic');
 Route::post('/auth/token', [TokenController::class, 'token']);
 
 Route::apiResource('/rootservers', RootServerController::class, ['parameters' => ['rootservers' => 'rootServer']]);

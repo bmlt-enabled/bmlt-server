@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Controllers\Query;
+
+use App\Http\Controllers\Controller;
+use App\Http\Responses\JsonResponse;
+use Illuminate\Http\Request;
+
+class SwaggerController extends Controller
+{
+    public function openapi(Request $request)
+    {
+        $server = new \stdClass();
+        $server->url = rtrim(url('/'), '/') . '/';
+        $server->description = 'this server';
+
+        $json = json_decode(\File::get(storage_path('api-docs/api-docs-semantic.json')));
+        $json->servers = [$server];
+
+        return new JsonResponse($json);
+    }
+}
