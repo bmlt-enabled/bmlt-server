@@ -142,6 +142,9 @@
                             "type": "string",
                             "example": "O,C"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRootServerIds"
                     }
                 ],
                 "responses": {
@@ -429,25 +432,28 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "nw_corner_longitude": {
-                                            "type": "number",
-                                            "format": "float"
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "nw_corner_longitude": {
+                                                "description": "Longitude of the north-west corner of the bounding box.",
+                                                "type": "string"
+                                            },
+                                            "nw_corner_latitude": {
+                                                "description": "Latitude of the north-west corner of the bounding box.",
+                                                "type": "string"
+                                            },
+                                            "se_corner_longitude": {
+                                                "description": "Longitude of the south-east corner of the bounding box.",
+                                                "type": "string"
+                                            },
+                                            "se_corner_latitude": {
+                                                "description": "Latitude of the south-east corner of the bounding box.",
+                                                "type": "string"
+                                            }
                                         },
-                                        "nw_corner_latitude": {
-                                            "type": "number",
-                                            "format": "float"
-                                        },
-                                        "se_corner_longitude": {
-                                            "type": "number",
-                                            "format": "float"
-                                        },
-                                        "se_corner_latitude": {
-                                            "type": "number",
-                                            "format": "float"
-                                        }
-                                    },
-                                    "type": "object"
+                                        "type": "object"
+                                    }
                                 }
                             }
                         }
@@ -480,6 +486,9 @@
                                 "1"
                             ]
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/SemRootServerIds"
                     }
                 ],
                 "responses": {
@@ -810,6 +819,66 @@
                     },
                     "google_api_key": {
                         "type": "string"
+                    },
+                    "dbVersion": {
+                        "description": "Identifier of the most recently applied database migration.",
+                        "type": "string"
+                    },
+                    "dbPrefix": {
+                        "description": "Configured database table prefix.",
+                        "type": "string"
+                    },
+                    "phpVersion": {
+                        "description": "PHP version powering the server.",
+                        "type": "string"
+                    },
+                    "auto_geocoding_enabled": {
+                        "description": "Whether automatic geocoding from address fields is enabled.",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    },
+                    "county_auto_geocoding_enabled": {
+                        "description": "Whether automatic geocoding of the county field is enabled.",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    },
+                    "zip_auto_geocoding_enabled": {
+                        "description": "Whether automatic geocoding from postal codes is enabled.",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
+                    },
+                    "commit": {
+                        "description": "Source-control commit identifier of the running build.",
+                        "type": "string"
+                    },
+                    "default_closed_status": {
+                        "description": "Default open/closed status applied when a meeting has neither the OPEN nor CLOSED format.",
+                        "oneOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "boolean"
+                            }
+                        ]
                     },
                     "aggregator_mode_enabled": {
                         "description": "`1` / `true` if this server is running in aggregator mode.",
@@ -1196,12 +1265,14 @@
             "SemAdvancedPublished": {
                 "name": "advanced_published",
                 "in": "query",
-                "description": "Published-status filter. Omit to return only published meetings. `0` returns both. `-1` returns only unpublished (requires authentication).",
+                "description": "Published-status filter. `1` (default) returns only published meetings, `0` returns both, `-1` returns only unpublished (requires authentication).",
                 "schema": {
                     "type": "integer",
+                    "default": 1,
                     "enum": [
-                        -1,
-                        0
+                        1,
+                        0,
+                        -1
                     ]
                 }
             },

@@ -124,6 +124,14 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'meeting_counties_and_sub_provinces', type: 'string'),
         new OA\Property(property: 'available_keys', type: 'string', description: 'Comma-separated list of field keys exposed by this server.'),
         new OA\Property(property: 'google_api_key', type: 'string'),
+        new OA\Property(property: 'dbVersion', type: 'string', description: 'Identifier of the most recently applied database migration.'),
+        new OA\Property(property: 'dbPrefix', type: 'string', description: 'Configured database table prefix.'),
+        new OA\Property(property: 'phpVersion', type: 'string', description: 'PHP version powering the server.'),
+        new OA\Property(property: 'auto_geocoding_enabled', oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'boolean')], description: 'Whether automatic geocoding from address fields is enabled.'),
+        new OA\Property(property: 'county_auto_geocoding_enabled', oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'boolean')], description: 'Whether automatic geocoding of the county field is enabled.'),
+        new OA\Property(property: 'zip_auto_geocoding_enabled', oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'boolean')], description: 'Whether automatic geocoding from postal codes is enabled.'),
+        new OA\Property(property: 'commit', type: 'string', description: 'Source-control commit identifier of the running build.'),
+        new OA\Property(property: 'default_closed_status', oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'boolean')], description: 'Default open/closed status applied when a meeting has neither the OPEN nor CLOSED format.'),
         new OA\Property(property: 'aggregator_mode_enabled', oneOf: [new OA\Schema(type: 'string'), new OA\Schema(type: 'boolean')], description: '`1` / `true` if this server is running in aggregator mode.'),
     ]
 )]

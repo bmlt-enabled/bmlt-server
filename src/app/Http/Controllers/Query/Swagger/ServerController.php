@@ -33,13 +33,16 @@ class ServerController extends Controller
                 response: 200,
                 description: "Bounding box for the area covered by this server's meetings",
                 content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(property: 'nw_corner_longitude', type: 'number', format: 'float'),
-                        new OA\Property(property: 'nw_corner_latitude', type: 'number', format: 'float'),
-                        new OA\Property(property: 'se_corner_longitude', type: 'number', format: 'float'),
-                        new OA\Property(property: 'se_corner_latitude', type: 'number', format: 'float'),
-                    ]
+                    type: 'array',
+                    items: new OA\Items(
+                        type: 'object',
+                        properties: [
+                            new OA\Property(property: 'nw_corner_longitude', type: 'string', description: 'Longitude of the north-west corner of the bounding box.'),
+                            new OA\Property(property: 'nw_corner_latitude', type: 'string', description: 'Latitude of the north-west corner of the bounding box.'),
+                            new OA\Property(property: 'se_corner_longitude', type: 'string', description: 'Longitude of the south-east corner of the bounding box.'),
+                            new OA\Property(property: 'se_corner_latitude', type: 'string', description: 'Latitude of the south-east corner of the bounding box.'),
+                        ]
+                    )
                 )
             ),
         ]

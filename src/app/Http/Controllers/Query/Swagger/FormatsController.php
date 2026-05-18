@@ -16,6 +16,7 @@ class FormatsController extends Controller
             new OA\Parameter(ref: '#/components/parameters/SemShowAll'),
             new OA\Parameter(name: 'format_ids', in: 'query', description: 'Format IDs to include (positive) or exclude (negative). Comma-separated.', schema: new OA\Schema(type: 'string', example: '1,2,-3')),
             new OA\Parameter(name: 'key_strings', in: 'query', description: 'Format key strings to filter by. Comma-separated.', schema: new OA\Schema(type: 'string', example: 'O,C')),
+            new OA\Parameter(ref: '#/components/parameters/SemRootServerIds'),
         ],
         responses: [
             new OA\Response(

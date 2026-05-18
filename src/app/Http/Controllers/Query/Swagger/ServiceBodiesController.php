@@ -15,6 +15,7 @@ class ServiceBodiesController extends Controller
             new OA\Parameter(ref: '#/components/parameters/SemServices'),
             new OA\Parameter(ref: '#/components/parameters/SemRecursive'),
             new OA\Parameter(name: 'parents', in: 'query', description: 'Set to `1` to include parent service bodies in the result.', schema: new OA\Schema(type: 'string', enum: ['0', '1'])),
+            new OA\Parameter(ref: '#/components/parameters/SemRootServerIds'),
         ],
         responses: [
             new OA\Response(
