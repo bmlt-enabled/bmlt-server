@@ -1,6 +1,9 @@
-## 4.2.2 (UNRELEASED)
+## 4.2.2 (June 4, 2026)
 * Bug fixes:
     * Preserve hidden service body editors when non-admin updates a service body
+    * Check for valid timezone data response and handle error if it isn't valid (previously, an invalid response would cause the meeting editor to hang)
+    * Re-run orphaned format ID cleanup migration for 4.2.1 fix
+* Added semantic API OpenAPI spec and docs UI
 
 ## 4.2.1 (April 17, 2026)
 * Fix a nasty bug in the orphaned-format cleanup migration (added in 4.1.0) that could strip valid format codes from meetings.
