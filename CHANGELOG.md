@@ -1,9 +1,12 @@
+## 4.2.3 (June 5, 2026)
+* Strip `/index.php` from the UI base URL (fixes timezone auto-detect failing in the meeting editor).
+
 ## 4.2.2 (June 4, 2026)
 * Bug fixes:
     * Preserve hidden service body editors when non-admin updates a service body
     * Check for valid timezone data response and handle error if it isn't valid (previously, an invalid response would cause the meeting editor to hang)
     * Re-run orphaned format ID cleanup migration for 4.2.1 fix
-* Added semantic API OpenAPI spec and docs UI
+* Added semantic API OpenAPI spec and docs UI (Accessed from `/api/v1/documentation/semantic`)
 
 ## 4.2.1 (April 17, 2026)
 * Fix a nasty bug in the orphaned-format cleanup migration (added in 4.1.0) that could strip valid format codes from meetings.
