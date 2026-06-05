@@ -23,7 +23,10 @@ class UserInterfaceController extends Controller
 
         return response()->view('frontend', [
             'autoGeocodingEnabled' => bmlt_config('autoGeocodingEnabled'),
-            'baseUrl' => $request->getBaseurl(),
+            // Strip index.php so apiBaseUrl is the document root, which is what the UI expects
+            // when building static asset URLs (e.g. the timezone files); otherwise they route
+            // through index.php and get served the SPA HTML instead of the file.
+            'baseUrl' => str($request->getBaseUrl())->chopEnd('/index.php'),
             'bmltTitle' => bmlt_config('bmltTitle'),
             'bmltNotice' => bmlt_config('bmltNotice'),
             'centerLongitude' => bmlt_config('searchSpecMapCenterLongitude'),
