@@ -8,6 +8,9 @@ VENDOR_AUTOLOAD := src/vendor/autoload.php
 NODE_MODULES := src/node_modules/.package-lock.json
 FRONTEND := src/public/build/manifest.json
 ZIP_FILE := build/bmlt-server.zip
+BAKE := docker buildx bake -f docker/docker-bake.hcl
+BAKE_ENV := SHA=$(COMMIT) CREATED=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ') PHP_VERSION=$(BASE_IMAGE_TAG)
+BAKE_APP_ENV = APP_IMAGE=$(IMAGE) TAG=$(TAG) APP_DOCKERFILE=docker/$(DOCKERFILE)
 EXTRA_DOCKER_COMPOSE_ARGS :=
 ifeq ($(CI)x, x)
 	DOCKERFILE := Dockerfile-debug
@@ -110,11 +113,11 @@ zip: $(ZIP_FILE) ## Builds zip file
 
 .PHONY: docker
 docker: zip ## Builds Docker Image
-	docker build --pull --build-arg PHP_VERSION=$(BASE_IMAGE_TAG) --label "org.opencontainers.image.revision=$(COMMIT)" --label "org.opencontainers.image.created=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" -f docker/$(DOCKERFILE) . -t $(IMAGE):$(TAG)
+	$(BAKE_APP_ENV) $(BAKE_ENV) $(BAKE) app --load
 
 .PHONY: docker-push
-docker-push: ## Pushes docker image to Dockerhub
-	docker push $(IMAGE):$(TAG)
+docker-push: zip ## Builds and pushes docker image to Dockerhub
+	$(BAKE_APP_ENV) $(BAKE_ENV) $(BAKE) app --push
 
 .PHONY: dev
 dev: zip ## Docker Compose Up
@@ -159,8 +162,8 @@ phpstan:  ## PHP Larastan Code Analysis
 	$(LINT_PREFIX) vendor/bin/phpstan analyse -c .phpstan.neon --memory-limit=2G
 
 .PHONY: docker-publish-base
-docker-publish-base:  ## Builds Base Docker Image
-	docker buildx build --platform linux/amd64,linux/arm64/v8 --label "org.opencontainers.image.revision=$(COMMIT)" --label "org.opencontainers.image.created=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')" -f docker/Dockerfile-base docker/ -t $(BASE_IMAGE):$(BASE_IMAGE_TAG) --push
+docker-publish-base:  ## Builds and pushes multi-arch base images (all PHP versions)
+	$(BAKE_ENV) $(BAKE) base --push
 
 .PHONY: mysql
 mysql:  ## Runs mysql cli in mysql container

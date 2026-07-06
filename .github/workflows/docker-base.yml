@@ -6,14 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-base:
+  build:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        php_version: [8.3, 8.4, 8.5]
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -22,7 +19,6 @@ jobs:
         uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Login to Docker Hub
@@ -31,62 +27,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: bmltenabled/bmlt-server-base
-          tags: |
-            type=raw,value=${{ matrix.php_version }}
-            type=raw,value=latest,enable=${{ matrix.php_version == '8.3' }}
-          labels: |
-            org.opencontainers.image.title=BMLT Server Base (PHP ${{ matrix.php_version }})
-            org.opencontainers.image.description=Base image for BMLT Server with PHP ${{ matrix.php_version }}
-            org.opencontainers.image.vendor=BMLT
-            org.opencontainers.image.created={{date 'YYYY-MM-DDTHH:mm:ssZ'}}
-            org.opencontainers.image.version=${{ matrix.php_version }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            php.version=${{ matrix.php_version }}
+      - name: Set build timestamp
+        run: echo "CREATED=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
-      - name: Build and push Base
-        uses: docker/build-push-action@v7
+      - name: Build and push base + sample-db images
+        uses: docker/bake-action@v7
         with:
-          context: ./docker
-          file: ./docker/Dockerfile-base
-          platforms: linux/amd64,linux/arm64/v8
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version }}
+          files: ./docker/docker-bake.hcl
+          targets: |
+            base
+            db
           push: true
-
-  build-db:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build and push DB
-        uses: docker/build-push-action@v7
-        with:
-          context: ./docker
-          file: ./docker/Dockerfile-db
-          platforms: linux/amd64,linux/arm64/v8
-          tags: bmltenabled/bmlt-server-sample-db:latest
-          push: true
+        env:
+          SHA: ${{ github.sha }}
+          CREATED: ${{ env.CREATED }}
