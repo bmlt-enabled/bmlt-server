@@ -12,6 +12,6 @@ export async function initGoogleMaps(apiKey: string) {
   }
 }
 
-export async function loadLibraries(...libraries: string[]) {
+export async function loadLibraries(...libraries: Parameters<typeof importLibrary>[0][]) {
   return await Promise.all(libraries.map((lib) => importLibrary(lib)));
 }

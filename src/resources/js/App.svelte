@@ -86,12 +86,21 @@
     }
   }
 
+  // Removing a still-focused field fires focusout mid-teardown, which lets felte write to a
+  // store while a derived is active -- Svelte then throws state_unsafe_mutation and reactivity
+  // dies silently. Blurring first is what already happens when the submit button is clicked.
+  function blurActiveElement() {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }
+
   $effect(() => {
     if (!$apiCredentials) {
       push('/login');
     }
   });
 </script>
+
+<svelte:document onsubmitcapture={blurActiveElement} />
 
 <svelte:head>
   <title>BMLT Server</title>
