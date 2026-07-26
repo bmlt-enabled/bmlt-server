@@ -1,3 +1,6 @@
+## 4.2.4 (July 26, 2026)
+* Fix the admin interface locking up after logging in by pressing Enter on a slower connection. Once it happened, the Apply button stayed greyed out no matter what was edited, and Logout no longer returned to the login screen.
+
 ## 4.2.3 (June 5, 2026)
 * Strip `/index.php` from the UI base URL (fixes timezone auto-detect failing in the meeting editor).
 
