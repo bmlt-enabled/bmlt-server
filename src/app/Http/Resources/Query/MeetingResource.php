@@ -135,7 +135,7 @@ class MeetingResource extends JsonResource
                 ->mapWithKeys(fn($data, $_) => [$data->key => $data->data_string])
                 ->keys()
                 ->merge($meetingRepository->getMainFields())
-                ->merge(['published', 'root_server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km'])
+                ->merge(['published', 'root_server_uri', 'format_shared_id_list', 'distance_in_miles', 'distance_in_km', 'service_body_name'])
                 ->intersect($dataFieldKeys)
                 ->mapWithKeys(fn($key, $_) => [$key => $key]);
 

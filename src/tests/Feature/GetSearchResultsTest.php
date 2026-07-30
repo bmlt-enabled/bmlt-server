@@ -1819,6 +1819,33 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals($rootServer->id, $data[0]['root_server_id']);
     }
 
+    public function testDataFieldKeyServiceBodyName()
+    {
+        $area1 = $this->createArea('area1', 'area1', 0);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $data = collect($this->get("/client_interface/json/?switcher=GetSearchResults&data_field_key=service_body_name")
+            ->assertStatus(200)
+            ->json());
+        $keys = array_keys($data[0]);
+        $this->assertEquals(1, count($keys));
+        $this->assertEquals('service_body_name', $keys[0]);
+        $this->assertEquals($area1->name_string, $data[0]['service_body_name']);
+    }
+
+    public function testDataFieldKeyServiceBodyNameAlongsideOtherFields()
+    {
+        $area1 = $this->createArea('area1', 'area1', 0);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $data = collect($this->get("/client_interface/json/?switcher=GetSearchResults&data_field_key=id_bigint,service_body_bigint,service_body_name")
+            ->assertStatus(200)
+            ->json());
+        $keys = array_keys($data[0]);
+        $this->assertEquals(3, count($keys));
+        $this->assertEquals(strval($meeting1->id_bigint), $data[0]['id_bigint']);
+        $this->assertEquals(strval($area1->id_bigint), $data[0]['service_body_bigint']);
+        $this->assertEquals($area1->name_string, $data[0]['service_body_name']);
+    }
+
     public function testDataFieldKeyDataFields()
     {
         $dataFieldTemplates = MeetingData::query()->where('meetingid_bigint', 0)->get();
