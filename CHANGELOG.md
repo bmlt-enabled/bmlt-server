@@ -1,5 +1,5 @@
-## 4.2.5 (UNRELEASED)
-* Fix `service_body_name` being dropped from `GetSearchResults` responses whenever `data_field_key` was used. It could not be requested at all, and asking for it on its own silently disabled field filtering entirely.
+## 4.2.5 (July 31, 2026)
+* Fix `service_body_name` being dropped from `GetSearchResults` responses whenever `data_field_key` was used.
 
 ## 4.2.4 (July 26, 2026)
 * Fix the admin interface locking up after logging in by pressing Enter on a slower connection. Once it happened, the Apply button stayed greyed out no matter what was edited, and Logout no longer returned to the login screen.
