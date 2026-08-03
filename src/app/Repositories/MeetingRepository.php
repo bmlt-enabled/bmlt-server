@@ -204,14 +204,12 @@ class MeetingRepository implements MeetingRepositoryInterface
             }
 
             if (empty($moreMeetingIds)) {
+                // MySQL drops rows when MATCH() runs inside a correlated subquery, so keep these uncorrelated
+                // rather than using whereHas.
                 $meetings = $meetings->where(function (Builder $query) use ($searchString) {
                     $query
-                        ->whereHas('data', function (Builder $query) use ($searchString) {
-                            $query->whereFullText('data_string', $searchString);
-                        })
-                        ->orWhereHas('longdata', function (Builder $query) use ($searchString) {
-                            $query->whereFullText('data_blob', $searchString);
-                        });
+                        ->whereIn('id_bigint', MeetingData::query()->select('meetingid_bigint')->whereFullText('data_string', $searchString))
+                        ->orWhereIn('id_bigint', MeetingLongData::query()->select('meetingid_bigint')->whereFullText('data_blob', $searchString));
                 });
             } else {
                 $meetings = $meetings->whereIn('id_bigint', $moreMeetingIds);

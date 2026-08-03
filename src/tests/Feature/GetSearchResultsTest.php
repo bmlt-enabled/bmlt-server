@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\FromFileConfig;
 use App\Http\Resources\Query\MeetingResource;
 use App\FromDatabaseConfig;
+use App\Interfaces\MeetingRepositoryInterface;
 use App\Models\Format;
 use App\Models\Meeting;
 use App\Models\MeetingData;
@@ -1379,6 +1380,54 @@ class GetSearchResultsTest extends TestCase
                 MeetingData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingLongData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
             }
+        }
+    }
+
+    public function testSearchStringMatchesDuplicateValues()
+    {
+        // MySQL drops rows when MATCH() runs inside a correlated subquery, so meetings sharing an
+        // identical field value would go missing from the results. See issue #1519.
+        $meetingIds = [];
+        try {
+            for ($i = 0; $i < 3; $i++) {
+                $meeting = $this->createMeeting(dataFields: ['meeting_name' => 'this test is blah']);
+                $meetingIds[] = $meeting->id_bigint;
+            }
+            // MySQL full text searches do not work against uncommitted data, because the full text
+            // index has not yet been updated. We commit here, and then are very careful to clean up all
+            // data in the finally block
+            DB::commit();
+            $response = $this->get("/client_interface/json/?switcher=GetSearchResults&SearchString=blah%20test")
+                ->assertStatus(200)
+                ->assertJsonCount(3);
+            foreach ($meetingIds as $meetingId) {
+                $response->assertJsonFragment(['id_bigint' => strval($meetingId)]);
+            }
+        } finally {
+            Meeting::query()->whereIn('id_bigint', $meetingIds)->delete();
+            MeetingData::query()->whereIn('meetingid_bigint', $meetingIds)->delete();
+            MeetingLongData::query()->whereIn('meetingid_bigint', $meetingIds)->delete();
+        }
+    }
+
+    public function testSearchStringFullTextSubqueriesAreNotCorrelated()
+    {
+        // Whether MySQL actually drops rows depends on the query plan it picks, which varies with table
+        // statistics, so guard the query shape itself: the MATCH() subqueries must not reference the outer
+        // table. See issue #1519.
+        $queries = [];
+        DB::listen(function ($query) use (&$queries) {
+            $queries[] = $query->sql;
+        });
+        app(MeetingRepositoryInterface::class)->getSearchResults(searchString: 'blah test');
+
+        $fullTextQueries = array_values(array_filter($queries, fn($sql) => str_contains($sql, 'match')));
+        $this->assertNotEmpty($fullTextQueries);
+
+        foreach ($fullTextQueries as $sql) {
+            // strip the outer "select ... from `..._comdef_meetings_main`" so only the subqueries remain
+            $subqueries = substr($sql, strpos($sql, 'where'));
+            $this->assertStringNotContainsString('comdef_meetings_main', $subqueries);
         }
     }
 
