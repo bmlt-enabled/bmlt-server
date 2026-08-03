@@ -14,19 +14,20 @@ jobs:
           - "8.4"
           - "8.5"
         db:
-          - "10.2"
-          - "latest"
+          - "mariadb:10.2"
+          - "mariadb:latest"
+          - "mysql:8.4"
     services:
-      mariadb:
-        image: mariadb:${{ matrix.db }}
+      db:
+        image: ${{ matrix.db }}
         ports:
           - 3306
         env:
-          MARIADB_USER: rootserver
-          MARIADB_PASSWORD: rootserver
-          MARIADB_DATABASE: rootserver
-          MARIADB_ROOT_PASSWORD: rootserver
-        options: --health-cmd="${{ (matrix.db == 'latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
+          MYSQL_USER: rootserver
+          MYSQL_PASSWORD: rootserver
+          MYSQL_DATABASE: rootserver
+          MYSQL_ROOT_PASSWORD: rootserver
+        options: --health-cmd="${{ (matrix.db == 'mariadb:latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - name: checkout 🛒
         uses: actions/checkout@v6
@@ -48,7 +49,7 @@ jobs:
 
       - name: make test 🧪
         env:
-          DB_PORT: ${{ job.services.mariadb.ports[3306] }}
+          DB_PORT: ${{ job.services.db.ports[3306] }}
         run: |
           make test
 
