@@ -1,3 +1,6 @@
+## 4.2.7 (August 5, 2026)
+* Updated localization for Danish (da) language.
+
 ## 4.2.6 (August 3, 2026)
 * Fix meetings missing from text search results on servers running MySQL. Meetings sharing a name, location, or address with another meeting could be silently omitted while still being findable by ID, costing common searches 15-25% of their results. Searches are also considerably faster. MariaDB servers were not affected.
 
