@@ -5,7 +5,7 @@
         "dev": "vite dev",
         "build": "vite build",
         "preview": "vite preview",
-        "lint": "prettier --check vite.config.ts resources/js && eslint vite.config.ts resources/js && svelte-check --tsconfig ./tsconfig.json",
+        "lint": "prettier --check vite.config.ts resources/js && eslint vite.config.ts resources/js && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts",
         "format": "prettier --write vite.config.ts resources/js",
         "test": "vitest run",
         "test:watch": "vitest",
