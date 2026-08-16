@@ -48,6 +48,23 @@ variable "CREATED" {
   default = ""
 }
 
+# Set (to anything non-empty) by CI, which builds each platform on its own
+# native runner: drop the tags and push by digest instead, so a later job can
+# merge the per-arch digests into one tagged manifest list.
+variable "DIGEST_ONLY" {
+  default = ""
+}
+
+function "tags_or_digest" {
+  params = [tags]
+  result = DIGEST_ONLY != "" ? [] : tags
+}
+
+function "digest_output" {
+  params = [image]
+  result = DIGEST_ONLY != "" ? ["type=image,name=${image},push-by-digest=true,name-canonical=true,push=true"] : []
+}
+
 # Base image tags: always ":<php>", plus ":latest" for the primary (8.3) build.
 function "base_tags" {
   params = [php]
@@ -61,6 +78,12 @@ group "default" {
   targets = ["app"]
 }
 
+# Everything the weekly publish workflow builds. CI expands this group into one
+# job per target so they build in parallel.
+group "ci" {
+  targets = ["base", "db"]
+}
+
 target "base" {
   matrix = {
     php = ["8.3", "8.4", "8.5"]
@@ -72,7 +95,8 @@ target "base" {
   args = {
     PHP_VERSION = php
   }
-  tags = base_tags(php)
+  tags   = tags_or_digest(base_tags(php))
+  output = digest_output(BASE_IMAGE)
   labels = {
     "org.opencontainers.image.title"       = "BMLT Server Base (PHP ${php})"
     "org.opencontainers.image.description" = "Base image for BMLT Server with PHP ${php}"
@@ -88,7 +112,8 @@ target "db" {
   context    = "docker"
   dockerfile = "Dockerfile-db"
   platforms  = ["linux/amd64", "linux/arm64/v8"]
-  tags       = ["${DB_IMAGE}:latest"]
+  tags       = tags_or_digest(["${DB_IMAGE}:latest"])
+  output     = digest_output(DB_IMAGE)
   labels = {
     "org.opencontainers.image.title"       = "BMLT Server Sample DB"
     "org.opencontainers.image.description" = "MariaDB seeded with the BMLT sample schema"
