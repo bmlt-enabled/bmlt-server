@@ -9,15 +9,25 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     outputs:
-      targets: ${{ steps.list.outputs.targets }}
+      builds: ${{ steps.builds.outputs.matrix }}
+      targets: ${{ steps.targets.outputs.matrix }}
       created: ${{ steps.timestamp.outputs.created }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: List bake targets
-        id: list
-        uses: docker/bake-action/subaction/list-targets@v7
+      # One entry per target/platform pair, straight out of the bake file.
+      - name: Build matrix
+        id: builds
+        uses: docker/bake-action/subaction/matrix@v7
+        with:
+          files: ./docker/docker-bake.hcl
+          target: ci
+          fields: platforms
+
+      - name: Target matrix
+        id: targets
+        uses: docker/bake-action/subaction/matrix@v7
         with:
           files: ./docker/docker-bake.hcl
           target: ci
@@ -30,17 +40,14 @@ jobs:
   # by digest only; the merge job below turns the digests into tagged manifests.
   build:
     needs: prepare
-    runs-on: ${{ matrix.platform.runner }}
+    runs-on: ${{ startsWith(matrix.platforms, 'linux/arm64') && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     permissions:
       contents: read
       packages: write
     strategy:
       fail-fast: false
       matrix:
-        target: ${{ fromJSON(needs.prepare.outputs.targets) }}
-        platform:
-          - { name: linux/amd64, runner: ubuntu-24.04 }
-          - { name: linux/arm64, runner: ubuntu-24.04-arm }
+        include: ${{ fromJSON(needs.prepare.outputs.builds) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -54,14 +61,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push ${{ matrix.target }} (${{ matrix.platform.name }})
+      - name: Build and push ${{ matrix.target }} (${{ matrix.platforms }})
         id: bake
         uses: docker/bake-action@v7
         with:
           files: ./docker/docker-bake.hcl
           targets: ${{ matrix.target }}
           set: |
-            *.platform=${{ matrix.platform.name }}
+            *.platform=${{ matrix.platforms }}
         env:
           DIGEST_ONLY: '1'
           SHA: ${{ github.sha }}
@@ -79,7 +86,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v7
         with:
-          name: digest-${{ matrix.target }}-${{ startsWith(matrix.platform.name, 'linux/arm64') && 'arm64' || 'amd64' }}
+          name: digest-${{ matrix.target }}-${{ startsWith(matrix.platforms, 'linux/arm64') && 'arm64' || 'amd64' }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -95,7 +102,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ${{ fromJSON(needs.prepare.outputs.targets) }}
+        include: ${{ fromJSON(needs.prepare.outputs.targets) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
