@@ -113,6 +113,7 @@ class SwitcherController extends Controller
         $weekdaysExclude = count($weekdaysExclude) ? $weekdaysExclude : null;
 
         $venueTypes = $request->input('venue_types', []);
+        $venueTypes = is_string($venueTypes) ? array_map(fn ($id) => trim($id), explode(',', $venueTypes)) : $venueTypes;
         $venueTypes = ensure_integer_array($venueTypes);
         $venueTypesInclude = collect($venueTypes)->filter(fn ($v) => $v > 0)->toArray();
         $venueTypesInclude = !empty($venueTypesInclude) ? $venueTypesInclude : null;
