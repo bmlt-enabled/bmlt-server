@@ -407,12 +407,47 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
     }
 
+    public function testVenueTypeIncludeTwoCommaSeparated()
+    {
+        $meeting1 = $this->createMeeting(['venue_type' => 1]);
+        $meeting2 = $this->createMeeting(['venue_type' => 2]);
+        $meeting3 = $this->createMeeting(['venue_type' => 3]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&venue_types=1,2")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['id_bigint' => strval($meeting2->id_bigint)]);
+    }
+
+    public function testVenueTypeIncludeCommaSeparatedWithSpaces()
+    {
+        $meeting1 = $this->createMeeting(['venue_type' => 1]);
+        $meeting2 = $this->createMeeting(['venue_type' => 2]);
+        $meeting3 = $this->createMeeting(['venue_type' => 3]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&venue_types=1,%203")
+            ->assertStatus(200)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)])
+            ->assertJsonFragment(['id_bigint' => strval($meeting3->id_bigint)]);
+    }
+
     public function testVenueTypeExcludeTwo()
     {
         $meeting1 = $this->createMeeting(['venue_type' => 1]);
         $meeting2 = $this->createMeeting(['venue_type' => 2]);
         $meeting3 = $this->createMeeting(['venue_type' => 3]);
         $this->get("/client_interface/json/?switcher=GetSearchResults&venue_types[]=-1&venue_types[]=-2")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id_bigint' => strval($meeting3->id_bigint)]);
+    }
+
+    public function testVenueTypeExcludeTwoCommaSeparated()
+    {
+        $meeting1 = $this->createMeeting(['venue_type' => 1]);
+        $meeting2 = $this->createMeeting(['venue_type' => 2]);
+        $meeting3 = $this->createMeeting(['venue_type' => 3]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&venue_types=-1,-2")
             ->assertStatus(200)
             ->assertJsonCount(1)
             ->assertJsonFragment(['id_bigint' => strval($meeting3->id_bigint)]);
