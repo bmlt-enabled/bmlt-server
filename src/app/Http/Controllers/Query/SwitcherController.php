@@ -101,6 +101,10 @@ class SwitcherController extends Controller
             abort(422, 'lang_enum must be a single language code for GetSearchResults.');
         }
 
+        if (is_array($request->input('meeting_key'))) {
+            abort(422, 'meeting_key must be a single field name. Pass several values with meeting_key_value[].');
+        }
+
         $meetingIds = $request->input('meeting_ids') ?? [];
         $meetingIds = is_string($meetingIds) ? array_map(fn ($id) => trim($id), explode(',', $meetingIds)) : $meetingIds;
         $meetingIds = ensure_integer_array($meetingIds);

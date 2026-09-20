@@ -1106,6 +1106,16 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonFragment(['weekday_tinyint' => '2']);
     }
 
+    // The values may be an array; the key is a single field name
+    public function testMeetingKeyArrayIsRejected()
+    {
+        $this->createMeeting([], ['location_municipality' => 'Edmonds']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key[]=location_municipality&meeting_key_value=Edmonds")
+            ->assertStatus(422);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key[]=location_municipality&meeting_key_value[]=Edmonds")
+            ->assertStatus(422);
+    }
+
     // StartsAfter
     //
     //
