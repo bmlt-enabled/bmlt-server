@@ -96,6 +96,11 @@ class SwitcherController extends Controller
     private function getSearchResults(Request $request, ?string $dataFormat = null): BaseJsonResponse
     {
         $isAggregatorMode = (bool)file_config('aggregator_mode_enabled');
+
+        if (is_array($request->input('lang_enum'))) {
+            abort(422, 'lang_enum must be a single language code for GetSearchResults.');
+        }
+
         $meetingIds = $request->input('meeting_ids') ?? [];
         $meetingIds = is_string($meetingIds) ? array_map(fn ($id) => trim($id), explode(',', $meetingIds)) : $meetingIds;
         $meetingIds = ensure_integer_array($meetingIds);

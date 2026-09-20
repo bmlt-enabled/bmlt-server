@@ -2202,6 +2202,38 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals(strval($format1->shared_id_bigint), $data['formats'][0]['id']);
     }
 
+    public function testLangEnumSelectsFormatLanguage()
+    {
+        $formatEn = $this->createFormat(901, 'O', 'Open', 'desc', 'en', 'worldid');
+        $formatDe = $this->createFormat(901, 'OF', 'Offen', 'desc', 'de', 'worldid');
+        $this->createMeeting(['formats' => "$formatEn->shared_id_bigint"]);
+        $data = $this->get("/client_interface/json/?switcher=GetSearchResults&get_used_formats&lang_enum=de")
+            ->assertStatus(200)
+            ->json();
+        $this->assertEquals(1, count($data['formats']));
+        $this->assertEquals('de', $data['formats'][0]['lang']);
+        $this->assertEquals('OF', $data['meetings'][0]['formats']);
+    }
+
+    public function testLangEnumArrayIsRejected()
+    {
+        $format1 = $this->createFormat1();
+        $this->createMeeting(['formats' => "$format1->shared_id_bigint"]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&get_used_formats&lang_enum[]=en&lang_enum[]=de")
+            ->assertStatus(422);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&lang_enum[]=en")
+            ->assertStatus(422);
+    }
+
+    public function testLangEnumEmptyIsStillAccepted()
+    {
+        $format1 = $this->createFormat1();
+        $this->createMeeting(['formats' => "$format1->shared_id_bigint"]);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&lang_enum=")
+            ->assertStatus(200)
+            ->assertJsonCount(1);
+    }
+
     public function testGetFormatsOnly()
     {
         $format1 = $this->createFormat1();
