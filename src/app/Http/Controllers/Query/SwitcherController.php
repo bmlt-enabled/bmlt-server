@@ -401,14 +401,32 @@ class SwitcherController extends Controller
 
         // This code to calculate the formats fields is really inefficient, but necessary because
         // we don't have foreign keys between the meetings and formats tables.
+        //
+        // Load the used formats in every language, then keep a single row per shared id, preferring
+        // the requested language, then English, then any remaining language (alphabetically, so the
+        // choice is deterministic). Loading only the requested language would drop any format id
+        // whose row does not exist in that language from format_shared_id_list and the used-formats
+        // list entirely -- e.g. a format defined only in Portuguese on the aggregator disappears
+        // from an English search rather than being reported with a fallback name. A format still has
+        // exactly one row per shared id in the response; that row may carry a name from a fallback
+        // language, distinguishable by its lang_enum.
         $langEnum = $request->input('lang_enum', App::currentLocale());
         $formats = $this->formatRepository->search(
             rootServersInclude: $rootServersInclude,
             rootServersExclude: $rootServersExclude,
-            langEnums: [$langEnum],
+            langEnums: null,
             meetings: $meetings,
             eagerRootServers: $isAggregatorMode,
         );
+
+        $formats = $formats
+            ->sortBy(fn ($format) => sprintf(
+                '%d_%s',
+                $format->lang_enum === $langEnum ? 0 : ($format->lang_enum === 'en' ? 1 : 2),
+                $format->lang_enum
+            ))
+            ->unique('shared_id_bigint')
+            ->values();
 
         $formatsById = $formats->mapWithKeys(fn ($format, $_) => [$format->shared_id_bigint => $format]);
         foreach ($meetings as $meeting) {
