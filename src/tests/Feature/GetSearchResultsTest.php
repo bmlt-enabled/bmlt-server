@@ -853,6 +853,118 @@ class GetSearchResultsTest extends TestCase
             ]);
     }
 
+    // format language fallback
+    //
+    //
+    public function testFormatLangKeepsUntranslatedFormatIds()
+    {
+        // 901 has an English row; 902 exists only in Portuguese. A default (English) search must
+        // still report 902 -- with its Portuguese name -- rather than dropping the id.
+        $this->createFormat(901, 'A', 'NameA-en', 'desc', 'en');
+        $this->createFormat(902, 'B', 'NameB-pt', 'desc', 'pt');
+        $meeting = $this->createMeeting(['formats' => '901,902']);
+        $this->get('/client_interface/json/?switcher=GetSearchResults')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id_bigint' => strval($meeting->id_bigint),
+                'format_shared_id_list' => '901,902',
+                'formats' => 'A,B',
+            ]);
+    }
+
+    public function testFormatLangUsedFormatsHaveOneRowPerIdWithLang()
+    {
+        $this->createFormat(901, 'A', 'NameA-en', 'desc', 'en');
+        $this->createFormat(902, 'B', 'NameB-pt', 'desc', 'pt');
+        $this->createMeeting(['formats' => '901,902']);
+        $formats = collect(
+            $this->get('/client_interface/json/?switcher=GetSearchResults&get_used_formats=1')
+                ->assertStatus(200)
+                ->json('formats')
+        );
+        // Exactly one row per shared id, each carrying its real language.
+        $this->assertEquals(1, $formats->where('id', '901')->count());
+        $this->assertEquals(1, $formats->where('id', '902')->count());
+        $this->assertEquals('en', $formats->firstWhere('id', '901')['lang']);
+        $this->assertEquals('pt', $formats->firstWhere('id', '902')['lang']);
+    }
+
+    public function testFormatLangRequestedLanguageWinsOverEnglish()
+    {
+        $this->createFormat(901, 'A', 'NameA-en', 'desc', 'en');
+        $this->createFormat(901, 'A-es', 'NameA-es', 'desc', 'es');
+        $meeting = $this->createMeeting(['formats' => '901']);
+        $this->get('/client_interface/json/?switcher=GetSearchResults&get_used_formats=1&lang_enum=es')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id_bigint' => strval($meeting->id_bigint),
+                'formats' => 'A-es',
+            ])
+            ->assertJsonFragment([
+                'id' => '901',
+                'lang' => 'es',
+                'key_string' => 'A-es',
+                'name_string' => 'NameA-es',
+            ]);
+    }
+
+    public function testFormatLangEnglishWinsWhenRequestedLanguageMissing()
+    {
+        $this->createFormat(901, 'A', 'NameA-en', 'desc', 'en');
+        $this->createFormat(901, 'A-de', 'NameA-de', 'desc', 'de');
+        $meeting = $this->createMeeting(['formats' => '901']);
+        // Requested language (fr) has no row, so English is preferred over German.
+        $this->get('/client_interface/json/?switcher=GetSearchResults&get_used_formats=1&lang_enum=fr')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id_bigint' => strval($meeting->id_bigint),
+                'formats' => 'A',
+            ])
+            ->assertJsonFragment([
+                'id' => '901',
+                'lang' => 'en',
+                'key_string' => 'A',
+            ]);
+    }
+
+    public function testFormatLangFallsBackToLowestLanguageWhenNoEnglish()
+    {
+        $this->createFormat(902, 'B-pt', 'NameB-pt', 'desc', 'pt');
+        $this->createFormat(902, 'B-it', 'NameB-it', 'desc', 'it');
+        $meeting = $this->createMeeting(['formats' => '902']);
+        // Neither the requested language (fr) nor English exists, so the alphabetically lowest
+        // remaining language (it) is chosen deterministically.
+        $this->get('/client_interface/json/?switcher=GetSearchResults&get_used_formats=1&lang_enum=fr')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id_bigint' => strval($meeting->id_bigint),
+                'format_shared_id_list' => '902',
+                'formats' => 'B-it',
+            ])
+            ->assertJsonFragment([
+                'id' => '902',
+                'lang' => 'it',
+                'key_string' => 'B-it',
+            ]);
+    }
+
+    public function testFormatLangUnaffectedWhenRequestedLanguagePresent()
+    {
+        // When every format has a row in the requested language, the response is exactly as before.
+        $this->createFormat(901, 'A', 'NameA-en', 'desc', 'en');
+        $this->createFormat(901, 'A-es', 'NameA-es', 'desc', 'es');
+        $this->createFormat(902, 'B', 'NameB-en', 'desc', 'en');
+        $this->createFormat(902, 'B-es', 'NameB-es', 'desc', 'es');
+        $meeting = $this->createMeeting(['formats' => '901,902']);
+        $this->get('/client_interface/json/?switcher=GetSearchResults&lang_enum=es')
+            ->assertStatus(200)
+            ->assertJsonFragment([
+                'id_bigint' => strval($meeting->id_bigint),
+                'format_shared_id_list' => '901,902',
+                'formats' => 'A-es,B-es',
+            ]);
+    }
+
     // meeting_key/meeting_key_value
     //
     //
