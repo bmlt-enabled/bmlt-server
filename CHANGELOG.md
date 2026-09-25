@@ -1,4 +1,7 @@
 ## 4.2.8 (UNRELEASED)
+* Fixed `GetSearchResults` dropping format IDs that have no definition in the requested language; they are now kept in the results.
+* Fixed `venue_type` not accepting comma-separated values in `GetSearchResults` as documented.
+* `GetSearchResults` now returns a 422 error when `lang_enum` or a meeting key is passed as an array.
 * Fixed the Service Bodies page showing the "add service body" form when a search returned no matches.
 
 ## 4.2.7 (August 5, 2026)
