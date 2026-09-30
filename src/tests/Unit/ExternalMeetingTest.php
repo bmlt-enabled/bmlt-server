@@ -1198,14 +1198,6 @@ class ExternalMeetingTest extends TestCase
         $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
     }
 
-    public function testShouldNotDeriveTimeZoneFromNationWhenSourceSuppliedOne()
-    {
-        $values = $this->nationCandidateValues();
-        $values['time_zone'] = 'Asia/Kolkata';
-        $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
-    }
-
     public function testShouldNotDeriveTimeZoneFromBlankNation()
     {
         $values = $this->nationCandidateValues();

@@ -976,7 +976,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             if ($deriveTimeZones && $external->shouldDeriveTimeZone($placeholderCenters)) {
                 $this->deriveTimeZone($external);
             }
-            if ($deriveTimeZones && $external->shouldDeriveTimeZoneFromNation()) {
+            if ($deriveTimeZones && !$external->hasTimeZone() && $external->shouldDeriveTimeZoneFromNation()) {
                 $this->deriveTimeZoneFromNation($external);
             }
             $db = $meetingsBySourceId->get($external->id);
