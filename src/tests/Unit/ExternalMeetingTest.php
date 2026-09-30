@@ -1047,7 +1047,7 @@ class ExternalMeetingTest extends TestCase
         $this->assertFalse($external->isEqual($db, collect([$sb1->id_bigint => $sb1->source_id]), collect([$f1->shared_id_bigint => $f1->source_id])));
     }
 
-    // Time zone derivation
+    // shouldDeriveTimeZone
     //
     //
     private function deriveCandidateValues(): array
@@ -1060,13 +1060,13 @@ class ExternalMeetingTest extends TestCase
         return $values;
     }
 
-    public function testIsVirtualOrHybridForVirtual()
+    public function testShouldDeriveTimeZoneForVirtual()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $this->assertTrue($external->isVirtualOrHybrid());
     }
 
-    public function testIsVirtualOrHybridForHybrid()
+    public function testShouldDeriveTimeZoneForHybrid()
     {
         $values = $this->deriveCandidateValues();
         $values['venue_type'] = (string)Meeting::VENUE_TYPE_HYBRID;
@@ -1074,7 +1074,7 @@ class ExternalMeetingTest extends TestCase
         $this->assertTrue($external->isVirtualOrHybrid());
     }
 
-    public function testIsNotVirtualOrHybridForInPerson()
+    public function testShouldNotDeriveTimeZoneForInPerson()
     {
         $values = $this->deriveCandidateValues();
         $values['venue_type'] = (string)Meeting::VENUE_TYPE_IN_PERSON;
@@ -1082,7 +1082,7 @@ class ExternalMeetingTest extends TestCase
         $this->assertFalse($external->isVirtualOrHybrid());
     }
 
-    public function testHasTimeZoneWhenSourceSuppliedOne()
+    public function testShouldNotDeriveTimeZoneWhenSourceSuppliedOne()
     {
         $values = $this->deriveCandidateValues();
         $values['time_zone'] = 'America/Chicago';
@@ -1090,7 +1090,7 @@ class ExternalMeetingTest extends TestCase
         $this->assertTrue($external->hasTimeZone());
     }
 
-    public function testHasNoTimeZoneWhenSourceTimeZoneIsLiteralNull()
+    public function testShouldDeriveTimeZoneWhenSourceTimeZoneIsLiteralNull()
     {
         $values = $this->deriveCandidateValues();
         $values['time_zone'] = 'NULL';
@@ -1098,79 +1098,72 @@ class ExternalMeetingTest extends TestCase
         $this->assertFalse($external->hasTimeZone());
     }
 
-    public function testHasTrustworthyLocationAndCoordinates()
-    {
-        $external = new ExternalMeeting($this->deriveCandidateValues());
-        $this->assertTrue($external->hasTrustworthyLocation());
-        $this->assertTrue($external->hasCoordinates());
-    }
-
-    public function testHasNoTrustworthyLocationWithoutCityStateOrPostalCode()
+    public function testShouldNotDeriveTimeZoneWithoutTrustworthyLocation()
     {
         $values = $this->deriveCandidateValues();
         $values['location_municipality'] = '';
         $values['location_province'] = '';
         $values['location_postal_code_1'] = '';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->hasTrustworthyLocation());
+        $this->assertFalse($external->hasUsableCoordinates([]));
     }
 
-    public function testHasTrustworthyLocationWithPostalCodeButNoCityState()
+    public function testShouldDeriveTimeZoneWithPostalCodeButNoCityState()
     {
         $values = $this->deriveCandidateValues();
         $values['location_municipality'] = '';
         $values['location_province'] = '';
         $values['location_postal_code_1'] = '30339';
         $external = new ExternalMeeting($values);
-        $this->assertTrue($external->hasTrustworthyLocation());
+        $this->assertTrue($external->hasUsableCoordinates([]));
     }
 
-    public function testHasNoCoordinatesWhenMissing()
+    public function testShouldNotDeriveTimeZoneWithoutCoordinates()
     {
         $values = $this->deriveCandidateValues();
         $values['latitude'] = '';
         $values['longitude'] = '';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->hasCoordinates());
+        $this->assertFalse($external->hasUsableCoordinates([]));
     }
 
-    public function testHasNoCoordinatesForNullIsland()
+    public function testShouldNotDeriveTimeZoneForNullIsland()
     {
         $values = $this->deriveCandidateValues();
         $values['latitude'] = '0';
         $values['longitude'] = '0';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->hasCoordinates());
+        $this->assertFalse($external->hasUsableCoordinates([]));
     }
 
-    public function testIsPlaceholderCoordinate()
+    public function testShouldNotDeriveTimeZoneOnPlaceholderCoordinate()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.7128, 'longitude' => -74.0060]];
-        $this->assertTrue($external->isPlaceholderCoordinate($centers));
+        $this->assertFalse($external->hasUsableCoordinates($centers));
     }
 
-    public function testIsPlaceholderCoordinateWithinTolerance()
+    public function testShouldNotDeriveTimeZoneOnPlaceholderWithinTolerance()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.71285, 'longitude' => -74.00605]];
-        $this->assertTrue($external->isPlaceholderCoordinate($centers));
+        $this->assertFalse($external->hasUsableCoordinates($centers));
     }
 
-    public function testIsNotPlaceholderCoordinateJustOutsideTolerance()
+    public function testShouldDeriveTimeZoneJustOutsidePlaceholderTolerance()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.7138, 'longitude' => -74.0060]];
-        $this->assertFalse($external->isPlaceholderCoordinate($centers));
+        $this->assertTrue($external->hasUsableCoordinates($centers));
     }
 
-    public function testIsPlaceholderCoordinateOnAnyOneOfSeveral()
+    public function testShouldNotDeriveTimeZoneWhenOnAnyOneOfSeveralPlaceholders()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [
             ['latitude' => 34.235918, 'longitude' => -118.563659],
             ['latitude' => 40.7128, 'longitude' => -74.0060],
         ];
-        $this->assertTrue($external->isPlaceholderCoordinate($centers));
+        $this->assertFalse($external->hasUsableCoordinates($centers));
     }
 }

@@ -101,7 +101,18 @@ class ExternalMeeting extends ExternalObject
         return in_array($this->venueType, [Meeting::VENUE_TYPE_VIRTUAL, Meeting::VENUE_TYPE_HYBRID], true);
     }
 
-    public function isPlaceholderCoordinate(array $placeholderCenters): bool
+    public function hasUsableCoordinates(array $placeholderCenters): bool
+    {
+        if (!$this->hasTrustworthyLocation()) {
+            return false;
+        }
+        if (!$this->hasCoordinates()) {
+            return false;
+        }
+        return !$this->isPlaceholderCoordinate($placeholderCenters);
+    }
+
+    private function isPlaceholderCoordinate(array $placeholderCenters): bool
     {
         foreach ($placeholderCenters as $center) {
             if ($this->coordinatesMatch($this->latitude, $this->longitude, $center['latitude'], $center['longitude'])) {
