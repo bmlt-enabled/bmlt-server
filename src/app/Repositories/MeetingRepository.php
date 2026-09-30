@@ -973,11 +973,13 @@ class MeetingRepository implements MeetingRepositoryInterface
 
         foreach ($externalObjects as $external) {
             $external = $this->castExternal($external);
-            if ($deriveTimeZones && $external->shouldDeriveTimeZone($placeholderCenters)) {
-                $this->deriveTimeZone($external);
-            }
-            if ($deriveTimeZones && !$external->hasTimeZone() && $external->shouldDeriveTimeZoneFromNation()) {
-                $this->deriveTimeZoneFromNation($external);
+            if ($deriveTimeZones && $external->isVirtualOrHybrid() && !$external->hasTimeZone()) {
+                if ($external->hasTrustworthyLocation() && $external->hasCoordinates() && !$external->isPlaceholderCoordinate($placeholderCenters)) {
+                    $this->deriveTimeZone($external);
+                }
+                if (!$external->hasTimeZone() && !empty(trim($external->locationNation ?? ''))) {
+                    $this->deriveTimeZoneFromNation($external);
+                }
             }
             $db = $meetingsBySourceId->get($external->id);
 

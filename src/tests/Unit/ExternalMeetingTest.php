@@ -1047,7 +1047,7 @@ class ExternalMeetingTest extends TestCase
         $this->assertFalse($external->isEqual($db, collect([$sb1->id_bigint => $sb1->source_id]), collect([$f1->shared_id_bigint => $f1->source_id])));
     }
 
-    // shouldDeriveTimeZone
+    // Time zone derivation
     //
     //
     private function deriveCandidateValues(): array
@@ -1060,149 +1060,117 @@ class ExternalMeetingTest extends TestCase
         return $values;
     }
 
-    public function testShouldDeriveTimeZoneForVirtual()
+    public function testIsVirtualOrHybridForVirtual()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
-        $this->assertTrue($external->shouldDeriveTimeZone([]));
+        $this->assertTrue($external->isVirtualOrHybrid());
     }
 
-    public function testShouldDeriveTimeZoneForHybrid()
+    public function testIsVirtualOrHybridForHybrid()
     {
         $values = $this->deriveCandidateValues();
         $values['venue_type'] = (string)Meeting::VENUE_TYPE_HYBRID;
         $external = new ExternalMeeting($values);
-        $this->assertTrue($external->shouldDeriveTimeZone([]));
+        $this->assertTrue($external->isVirtualOrHybrid());
     }
 
-    public function testShouldNotDeriveTimeZoneForInPerson()
+    public function testIsNotVirtualOrHybridForInPerson()
     {
         $values = $this->deriveCandidateValues();
         $values['venue_type'] = (string)Meeting::VENUE_TYPE_IN_PERSON;
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
+        $this->assertFalse($external->isVirtualOrHybrid());
     }
 
-    public function testShouldNotDeriveTimeZoneWhenSourceSuppliedOne()
+    public function testHasTimeZoneWhenSourceSuppliedOne()
     {
         $values = $this->deriveCandidateValues();
         $values['time_zone'] = 'America/Chicago';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
+        $this->assertTrue($external->hasTimeZone());
     }
 
-    public function testShouldDeriveTimeZoneWhenSourceTimeZoneIsLiteralNull()
+    public function testHasNoTimeZoneWhenSourceTimeZoneIsLiteralNull()
     {
         $values = $this->deriveCandidateValues();
         $values['time_zone'] = 'NULL';
         $external = new ExternalMeeting($values);
-        $this->assertTrue($external->shouldDeriveTimeZone([]));
+        $this->assertFalse($external->hasTimeZone());
     }
 
-    public function testShouldNotDeriveTimeZoneWithoutTrustworthyLocation()
+    public function testHasTrustworthyLocationAndCoordinates()
+    {
+        $external = new ExternalMeeting($this->deriveCandidateValues());
+        $this->assertTrue($external->hasTrustworthyLocation());
+        $this->assertTrue($external->hasCoordinates());
+    }
+
+    public function testHasNoTrustworthyLocationWithoutCityStateOrPostalCode()
     {
         $values = $this->deriveCandidateValues();
         $values['location_municipality'] = '';
         $values['location_province'] = '';
         $values['location_postal_code_1'] = '';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
+        $this->assertFalse($external->hasTrustworthyLocation());
     }
 
-    public function testShouldDeriveTimeZoneWithPostalCodeButNoCityState()
+    public function testHasTrustworthyLocationWithPostalCodeButNoCityState()
     {
         $values = $this->deriveCandidateValues();
         $values['location_municipality'] = '';
         $values['location_province'] = '';
         $values['location_postal_code_1'] = '30339';
         $external = new ExternalMeeting($values);
-        $this->assertTrue($external->shouldDeriveTimeZone([]));
+        $this->assertTrue($external->hasTrustworthyLocation());
     }
 
-    public function testShouldNotDeriveTimeZoneWithoutCoordinates()
+    public function testHasNoCoordinatesWhenMissing()
     {
         $values = $this->deriveCandidateValues();
         $values['latitude'] = '';
         $values['longitude'] = '';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
+        $this->assertFalse($external->hasCoordinates());
     }
 
-    public function testShouldNotDeriveTimeZoneForNullIsland()
+    public function testHasNoCoordinatesForNullIsland()
     {
         $values = $this->deriveCandidateValues();
         $values['latitude'] = '0';
         $values['longitude'] = '0';
         $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
+        $this->assertFalse($external->hasCoordinates());
     }
 
-    public function testShouldNotDeriveTimeZoneOnPlaceholderCoordinate()
+    public function testIsPlaceholderCoordinate()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.7128, 'longitude' => -74.0060]];
-        $this->assertFalse($external->shouldDeriveTimeZone($centers));
+        $this->assertTrue($external->isPlaceholderCoordinate($centers));
     }
 
-    public function testShouldNotDeriveTimeZoneOnPlaceholderWithinTolerance()
+    public function testIsPlaceholderCoordinateWithinTolerance()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.71285, 'longitude' => -74.00605]];
-        $this->assertFalse($external->shouldDeriveTimeZone($centers));
+        $this->assertTrue($external->isPlaceholderCoordinate($centers));
     }
 
-    public function testShouldDeriveTimeZoneJustOutsidePlaceholderTolerance()
+    public function testIsNotPlaceholderCoordinateJustOutsideTolerance()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [['latitude' => 40.7138, 'longitude' => -74.0060]];
-        $this->assertTrue($external->shouldDeriveTimeZone($centers));
+        $this->assertFalse($external->isPlaceholderCoordinate($centers));
     }
 
-    public function testShouldNotDeriveTimeZoneWhenOnAnyOneOfSeveralPlaceholders()
+    public function testIsPlaceholderCoordinateOnAnyOneOfSeveral()
     {
         $external = new ExternalMeeting($this->deriveCandidateValues());
         $centers = [
             ['latitude' => 34.235918, 'longitude' => -118.563659],
             ['latitude' => 40.7128, 'longitude' => -74.0060],
         ];
-        $this->assertFalse($external->shouldDeriveTimeZone($centers));
-    }
-
-    // shouldDeriveTimeZoneFromNation
-    //
-    //
-    private function nationCandidateValues(): array
-    {
-        // Nothing but the nation to go on: no coordinates, no city, no postal code.
-        $values = $this->deriveCandidateValues();
-        $values['location_nation'] = 'Nepal';
-        $values['latitude'] = '';
-        $values['longitude'] = '';
-        $values['location_municipality'] = '';
-        $values['location_province'] = '';
-        $values['location_postal_code_1'] = '';
-        return $values;
-    }
-
-    public function testShouldDeriveTimeZoneFromNationWithNothingElseToGoOn()
-    {
-        $external = new ExternalMeeting($this->nationCandidateValues());
-        $this->assertTrue($external->shouldDeriveTimeZoneFromNation());
-        $this->assertFalse($external->shouldDeriveTimeZone([]));
-    }
-
-    public function testShouldNotDeriveTimeZoneFromNationForInPerson()
-    {
-        $values = $this->nationCandidateValues();
-        $values['venue_type'] = (string)Meeting::VENUE_TYPE_IN_PERSON;
-        $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
-    }
-
-    public function testShouldNotDeriveTimeZoneFromBlankNation()
-    {
-        $values = $this->nationCandidateValues();
-        $values['location_nation'] = '   ';
-        $external = new ExternalMeeting($values);
-        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
+        $this->assertTrue($external->isPlaceholderCoordinate($centers));
     }
 }
