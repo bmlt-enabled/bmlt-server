@@ -96,12 +96,17 @@ class ExternalMeeting extends ExternalObject
         return $hasCityAndState || $hasPostalCode;
     }
 
-    public function shouldDeriveTimeZone(array $placeholderCenters): bool
+    private function isVirtualMissingTimeZone(): bool
     {
         if (!in_array($this->venueType, [Meeting::VENUE_TYPE_VIRTUAL, Meeting::VENUE_TYPE_HYBRID], true)) {
             return false;
         }
-        if ($this->hasTimeZone()) {
+        return !$this->hasTimeZone();
+    }
+
+    public function shouldDeriveTimeZone(array $placeholderCenters): bool
+    {
+        if (!$this->isVirtualMissingTimeZone()) {
             return false;
         }
         if (!$this->hasTrustworthyLocation()) {
@@ -111,6 +116,12 @@ class ExternalMeeting extends ExternalObject
             return false;
         }
         return !$this->isPlaceholderCoordinate($placeholderCenters);
+    }
+
+    // Fallback for when the coordinates can't be used; needs no city or coordinates.
+    public function shouldDeriveTimeZoneFromNation(): bool
+    {
+        return $this->isVirtualMissingTimeZone() && !empty(trim($this->locationNation ?? ''));
     }
 
     private function isPlaceholderCoordinate(array $placeholderCenters): bool

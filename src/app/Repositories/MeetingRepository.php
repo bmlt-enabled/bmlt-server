@@ -976,6 +976,9 @@ class MeetingRepository implements MeetingRepositoryInterface
             if ($deriveTimeZones && $external->shouldDeriveTimeZone($placeholderCenters)) {
                 $this->deriveTimeZone($external);
             }
+            if ($deriveTimeZones && $external->shouldDeriveTimeZoneFromNation()) {
+                $this->deriveTimeZoneFromNation($external);
+            }
             $db = $meetingsBySourceId->get($external->id);
 
             $serviceBodyId = $serviceBodySourceIdToIdMap->get($external->serviceBodyId);
@@ -1009,6 +1012,14 @@ class MeetingRepository implements MeetingRepositoryInterface
     private function deriveTimeZone(ExternalMeeting $external): void
     {
         $timeZone = $this->timeZoneForCoordinate($external->latitude, $external->longitude);
+        if (!is_null($timeZone)) {
+            $external->timeZone = $timeZone;
+        }
+    }
+
+    private function deriveTimeZoneFromNation(ExternalMeeting $external): void
+    {
+        $timeZone = $this->timeZoneRepository->getByNation($external->locationNation);
         if (!is_null($timeZone)) {
             $external->timeZone = $timeZone;
         }

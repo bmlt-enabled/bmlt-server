@@ -25,6 +25,31 @@ return [
     'timezone_index_path' => env('AGGREGATOR_TIMEZONE_INDEX_PATH'),
     'timezone_data_path' => env('AGGREGATOR_TIMEZONE_DATA_PATH'),
 
+    // Free-text location_nation values mapped to ISO country codes, used to set a time zone for
+    // single-zone countries. Keys are lowercase without full stops; two-letter codes need no entry.
+    // Snapshot taken 2026-09-30 from the values on the aggregator's virtual and hybrid meetings.
+    'nation_aliases' => [
+        'bangladesh' => 'BD',
+        'danmark' => 'DK',
+        'france' => 'FR',
+        'india' => 'IN',
+        'ireland' => 'IE',
+        'italia' => 'IT',
+        'nepal' => 'NP',
+        'northern ireland' => 'GB',
+        'oman' => 'OM',
+        'paraguay' => 'PY',
+        'royaume uni' => 'GB',
+        'singapore' => 'SG',
+        'slovak' => 'SK',
+        'slovakia' => 'SK',
+        'suisse' => 'CH',
+        'switzerland' => 'CH',
+        'thaïlande' => 'TH',
+        'uruguai' => 'UY',
+        'vietnam' => 'VN',
+    ],
+
     // Each root server's configured map center, keyed by source_id, as [latitude, longitude].
     // A meeting sitting exactly on its server's map center was never given a location of its
     // own, so its coordinates say nothing about where it is and we must not derive a time zone

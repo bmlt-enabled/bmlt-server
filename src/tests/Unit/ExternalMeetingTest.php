@@ -1166,4 +1166,51 @@ class ExternalMeetingTest extends TestCase
         ];
         $this->assertFalse($external->shouldDeriveTimeZone($centers));
     }
+
+    // shouldDeriveTimeZoneFromNation
+    //
+    //
+    private function nationCandidateValues(): array
+    {
+        // Nothing but the nation to go on: no coordinates, no city, no postal code.
+        $values = $this->deriveCandidateValues();
+        $values['location_nation'] = 'Nepal';
+        $values['latitude'] = '';
+        $values['longitude'] = '';
+        $values['location_municipality'] = '';
+        $values['location_province'] = '';
+        $values['location_postal_code_1'] = '';
+        return $values;
+    }
+
+    public function testShouldDeriveTimeZoneFromNationWithNothingElseToGoOn()
+    {
+        $external = new ExternalMeeting($this->nationCandidateValues());
+        $this->assertTrue($external->shouldDeriveTimeZoneFromNation());
+        $this->assertFalse($external->shouldDeriveTimeZone([]));
+    }
+
+    public function testShouldNotDeriveTimeZoneFromNationForInPerson()
+    {
+        $values = $this->nationCandidateValues();
+        $values['venue_type'] = (string)Meeting::VENUE_TYPE_IN_PERSON;
+        $external = new ExternalMeeting($values);
+        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
+    }
+
+    public function testShouldNotDeriveTimeZoneFromNationWhenSourceSuppliedOne()
+    {
+        $values = $this->nationCandidateValues();
+        $values['time_zone'] = 'Asia/Kolkata';
+        $external = new ExternalMeeting($values);
+        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
+    }
+
+    public function testShouldNotDeriveTimeZoneFromBlankNation()
+    {
+        $values = $this->nationCandidateValues();
+        $values['location_nation'] = '   ';
+        $external = new ExternalMeeting($values);
+        $this->assertFalse($external->shouldDeriveTimeZoneFromNation());
+    }
 }
