@@ -80,6 +80,7 @@ $(ZIP_FILE): $(VENDOR_AUTOLOAD) $(FRONTEND) $(SEMANTIC_HTML) $(TIMEZONE_ASSETS)
 	cd build && zip -r $(shell basename $(ZIP_FILE)) main_server \
 		-x main_server/.gitattributes \
 		-x main_server/.gitignore \
+		-x main_server/.npmrc \
 		-x main_server/.nvmrc \
 		-x main_server/.phpcs.xml \
 		-x main_server/.phpstan.neon \

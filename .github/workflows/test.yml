@@ -30,14 +30,14 @@ jobs:
         options: --health-cmd="${{ (matrix.db == 'mariadb:latest') && 'mariadb-admin' || 'mysqladmin' }} ping" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: php ${{ matrix.php }} 🐘
         id: setup-php
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2.6.5
+          tools: composer:v2.10.3
 
       - name: make composer 🎼
         run: |
@@ -74,10 +74,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: checkout 🛒
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: node 22 ❇️
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 22
 
