@@ -28,3 +28,8 @@
 
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Allow for compressed json response
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
