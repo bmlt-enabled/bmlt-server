@@ -1,5 +1,6 @@
 ## 4.2.9 (UNRELEASED)
 * Added a Meeting Update URL field to service bodies, intended to link to the service body's meeting update form (e.g. a BMLT Workflow page).
+* In aggregator mode, `GetSearchResults` now includes `source_id`, the meeting's ID on its source root server.
 
 ## 4.2.8 (September 25, 2026)
 * Fixed `GetSearchResults` dropping format IDs that have no definition in the requested language; they are now kept in the results.

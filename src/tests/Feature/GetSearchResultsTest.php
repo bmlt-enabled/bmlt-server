@@ -2025,6 +2025,32 @@ class GetSearchResultsTest extends TestCase
         $this->assertEquals($rootServer->id, $data[0]['root_server_id']);
     }
 
+    public function testDataFieldKeySourceIdWithAggregatorDisabled()
+    {
+        $rootServer = $this->createRootServer(1);
+        $meeting1 = $this->createMeeting(['source_id' => 123]);
+        $meeting1->rootserver()->associate($rootServer);
+        $meeting1->save();
+        $data = collect($this->get("/client_interface/json/?switcher=GetSearchResults&root_server_ids=$rootServer->id&data_field_key=source_id")
+            ->assertStatus(200)
+            ->json());
+        $this->assertArrayNotHasKey('source_id', $data[0]);
+    }
+
+    public function testDataFieldKeySourceIdWithAggregatorEnabled()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        $rootServer = $this->createRootServer(1);
+        $meeting1 = $this->createMeeting(['source_id' => 123]);
+        $meeting1->rootserver()->associate($rootServer);
+        $meeting1->save();
+        $data = collect($this->get("/client_interface/json/?switcher=GetSearchResults&root_server_ids=$rootServer->id&data_field_key=source_id")
+            ->assertStatus(200)
+            ->json());
+        $this->assertEquals(['source_id'], array_keys($data[0]));
+        $this->assertEquals(123, $data[0]['source_id']);
+    }
+
     public function testDataFieldKeyServiceBodyName()
     {
         $area1 = $this->createArea('area1', 'area1', 0);
@@ -2459,6 +2485,31 @@ class GetSearchResultsTest extends TestCase
         $this->get("/client_interface/json/?switcher=GetSearchResults&root_server_ids=$rootServer->id")
             ->assertStatus(200)
             ->assertJsonFragment(['root_server_id' => $rootServer->id]);
+    }
+
+    public function testSourceIdWithAggregatorDisabled()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', false);
+        $rootServer = $this->createRootServer(1);
+        $meeting = $this->createMeeting(['source_id' => 123]);
+        $meeting->rootServer()->associate($rootServer);
+        $meeting->save();
+        $response = $this->get("/client_interface/json/?switcher=GetSearchResults&root_server_ids=$rootServer->id")
+            ->assertStatus(200)
+            ->json();
+        $this->assertArrayNotHasKey('source_id', $response[0]);
+    }
+
+    public function testSourceIdWithAggregatorEnabled()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        $rootServer = $this->createRootServer(1);
+        $meeting = $this->createMeeting(['source_id' => 123]);
+        $meeting->rootServer()->associate($rootServer);
+        $meeting->save();
+        $this->get("/client_interface/json/?switcher=GetSearchResults&root_server_ids=$rootServer->id")
+            ->assertStatus(200)
+            ->assertJsonFragment(['source_id' => 123]);
     }
 
     // root server ids

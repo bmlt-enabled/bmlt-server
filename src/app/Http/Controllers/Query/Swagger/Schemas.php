@@ -46,6 +46,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'contact_phone_1', type: 'string'),
         new OA\Property(property: 'contact_email_1', type: 'string'),
         new OA\Property(property: 'root_server_id', type: 'string', description: 'Aggregator mode only — ID of the root server this meeting came from.'),
+        new OA\Property(property: 'source_id', type: 'string', description: 'Aggregator mode only — ID of this meeting on its source root server.'),
         new OA\Property(property: 'root_server_uri', type: 'string'),
         new OA\Property(property: 'format_shared_id_list', type: 'string'),
     ]
