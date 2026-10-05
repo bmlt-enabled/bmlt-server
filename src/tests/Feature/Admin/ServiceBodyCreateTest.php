@@ -20,6 +20,7 @@ class ServiceBodyCreateTest extends TestCase
             'assignedUserIds' => [],
             'url' => 'http://blah.com',
             'helpline' => '555-555-5555',
+            'meetingUpdateUrl' => 'https://blah.com/meeting-update',
             'worldId' => 'test world id',
         ];
     }
@@ -43,6 +44,7 @@ class ServiceBodyCreateTest extends TestCase
             ->assertJsonFragment(['assignedUserIds' => $data['assignedUserIds']])
             ->assertJsonFragment(['url' => $data['url']])
             ->assertJsonFragment(['helpline' => $data['helpline']])
+            ->assertJsonFragment(['meetingUpdateUrl' => $data['meetingUpdateUrl']])
             ->assertJsonFragment(['worldId' => $data['worldId']])
             ->json();
     }
@@ -66,6 +68,7 @@ class ServiceBodyCreateTest extends TestCase
             ->assertJsonFragment(['assignedUserIds' => $data['assignedUserIds']])
             ->assertJsonFragment(['url' => $data['url']])
             ->assertJsonFragment(['helpline' => $data['helpline']])
+            ->assertJsonFragment(['meetingUpdateUrl' => $data['meetingUpdateUrl']])
             ->assertJsonFragment(['worldId' => $data['worldId']])
             ->json();
     }
@@ -315,6 +318,43 @@ class ServiceBodyCreateTest extends TestCase
 
         // it is not required
         unset($data['url']);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/servicebodies', $data)
+            ->assertStatus(201);
+    }
+
+    public function testStoreServiceBodyValidateMeetingUpdateUrl()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $data = $this->validPayload($user);
+
+        // it can't be an invalid url
+        $data['meetingUpdateUrl'] = 'test';
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/servicebodies', $data)
+            ->assertStatus(422);
+
+        // it can't be longer than 255 characters
+        $data['meetingUpdateUrl'] = 'https://' . str_repeat('t', 255 - 11) . '.org';
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/servicebodies', $data)
+            ->assertStatus(422);
+
+        // it can be a valid url with <= 255 characters
+        $data['meetingUpdateUrl'] = 'https://' . str_repeat('t', 255 - 12) . '.org';
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/servicebodies', $data)
+            ->assertStatus(201);
+
+        // it can be null
+        $data['meetingUpdateUrl'] = null;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->post('/api/v1/servicebodies', $data)
+            ->assertStatus(201);
+
+        // it is not required
+        unset($data['meetingUpdateUrl']);
         $this->withHeader('Authorization', "Bearer $token")
             ->post('/api/v1/servicebodies', $data)
             ->assertStatus(201);

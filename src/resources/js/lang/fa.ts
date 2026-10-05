@@ -208,6 +208,7 @@ export const faTranslations = {
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'جلسات',
   meetingUnpublishedNote: 'توجه: انتشار جلسه نشانگر بسته شدن موقت است. اگر این جلسه به طور دائم بسته شده است ، لطفاً آن را حذف کنید.',
+  meetingUpdateUrlTitle: 'آدرس به‌روزرسانی جلسات',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'دقیقه',
   more: 'more', // TODO: translate

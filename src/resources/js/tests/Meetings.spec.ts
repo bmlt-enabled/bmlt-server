@@ -79,7 +79,20 @@ describe('check content in Meetings tab when logged in as various users', () => 
 
   test('check service body field is disabled text input when user has exactly one service body', async () => {
     const user = await login('serveradmin', 'Meetings');
-    const singleServiceBody = { id: 999, name: 'Only Service Body', adminUserId: 1, type: 'AS', parentId: null, assignedUserIds: [], email: '', description: '', url: '', helpline: '', worldId: '' };
+    const singleServiceBody = {
+      id: 999,
+      name: 'Only Service Body',
+      adminUserId: 1,
+      type: 'AS',
+      parentId: null,
+      assignedUserIds: [],
+      email: '',
+      description: '',
+      url: '',
+      helpline: '',
+      worldId: '',
+      meetingUpdateUrl: null
+    };
     vi.spyOn(ApiClientWrapper.api, 'getServiceBodies').mockResolvedValue([singleServiceBody]);
 
     await user.click(await screen.findByRole('link', { name: 'Home' }));

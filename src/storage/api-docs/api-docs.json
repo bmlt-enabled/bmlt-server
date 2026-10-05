@@ -2944,6 +2944,11 @@
                         "type": "string",
                         "example": "string"
                     },
+                    "meetingUpdateUrl": {
+                        "type": "string",
+                        "example": "https://example.com/meeting-update",
+                        "nullable": true
+                    },
                     "email": {
                         "type": "string",
                         "example": "string"
@@ -2966,6 +2971,7 @@
                     "assignedUserIds",
                     "url",
                     "helpline",
+                    "meetingUpdateUrl",
                     "email",
                     "worldId"
                 ],

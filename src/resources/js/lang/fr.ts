@@ -208,6 +208,7 @@ export const frTranslations = {
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Réunions',
   meetingUnpublishedNote: 'Note : dépublier une réunion indique une fermeture temporaire. Si cette réunion est définitivement fermée, veuillez la supprimer.',
+  meetingUpdateUrlTitle: 'URL de mise à jour des réunions',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
   more: 'more', // TODO: translate

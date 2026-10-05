@@ -15,13 +15,14 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'assignedUserIds', type: 'array', items: new OA\Items(type: 'integer', example: 0)),
         new OA\Property(property: 'url', type: 'string', example: 'string'),
         new OA\Property(property: 'helpline', type: 'string', example: 'string'),
+        new OA\Property(property: 'meetingUpdateUrl', type: 'string', nullable: true, example: 'https://example.com/meeting-update'),
         new OA\Property(property: 'email', type: 'string', example: 'string'),
         new OA\Property(property: 'worldId', type: 'string', example: 'string'),
     ]
 )]
 #[OA\Schema(
     schema: 'ServiceBody',
-    required: ['id', 'parentId', 'name', 'description', 'type', 'adminUserId', 'assignedUserIds', 'url', 'helpline', 'email', 'worldId'],
+    required: ['id', 'parentId', 'name', 'description', 'type', 'adminUserId', 'assignedUserIds', 'url', 'helpline', 'meetingUpdateUrl', 'email', 'worldId'],
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 0),
     ],

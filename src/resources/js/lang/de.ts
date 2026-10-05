@@ -154,6 +154,7 @@ export const deTranslations = {
   meetingsTitle: 'Meeting',
   meetingUnpublishedNote:
     'Hinweis: Das Aufheben der Veröffentlichung eines Meetings bedeutet, dass es vorübergehend geschlossen wurde. Wenn dieses Meeting dauerhaft geschlossen wurde, lösch es bitte.',
+  meetingUpdateUrlTitle: 'URL für Meeting-Aktualisierungen',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minuten',
   more: 'more', // TODO: translate

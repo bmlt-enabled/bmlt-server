@@ -208,6 +208,7 @@ export const enTranslations = {
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Meetings',
   meetingUnpublishedNote: 'Note: Unpublishing a meeting indicates a temporary closure. If this meeting has closed permanently, please delete it.',
+  meetingUpdateUrlTitle: 'Meeting Update URL',
   miles: 'Miles',
   minutesTitle: 'Minutes',
   more: 'more',

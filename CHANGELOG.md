@@ -1,3 +1,6 @@
+## 4.2.9 (UNRELEASED)
+* Added a Meeting Update URL field to service bodies, intended to link to the service body's meeting update form (e.g. a BMLT Workflow page).
+
 ## 4.2.8 (September 25, 2026)
 * Fixed `GetSearchResults` dropping format IDs that have no definition in the requested language; they are now kept in the results.
 * Fixed `venue_type` not accepting comma-separated values in `GetSearchResults` as documented.

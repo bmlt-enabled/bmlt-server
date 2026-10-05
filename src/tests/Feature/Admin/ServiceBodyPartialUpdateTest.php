@@ -75,6 +75,14 @@ class ServiceBodyPartialUpdateTest extends TestCase
         $region->refresh();
         $this->assertEquals($region->kml_file_uri_string, $data['helpline']);
 
+        $data = ['meetingUpdateUrl' => 'https://www.na.org/meeting-update'];
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$region->id_bigint", $data)
+            ->assertStatus(204);
+        $region->refresh();
+        $this->assertEquals($region->meeting_update_url, $data['meetingUpdateUrl']);
+        $this->assertEquals('123-456-7890', $region->kml_file_uri_string);
+
         $data = ['email' => 'test@test.com'];
         $this->withHeader('Authorization', "Bearer $token")
             ->patch("/api/v1/servicebodies/$region->id_bigint", $data)
@@ -154,6 +162,14 @@ class ServiceBodyPartialUpdateTest extends TestCase
             ->assertStatus(204);
         $region->refresh();
         $this->assertEquals($region->kml_file_uri_string, $data['helpline']);
+
+        $data = ['meetingUpdateUrl' => 'https://www.na.org/meeting-update'];
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$region->id_bigint", $data)
+            ->assertStatus(204);
+        $region->refresh();
+        $this->assertEquals($region->meeting_update_url, $data['meetingUpdateUrl']);
+        $this->assertEquals('123-456-7890', $region->kml_file_uri_string);
 
         $data = ['email' => 'test@test.com'];
         $this->withHeader('Authorization', "Bearer $token")
