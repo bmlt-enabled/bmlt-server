@@ -328,6 +328,7 @@ class ServiceBodyRepository implements ServiceBodyRepositoryInterface
             'sb_type' => $externalServiceBody->type,
             'uri_string' => $externalServiceBody->url,
             'kml_file_uri_string' => $externalServiceBody->helpline,
+            'meeting_update_url' => $externalServiceBody->meetingUpdateUrl,
             'worldid_mixed' => $externalServiceBody->worldId,
             'sb_meeting_email' => '',
         ];

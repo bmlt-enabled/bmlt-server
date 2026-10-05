@@ -208,6 +208,7 @@ export const elTranslations = {
   meetingStatesProvinces: 'Γεωγραφικό διαμέρισμα ομάδας',
   meetingsTitle: 'Ομάδες',
   meetingUnpublishedNote: 'please delete it.',
+  meetingUpdateUrlTitle: 'Διεύθυνση ενημέρωσης στοιχείων ομάδας',
   miles: 'Μίλια',
   minutesTitle: 'Λεπτά',
   more: 'Περισσότερα',

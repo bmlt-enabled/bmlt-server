@@ -61,6 +61,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'lang', type: 'string'),
         new OA\Property(property: 'id', type: 'string'),
         new OA\Property(property: 'world_id', type: 'string'),
+        new OA\Property(property: 'meeting_update_url', type: 'string', description: 'URL of the service body\'s meeting update form.'),
         new OA\Property(property: 'root_server_id', type: 'string', description: 'Aggregator mode only.'),
         new OA\Property(property: 'root_server_uri', type: 'string', description: 'Aggregator mode only.'),
         new OA\Property(property: 'format_type_enum', type: 'string'),

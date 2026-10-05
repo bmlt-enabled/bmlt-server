@@ -140,6 +140,11 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     await user.clear(helpline);
     await user.type(helpline, '843-555-7247');
     expect(helpline.value).toBe('843-555-7247');
+    const meetingUpdateUrl = screen.getByRole('textbox', { name: 'Meeting Update URL' }) as HTMLInputElement;
+    expect(meetingUpdateUrl.value).toBe('https://ruralarea.example.com/meeting-update');
+    await user.clear(meetingUpdateUrl);
+    await user.type(meetingUpdateUrl, 'https://moreruralarea.example.com/meeting-update');
+    expect(meetingUpdateUrl.value).toBe('https://moreruralarea.example.com/meeting-update');
     const worldid = screen.getByRole('textbox', { name: 'World Committee Code' }) as HTMLInputElement;
     expect(worldid.value).toBe('AS778');
     await user.clear(worldid);
@@ -158,6 +163,7 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(mockSavedServiceBodyUpdate?.description).toBe('Rural Area Description now more rural');
     expect(mockSavedServiceBodyUpdate?.url).toBe('https://moreruralarea.example.com');
     expect(mockSavedServiceBodyUpdate?.helpline).toBe('843-555-7247');
+    expect(mockSavedServiceBodyUpdate?.meetingUpdateUrl).toBe('https://moreruralarea.example.com/meeting-update');
     expect(mockSavedServiceBodyUpdate?.worldId).toBe('AS788');
     // check that service body create and service body delete weren't touched
     expect(mockSavedServiceBodyCreate).toBe(null);
@@ -210,6 +216,9 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     const helpline = screen.getByRole('textbox', { name: 'Helpline' }) as HTMLInputElement;
     await user.type(helpline, '843-555-7247');
     expect(helpline.value).toBe('843-555-7247');
+    const meetingUpdateUrl = screen.getByRole('textbox', { name: 'Meeting Update URL' }) as HTMLInputElement;
+    await user.type(meetingUpdateUrl, 'https://moreruralarea.example.com/meeting-update');
+    expect(meetingUpdateUrl.value).toBe('https://moreruralarea.example.com/meeting-update');
     const worldid = screen.getByRole('textbox', { name: 'World Committee Code' }) as HTMLInputElement;
     await user.type(worldid, 'AS788');
     expect(worldid.value).toBe('AS788');
@@ -224,6 +233,7 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     expect(mockSavedServiceBodyCreate?.description).toBe('Rural Area Description');
     expect(mockSavedServiceBodyCreate?.url).toBe('https://moreruralarea.example.com');
     expect(mockSavedServiceBodyCreate?.helpline).toBe('843-555-7247');
+    expect(mockSavedServiceBodyCreate?.meetingUpdateUrl).toBe('https://moreruralarea.example.com/meeting-update');
     expect(mockSavedServiceBodyCreate?.worldId).toBe('AS788');
     expect(mockSavedServiceBodyUpdate).toBe(null);
     expect(mockDeletedServiceBodyId).toBe(null);
@@ -234,10 +244,13 @@ describe('check editing, adding, and deleting service bodies using the popup dia
     await user.click(await screen.findByRole('button', { name: 'Add Service Body' }));
     const email = screen.getByLabelText('Email') as HTMLInputElement;
     await user.type(email, 'blah');
+    const meetingUpdateUrl = screen.getByLabelText('Meeting Update URL') as HTMLInputElement;
+    await user.type(meetingUpdateUrl, 'blah');
     const addButtons = screen.getAllByRole('button', { name: 'Add Service Body' });
     await user.click(addButtons[1]);
     expect(screen.getByText('name is a required field')).toBeInTheDocument();
     expect(screen.getByText('email must be a valid email')).toBeInTheDocument();
+    expect(screen.getByText('meetingUpdateUrl must be a valid URL')).toBeInTheDocument();
   });
 
   test('logged in as Northern Zone; edit Big Region Service Body', async () => {
@@ -444,6 +457,7 @@ describe('Spreadsheet download functionality', () => {
       expect(sheet['H1'].v).toBe('url');
       expect(sheet['I1'].v).toBe('helpline');
       expect(sheet['J1'].v).toBe('email');
+      expect(sheet['K1'].v).toBe('meetingUpdateUrl');
 
       // Check for some known service body data (from shared mocks)
       const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1');
@@ -469,6 +483,7 @@ describe('Spreadsheet download functionality', () => {
           expect(sheet[`G${row}`].v).toBe('AS778'); // worldId
           expect(sheet[`H${row}`].v).toBe('https://ruralarea.example.com'); // url
           expect(sheet[`I${row}`].v).toBe('803-555-7247'); // helpline
+          expect(sheet[`K${row}`].v).toBe('https://ruralarea.example.com/meeting-update'); // meetingUpdateUrl
         }
       }
 

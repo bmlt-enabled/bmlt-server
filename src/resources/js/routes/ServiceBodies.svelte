@@ -151,7 +151,8 @@
       worldId: sb.worldId,
       url: sb.url,
       helpline: sb.helpline,
-      email: sb.email
+      email: sb.email,
+      meetingUpdateUrl: sb.meetingUpdateUrl
     }))
   );
 </script>

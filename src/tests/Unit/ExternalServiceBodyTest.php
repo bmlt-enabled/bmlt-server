@@ -20,6 +20,7 @@ class ExternalServiceBodyTest extends TestCase
             'url' => 'http://transuana.org',
             'helpline' => 'helpline',
             'world_id' => 'AR6339',
+            'meeting_update_url' => 'https://transuana.org/meeting-update',
         ];
     }
 
@@ -34,6 +35,7 @@ class ExternalServiceBodyTest extends TestCase
             'uri_string' => $validValues['url'],
             'kml_file_uri_string' => $validValues['helpline'],
             'worldid_mixed' => $validValues['world_id'],
+            'meeting_update_url' => $validValues['meeting_update_url'],
         ]);
     }
 
@@ -49,6 +51,7 @@ class ExternalServiceBodyTest extends TestCase
         $this->assertEquals($values['url'], $serviceBody->url);
         $this->assertEquals($values['helpline'], $serviceBody->helpline);
         $this->assertEquals($values['world_id'], $serviceBody->worldId);
+        $this->assertEquals($values['meeting_update_url'], $serviceBody->meetingUpdateUrl);
     }
 
     public function testValidWithEmpty()
@@ -58,6 +61,7 @@ class ExternalServiceBodyTest extends TestCase
         $values['url'] = '';
         $values['helpline'] = '';
         $values['world_id'] = '';
+        $values['meeting_update_url'] = '';
         $serviceBody = new ExternalServiceBody($values);
         $this->assertEquals($values['id'], $serviceBody->id);
         $this->assertEquals($values['parent_id'], $serviceBody->parentId);
@@ -67,6 +71,7 @@ class ExternalServiceBodyTest extends TestCase
         $this->assertNull($serviceBody->url);
         $this->assertNull($serviceBody->helpline);
         $this->assertNull($serviceBody->worldId);
+        $this->assertNull($serviceBody->meetingUpdateUrl);
     }
 
     public function testValidWithNulls()
@@ -76,6 +81,7 @@ class ExternalServiceBodyTest extends TestCase
         $values['url'] = null;
         $values['helpline'] = null;
         $values['world_id'] = null;
+        $values['meeting_update_url'] = null;
         $serviceBody = new ExternalServiceBody($values);
         $this->assertEquals($values['id'], $serviceBody->id);
         $this->assertEquals($values['parent_id'], $serviceBody->parentId);
@@ -85,6 +91,7 @@ class ExternalServiceBodyTest extends TestCase
         $this->assertNull($serviceBody->url);
         $this->assertNull($serviceBody->helpline);
         $this->assertNull($serviceBody->worldId);
+        $this->assertNull($serviceBody->meetingUpdateUrl);
     }
 
     public function testValidWithMissing()
@@ -94,6 +101,7 @@ class ExternalServiceBodyTest extends TestCase
         unset($values['url']);
         unset($values['helpline']);
         unset($values['world_id']);
+        unset($values['meeting_update_url']);
         $serviceBody = new ExternalServiceBody($values);
         $this->assertEquals($values['id'], $serviceBody->id);
         $this->assertEquals($values['parent_id'], $serviceBody->parentId);
@@ -103,6 +111,7 @@ class ExternalServiceBodyTest extends TestCase
         $this->assertNull($serviceBody->url);
         $this->assertNull($serviceBody->helpline);
         $this->assertNull($serviceBody->worldId);
+        $this->assertNull($serviceBody->meetingUpdateUrl);
     }
 
     public function testMissingId()
@@ -190,6 +199,14 @@ class ExternalServiceBodyTest extends TestCase
         $this->expectException(InvalidServiceBodyException::class);
         $values = $this->validValues();
         $values['helpline'] = 123;
+        new ExternalServiceBody($values);
+    }
+
+    public function testInvalidMeetingUpdateUrl()
+    {
+        $this->expectException(InvalidServiceBodyException::class);
+        $values = $this->validValues();
+        $values['meeting_update_url'] = 123;
         new ExternalServiceBody($values);
     }
 

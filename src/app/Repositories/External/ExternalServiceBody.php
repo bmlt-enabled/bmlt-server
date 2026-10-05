@@ -13,6 +13,7 @@ class ExternalServiceBody extends ExternalObject
     public ?string $type;
     public ?string $url;
     public ?string $helpline;
+    public ?string $meetingUpdateUrl;
     public ?string $worldId;
 
     public function __construct(array $values)
@@ -24,6 +25,7 @@ class ExternalServiceBody extends ExternalObject
         $this->type = $this->validateNullableString($values, 'type');
         $this->url = $this->validateNullableString($values, 'url');
         $this->helpline = $this->validateNullableString($values, 'helpline');
+        $this->meetingUpdateUrl = $this->validateNullableString($values, 'meeting_update_url');
         $this->worldId = $this->validateNullableString($values, 'world_id');
     }
 
@@ -45,6 +47,9 @@ class ExternalServiceBody extends ExternalObject
             return false;
         }
         if ($this->helpline != $serviceBody->kml_file_uri_string) {
+            return false;
+        }
+        if ($this->meetingUpdateUrl != $serviceBody->meeting_update_url) {
             return false;
         }
         if ($this->worldId != $serviceBody->worldid_mixed) {

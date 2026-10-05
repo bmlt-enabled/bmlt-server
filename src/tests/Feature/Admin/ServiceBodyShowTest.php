@@ -261,6 +261,38 @@ class ServiceBodyShowTest extends TestCase
         $this->assertNull($data['helpline']);
     }
 
+    public function testShowServiceBodyMeetingUpdateUrlNotNull()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+
+        $area = $this->createArea('test name', 'test desc', 0);
+        $area->meeting_update_url = 'https://na.org/meeting-update';
+        $area->save();
+
+        $data = $this->withHeader('Authorization', "Bearer $token")
+            ->get("/api/v1/servicebodies/$area->id_bigint")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertEquals($area->meeting_update_url, $data['meetingUpdateUrl']);
+    }
+
+    public function testShowServiceBodyMeetingUpdateUrlNull()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+
+        $area = $this->createArea('test name', 'test desc', 0);
+
+        $data = $this->withHeader('Authorization', "Bearer $token")
+            ->get("/api/v1/servicebodies/$area->id_bigint")
+            ->assertStatus(200)
+            ->json();
+
+        $this->assertNull($data['meetingUpdateUrl']);
+    }
+
     public function testShowServiceBodyEmail()
     {
         $user = $this->createAdminUser();

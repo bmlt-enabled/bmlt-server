@@ -188,7 +188,8 @@ export const northernZone: ServiceBody = {
   description: 'Northern Zone Description',
   url: 'https://nzone.example.com',
   helpline: '123-456-7890',
-  worldId: 'ZF123'
+  worldId: 'ZF123',
+  meetingUpdateUrl: null
 };
 
 export const bigRegion: ServiceBody = {
@@ -202,7 +203,8 @@ export const bigRegion: ServiceBody = {
   description: 'Big Region Description',
   url: 'https://bigregion.example.com',
   helpline: '123-555-1212',
-  worldId: 'RG125'
+  worldId: 'RG125',
+  meetingUpdateUrl: null
 };
 
 export const smallRegion: ServiceBody = {
@@ -216,7 +218,8 @@ export const smallRegion: ServiceBody = {
   description: 'Small Region Description',
   url: 'https://smallregion.example.com',
   helpline: '555-867-5309',
-  worldId: 'RG558'
+  worldId: 'RG558',
+  meetingUpdateUrl: null
 };
 
 export const riverCityArea: ServiceBody = {
@@ -230,7 +233,8 @@ export const riverCityArea: ServiceBody = {
   description: 'River City Area Description',
   url: 'https://rivercityarea.example.com',
   helpline: '803-555-1212',
-  worldId: 'AS128'
+  worldId: 'AS128',
+  meetingUpdateUrl: null
 };
 
 export const mountainArea: ServiceBody = {
@@ -244,7 +248,8 @@ export const mountainArea: ServiceBody = {
   description: 'Mountain Area Description',
   url: 'https://mountainarea.example.com',
   helpline: '803-555-4242',
-  worldId: 'AS428'
+  worldId: 'AS428',
+  meetingUpdateUrl: null
 };
 
 export const ruralArea: ServiceBody = {
@@ -258,7 +263,8 @@ export const ruralArea: ServiceBody = {
   description: 'Rural Area Description',
   url: 'https://ruralarea.example.com',
   helpline: '803-555-7247',
-  worldId: 'AS778'
+  worldId: 'AS778',
+  meetingUpdateUrl: 'https://ruralarea.example.com/meeting-update'
 };
 
 export const closedFormat: Format = {
@@ -849,6 +855,7 @@ async function mockCreateServiceBody({ serviceBodyCreate: serviceBody }: { servi
     url: serviceBody.url || '',
     helpline: serviceBody.helpline || '',
     worldId: serviceBody.worldId || '',
+    meetingUpdateUrl: serviceBody.meetingUpdateUrl || null,
     id: 9
   };
 }

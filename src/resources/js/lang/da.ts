@@ -208,6 +208,7 @@ export const daTranslations = {
   meetingStatesProvinces: 'Møde stat/provins',
   meetingsTitle: 'Møder',
   meetingUnpublishedNote: 'Note: Et ikke offentliggjot møde indikerer midlertidig lukning, hvis dette møde lukkes helt, bedes det slettet',
+  meetingUpdateUrlTitle: 'URL til mødeopdatering',
   miles: 'Mil / kilometer',
   minutesTitle: 'Minutter',
   more: 'mere',

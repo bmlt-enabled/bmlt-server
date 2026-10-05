@@ -208,6 +208,7 @@ export const esTranslations = {
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Grupos',
   meetingUnpublishedNote: 'Nota: Cancelar la publicación de este grupo indica un cierre temporal. Si este grupo se ha cerrado de forma permanente, elimínela.',
+  meetingUpdateUrlTitle: 'Dirección URL para actualización de grupos',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutos',
   more: 'more', // TODO: translate

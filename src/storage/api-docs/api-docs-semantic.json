@@ -653,6 +653,10 @@
                     "world_id": {
                         "type": "string"
                     },
+                    "meeting_update_url": {
+                        "description": "URL of the service body's meeting update form.",
+                        "type": "string"
+                    },
                     "root_server_id": {
                         "description": "Aggregator mode only.",
                         "type": "string"

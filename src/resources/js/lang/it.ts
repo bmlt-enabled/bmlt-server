@@ -208,6 +208,7 @@ export const itTranslations = {
   meetingStatesProvinces: 'Riunioni per regione',
   meetingsTitle: 'Riunioni',
   meetingUnpublishedNote: 'Nota: annullare la pubblicazione di una riunione indica una chiusura temporanea. Se questa riunione è stata chiusa, eliminala.',
+  meetingUpdateUrlTitle: 'URL aggiornamento riunioni',
   miles: 'Miglia',
   minutesTitle: 'Minuti',
   more: 'altro',

@@ -208,6 +208,7 @@ export const ruTranslations = {
   meetingStatesProvinces: 'Meeting States/Provinces',
   meetingsTitle: 'Meetings',
   meetingUnpublishedNote: 'Note: Unpublishing a meeting indicates a temporary closure. If this meeting has closed permanently, please delete it.',
+  meetingUpdateUrlTitle: 'URL для обновления информации о собраниях',
   miles: 'Miles', // TODO: Translate
   minutesTitle: 'Minutes',
   more: 'more', // TODO: translate

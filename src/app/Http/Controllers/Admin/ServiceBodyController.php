@@ -97,6 +97,7 @@ class ServiceBodyController extends ResourceController
             'principal_user_bigint' => $validated['adminUserId'],
             'editors_string' => collect($validated['assignedUserIds'])->map(fn ($v) => strval($v))->join(','),
             'uri_string' => $validated['url'] ?? null,
+            'meeting_update_url' => $validated['meetingUpdateUrl'] ?? null,
             'sb_meeting_email' => $validated['email'] ?? '',
             'kml_file_uri_string' => $validated['helpline'] ?? null,
             'worldid_mixed' => $validated['worldId'] ?? null,
@@ -132,6 +133,8 @@ class ServiceBodyController extends ResourceController
                         return ['assignedUserIds' => $request->has('assignedUserIds') ? $request->input('assignedUserIds') : (empty($serviceBody->editors_string) ? [] : array_map(fn ($v) => intval($v), explode(',', $serviceBody->editors_string)))];
                     } elseif ($fieldName == 'uri_string') {
                         return ['url' => $request->has('url') ? $request->input('url') : $serviceBody->uri_string];
+                    } elseif ($fieldName == 'meeting_update_url') {
+                        return ['meetingUpdateUrl' => $request->has('meetingUpdateUrl') ? $request->input('meetingUpdateUrl') : $serviceBody->meeting_update_url];
                     } elseif ($fieldName == 'sb_meeting_email') {
                         return ['email' => $request->has('email') ? $request->input('email') : $serviceBody->sb_meeting_email];
                     } elseif ($fieldName == 'kml_file_uri_string') {
@@ -183,6 +186,7 @@ class ServiceBodyController extends ResourceController
             'assignedUserIds' => 'present|array',
             'assignedUserIds.*' => 'int|exists:comdef_users,id_bigint',
             'url' => 'nullable|url|max:255',
+            'meetingUpdateUrl' => 'nullable|url|max:255',
             'helpline' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'worldId' => 'nullable|string|max:30',
@@ -212,6 +216,8 @@ class ServiceBodyController extends ResourceController
                     return [$fieldName => collect($validated['assignedUserIds'])->map(fn ($v) => strval($v))->join(',')];
                 } elseif ($fieldName == 'uri_string') {
                     return [$fieldName => $validated['url'] ?? null];
+                } elseif ($fieldName == 'meeting_update_url') {
+                    return [$fieldName => $validated['meetingUpdateUrl'] ?? null];
                 } elseif ($fieldName == 'sb_meeting_email') {
                     return [$fieldName => $validated['email'] ?? ''];
                 } elseif ($fieldName == 'kml_file_uri_string') {

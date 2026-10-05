@@ -67,6 +67,7 @@
     description: selectedServiceBody?.description ?? '',
     url: selectedServiceBody?.url ?? '',
     helpline: selectedServiceBody?.helpline ?? '',
+    meetingUpdateUrl: selectedServiceBody?.meetingUpdateUrl ?? '',
     worldId: selectedServiceBody?.worldId ?? ''
   };
 
@@ -103,6 +104,7 @@
             description: (error?.errors?.description ?? []).join(' '),
             url: (error?.errors?.url ?? []).join(' '),
             helpline: (error?.errors?.helpline ?? []).join(' '),
+            meetingUpdateUrl: (error?.errors?.meetingUpdateUrl ?? []).join(' '),
             worldId: (error?.errors?.worldId ?? []).join(' ')
           });
         }
@@ -133,6 +135,11 @@
           .max(255),
         helpline: yup
           .string()
+          .transform((v) => v.trim())
+          .max(255),
+        meetingUpdateUrl: yup
+          .string()
+          .url()
           .transform((v) => v.trim())
           .max(255),
         worldId: yup
@@ -312,6 +319,15 @@
       <Helper class="mt-2" color="red">
         {#if $errors.helpline}
           {$errors.helpline}
+        {/if}
+      </Helper>
+    </div>
+    <div class="md:col-span-2">
+      <Label for="meetingUpdateUrl" class="mb-2">{$translations.meetingUpdateUrlTitle}</Label>
+      <Input type="text" id="meetingUpdateUrl" name="meetingUpdateUrl" />
+      <Helper class="mt-2" color="red">
+        {#if $errors.meetingUpdateUrl}
+          {$errors.meetingUpdateUrl}
         {/if}
       </Helper>
     </div>

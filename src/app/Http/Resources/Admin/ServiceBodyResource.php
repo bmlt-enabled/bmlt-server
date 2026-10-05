@@ -26,6 +26,7 @@ class ServiceBodyResource extends JsonResource
             'assignedUserIds' => !empty($this->editors_string) ? collect(explode(',', $this->editors_string))->map(fn ($id) => intval($id))->toArray() : [],
             'url' => $this->uri_string,
             'helpline' => $this->kml_file_uri_string,
+            'meetingUpdateUrl' => $this->meeting_update_url,
             'email' => $this->sb_meeting_email,
             'worldId' => $this->worldid_mixed,
         ];

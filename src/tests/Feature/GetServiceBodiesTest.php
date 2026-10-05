@@ -64,6 +64,7 @@ class GetServiceBodiesTest extends TestCase
                 'url' => $item->uri_string,
                 'helpline' => $item->kml_file_uri_string ?? '',
                 'world_id' => $item->worldid_mixed ?? '',
+                'meeting_update_url' => $item->meeting_update_url ?? '',
                 ], $array)
             ) {
                 return false;
@@ -86,6 +87,7 @@ class GetServiceBodiesTest extends TestCase
                 'url' => $item->uri_string,
                 'helpline' => $item->kml_file_uri_string ?? '',
                 'world_id' => $item->worldid_mixed ?? '',
+                'meeting_update_url' => $item->meeting_update_url ?? '',
                 ], $array)
             ) {
                 return false;
@@ -128,6 +130,24 @@ class GetServiceBodiesTest extends TestCase
             ->json();
         $expected = [$zone];
         $this->assertTrue($this->allServiceBodiesInArray($expected, $response));
+    }
+
+    public function testMeetingUpdateUrl()
+    {
+        $zone = $this->createZone("sezf", "sezf");
+        $zone->meeting_update_url = 'https://sezf.org/meeting-update';
+        $zone->save();
+        $this->get('/client_interface/json/?switcher=GetServiceBodies')
+            ->assertStatus(200)
+            ->assertJsonFragment(['meeting_update_url' => 'https://sezf.org/meeting-update']);
+    }
+
+    public function testMeetingUpdateUrlNull()
+    {
+        $this->createZone("sezf", "sezf");
+        $this->get('/client_interface/json/?switcher=GetServiceBodies')
+            ->assertStatus(200)
+            ->assertJsonFragment(['meeting_update_url' => '']);
     }
 
     public function testFilterIncludeNoArray()

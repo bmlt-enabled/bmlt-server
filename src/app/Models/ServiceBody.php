@@ -35,6 +35,7 @@ class ServiceBody extends Model
         'description_string',
         'sb_type',
         'uri_string',
+        'meeting_update_url',
         'kml_file_uri_string',
         'principal_user_bigint',
         'worldid_mixed',
