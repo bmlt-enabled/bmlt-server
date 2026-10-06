@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2026_04_18_000000_clean_orphaned_format_ids_rerun')) {
+        if (!$this->migrationRepository->migrationExists('2026_10_05_000000_add_meeting_update_url_to_service_bodies')) {
             return true;
         }
 
