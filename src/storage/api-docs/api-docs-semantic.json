@@ -623,6 +623,10 @@
                         "description": "Aggregator mode only — ID of the root server this meeting came from.",
                         "type": "string"
                     },
+                    "source_id": {
+                        "description": "Aggregator mode only — ID of this meeting on its source root server.",
+                        "type": "string"
+                    },
                     "root_server_uri": {
                         "type": "string"
                     },
