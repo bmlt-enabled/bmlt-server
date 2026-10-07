@@ -96,14 +96,13 @@ class ExternalMeeting extends ExternalObject
         return $hasCityAndState || $hasPostalCode;
     }
 
-    public function shouldDeriveTimeZone(array $placeholderCenters): bool
+    public function isVirtualOrHybrid(): bool
     {
-        if (!in_array($this->venueType, [Meeting::VENUE_TYPE_VIRTUAL, Meeting::VENUE_TYPE_HYBRID], true)) {
-            return false;
-        }
-        if ($this->hasTimeZone()) {
-            return false;
-        }
+        return in_array($this->venueType, [Meeting::VENUE_TYPE_VIRTUAL, Meeting::VENUE_TYPE_HYBRID], true);
+    }
+
+    public function hasUsableCoordinates(array $placeholderCenters): bool
+    {
         if (!$this->hasTrustworthyLocation()) {
             return false;
         }

@@ -103,6 +103,40 @@ class TimeZoneRepository implements TimeZoneRepositoryInterface
         }
     }
 
+    /**
+     * The time zone of a country that has exactly one, from a free-text location_nation.
+     *
+     * The field is free text, so it is normalized first: a known name or spelling from
+     * `aggregator.nation_aliases`, else an ISO 3166-1 alpha-2 code as written.
+     */
+    public function getByNation(string $nation): ?string
+    {
+        $countryCode = $this->countryCodeForNation($nation);
+        if (is_null($countryCode)) {
+            return null;
+        }
+
+        $zones = \DateTimeZone::listIdentifiers(\DateTimeZone::PER_COUNTRY, $countryCode);
+        return count($zones) === 1 ? $zones[0] : null;
+    }
+
+    private function countryCodeForNation(string $nation): ?string
+    {
+        $normalized = trim(preg_replace('/\s+/u', ' ', str_replace('.', '', mb_strtolower($nation))));
+        if ($normalized === '') {
+            return null;
+        }
+
+        $aliases = config('aggregator.nation_aliases') ?? [];
+        if (isset($aliases[$normalized])) {
+            return strtoupper($aliases[$normalized]);
+        }
+
+        // Anything else must already be a two-letter code. An unknown one yields no zones
+        // from listIdentifiers, so it falls out as null rather than as a guess.
+        return preg_match('/^[a-z]{2}$/', $normalized) ? strtoupper($normalized) : null;
+    }
+
     private function getFromBoundary(int $pos, int $len, float $latitude, float $longitude): ?string
     {
         $geoJson = (new GeobufDecoder())->decode($this->readSlice($pos, $len));
