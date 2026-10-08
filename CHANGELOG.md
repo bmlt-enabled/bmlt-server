@@ -1,4 +1,4 @@
-## 4.2.9 (UNRELEASED)
+## 4.2.9 (October 8, 2026)
 * Added Finnish language translations.
 * Added a Meeting Update URL field to service bodies, intended to link to the service body's meeting update form (e.g. a BMLT Workflow page).
 * In aggregator mode, `GetSearchResults` now includes `source_id`, the meeting's ID on its source root server.
