@@ -12,10 +12,12 @@ class TranslationTest extends TestCase
     {
         $langPath = __DIR__ . '/../../lang';
         $englishPath = $langPath . '/en';
+        // Laravel framework files are optional for other languages
+        $frameworkFiles = ['auth.php', 'pagination.php', 'passwords.php', 'validation.php'];
 
         $englishTranslations = collect(scandir($englishPath))
             ->reject(fn ($dir) => $dir == '.' || $dir == '..')
-            ->reject(fn ($dir) => $dir == 'auth.php' || $dir == 'pagination.php' || $dir == 'passwords.php' || $dir == 'validation.php')
+            ->reject(fn ($dir) => in_array($dir, $frameworkFiles))
             ->mapWithKeys(fn ($filename, $_) => [$filename => include($englishPath . '/' . $filename)]);
 
         $otherLanguages = collect(scandir($langPath))
@@ -25,6 +27,7 @@ class TranslationTest extends TestCase
         foreach ($otherLanguages as $otherPath) {
             $otherTranslations = collect(scandir($otherPath))
                 ->reject(fn ($dir) => $dir == '.' || $dir == '..')
+                ->reject(fn ($dir) => in_array($dir, $frameworkFiles))
                 ->mapWithKeys(fn ($filename, $_) => [$filename => include($otherPath . '/' . $filename)]);
 
             $this->assertEquals(count($englishTranslations), count($otherTranslations));
