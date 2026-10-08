@@ -4,6 +4,7 @@ export { elTranslations, elYupLocale } from './el';
 export { enTranslations, enYupLocale } from './en';
 export { esTranslations, esYupLocale } from './es';
 export { faTranslations, faYupLocale } from './fa';
+export { fiTranslations, fiYupLocale } from './fi';
 export { frTranslations, frYupLocale } from './fr';
 export { itTranslations, itYupLocale } from './it';
 export { plTranslations, plYupLocale } from './pl';
