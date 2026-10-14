@@ -81,7 +81,7 @@ export const itTranslations = {
   by: 'di',
   cancel: 'Annulla',
   changeHistoryDepth: 'Profondità della cronologia delle modifiche',
-  chooseOption: 'Choose option ...', // TODO: translate
+  chooseOption: "Scegli un'opzione ...",
   chooseStartTime: "Scegli l'ora di inizio",
   cityTownTitle: 'Comune',
   clearFormTitle: 'Svuota modulo',
@@ -170,10 +170,10 @@ export const itTranslations = {
   hideDetails: 'Nascondi dettagli',
   homeTitle: 'Home',
   hoursTitle: 'Ore',
-  hybrid: 'Hybrid', // TODO: translate
+  hybrid: 'Ibrida',
   idTitle: 'ID',
   includeServiceBodyEmailInSemanticOutput: "Includi email della struttura di servizio nell'output semantico",
-  inPerson: 'In-Person', // TODO: translate
+  inPerson: 'In presenza',
   invalidUsernameOrPassword: 'Nome utente o password non validi',
   keyAlreadyInUse: 'chiave già in uso per un altro formato',
   keyIsRequired: 'chiave obbligatoria',
@@ -184,16 +184,16 @@ export const itTranslations = {
   latitudeTitle: 'Latitudine',
   loadFile: 'Carica file',
   loading: 'caricamento in corso...',
-  location: 'Location', // TODO: translate
-  locationMapTitle: 'Mappa posizione', // TOFIX: translate
+  location: 'Posizione',
+  locationMapTitle: 'Mappa posizione',
   locationStreetErrorMessage: 'Le riunioni ibride o in presenza devono avere un indirizzo.',
-  locationTextTitle: 'Testo della posizione',
+  locationTextTitle: 'Luogo (nome della struttura)',
   loginTitle: 'Login',
   loginVerb: 'Accedi',
   logout: 'Esci',
   longitudeTitle: 'Longitudine',
   malformedRows: 'Righe malformate',
-  manageServerSettings: 'Manage Server Settings', // TODO: translate
+  manageServerSettings: 'Gestisci impostazioni del server',
   mapCenterLocation: 'Posizione del centro della mappa',
   mapsAndGeocoding: 'Mappe e geocodifica',
   meeting: 'riunione',
@@ -274,7 +274,7 @@ export const itTranslations = {
   numberOfMeetingsForAutoSearchHelperText: 'Numero di riunioni da trovare quando si cerca per indirizzo senza raggio. Valori più alti espandono il raggio di ricerca per trovare più riunioni.',
   observerTitle: 'Osservatore della struttura di servizio',
   occurredAt: 'Avvenuto alle',
-  otherMeetingEditorsTitle: 'Other Meeting Editors', // TODO: translate
+  otherMeetingEditorsTitle: 'Altri editor delle riunioni',
   ownedByTitle: 'Di proprietà di',
   paginationOf: 'di',
   paginationShowing: 'Mostra',
@@ -300,7 +300,7 @@ export const itTranslations = {
   selectAllServiceBodies: 'Seleziona tutte le strutture di servizio',
   serverAdministratorTitle: 'Amministratore server principale',
   serverNotice: 'Avviso server',
-  serverSettings: 'Server Settings', // TODO: translate
+  serverSettings: 'Impostazioni del server',
   serverTitle: 'Server BMLT',
   serverTitleLabel: 'Titolo server',
   serviceBodiesNoParent: 'Nessun genitore (livello superiore)',
@@ -319,7 +319,7 @@ export const itTranslations = {
   showAllTranslations: 'Mostra tutte le traduzioni',
   showDetails: 'Mostra dettagli',
   startTimeTitle: 'Ora di inizio',
-  stateTitle: 'Regione/provincia',
+  stateTitle: 'Regione (es. Toscana)',
   streetTitle: 'Via',
   summary: 'Riepilogo',
   supportedFileFormats: 'Formati supportati: Excel (.xlsx) e CSV (.csv)',
@@ -350,8 +350,8 @@ export const itTranslations = {
   usersTitle: 'Utenti',
   userTitle: 'Utente',
   userTypeTitle: 'Tipo utente',
-  venueTypeTitle: 'Tipo di struttura',
-  virtual: 'Virtual', // TODO: translate
+  venueTypeTitle: 'Tipo di riunione',
+  virtual: 'Online',
   virtualMeetingAdditionalInfoTitle: 'Informazioni aggiuntive della riunione online',
   virtualMeetingTitle: 'Link della riunione online',
   websiteUrlTitle: 'URL sito web',
