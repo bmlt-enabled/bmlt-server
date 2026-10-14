@@ -1,3 +1,6 @@
+## 4.2.10 (UNRELEASED)
+* Updated Italian translations.
+
 ## 4.2.9 (October 8, 2026)
 * Added Finnish language translations.
 * Added a Meeting Update URL field to service bodies, intended to link to the service body's meeting update form (e.g. a BMLT Workflow page).
