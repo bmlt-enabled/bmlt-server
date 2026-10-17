@@ -25,6 +25,35 @@ class TimeZoneRepositoryTest extends TestCase
         $this->assertNull($repository->getByCoordinates(NAN, 0.0));
     }
 
+    public function testResolvesSingleZoneNationsHoweverTheyAreWritten()
+    {
+        $repository = new TimeZoneRepository();
+
+        $this->assertEquals('Asia/Kathmandu', $repository->getByNation('Nepal'));
+        $this->assertEquals('Asia/Kathmandu', $repository->getByNation('  NEPAL. '));
+        $this->assertEquals('Europe/Copenhagen', $repository->getByNation('dk'));
+        $this->assertEquals('Europe/London', $repository->getByNation('Northern  Ireland'));
+        $this->assertEquals('Asia/Bangkok', $repository->getByNation('THAÏLANDE'));
+    }
+
+    public function testReturnsNullForNationsWithSeveralZones()
+    {
+        $repository = new TimeZoneRepository();
+
+        $this->assertNull($repository->getByNation('US'));
+        $this->assertNull($repository->getByNation('Brasil'));
+    }
+
+    public function testReturnsNullForUnrecognizedNations()
+    {
+        $repository = new TimeZoneRepository();
+
+        $this->assertNull($repository->getByNation(''));
+        $this->assertNull($repository->getByNation('   '));
+        $this->assertNull($repository->getByNation('Deutsch'));
+        $this->assertNull($repository->getByNation('ZZ'));
+    }
+
     public function testReturnsNullWhenBoundaryDataMissing()
     {
         config([
