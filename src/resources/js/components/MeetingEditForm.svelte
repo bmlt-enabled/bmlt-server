@@ -28,13 +28,16 @@
   import type { Format, Meeting, MeetingPartialUpdate, ServiceBody } from 'bmlt-server-client';
   import { translations } from '../stores/localization';
   import MeetingDeleteModal from './MeetingDeleteModal.svelte';
+  import MeetingTranslateModal from './MeetingTranslateModal.svelte';
   import { TrashBinOutline } from 'flowbite-svelte-icons';
+  import { LanguageOutline } from 'flowbite-svelte-icons';
+  import { authenticatedUser } from '../stores/apiCredentials';
 
   interface Props {
     selectedMeeting: Meeting | null;
     serviceBodies: ServiceBody[];
     formats: Format[];
-    onSaved: (meeting: Meeting) => void;
+    onSaved: (meeting: Meeting, targetLanguage: string) => void;
     onClosed: () => void;
     onDeleted: (meeting: Meeting) => void;
   }
@@ -86,11 +89,15 @@
   let geocodingError: string | null = $state(null);
   let isPublishedChecked = $state(true);
   let showDeleteModal = $state(false);
+  let showTranslateModal = $state(false);
   let meetingToDelete: Meeting | undefined = $state();
+
   const weekdayChoices = daysOfWeek.map((day: string, index: number) => ({
     value: index,
     name: day
   }));
+  let targetLanguage = $state($authenticatedUser?.type === 'translator' ? $authenticatedUser.targetLanguage : '');
+  const isTranslation = () => ((targetLanguage ?? '' != '') ? true : false);
   const statesAndProvincesChoices = settings.meetingStatesAndProvinces
     .map((state) => ({
       value: state,
@@ -212,8 +219,27 @@
       }
     }
   }
-
-  const { data, errors, form, setData, isDirty } = createForm({
+  function updateFields(meeting: Meeting, selectedTargetLanguage: string) {
+    showTranslateModal = false;
+    targetLanguage = selectedTargetLanguage;
+    const translationFields = [
+      'name',
+      'locationText',
+      'locationInfo',
+      'locationStreet',
+      'locationNeighborhood',
+      'locationCitySubsection',
+      'locationMunicipality',
+      'locationSubProvince',
+      'locationProvince',
+      'locationNation',
+      'comments'
+    ];
+    translationFields.forEach((name) => {
+      if (meeting[name as keyof Meeting]) setFields(name as any, meeting[name as keyof Meeting]);
+    });
+  }
+  const { data, errors, form, setData, setFields, isDirty } = createForm({
     initialValues: initialValues,
     onSubmit: async (values) => {
       spinner.show();
@@ -270,8 +296,19 @@
         };
         savedMeeting = await RootServerApi.createMeeting(copyData);
       } else if (selectedMeeting) {
-        await RootServerApi.updateMeeting(selectedMeeting.id, values);
-        savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
+        let updated = Object.getOwnPropertyNames(values).reduce<MeetingPartialUpdate>((acc, curr) => {
+          if (values[curr as keyof MeetingPartialUpdate] !== initialValues[curr as keyof MeetingPartialUpdate]) {
+            acc[curr as keyof MeetingPartialUpdate] = values[curr as keyof MeetingPartialUpdate] as any;
+          }
+          return acc;
+        }, {} as MeetingPartialUpdate);
+        if (targetLanguage && targetLanguage !== '') {
+          await RootServerApi.translateMeeting(selectedMeeting.id, targetLanguage, updated);
+          savedMeeting = await RootServerApi.getMeetingTranslation(targetLanguage, selectedMeeting.id);
+        } else {
+          await RootServerApi.partialUpdateMeeting(selectedMeeting.id, updated);
+          savedMeeting = await RootServerApi.getMeeting(selectedMeeting.id);
+        }
       } else {
         savedMeeting = await RootServerApi.createMeeting(values);
       }
@@ -327,7 +364,7 @@
     onSuccess: () => {
       spinner.hide();
       if (savedMeeting) {
-        onSaved(savedMeeting);
+        onSaved(savedMeeting, targetLanguage ?? '');
       }
     },
     extend: validator({
@@ -502,6 +539,11 @@
     showDeleteModal = true;
   }
 
+  function handleTranslate(event: MouseEvent) {
+    event.stopPropagation();
+    if ($isDirty) return;
+    showTranslateModal = true;
+  }
   // This hack is required until https://github.com/themesberg/flowbite-svelte/issues/1395 is fixed.
   function disableButtonHack(event: MouseEvent) {
     if (!$isDirty && !saveAsCopy) {
@@ -795,6 +837,9 @@
   $effect(() => {
     setData('formatIds', formatIdsSelected);
   });
+  function getTargetLanguageName(): string {
+    return targetLanguage ? settings.languageMapping[targetLanguage] : '';
+  }
 </script>
 
 <svelte:head>
@@ -828,7 +873,7 @@
 {#snippet basicTabContent()}
   <div class="grid items-center gap-4 md:grid-cols-3">
     <div class="w-full">
-      <Checkbox name="published" bind:checked={isPublishedChecked}>
+      <Checkbox name="published" bind:checked={isPublishedChecked} disabled={isTranslation()}>
         {$translations.meetingIsPublishedTitle}
       </Checkbox>
       {#if !isPublishedChecked}
@@ -850,9 +895,21 @@
         </div>
         <Button
           color="alternative"
+          onclick={(e: MouseEvent) => selectedMeeting && handleTranslate(e)}
+          class="text-red-600 dark:text-red-500"
+          aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          disabled={$isDirty || $authenticatedUser?.type === 'translator'}
+        >
+          <LanguageOutline title={{ id: 'translateMeeting', title: 'Translate Meeting' }} ariaLabel="Translate Meeting" />
+          <span class="sr-only">Translate Meeting</span>
+          {getTargetLanguageName()}
+        </Button>
+        <Button
+          color="alternative"
           onclick={(e: MouseEvent) => selectedMeeting && handleDelete(e, selectedMeeting)}
           class="text-red-600 dark:text-red-500"
           aria-label={$translations.deleteMeeting + ' ' + (selectedMeeting?.id ?? '')}
+          disabled={isTranslation()}
         >
           <TrashBinOutline title={{ id: 'deleteMeeting', title: $translations.deleteMeeting }} ariaLabel={$translations.deleteMeeting} />
           <span class="sr-only">{$translations.deleteMeeting}</span>
@@ -874,7 +931,7 @@
   <div class="grid gap-4 md:grid-cols-3">
     <div class="w-full">
       <Label for="day" class="mt-2 mb-2">{$translations.dayTitle}</Label>
-      <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
+      <Select id="day" items={weekdayChoices} name="day" bind:value={$data.day} class="rounded-lg dark:bg-gray-600" disabled={isTranslation()}/>
       {#if $errors.day}
         <Helper class="mt-2" color="red">
           {$errors.day}
@@ -883,7 +940,7 @@
     </div>
     <div class="w-full">
       <Label for="startTime" class="mt-2 mb-2">{$translations.startTimeTitle}</Label>
-      <Input type="time" id="startTime" name="startTime" />
+      <Input type="time" id="startTime" name="startTime" disabled={isTranslation()} />
       {#if $errors.startTime}
         <Helper class="mt-2" color="red">
           {$errors.startTime}
@@ -892,7 +949,7 @@
     </div>
     <div class="w-full">
       <span class="mt-2 mb-2 block text-sm font-medium text-gray-900 rtl:text-right dark:text-gray-300">{$translations.durationTitle}</span>
-      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} />
+      <DurationSelector initialDuration={initialValues.duration} updateDuration={(d: string) => setData('duration', d)} disabled={isTranslation()} />
       {#if $errors.duration}
         <Helper class="mt-2" color="red">
           {$errors.duration}
@@ -905,9 +962,9 @@
       <Label for="serviceBodyId" class="mt-2 mb-2">{$translations.serviceBodyTitle}</Label>
       {#if serviceBodies.length === 1}
         <Input type="text" value={serviceBodies[0].name} disabled />
-        <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} />
+        <input type="hidden" id="serviceBodyId" name="serviceBodyId" bind:value={$data.serviceBodyId} disabled={isTranslation()} />
       {:else}
-        <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
+        <Select id="serviceBodyId" items={serviceBodyIdItems} name="serviceBodyId" bind:value={$data.serviceBodyId} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" disabled={isTranslation()} />
       {/if}
       {#if $errors.serviceBodyId}
         <Helper class="mt-2" color="red">
@@ -919,7 +976,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="email" class="mt-2 mb-2">{$translations.emailTitle}</Label>
-      <Input type="email" id="email" name="email" />
+      <Input type="email" id="email" name="email" disabled={isTranslation()} />
       {#if $errors.email}
         <Helper class="mt-2" color="red">
           {$errors.email}
@@ -928,7 +985,7 @@
     </div>
     <div class="w-full">
       <Label for="worldId" class="mt-2 mb-2">{$translations.worldIdTitle}</Label>
-      <Input type="text" id="worldId" name="worldId" />
+      <Input type="text" id="worldId" name="worldId" disabled={isTranslation()} />
       {#if $errors.worldId}
         <Helper class="mt-2" color="red">
           {$errors.worldId}
@@ -938,7 +995,7 @@
   </div>
   <div class="md:col-span-2">
     <Label for="formatIds" class="mt-2 mb-2">{$translations.formatsTitle}</Label>
-    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-700" bind:value={formatIdsSelected}>
+    <MultiSelect id="formatIds" items={formatItems} name="formatIds" class="hide-close-button bg-gray-50 dark:bg-gray-600" bind:value={formatIdsSelected} disabled={isTranslation()}>
       {#snippet children({ item, clear })}
         <Badge rounded color={getBadgeColor(String(item.value), formatIdToFormatType)} dismissable params={{ duration: 100 }} onclose={clear}>
           {item.name}
@@ -958,7 +1015,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="venueType" class="mt-2 mb-2">{$translations.venueTypeTitle}</Label>
-      <Select id="venueType" items={venueTypeItems} name="venueType" bind:value={$data.venueType} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" />
+      <Select id="venueType" items={venueTypeItems} name="venueType" bind:value={$data.venueType} placeholder={$translations.chooseOption} class="rounded-lg dark:bg-gray-600" disabled={isTranslation()} />
       {#if $errors.venueType}
         <Helper class="mt-2" color="red">
           {$errors.venueType}
@@ -966,48 +1023,50 @@
       {/if}
     </div>
   </div>
-  <div class="mt-4 grid gap-4 md:grid-cols-2">
-    <div class="md:col-span-2">
-      <MapAccordion
-        title={$translations.locationMapTitle}
-        onToggle={(isOpen) => {
-          showMap.set(isOpen);
+  {#if !isTranslation()}
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <div class="md:col-span-2">
+        <MapAccordion
+          title={$translations.locationMapTitle}
+          onToggle={(isOpen) => {
+            showMap.set(isOpen);
 
-          if (isOpen) {
-            // ensure map is initialized or refreshed
-            setTimeout(() => {
-              if (mapInitialized && map) {
-                // If map already exists, just resize and recenter it
-                if ('invalidateSize' in map) {
-                  map.invalidateSize();
-                  if ('setView' in map) {
-                    map.setView([latitude, longitude]);
+            if (isOpen) {
+              // ensure map is initialized or refreshed
+              setTimeout(() => {
+                if (mapInitialized && map) {
+                  // If map already exists, just resize and recenter it
+                  if ('invalidateSize' in map) {
+                    map.invalidateSize();
+                    if ('setView' in map) {
+                      map.setView([latitude, longitude]);
+                    }
+                  } else if (isGoogleMap(map)) {
+                    map.setCenter({ lat: latitude, lng: longitude });
                   }
-                } else if (isGoogleMap(map)) {
-                  map.setCenter({ lat: latitude, lng: longitude });
+                } else {
+                  initializeMap();
                 }
-              } else {
-                initializeMap();
-              }
-            }, 200);
-          }
-        }}
-      >
-        <div id="locationMap" bind:this={mapElement} class="h-[300px]">
-          {#if mapError}
-            <div class="map-error rounded bg-gray-100 p-4 text-center dark:bg-gray-800">
-              <strong>{$translations.googleKeyProblemTitle}</strong><br />
-              {mapError}
-            </div>
-          {/if}
-        </div>
-      </MapAccordion>
+              }, 200);
+            }
+          }}
+        >
+          <div id="locationMap" bind:this={mapElement} class="h-[300px]">
+            {#if mapError}
+              <div class="map-error rounded bg-gray-100 p-4 text-center dark:bg-gray-800">
+                <strong>{$translations.googleKeyProblemTitle}</strong><br />
+                {mapError}
+              </div>
+            {/if}
+          </div>
+        </MapAccordion>
+      </div>
     </div>
-  </div>
+  {/if}
   <div class="grid gap-4 md:grid-cols-2">
     <div class="w-full">
       <Label for="longitude" class="mt-2 mb-2">{$translations.longitudeTitle}</Label>
-      <Input type="text" id="longitude" name="longitude" bind:value={longitude} disabled={settings.autoGeocodingEnabled} required />
+      <Input type="text" id="longitude" name="longitude" bind:value={longitude} disabled={settings.autoGeocodingEnabled || isTranslation()} required />
       {#if settings.autoGeocodingEnabled}
         <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
@@ -1019,7 +1078,7 @@
     </div>
     <div class="w-full">
       <Label for="latitude" class="mt-2 mb-2">{$translations.latitudeTitle}</Label>
-      <Input type="text" id="latitude" name="latitude" bind:value={latitude} disabled={settings.autoGeocodingEnabled} required />
+      <Input type="text" id="latitude" name="latitude" bind:value={latitude} disabled={settings.autoGeocodingEnabled || isTranslation()} required />
       {#if settings.autoGeocodingEnabled}
         <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
@@ -1141,7 +1200,7 @@
     </div>
     <div class="w-full">
       <Label for="locationPostalCode1" class="mt-2 mb-2">{$translations.zipCodeTitle}</Label>
-      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={settings.zipAutoGeocodingEnabled} />
+      <Input type="text" id="locationPostalCode1" name="locationPostalCode1" disabled={settings.zipAutoGeocodingEnabled || isTranslation()} />
       {#if settings.zipAutoGeocodingEnabled}
         <Tooltip placement="top" trigger="hover">{$translations.automaticallyCalculatedOnSave}</Tooltip>
       {/if}
@@ -1164,7 +1223,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="phoneMeetingNumber" class="mt-2 mb-2">{$translations.phoneMeetingTitle}</Label>
-      <Input type="text" id="phoneMeetingNumber" name="phoneMeetingNumber" />
+      <Input type="text" id="phoneMeetingNumber" name="phoneMeetingNumber" disabled={isTranslation()} />
       {#if $errors.phoneMeetingNumber}
         <Helper class="mt-2" color="red">
           {$errors.phoneMeetingNumber}
@@ -1175,7 +1234,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="virtualMeetingLink" class="mt-2 mb-2">{$translations.virtualMeetingTitle}</Label>
-      <Input type="text" id="virtualMeetingLink" name="virtualMeetingLink" />
+      <Input type="text" id="virtualMeetingLink" name="virtualMeetingLink" disabled={isTranslation()} />
       {#if $errors.virtualMeetingLink}
         <Helper class="mt-2" color="red">
           {$errors.virtualMeetingLink}
@@ -1186,7 +1245,7 @@
   <div class="grid gap-4 md:grid-cols-2">
     <div class="md:col-span-2">
       <Label for="virtualMeetingAdditionalInfo" class="mt-2 mb-2">{$translations.virtualMeetingAdditionalInfoTitle}</Label>
-      <Input type="text" id="virtualMeetingAdditionalInfo" name="virtualMeetingAdditionalInfo" />
+      <Input type="text" id="virtualMeetingAdditionalInfo" name="virtualMeetingAdditionalInfo" disabled={isTranslation()} />
       {#if $errors.virtualMeetingAdditionalInfo}
         <Helper class="mt-2" color="red">
           {$errors.virtualMeetingAdditionalInfo}
@@ -1395,7 +1454,7 @@
       {/if}
       {#if selectedMeeting}
         <div class="mb-4">
-          <Checkbox name="saveAsCopy" checked={saveAsCopy} onchange={(e) => (saveAsCopy = e.currentTarget.checked)}>
+          <Checkbox name="saveAsCopy" checked={saveAsCopy} onchange={(e) => (saveAsCopy = e.currentTarget.checked)} disabled={isTranslation()}>
             {$translations.saveAsCopyCheckbox}
           </Checkbox>
         </div>
@@ -1415,6 +1474,7 @@
 {#if meetingToDelete}
   <MeetingDeleteModal bind:showDeleteModal {meetingToDelete} {onDeleted} />
 {/if}
+<MeetingTranslateModal bind:showTranslateModal meeting={selectedMeeting as Meeting} onTranslate={updateFields} onClosed={() => (showTranslateModal = false)} />
 
 <style>
   :global(.hide-close-button button[aria-label='Close']) {

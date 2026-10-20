@@ -59,12 +59,20 @@ class MeetingController extends ResourceController
 
         return MeetingResource::collection($meetings);
     }
-
+    public function searchTranslations(Request $request)
+    {
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        return $this->index($request);
+    }
     public function show(Meeting $meeting)
     {
         return new MeetingResource($meeting);
     }
-
+    public function getTranslation(Request $request, Meeting $meeting)
+    {
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        return new MeetingResource($meeting);
+    }
     public function store(Request $request)
     {
         $validated = $this->validateInputs($request);
@@ -80,7 +88,23 @@ class MeetingController extends ResourceController
         $this->meetingRepository->update($meeting->id_bigint, $values);
         return response()->noContent();
     }
-
+    public function translate(Request $request, Meeting $meeting)
+    {
+        $this->meetingRepository->setTargetLanguage($request->lang);
+        $validated = $this->validateTranslationInputs($request);
+        if (isset($validated['customFields'])) {
+            foreach ($validated['customFields'] as $key => $value) {
+                $validated[$key] = $value;
+            }
+            unset($validated['customFields']);
+        }
+        if (isset($validated['name'])) {
+            $validated['meeting_name'] = $validated['name'];
+            unset($validated['name']);
+        }
+        $this->meetingRepository->translate($meeting->id_bigint, $validated);
+        return response()->noContent();
+    }
     public function partialUpdate(Request $request, Meeting $meeting)
     {
         $meetingData = $meeting->data
@@ -169,7 +193,12 @@ class MeetingController extends ResourceController
         }
         return $customFields;
     }
-
+    private function validateTranslationInputs(Request $request)
+    {
+        return $request->validate(
+            array_merge(['name' => 'nullable|string|max:128'], $this->getDataFieldValidators(true))
+        );
+    }
     private function validateInputs(Request $request, $skipVenueTypeLocationValidation = false)
     {
         return collect($request->validate(

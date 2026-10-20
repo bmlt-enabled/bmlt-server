@@ -103,7 +103,29 @@ class MeetingController extends Controller
     public function index()
     {
     }
-
+    #[OA\Get(
+        path: "/api/v1/translations/meetings/{lang}",
+        operationId: "getTranslatedMeetings",
+        description:"Retrieve meetings for authenticated user.",
+        security: [["bmltToken" => []]],
+        tags: ["rootServer"],
+        summary: "Retrieves meetings with translated values",
+        parameters: [
+            new OA\Parameter(name: "lang", description: "language", in: "path", required: true, schema: new OA\Schema(type: "string"), example: "en"),
+            new OA\Parameter(name: 'meetingIds', description: 'comma delimited meeting ids', in: 'query', required: false, schema: new OA\Schema(type: 'string'), example: '1,2'),
+            new OA\Parameter(name: 'days', description: 'comma delimited day ids between 0-6', in: 'query', required: false, schema: new OA\Schema(type: 'string'), example: '0,1'),
+            new OA\Parameter(name: 'serviceBodyIds', description: 'comma delimited service body ids', in: 'query', required: false, schema: new OA\Schema(type: 'string'), example: '3,4'),
+            new OA\Parameter(name: 'searchString', description: 'string', in: 'query', required: false, schema: new OA\Schema(type: 'string'), example: 'Just for Today'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'List of meetings.', content: new OA\JsonContent(ref: '#/components/schemas/MeetingCollection')),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
+    public function translateIndex()
+    {
+    }
     #[OA\Get(
         path: '/api/v1/meetings/{meetingId}',
         operationId: 'getMeeting',
@@ -123,7 +145,26 @@ class MeetingController extends Controller
     public function show()
     {
     }
-
+    #[OA\Get(
+        path: "/api/v1/translations/meetings/{meetingId}/{lang}",
+        summary: "Retrieves a meeting translation",
+        description: "Retrieve a meeting.",
+        operationId: "getMeetingTranslation",
+        security: [['bmltToken' => []]],
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'meetingId', description: 'ID of meeting', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+            new OA\Parameter(name: 'lang', description: 'Language code', in: 'path', required: true, schema: new OA\Schema(type: 'string'), example: 'en'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Returns when user is authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/Meeting')),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 404, description: 'Returns when no meeting exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+        ]
+    )]
+    public function showTranslation()
+    {
+    }
     #[OA\Post(
         path: '/api/v1/meetings',
         operationId: 'createMeeting',
@@ -202,7 +243,34 @@ class MeetingController extends Controller
     public function partialUpdate()
     {
     }
-
+    #[OA\Patch(
+        path: '/api/v1/translations/meetings/{meetingId}/{lang}',
+        operationId: 'translateMeeting',
+        description: 'Provide tranlations for a meeting by id',
+        summary: 'Translates the a meeting data',
+        security: [['bmltToken' => []]],
+        requestBody: new OA\RequestBody(
+            description: 'Pass in fields you want to translate.',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/MeetingPartialUpdate')
+        ),
+        tags: ['rootServer'],
+        parameters: [
+            new OA\Parameter(name: 'meetingId', description: 'ID of meeting', in: 'path', required: true, schema: new OA\Schema(type: 'integer', format: 'int64'), example: '1'),
+            new OA\Parameter(name: 'lang', description: 'Language code', in: 'path', required: true, schema: new OA\Schema(type: 'string'), example: 'en'),
+            new OA\Parameter(name: 'skipVenueTypeLocationValidation', description: 'specify true to skip venue type location validation', in: 'query', required: false, schema: new OA\Schema(type: 'boolean'), example: 'true'),
+        ],
+        responses: [
+            new OA\Response(response: 204, description: 'Success.'),
+            new OA\Response(response: 401, description: 'Returns when user is not authenticated.', content: new OA\JsonContent(ref: '#/components/schemas/AuthenticationError')),
+            new OA\Response(response: 403, description: 'Returns when user is unauthorized to perform action.', content: new OA\JsonContent(ref: '#/components/schemas/AuthorizationError')),
+            new OA\Response(response: 404, description: 'Returns when no meeting exists.', content: new OA\JsonContent(ref: '#/components/schemas/NotFoundError')),
+            new OA\Response(response: 422, description: 'Validation error.', content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')),
+        ]
+    )]
+    public function translate()
+    {
+    }
     #[OA\Delete(
         path: '/api/v1/meetings/{meetingId}',
         operationId: 'deleteMeeting',

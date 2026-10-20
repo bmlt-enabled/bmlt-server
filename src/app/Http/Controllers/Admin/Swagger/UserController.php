@@ -12,6 +12,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'displayName', type: 'string', example: 'string'),
         new OA\Property(property: 'description', type: 'string', example: 'string'),
         new OA\Property(property: 'email', type: 'string', example: 'string'),
+        new OA\Property(property: 'targetLanguage', type: 'string', example: 'en'),
         new OA\Property(property: 'ownerId', type: 'integer', example: 0),
     ]
 )]

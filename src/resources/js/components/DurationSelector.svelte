@@ -9,9 +9,10 @@
   interface Props {
     initialDuration: string;
     updateDuration: (d: string) => void;
+    disabled: boolean;
   }
 
-  let { initialDuration, updateDuration }: Props = $props();
+  let { initialDuration, updateDuration, disabled }: Props = $props();
   let hours: string = $state('');
   let minutes: string = $state('');
 

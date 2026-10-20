@@ -200,6 +200,7 @@
             updateDuration={(d) => {
               $data.defaultDurationTime = d + ':00';
             }}
+            disabled={false}
           />
           <Helper class="mt-2" color="red">
             {#if $errors.defaultDurationTime}

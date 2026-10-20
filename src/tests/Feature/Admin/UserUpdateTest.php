@@ -304,10 +304,20 @@ class UserUpdateTest extends TestCase
         // it can be any valid type
         foreach (array_keys(User::USER_TYPE_TO_USER_LEVEL_MAP) as $type) {
             $data['type'] = $type;
+            if ($type == 'translator') {
+                $data['targetLanguage'] = 'de';
+            } else {
+                unset($data['targetLanguage']);
+            }
             $this->withHeader('Authorization', "Bearer $token")
                 ->put("/api/v1/users/$user->id_bigint", $data)
                 ->assertStatus(204);
         }
+        $data['type'] = 'translator';
+        unset($data['targetLanguage']);
+        $this->withHeader('Authorization', "Bearer $token")
+                ->post('/api/v1/users', $data)
+                ->assertStatus(422);
     }
 
     public function testUpdateUserValidateDisplayName()

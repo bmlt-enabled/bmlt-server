@@ -17,7 +17,7 @@ class TestCase extends BaseTestCase
     // meetings
     //
     //
-    private static $meetingMainFieldDefaults = [
+    protected static $meetingMainFieldDefaults = [
         'worldid_mixed' => 'worldid_mixed_default',
         'service_body_bigint' => 1,
         'weekday_tinyint' => 1,
@@ -32,7 +32,7 @@ class TestCase extends BaseTestCase
         'published' => 1,
     ];
 
-    private static $meetingDataFieldDefaults = [
+    protected static $meetingDataFieldDefaults = [
         'meeting_name' => 'NA Meeting',
     ];
 
