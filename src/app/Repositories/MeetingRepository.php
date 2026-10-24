@@ -400,57 +400,33 @@ class MeetingRepository implements MeetingRepositoryInterface
             return $meetings->get();
         }
 
-        if (empty(array_diff($sortKeys, Meeting::$mainFields))) {
-            // all sorts can be done in sql
-            foreach ($sortKeys as $sortKey) {
-                $meetings = $meetings->orderBy($sortKey);
-            }
-            return $meetings->get();
-        }
+        // Order in SQL so the LIMIT/OFFSET above pages the ordered set. Main fields order directly;
+        // data fields order by a correlated subquery over the data/longdata tables (empty/missing
+        // last), with an id_bigint tie-breaker so paging can't drop or repeat rows.
+        // Keep the subqueries bare and separate — don't fold them into a COALESCE/NULLIF: wrapping a
+        // correlated subquery in a function mis-sorts under prepared statements (MySQL + MariaDB, MDEV-41774).
+        $prefix = DB::connection()->getTablePrefix();
+        $mainTable = $prefix . (new Meeting())->getTable();
+        $dataColumns = [
+            $prefix . (new MeetingData())->getTable() => 'data_string',
+            $prefix . (new MeetingLongData())->getTable() => 'data_blob',
+        ];
 
-        // we have to sort in memory
-        $mainTableKeys = [];
         foreach ($sortKeys as $sortKey) {
             if (in_array($sortKey, Meeting::$mainFields)) {
-                $mainTableKeys[$sortKey] = null;
+                $meetings = $meetings->orderBy($sortKey);
+                continue;
+            }
+
+            foreach ($dataColumns as $table => $column) {
+                $value = "(SELECT $column FROM `$table` WHERE meetingid_bigint = `$mainTable`.id_bigint AND `key` = ? LIMIT 1)";
+                $meetings = $meetings
+                    ->orderByRaw("$value IS NULL OR $value = ?", [$sortKey, $sortKey, ''])
+                    ->orderByRaw($value, [$sortKey]);
             }
         }
 
-        $dataByMeeting = [];
-        $meetings = $meetings->get();
-        foreach ($meetings as $meeting) {
-            $dataByMeeting[$meeting->id_bigint] = $meeting->data
-                ->mapWithKeys(fn($data, $_) => [$data->key => $data->data_string])
-                ->toBase()
-                ->merge(
-                    $meeting->longdata->mapWithKeys(fn($data, $_) => [$data->key => $data->data_blob])->toBase()
-                );
-        }
-
-        return $meetings->sortBy([function ($m1, $m2) use ($sortKeys, $mainTableKeys, $dataByMeeting) {
-            foreach ($sortKeys as $sortKey) {
-                if (array_key_exists($sortKey, $mainTableKeys)) {
-                    $field1 = $m1->{$sortKey};
-                    $field2 = $m2->{$sortKey};
-                } else {
-                    $field1 = $dataByMeeting[$m1->id_bigint]?->get($sortKey);
-                    $field2 = $dataByMeeting[$m2->id_bigint]?->get($sortKey);
-                }
-
-                // push nulls and empty strings to the end...
-                if ((is_null($field1) || $field1 == '') && !is_null($field2) && $field2 != '') {
-                    return 1;
-                } elseif (!is_null($field1) && $field1 != '' && (is_null($field2) || $field2 == '')) {
-                    return -1;
-                }
-
-                $comparison = $field1 <=> $field2;
-                if ($comparison != 0) {
-                    return $comparison;
-                }
-            }
-            return 0;
-        }]);
+        return $meetings->orderBy('id_bigint')->get();
     }
 
     private function calculateSearchRadius(Builder $baseQuery, $numMeetings, float $latitude, float $longitude, float $distanceMultiplier): float
