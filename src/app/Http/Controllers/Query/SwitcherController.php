@@ -392,6 +392,7 @@ class SwitcherController extends Controller
             nextStartGraceMinutes: $nextStartGraceMinutes,
             targetTimeZone: $targetTimeZone,
             searchString: $searchString,
+            suppressPrivateFields: true,
             published: $published,
             eagerRootServers: $isAggregatorMode,
             sortKeys: $sortKeys,

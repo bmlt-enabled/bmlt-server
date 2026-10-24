@@ -1099,10 +1099,16 @@ class GetSearchResultsTest extends TestCase
             try {
                 $meeting1 = $this->createMeeting(dataFields: [$fieldTemplate->key => 'testvalue']);
                 $meeting2 = $this->createMeeting(dataFields: [$fieldTemplate->key => 'badtestvalue']);
-                $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=$fieldTemplate->key&meeting_key_value=testvalue")
-                    ->assertStatus(200)
-                    ->assertJsonCount(1)
-                    ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                $response = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=$fieldTemplate->key&meeting_key_value=testvalue")
+                    ->assertStatus(200);
+                if ($fieldTemplate->visibility == 1) {
+                    // Private fields must not be searchable unauthenticated, otherwise an
+                    // exact-match query would confirm a masked value exists.
+                    $response->assertJsonCount(0);
+                } else {
+                    $response->assertJsonCount(1)
+                        ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                }
             } finally {
                 Meeting::query()->whereIn('id_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
@@ -1118,16 +1124,37 @@ class GetSearchResultsTest extends TestCase
             try {
                 $meeting1 = $this->createMeeting(longDataFields: [$fieldTemplate->key => 'testvalue']);
                 $meeting2 = $this->createMeeting(longDataFields: [$fieldTemplate->key => 'badtestvalue']);
-                $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=$fieldTemplate->key&meeting_key_value=testvalue")
-                    ->assertStatus(200)
-                    ->assertJsonCount(1)
-                    ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                $response = $this->get("/client_interface/json/?switcher=GetSearchResults&meeting_key=$fieldTemplate->key&meeting_key_value=testvalue")
+                    ->assertStatus(200);
+                if ($fieldTemplate->visibility == 1) {
+                    // Private fields must not be searchable unauthenticated, otherwise an
+                    // exact-match query would confirm a masked value exists.
+                    $response->assertJsonCount(0);
+                } else {
+                    $response->assertJsonCount(1)
+                        ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                }
             } finally {
                 Meeting::query()->whereIn('id_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingLongData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
             }
         }
+    }
+
+    public function testMeetingKeyPrivateFieldOnlySearchableWhenNotSuppressed()
+    {
+        // Public callers (suppressPrivateFields = true) cannot match a private field;
+        // authenticated callers (false) still can.
+        $meeting = $this->createMeeting(dataFields: ['contact_email_1' => 'needle@example.com']);
+        $repo = app(MeetingRepositoryInterface::class);
+
+        $suppressed = $repo->getSearchResults(meetingKey: 'contact_email_1', meetingKeyValue: 'needle@example.com', suppressPrivateFields: true);
+        $this->assertCount(0, $suppressed);
+
+        $notSuppressed = $repo->getSearchResults(meetingKey: 'contact_email_1', meetingKeyValue: 'needle@example.com', suppressPrivateFields: false);
+        $this->assertCount(1, $notSuppressed);
+        $this->assertEquals($meeting->id_bigint, $notSuppressed->first()->id_bigint);
     }
 
     // meeting_key/meeting_key_value[] - Array Support
@@ -1505,10 +1532,15 @@ class GetSearchResultsTest extends TestCase
                 // index has not yet been updated. We commit here, and then are very careful to clean up all
                 // data in the finally block
                 DB::commit();
-                $this->get("/client_interface/json/?switcher=GetSearchResults&SearchString=blah%20test")
-                    ->assertStatus(200)
-                    ->assertJsonCount(1)
-                    ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                $response = $this->get("/client_interface/json/?switcher=GetSearchResults&SearchString=blah%20test")
+                    ->assertStatus(200);
+                if ($fieldTemplate->visibility == 1) {
+                    // Private fields must not be reachable through the full-text search.
+                    $response->assertJsonCount(0);
+                } else {
+                    $response->assertJsonCount(1)
+                        ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                }
             } finally {
                 Meeting::query()->whereIn('id_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
@@ -1528,10 +1560,15 @@ class GetSearchResultsTest extends TestCase
                 // index has not yet been updated. We commit here, and then are very careful to clean up all
                 // data in the finally block
                 DB::commit();
-                $this->get("/client_interface/json/?switcher=GetSearchResults&SearchString=blah%20test")
-                    ->assertStatus(200)
-                    ->assertJsonCount(1)
-                    ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                $response = $this->get("/client_interface/json/?switcher=GetSearchResults&SearchString=blah%20test")
+                    ->assertStatus(200);
+                if ($fieldTemplate->visibility == 1) {
+                    // Private fields must not be reachable through the full-text search.
+                    $response->assertJsonCount(0);
+                } else {
+                    $response->assertJsonCount(1)
+                        ->assertJsonFragment(['id_bigint' => strval($meeting1->id_bigint)]);
+                }
             } finally {
                 Meeting::query()->whereIn('id_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
                 MeetingData::query()->whereIn('meetingid_bigint', [$meeting1->id_bigint, $meeting2->id_bigint])->delete();
