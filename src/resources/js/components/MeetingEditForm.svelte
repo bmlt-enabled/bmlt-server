@@ -17,7 +17,7 @@
   import { spinner } from '../stores/spinner';
   import type { MeetingChangeResource } from 'bmlt-server-client';
   import RootServerApi from '../lib/ServerApi';
-  import { formIsDirty, isDirty as globalIsDirty, stripLegacyFieldSeparator } from '../lib/utils';
+  import { formIsDirty, hasValidCoordinates, isDirty as globalIsDirty, stripLegacyFieldSeparator } from '../lib/utils';
   import { timeZones } from '../lib/timeZone/timeZones';
   import TimeZoneSelect from './TimeZoneSelect.svelte';
   import { tzFind } from '../lib/timeZone/find';
@@ -161,10 +161,6 @@
         }
       : Object.fromEntries(settings.customFields.map((field) => [field.name, '']))
   };
-
-  function hasValidCoordinates(lat: number, lng: number): boolean {
-    return typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180 && lat !== 0 && lng !== 0;
-  }
 
   const initialLat = hasValidCoordinates(initialValues.latitude, initialValues.longitude) ? initialValues.latitude : defaultLatLng.lat;
   const initialLng = hasValidCoordinates(initialValues.latitude, initialValues.longitude) ? initialValues.longitude : defaultLatLng.lng;
@@ -521,12 +517,17 @@
   let mapInitialized = $state(false);
 
   function initializeMap() {
-    if (!hasValidCoordinates(latitude, longitude)) {
+    // Text inputs yield strings; coerce to numbers so the map libraries (and later
+    // saves) get real numeric coordinates, falling back to the default center if invalid.
+    if (hasValidCoordinates(latitude, longitude)) {
+      latitude = Number(latitude);
+      longitude = Number(longitude);
+    } else {
       latitude = defaultLatLng.lat;
       longitude = defaultLatLng.lng;
-      setData('latitude', latitude);
-      setData('longitude', longitude);
     }
+    setData('latitude', latitude);
+    setData('longitude', longitude);
 
     if (mapInitialized) {
       // If already initialized, just resize/recenter
