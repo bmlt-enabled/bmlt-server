@@ -1330,6 +1330,22 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonCount(1);
     }
 
+    public function testEndsBeforeWithMinuteCarry()
+    {
+        // 18:45 + 0:30 ends at 19:15. This must use duration-aware time arithmetic:
+        // numeric addition of the TIME columns yields the invalid "18:75" and drops the row.
+        $meeting1 = $this->createMeeting(['start_time' => '18:45', 'duration_time' => '00:30']);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&EndsBeforeH=19&EndsBeforeM=15")
+            ->assertStatus(200)
+            ->assertJsonCount(1);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&EndsBeforeH=19&EndsBeforeM=14")
+            ->assertStatus(200)
+            ->assertJsonCount(0);
+        $this->get("/client_interface/json/?switcher=GetSearchResults&EndsBeforeH=19&EndsBeforeM=30")
+            ->assertStatus(200)
+            ->assertJsonCount(1);
+    }
+
     // geographic searches
     //
     //
