@@ -270,7 +270,7 @@ class MeetingRepository implements MeetingRepositoryInterface
             $endsBeforeParts = explode(':', $endsBefore);
             $endsBeforeSeconds = ($endsBeforeParts[0] * 3600) + ($endsBeforeParts[1] * 60);
             if (is_null($targetTimeZone)) {
-                $meetings = $meetings->whereRaw("time_to_sec(start_time + duration_time) <= $endsBeforeSeconds");
+                $meetings = $meetings->whereRaw('TIME_TO_SEC(ADDTIME(start_time, duration_time)) <= ?', [$endsBeforeSeconds]);
             } else {
                 $meetings = $meetings->whereRaw('TIME_TO_SEC(ADDTIME(TIME(' . self::occurrenceInTargetTimeZone() . '), duration_time)) <= ?', [$targetTimeZone, $endsBeforeSeconds]);
             }
