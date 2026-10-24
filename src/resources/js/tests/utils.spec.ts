@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { stripLegacyFieldSeparator } from '../lib/utils';
+import { hasValidCoordinates, stripLegacyFieldSeparator } from '../lib/utils';
 
 describe('stripLegacyFieldSeparator', () => {
   it('should strip legacy separator and return value', () => {
@@ -35,5 +35,36 @@ describe('stripLegacyFieldSeparator', () => {
 
   it('should return original value if nothing after separator', () => {
     expect(stripLegacyFieldSeparator('Bus Lines#@-@#')).toBe('Bus Lines#@-@#');
+  });
+});
+
+describe('hasValidCoordinates', () => {
+  it('should accept manually entered string coordinates', () => {
+    expect(hasValidCoordinates('40.7', '-74')).toBe(true);
+  });
+
+  it('should accept numeric coordinates', () => {
+    expect(hasValidCoordinates(40.7128, -74.006)).toBe(true);
+  });
+
+  it('should accept coordinates at the valid range boundaries', () => {
+    expect(hasValidCoordinates(-90, 180)).toBe(true);
+    expect(hasValidCoordinates('90', '-180')).toBe(true);
+  });
+
+  it('should reject out-of-range coordinates', () => {
+    expect(hasValidCoordinates('91', '0.1')).toBe(false);
+    expect(hasValidCoordinates('10', '181')).toBe(false);
+  });
+
+  it('should reject blank, whitespace, and non-numeric input', () => {
+    expect(hasValidCoordinates('', '')).toBe(false);
+    expect(hasValidCoordinates('   ', '10')).toBe(false);
+    expect(hasValidCoordinates('abc', '10')).toBe(false);
+  });
+
+  it('should reject the 0,0 null-island coordinate', () => {
+    expect(hasValidCoordinates(0, 0)).toBe(false);
+    expect(hasValidCoordinates('0', '0')).toBe(false);
   });
 });
