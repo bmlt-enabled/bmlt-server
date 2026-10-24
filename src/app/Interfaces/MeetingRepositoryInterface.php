@@ -39,6 +39,7 @@ interface MeetingRepositoryInterface
         int $nextStartGraceMinutes = 0,
         string $targetTimeZone = null,
         string $searchString = null,
+        bool $suppressPrivateFields = false,
         bool $published = true,
         bool $eagerServiceBodies = false,
         bool $eagerRootServers = false,

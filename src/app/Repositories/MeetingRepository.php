@@ -94,6 +94,7 @@ class MeetingRepository implements MeetingRepositoryInterface
         int $nextStartGraceMinutes = 0,
         string $targetTimeZone = null,
         string $searchString = null,
+        bool $suppressPrivateFields = false,
         ?bool $published = null,
         bool $eagerServiceBodies = false,
         bool $eagerRootServers = false,
@@ -231,13 +232,15 @@ class MeetingRepository implements MeetingRepositoryInterface
                     $meetings = $meetings->whereIn($meetingKey, $meetingKeyValues);
                 }
             } else {
-                $meetings = $meetings->where(function (Builder $query) use ($meetingKey, $meetingKeyValues) {
+                $meetings = $meetings->where(function (Builder $query) use ($meetingKey, $meetingKeyValues, $suppressPrivateFields) {
                     $query
-                        ->whereHas('data', function (Builder $query) use ($meetingKey, $meetingKeyValues) {
+                        ->whereHas('data', function (Builder $query) use ($meetingKey, $meetingKeyValues, $suppressPrivateFields) {
                             $query->where('key', $meetingKey)->whereIn('data_string', $meetingKeyValues);
+                            $this->excludePrivateFields($query, $suppressPrivateFields);
                         })
-                        ->orWhereHas('longdata', function (Builder $query) use ($meetingKey, $meetingKeyValues) {
+                        ->orWhereHas('longdata', function (Builder $query) use ($meetingKey, $meetingKeyValues, $suppressPrivateFields) {
                             $query->where('key', $meetingKey)->whereIn('data_blob', $meetingKeyValues);
+                            $this->excludePrivateFields($query, $suppressPrivateFields);
                         });
                 });
             }
@@ -297,10 +300,14 @@ class MeetingRepository implements MeetingRepositoryInterface
             if (empty($moreMeetingIds)) {
                 // MySQL drops rows when MATCH() runs inside a correlated subquery, so keep these uncorrelated
                 // rather than using whereHas.
-                $meetings = $meetings->where(function (Builder $query) use ($searchString) {
+                $meetings = $meetings->where(function (Builder $query) use ($searchString, $suppressPrivateFields) {
+                    $dataQuery = MeetingData::query()->select('meetingid_bigint')->whereFullText('data_string', $searchString);
+                    $longDataQuery = MeetingLongData::query()->select('meetingid_bigint')->whereFullText('data_blob', $searchString);
+                    $this->excludePrivateFields($dataQuery, $suppressPrivateFields);
+                    $this->excludePrivateFields($longDataQuery, $suppressPrivateFields);
                     $query
-                        ->whereIn('id_bigint', MeetingData::query()->select('meetingid_bigint')->whereFullText('data_string', $searchString))
-                        ->orWhereIn('id_bigint', MeetingLongData::query()->select('meetingid_bigint')->whereFullText('data_blob', $searchString));
+                        ->whereIn('id_bigint', $dataQuery)
+                        ->orWhereIn('id_bigint', $longDataQuery);
                 });
             } else {
                 $meetings = $meetings->whereIn('id_bigint', $moreMeetingIds);
@@ -636,6 +643,17 @@ class MeetingRepository implements MeetingRepositoryInterface
     public function getMainFields(): Collection
     {
         return collect(Meeting::$mainFields);
+    }
+
+    // Keep private (visibility=1) rows out of search predicates, so a masked value
+    // can't be confirmed by exact match.
+    private function excludePrivateFields(Builder $query, bool $suppress): void
+    {
+        if ($suppress) {
+            $query->where(function (Builder $query) {
+                $query->where('visibility', null)->orWhereNot('visibility', 1);
+            });
+        }
     }
 
     public function getCustomFields(): Collection
