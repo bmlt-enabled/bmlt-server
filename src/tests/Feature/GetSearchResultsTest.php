@@ -2187,6 +2187,33 @@ class GetSearchResultsTest extends TestCase
             ->assertJsonCount(0);
     }
 
+    public function testPagingWithDataFieldSort()
+    {
+        // meeting_name is a data field, so the sort happens in memory; the page must be
+        // taken after the whole matching set is ordered, not before.
+        $this->createMeeting(dataFields: ['meeting_name' => 'Zulu']);
+        $this->createMeeting(dataFields: ['meeting_name' => 'Alpha']);
+        $this->createMeeting(dataFields: ['meeting_name' => 'Mike']);
+
+        $base = '/client_interface/json/?switcher=GetSearchResults&sort_keys=meeting_name&page_size=1';
+
+        $this->get("$base&page_num=1")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['meeting_name' => 'Alpha']);
+        $this->get("$base&page_num=2")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['meeting_name' => 'Mike']);
+        $this->get("$base&page_num=3")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['meeting_name' => 'Zulu']);
+        $this->get("$base&page_num=4")
+            ->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+
     // test visibility of sensitive fields
     //
     //
