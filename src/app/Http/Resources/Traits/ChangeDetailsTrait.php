@@ -90,8 +90,14 @@ trait ChangeDetailsTrait
             }
 
             if (!is_null($beforeValue) && is_null($afterValue)) {
-                if ($key == 'published') {
+                if (!$isVisible) {
+                    $changeStrings[] = $fieldPrompt . ' ' . __('change_detail.was_changed') . '.';
+                    continue;
+                } elseif ($key == 'published') {
                     $changeStrings[] = __('change_detail.was_unpublished') . '.';
+                    continue;
+                } elseif ($key == 'email_contact') {
+                    $changeStrings[] = $fieldPrompt . ' ' . __('change_detail.was_changed') . '.';
                     continue;
                 }
                 $changeStrings[] = $fieldPrompt . ' ' . __('change_detail.was_changed_from') . ' "' . $beforeValue . '" ' . __('change_detail.to') . ' "' . $afterValue . '".';
