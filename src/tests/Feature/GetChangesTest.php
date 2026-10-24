@@ -29,6 +29,7 @@ class GetChangesTest extends TestCase
         'latitude' => null,
         'published' => '1',
         'formats' => '',
+        'email_contact' => null,
     ];
 
     private $mainTablePublicFields = [
@@ -977,7 +978,8 @@ class GetChangesTest extends TestCase
                         'service_body_id' => '1',
                         'service_body_name' => '',
                         'meeting_exists' => '1',
-                        'details' => "$prompt was changed from \"before\" to \"\".",
+                        // Clearing a non-visible field must not leak its old value into the public description
+                        'details' => "$prompt was changed.",
                         'json_data' => [
                             'before' => collect($this->getMainValuesPublicArray($change->beforeMeeting, $beforeValues))->merge([$fieldName => '********'])->toArray(),
                             'after' => $this->getMainValuesPublicArray($change->afterMeeting, $afterValues),
@@ -988,6 +990,21 @@ class GetChangesTest extends TestCase
             Meeting::query()->delete();
             MeetingData::query()->whereNot('meetingid_bigint', 0)->delete();
         }
+    }
+
+    public function testEmailContactRemoved()
+    {
+        // The meeting contact email is always masked in change history, so clearing it
+        // must not expose the old address in the public change description.
+        $user = $this->createUser();
+        $beforeValues = ['email_contact' => 'contact@example.com'];
+        $afterValues = [];
+        $change = $this->createChange($beforeValues, $afterValues, $user);
+
+        $response = $this->get('/client_interface/json/?switcher=GetChanges')
+            ->assertStatus(200);
+        $response->assertDontSee('contact@example.com');
+        $this->assertEquals('email_contact was changed.', $response->json()[0]['details']);
     }
 
     public function testStartDateFilter()
