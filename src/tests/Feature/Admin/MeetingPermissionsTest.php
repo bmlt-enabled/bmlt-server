@@ -324,6 +324,30 @@ class MeetingPermissionsTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function testUpdateAsServiceBodyAdminDestinationDenied()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area1 = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $area2 = $this->createArea('area2', 'area2', 0);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->put("/api/v1/meetings/$meeting1->id_bigint", ['serviceBodyId' => $area2->id_bigint])
+            ->assertStatus(403);
+    }
+
+    public function testUpdateAsServiceBodyAdminDestinationAllowed()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area1 = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $area2 = $this->createArea('area2', 'area2', 0, adminUserId: $user->id_bigint);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->put("/api/v1/meetings/$meeting1->id_bigint", ['serviceBodyId' => $area2->id_bigint])
+            ->assertStatus(422);
+    }
+
     // partial update
     //
     //
@@ -400,6 +424,30 @@ class MeetingPermissionsTest extends TestCase
         $this->withHeader('Authorization', "Bearer $token")
             ->patch("/api/v1/meetings/$meeting1->id_bigint")
             ->assertStatus(403);
+    }
+
+    public function testPartialUpdateAsServiceBodyAdminDestinationDenied()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area1 = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $area2 = $this->createArea('area2', 'area2', 0);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/meetings/$meeting1->id_bigint", ['serviceBodyId' => $area2->id_bigint])
+            ->assertStatus(403);
+    }
+
+    public function testPartialUpdateAsServiceBodyAdminDestinationAllowed()
+    {
+        $user = $this->createServiceBodyAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $area1 = $this->createArea('area1', 'area1', 0, adminUserId: $user->id_bigint);
+        $area2 = $this->createArea('area2', 'area2', 0, adminUserId: $user->id_bigint);
+        $meeting1 = $this->createMeeting(['service_body_bigint' => $area1->id_bigint]);
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/meetings/$meeting1->id_bigint", ['serviceBodyId' => $area2->id_bigint])
+            ->assertStatus(422);
     }
 
     // delete

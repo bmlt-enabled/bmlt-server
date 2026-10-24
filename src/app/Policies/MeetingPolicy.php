@@ -64,7 +64,20 @@ class MeetingPolicy
         }
 
         if ($user->isServiceBodyAdmin()) {
-            return $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint)->contains($meeting->service_body_bigint);
+            $assignedServiceBodyIds = $this->serviceBodyRepository->getAssignedServiceBodyIds($user->id_bigint);
+
+            if (!$assignedServiceBodyIds->contains($meeting->service_body_bigint)) {
+                return false;
+            }
+
+            // If the meeting is being moved to a different service body, the user must also
+            // be allowed to administer the destination service body.
+            $destinationServiceBodyId = request()->input('serviceBodyId');
+            if (!is_null($destinationServiceBodyId)) {
+                return $assignedServiceBodyIds->contains($destinationServiceBodyId);
+            }
+
+            return true;
         }
 
         return false;
