@@ -17,8 +17,9 @@ RUN apt-get update \
         mcrypt \
         unzip
 
-RUN add-apt-repository ppa:ondrej/php -y && apt-get update
-RUN apt-get -yqq install \
+RUN add-apt-repository ppa:ondrej/php -y \
+    && apt-get update \
+    && apt-get -yqq install \
         php${PHP_VERSION} \
         php${PHP_VERSION}-curl \
         php${PHP_VERSION}-dev \
