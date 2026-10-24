@@ -98,6 +98,23 @@ class ServiceBodyPartialUpdateTest extends TestCase
         $this->assertEquals($region->worldid_mixed, $data['worldId']);
     }
 
+    public function testPartialUpdateServiceBodyPreservesParentWhenOmitted()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $zone = $this->createZone('zone', 'zone');
+        $region = $this->createRegion('region', 'region', sbOwner: $zone->id_bigint, adminUserId: $user->id_bigint);
+
+        // patching an unrelated field with no parentId must not detach the service body from its parent
+        $data = ['description' => 'updated description'];
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$region->id_bigint", $data)
+            ->assertStatus(204);
+        $region->refresh();
+        $this->assertEquals($data['description'], $region->description_string);
+        $this->assertEquals($zone->id_bigint, $region->sb_owner);  // parent unchanged
+    }
+
     public function testPartialUpdateServiceBodyAsServiceBodyAdmin()
     {
         $user1 = $this->createServiceBodyAdminUser();

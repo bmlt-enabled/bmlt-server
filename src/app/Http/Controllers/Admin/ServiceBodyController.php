@@ -120,7 +120,7 @@ class ServiceBodyController extends ResourceController
             collect(ServiceBody::FIELDS)
                 ->mapWithKeys(function ($fieldName, $_) use ($request, $serviceBody) {
                     if ($fieldName == 'sb_owner') {
-                        return ['parentId' => $request->has('parentId') ? $request->input('parentId') : ($serviceBody->owner_id_bigint == 0 ? null : $serviceBody->owner_id_bigint)];
+                        return ['parentId' => $request->has('parentId') ? $request->input('parentId') : ($serviceBody->sb_owner == 0 ? null : $serviceBody->sb_owner)];
                     } elseif ($fieldName == 'sb_type') {
                         return ['type' => $request->has('type') ? $request->input('type') : $serviceBody->sb_type];
                     } elseif ($fieldName == 'principal_user_bigint') {
