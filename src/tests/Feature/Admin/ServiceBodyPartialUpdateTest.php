@@ -527,6 +527,33 @@ class ServiceBodyPartialUpdateTest extends TestCase
             ->assertStatus(204);
     }
 
+    public function testPartialUpdateServiceBodyRejectsSelfAndDescendantParent()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $zone = $this->createZone('zone', 'zone', adminUserId: $user->id_bigint);
+        $region = $this->createRegion('region', 'region', $zone->id_bigint, adminUserId: $user->id_bigint);
+        $area = $this->createArea('area', 'area', $region->id_bigint, adminUserId: $user->id_bigint);
+
+        // it can't be itself
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$zone->id_bigint", ['parentId' => $zone->id_bigint])
+            ->assertStatus(422);
+
+        // it can't be a direct child
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$zone->id_bigint", ['parentId' => $region->id_bigint])
+            ->assertStatus(422);
+
+        // it can't be a deeper descendant
+        $this->withHeader('Authorization', "Bearer $token")
+            ->patch("/api/v1/servicebodies/$zone->id_bigint", ['parentId' => $area->id_bigint])
+            ->assertStatus(422);
+
+        $zone->refresh();
+        $this->assertTrue($zone->sb_owner === 0);
+    }
+
     public function testPartialUpdateNoChangeCreatesNoChangeRecord()
     {
         $user = $this->createAdminUser();

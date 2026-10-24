@@ -194,6 +194,37 @@ class ServiceBodyUpdateTest extends TestCase
             ->assertStatus(204);
     }
 
+    public function testUpdateServiceBodyRejectsSelfAndDescendantParent()
+    {
+        $user = $this->createAdminUser();
+        $token = $user->createToken('test')->plainTextToken;
+        $zone = $this->createZone('zone', 'zone', adminUserId: $user->id_bigint);
+        $region = $this->createRegion('region', 'region', $zone->id_bigint, adminUserId: $user->id_bigint);
+        $area = $this->createArea('area', 'area', $region->id_bigint, adminUserId: $user->id_bigint);
+        $data = $this->toPayload($zone);
+
+        // it can't be itself
+        $data['parentId'] = $zone->id_bigint;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->put("/api/v1/servicebodies/$zone->id_bigint", $data)
+            ->assertStatus(422);
+
+        // it can't be a direct child
+        $data['parentId'] = $region->id_bigint;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->put("/api/v1/servicebodies/$zone->id_bigint", $data)
+            ->assertStatus(422);
+
+        // it can't be a deeper descendant
+        $data['parentId'] = $area->id_bigint;
+        $this->withHeader('Authorization', "Bearer $token")
+            ->put("/api/v1/servicebodies/$zone->id_bigint", $data)
+            ->assertStatus(422);
+
+        $zone->refresh();
+        $this->assertTrue($zone->sb_owner === 0);
+    }
+
     public function testUpdateServiceBodyValidateName()
     {
         $user = $this->createAdminUser();
