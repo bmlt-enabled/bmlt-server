@@ -108,7 +108,7 @@ class ServiceBodyController extends ResourceController
 
     public function update(Request $request, ServiceBody $serviceBody)
     {
-        $validated = $this->validateInputs($request);
+        $validated = $this->validateInputs($request, $serviceBody);
         $values = $this->buildValuesArrayForUpdate($request, $validated);
         $this->serviceBodyRepository->update($serviceBody->id_bigint, $values);
         return response()->noContent();
@@ -148,7 +148,7 @@ class ServiceBodyController extends ResourceController
                 ->reject(fn ($_, $key) => empty($key))
                 ->toArray()
         );
-        $validated = $this->validateInputs($request);
+        $validated = $this->validateInputs($request, $serviceBody);
         $values = $this->buildValuesArrayForUpdate($request, $validated);
         $this->serviceBodyRepository->update($serviceBody->id_bigint, $values);
         return response()->noContent();
@@ -175,10 +175,16 @@ class ServiceBodyController extends ResourceController
         return response()->noContent();
     }
 
-    private function validateInputs(Request $request): Collection
+    private function validateInputs(Request $request, ?ServiceBody $serviceBody = null): Collection
     {
+        $parentIdRules = ['nullable', 'present', 'int', 'exists:comdef_service_bodies,id_bigint'];
+        if ($serviceBody) {
+            // A service body cannot be its own parent, nor can one of its descendants, as that would create a cycle.
+            $parentIdRules[] = Rule::notIn($this->serviceBodyRepository->getChildren([$serviceBody->id_bigint]));
+        }
+
         return collect($request->validate([
-            'parentId' => 'nullable|present|int|exists:comdef_service_bodies,id_bigint',
+            'parentId' => $parentIdRules,
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => ['required', Rule::in(ServiceBody::VALID_SB_TYPES)],

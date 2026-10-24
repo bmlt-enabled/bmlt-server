@@ -54,7 +54,7 @@ class ServiceBodyChangeTest extends TestCase
         $token = $user->createToken('test')->plainTextToken;
         $zone = $this->createZone('zone name', 'zone description', adminUserId: $user->id_bigint);
         $data = [
-            'parentId' => $zone->id_bigint,
+            'parentId' => null,
             'name' => $zone->name_string . ' modified',
             'description' => $zone->description_string,
             'type' => $zone->sb_type,
