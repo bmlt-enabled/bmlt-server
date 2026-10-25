@@ -10,6 +10,7 @@ import {
   type FormatCreate,
   type FormatPartialUpdate,
   type FormatUpdate,
+  type GeocodeResponse,
   type GetMeetingsRequest,
   type Meeting,
   type MeetingChangeResource,
@@ -31,7 +32,7 @@ import {
 } from 'bmlt-server-client';
 import { errorModal } from '../stores/errorModal';
 
-export type { ServiceBodyEditor };
+export type { ServiceBodyEditor, GeocodeResponse };
 
 class ApiClient extends RootServerApi {
   private authorizationHeader: string | null = null;
@@ -324,6 +325,10 @@ class ApiClientWrapper {
   async getTimeZone(latitude: number, longitude: number): Promise<string | null> {
     const result = await this.api.timezone({ timeZoneRequest: { latitude, longitude } });
     return result.timeZone ?? null;
+  }
+
+  async geocodeAddress(address: string): Promise<GeocodeResponse> {
+    return this.api.geocode({ geocodeRequest: { address } });
   }
 
   async getSettings(): Promise<Record<string, any>> {

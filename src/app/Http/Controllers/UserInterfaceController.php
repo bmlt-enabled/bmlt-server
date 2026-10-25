@@ -38,6 +38,7 @@ class UserInterfaceController extends Controller
             'defaultDuration' => bmlt_config('defaultDurationTime'),
             'defaultLanguage' => App::currentLocale(),
             'distanceUnits' => bmlt_config('distanceUnits'),
+            'geocodingProvider' => bmlt_config('geocodingProvider', 'google'),
             'googleApiKey' => bmlt_config('googleApiKey', ''),
             'isLanguageSelectorEnabled' => bmlt_config('enableLanguageSelector'),
             'languageMapping' => self::getLanguageMapping(),

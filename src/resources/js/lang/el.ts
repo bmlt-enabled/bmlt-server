@@ -76,6 +76,7 @@ export const elTranslations = {
   anteMeridiem: 'Προ μεσημβρίας',
   applyChangesTitle: 'Εφαρμογή αλλαγών',
   automaticallyCalculatedOnSave: 'Αυτόματος υπολογισμός κατά την αποθήκευση',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Δήμος',
   busLinesTitle: 'Δρομολόγια λεωφορείων',
   by: 'από',
@@ -161,11 +162,19 @@ export const elTranslations = {
   formatTypeTitle: 'Τύπος θέματος ομάδας',
   formatValidationError: 'Σφάλμα : Το θέμα της ομάδας δεν μπορεί να διαγραφεί',
   generalSettings: 'Γενικές ρυθμίσεις',
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Αποτυχία γεωκωδικοποίησης(Geocoding )',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Αποτυχία  γεωκωδικοποίησης(Geocoding) Google',
   googleKeyProblemDescription: 'Το κλειδί API των χαρτών Google είναι άκυρο ή δεν έχει ρυθμιστεί σωστά. Ενημερώστε τις ρυθμίσεις του κλειδιού API.',
   googleKeyProblemTitle: 'Πρόβλημα κλειδιού API των χαρτών Google',
   googleMapsApiKey: 'Κλειδί API των χαρτών Google',
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Γραμμή βοήθειας',
   hideDetails: 'Απόκρυψη πληροφοριών',
   homeTitle: 'Αρχική',
@@ -359,6 +368,7 @@ export const elTranslations = {
   welcome: 'Καλώς ήρθατε',
   worldIdTitle: 'Κωδικός για Επιτροπή Παγκοσμίου',
   youHaveUnsavedChanges: 'Έχετε μη αποθηκευμένες αλλαγές. Σίγουρα θέλετε να κλείσετε',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Το API κλειδί σας των χαρτών Google',
   zipCodeTitle: 'Ταχυδρομικός κώδικας',
   zoomLevel: 'Επίπεδο ζουμ'
