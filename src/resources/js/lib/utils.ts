@@ -57,6 +57,14 @@ export function is24hrTime(): boolean {
   return !(timeString.includes('AM') || timeString.includes('PM'));
 }
 
+// Coordinate inputs are text fields, so manually entered values arrive as strings.
+// Normalize to numbers (treating blank/non-numeric as invalid) before range checking.
+export function hasValidCoordinates(lat: number | string, lng: number | string): boolean {
+  const latNum = typeof lat === 'string' ? Number(lat.trim()) : lat;
+  const lngNum = typeof lng === 'string' ? Number(lng.trim()) : lng;
+  return !Number.isNaN(latNum) && !Number.isNaN(lngNum) && latNum >= -90 && latNum <= 90 && lngNum >= -180 && lngNum <= 180 && latNum !== 0 && lngNum !== 0;
+}
+
 export function isCommaSeparatedNumbers(str: string): boolean {
   const regex: RegExp = /^(\d+)(,\d+)*$/;
   return regex.test(str);
