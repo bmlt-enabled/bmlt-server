@@ -76,6 +76,7 @@ export const daTranslations = {
   anteMeridiem: 'AM - før middag',
   applyChangesTitle: 'Andvend ændringer',
   automaticallyCalculatedOnSave: 'Beregnes automatisk ved gem',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Bydel/Byområde',
   busLinesTitle: 'Bus Linjer',
   by: 'ved',
@@ -161,11 +162,19 @@ export const daTranslations = {
   formatTypeTitle: 'Format/struktur Type',
   formatValidationError: 'Fejl: formatet (strukturen) kan ikke slettes da det stadig er knyttet til møder',
   generalSettings: 'Generelle indstillinger',
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geokoding mislykkes',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Google geokodning mislykkes',
   googleKeyProblemDescription: 'Google maps API nøgle er itu eller ikke configureret korrekt. Opdater venligst din API indstilling',
   googleKeyProblemTitle: 'Gogle map API nøgle problem',
   googleMapsApiKey: 'Google map API nøgle',
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Helpline',
   hideDetails: 'Skjul detaljer',
   homeTitle: 'Hjem',
@@ -358,6 +367,7 @@ export const daTranslations = {
   welcome: 'Velkomme',
   worldIdTitle: 'Verdenskomite kode',
   youHaveUnsavedChanges: 'Du har ændringer der ikke er gemt. Ønsker du virkelig at lukke?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Din google korts API nøgle',
   zipCodeTitle: 'Postnummer',
   zoomLevel: 'Zoom niveau'

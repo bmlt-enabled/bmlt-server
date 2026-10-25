@@ -20,6 +20,7 @@
             defaultDuration: '{{ $defaultDuration }}',
             defaultLanguage: '{{ $defaultLanguage }}',
             distanceUnits: '{{ $distanceUnits }}',
+            geocodingProvider: '{{ $geocodingProvider }}',
             googleApiKey: '{{ $googleApiKey }}',
             isLanguageSelectorEnabled: {{ $isLanguageSelectorEnabled ? 'true' : 'false' }},
             languageMapping: {{!! collect($languageMapping)->map(fn ($langName, $langAbbrev) => "$langAbbrev: '$langName'")->join(', ') !!}},

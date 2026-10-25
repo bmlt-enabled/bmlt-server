@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Query;
 
+use App\Exceptions\GeocodingException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Query\FormatResource;
 use App\Http\Resources\Query\MeetingResource;
@@ -16,6 +17,7 @@ use App\Interfaces\MigrationRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
 use App\Models\Meeting;
+use App\Services\GeoApiGeocoder;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse as BaseJsonResponse;
 use Illuminate\Support\Facades\App;
@@ -43,6 +45,62 @@ class SwitcherController extends Controller
         $this->meetingRepository = $meetingRepository;
         $this->migrationRepository = $migrationRepository;
         $this->serviceBodyRepository = $serviceBodyRepository;
+    }
+
+    /**
+     * Geocode a search string with the BMLT Geo API.
+     *
+     * @return array{0: float, 1: float} [latitude, longitude]
+     */
+    private function geocodeAddressWithGeoApi(Request $request, string $searchString): array
+    {
+        $referrer = $request->header('referer') ?: $request->getSchemeAndHttpHost();
+        try {
+            $result = app(GeoApiGeocoder::class)->geocode($searchString, $referrer);
+        } catch (GeocodingException $e) {
+            abort($e->status, $e->getMessage());
+        }
+
+        return [$result['latitude'], $result['longitude']];
+    }
+
+    /**
+     * Geocode a search string with the Google Geocoding REST API.
+     *
+     * @return array{0: float, 1: float} [latitude, longitude]
+     */
+    private function geocodeAddressWithGoogle(string $searchString, mixed $regionBias): array
+    {
+        $googleApiKey = bmlt_config('googleApiKey');
+        if (is_null($googleApiKey) || $googleApiKey === '') {
+            abort(400, 'A google api key must be configured to use StringSearchIsAnAddress.');
+        }
+
+        $geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?key=$googleApiKey&address=$searchString&sensor=false";
+        if (is_string($regionBias)) {
+            $geocodeUrl .= "&region=$regionBias";
+        }
+
+        $geocodeResponse = Http::get($geocodeUrl);
+        $genericError = 'There was a problem geocoding the SearchString.';
+        if (!$geocodeResponse->ok()) {
+            abort(500, $genericError);
+        }
+
+        $geocodeResponse = $geocodeResponse->json();
+        if (!isset($geocodeResponse['status']) || $geocodeResponse['status'] != 'OK') {
+            $errorMessage = $geocodeResponse['error_message'] ?? $genericError;
+            abort(500, $errorMessage);
+        }
+
+        try {
+            return [
+                $geocodeResponse['results'][0]['geometry']['location']['lat'],
+                $geocodeResponse['results'][0]['geometry']['location']['lng'],
+            ];
+        } catch (Exception) {
+            abort(500, 'There was a problem parsing the geocoding response.');
+        }
     }
 
     public function get(Request $request, string $dataFormat)
@@ -241,39 +299,16 @@ class SwitcherController extends Controller
         }
         $searchStringIsAddress = !is_null($searchString) && $request->input('StringSearchIsAnAddress') == '1';
         if (!is_null($searchString) && $searchStringIsAddress) {
-            $googleApiKey = bmlt_config('googleApiKey');
-            if (is_null($googleApiKey)) {
-                abort(400, 'A google api key must be configured to use StringSearchIsAnAddress.');
-            }
-
             $regionBias = bmlt_config('regionBias');
             if (is_string($regionBias) && is_numeric($searchString)) {
                 // when it's numeric, like a postcode, add $regionBias directly
                 $searchString .= ' ' . $regionBias;
             }
 
-            $geocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json?key=$googleApiKey&address=$searchString&sensor=false";
-            if (is_string($regionBias)) {
-                $geocodeUrl .= "&region=$regionBias";
-            }
-
-            $geocodeResponse = Http::get($geocodeUrl);
-            $genericError = 'There was a problem geocoding the SearchString.';
-            if (!$geocodeResponse->ok()) {
-                abort(500, $genericError);
-            }
-
-            $geocodeResponse = $geocodeResponse->json();
-            if (!isset($geocodeResponse['status']) || $geocodeResponse['status'] != 'OK') {
-                $errorMessage = $geocodeResponse['error_message'] ?? $genericError;
-                abort(500, $errorMessage);
-            }
-
-            try {
-                $latitude = $geocodeResponse['results'][0]['geometry']['location']['lat'];
-                $longitude = $geocodeResponse['results'][0]['geometry']['location']['lng'];
-            } catch (Exception) {
-                abort(500, 'There was a problem parsing the geocoding response.');
+            if (bmlt_config('geocodingProvider') === 'bmltgeo') {
+                [$latitude, $longitude] = $this->geocodeAddressWithGeoApi($request, $searchString);
+            } else {
+                [$latitude, $longitude] = $this->geocodeAddressWithGoogle($searchString, $regionBias);
             }
 
             $searchStringRadius = $request->input('SearchStringRadius');
