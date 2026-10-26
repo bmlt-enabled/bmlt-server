@@ -204,16 +204,21 @@ class ImportMeetingTest extends TestCase
         $this->assertEquals($rootServer2->id, $db->root_server_id);
     }
 
-    private function fakeTimeZoneLookup(?string $zone): void
+    private function fakeTimeZoneLookup(?string $zone, ?string $nationZone = null): void
     {
-        $this->app->instance(TimeZoneRepositoryInterface::class, new class ($zone) implements TimeZoneRepositoryInterface {
-            public function __construct(private ?string $zone)
+        $this->app->instance(TimeZoneRepositoryInterface::class, new class ($zone, $nationZone) implements TimeZoneRepositoryInterface {
+            public function __construct(private ?string $zone, private ?string $nationZone)
             {
             }
 
             public function getByCoordinates(float $latitude, float $longitude): ?string
             {
                 return $this->zone;
+            }
+
+            public function getByNation(string $nation): ?string
+            {
+                return $this->nationZone;
             }
         });
     }
@@ -348,6 +353,107 @@ class ImportMeetingTest extends TestCase
         (app(MeetingRepository::class))->import($rootServer->id, collect([$external]));
 
         $this->assertEmpty($this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    // A meeting whose only clue is its nation: no coordinates, no city, no postal code.
+    private function virtualMeetingWithOnlyNation(ExternalServiceBody $extSb, array $formats): ExternalMeeting
+    {
+        $external = $this->virtualMeetingMissingTimeZone($extSb, $formats);
+        $external->latitude = null;
+        $external->longitude = null;
+        $external->locationMunicipality = null;
+        $external->locationProvince = null;
+        $external->locationPostalCode1 = null;
+        $external->locationNation = 'Nepal';
+        return $external;
+    }
+
+    public function testDerivesTimeZoneFromNationWhenNothingElseToGoOn()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => true]);
+        $this->fakeTimeZoneLookup('America/New_York', 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        [$extSb, $extF1] = $this->importDeps($rootServer->id);
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$this->virtualMeetingWithOnlyNation($extSb, [$extF1])]));
+
+        $this->assertEquals('Asia/Kathmandu', $this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    public function testCoordinatesWinOverNation()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => true]);
+        $this->fakeTimeZoneLookup('America/New_York', 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        $external = $this->arrangeVirtualMeetingMissingTimeZone($rootServer->id);
+        $external->locationNation = 'Nepal';
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$external]));
+
+        $this->assertEquals('America/New_York', $this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    public function testFallsBackToNationWhenCoordinatesFindNoZone()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => true]);
+        // Open ocean, say: the coordinate lookup answers nothing.
+        $this->fakeTimeZoneLookup(null, 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        $external = $this->arrangeVirtualMeetingMissingTimeZone($rootServer->id);
+        $external->locationNation = 'Nepal';
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$external]));
+
+        $this->assertEquals('Asia/Kathmandu', $this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    public function testDoesNotDeriveTimeZoneFromNationWhenFeatureDisabled()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => false]);
+        $this->fakeTimeZoneLookup('America/New_York', 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        [$extSb, $extF1] = $this->importDeps($rootServer->id);
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$this->virtualMeetingWithOnlyNation($extSb, [$extF1])]));
+
+        $this->assertEmpty($this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    public function testNationDerivedTimeZoneDoesNotChurnOnReimport()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => true]);
+        $this->fakeTimeZoneLookup('America/New_York', 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        [$extSb, $extF1] = $this->importDeps($rootServer->id);
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$this->virtualMeetingWithOnlyNation($extSb, [$extF1])]));
+        $result = (app(MeetingRepository::class))->import($rootServer->id, collect([$this->virtualMeetingWithOnlyNation($extSb, [$extF1])]));
+
+        $this->assertEquals(0, $result->numUpdated);
+        $this->assertEquals('Asia/Kathmandu', $this->storedMeeting($rootServer->id)->time_zone);
+    }
+
+    public function testSourceTimeZoneWinsOverNationOnLaterSync()
+    {
+        FromFileConfig::set('aggregator_mode_enabled', true);
+        config(['aggregator.derive_missing_timezones' => true]);
+        $this->fakeTimeZoneLookup('America/New_York', 'Asia/Kathmandu');
+
+        $rootServer = $this->createRootServer(1);
+        [$extSb, $extF1] = $this->importDeps($rootServer->id);
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$this->virtualMeetingWithOnlyNation($extSb, [$extF1])]));
+        $this->assertEquals('Asia/Kathmandu', $this->storedMeeting($rootServer->id)->time_zone);
+
+        $external = $this->virtualMeetingWithOnlyNation($extSb, [$extF1]);
+        $external->timeZone = 'Asia/Kolkata';
+        (app(MeetingRepository::class))->import($rootServer->id, collect([$external]));
+
+        $this->assertEquals('Asia/Kolkata', $this->storedMeeting($rootServer->id)->time_zone);
     }
 
     // TODO test removing service body removes meeting
