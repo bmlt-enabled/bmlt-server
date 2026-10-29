@@ -2,6 +2,7 @@ import { beforeAll, beforeEach, describe, test, vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/svelte';
 import { login, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 import ApiClientWrapper from '../lib/ServerApi';
+import { serviceBodiesState } from '../stores/serviceBodiesState';
 
 beforeAll(sharedBeforeAll);
 beforeEach(sharedBeforeEach);
@@ -64,6 +65,11 @@ describe('check content in Meetings tab when logged in as various users', () => 
     vi.spyOn(ApiClientWrapper.api, 'getServiceBodies').mockResolvedValue([]);
     const user = await import('@testing-library/user-event').then((m) => m.default.setup());
     await user.click(await screen.findByRole('link', { name: 'Home' }));
+    // Wait until the Meetings route has fully unmounted (Home content visible) so its
+    // onDestroy store-save has completed, then clear the cached service bodies so the
+    // remount actually calls the mocked (empty) fetch instead of restoring the cache.
+    await screen.findByText('Welcome', { exact: false });
+    serviceBodiesState.reset();
     await user.click(await screen.findByRole('link', { name: 'Meetings' }));
 
     await waitFor(
