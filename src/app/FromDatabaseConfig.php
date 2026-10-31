@@ -20,7 +20,7 @@ class FromDatabaseConfig extends ConfigBase
         return static::$settingTypes->get($name);
     }
 
-    public static function get(string $name = null, $default = null)
+    public static function get(?string $name = null, $default = null)
     {
         if (!static::$configLoaded) {
             static::loadConfig();

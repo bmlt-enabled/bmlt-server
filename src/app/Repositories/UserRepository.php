@@ -29,7 +29,7 @@ class UserRepository implements UserRepositoryInterface
         return User::query()->where('login_string', $username)->first();
     }
 
-    public function search(array $includeIds = null, array $includeOwnerIds = null)
+    public function search(?array $includeIds = null, ?array $includeOwnerIds = null)
     {
         $users = User::query();
 
