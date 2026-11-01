@@ -98,7 +98,7 @@ class FormatController extends ResourceController
         return response()->noContent();
     }
 
-    private function validateInputs(Request $request, int $formatId = null): Collection
+    private function validateInputs(Request $request, ?int $formatId = null): Collection
     {
         return collect($request->validate([
             'worldId' => 'nullable|string|max:30',

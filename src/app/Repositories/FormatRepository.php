@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\DB;
 class FormatRepository implements FormatRepositoryInterface
 {
     public function search(
-        array $formatsInclude = null,
-        array $formatsExclude = null,
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
-        array $langEnums = null,
-        array $keyStrings = null,
+        ?array $formatsInclude = null,
+        ?array $formatsExclude = null,
+        ?array $rootServersInclude = null,
+        ?array $rootServersExclude = null,
+        ?array $langEnums = null,
+        ?array $keyStrings = null,
         bool $showAll = false,
-        Collection $meetings = null,
+        ?Collection $meetings = null,
         bool $eagerRootServers = false
     ): Collection {
         $formats = Format::query();
@@ -85,7 +85,7 @@ class FormatRepository implements FormatRepositoryInterface
             ->firstOrFail();
     }
 
-    private function getUsedFormatIds(Collection $meetings = null): array
+    private function getUsedFormatIds(?Collection $meetings = null): array
     {
         $uniqueFormatIds = [];
 
@@ -177,7 +177,7 @@ class FormatRepository implements FormatRepositoryInterface
         });
     }
 
-    public function getAsTranslations(array $formatIds = null): Collection
+    public function getAsTranslations(?array $formatIds = null): Collection
     {
         return Format::query()
             ->with(['translations'])

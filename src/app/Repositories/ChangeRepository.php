@@ -17,12 +17,12 @@ class ChangeRepository implements ChangeRepositoryInterface
         $this->serviceBodyRepository = $serviceBodyRepository;
     }
 
-    public function getMeetingChanges(string $startDate = null, string $endDate = null, int $meetingId = null, int $serviceBodyId = null, array $changeTypes = null): Collection
+    public function getMeetingChanges(?string $startDate = null, ?string $endDate = null, ?int $meetingId = null, ?int $serviceBodyId = null, ?array $changeTypes = null): Collection
     {
         return $this->getBuilder($startDate, $endDate, $meetingId, $serviceBodyId, $changeTypes)->get();
     }
 
-    public function getMeetingLastChangeTimes(string $startDate = null, string $endDate = null, int $meetingId = null, int $serviceBodyId = null, array $changeTypes = null): Collection
+    public function getMeetingLastChangeTimes(?string $startDate = null, ?string $endDate = null, ?int $meetingId = null, ?int $serviceBodyId = null, ?array $changeTypes = null): Collection
     {
         return $this->getBuilder($startDate, $endDate, $meetingId, $serviceBodyId, $changeTypes)
             ->selectRaw('MAX(change_date) as change_date, COALESCE(before_id_bigint, after_id_bigint) as meeting_id')
@@ -33,7 +33,7 @@ class ChangeRepository implements ChangeRepositoryInterface
             ->mapWithKeys(fn ($row, $_) => [$row->meeting_id => strtotime($row->change_date)]);
     }
 
-    private function getBuilder(string $startDate = null, string $endDate = null, int $meetingId = null, int $serviceBodyId = null, array $changeTypes = null)
+    private function getBuilder(?string $startDate = null, ?string $endDate = null, ?int $meetingId = null, ?int $serviceBodyId = null, ?array $changeTypes = null)
     {
         $changes = Change::query()
             ->with([

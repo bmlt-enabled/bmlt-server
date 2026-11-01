@@ -9,17 +9,17 @@ use Illuminate\Support\Collection;
 interface FormatRepositoryInterface
 {
     public function search(
-        array $formatsInclude = null,
-        array $formatsExclude = null,
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
-        array $langEnums = null,
-        array $keyStrings = null,
+        ?array $formatsInclude = null,
+        ?array $formatsExclude = null,
+        ?array $rootServersInclude = null,
+        ?array $rootServersExclude = null,
+        ?array $langEnums = null,
+        ?array $keyStrings = null,
         bool $showAll = false,
-        Collection $meetings = null,
+        ?Collection $meetings = null,
         bool $eagerRootServers = false
     ): Collection;
-    public function getAsTranslations(array $formatIds = null): Collection;
+    public function getAsTranslations(?array $formatIds = null): Collection;
     public function getVirtualFormat(): Format;
     public function getHybridFormat(): Format;
     public function getTemporarilyClosedFormat(): Format;

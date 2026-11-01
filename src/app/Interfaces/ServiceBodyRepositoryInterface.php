@@ -11,8 +11,8 @@ interface ServiceBodyRepositoryInterface
     public function search(
         array $includeIds = [],
         array $excludeIds = [],
-        array $rootServersInclude = null,
-        array $rootServersExclude = null,
+        ?array $rootServersInclude = null,
+        ?array $rootServersExclude = null,
         bool $recurseChildren = false,
         bool $recurseParents = false
     ): Collection;
