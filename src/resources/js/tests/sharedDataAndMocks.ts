@@ -993,6 +993,10 @@ export let mockSavedMeetingCreate: MeetingCreate | null;
 export let mockSavedMeetingUpdate: MeetingUpdate | null;
 export let mockDeletedMeetingId: number | null = null;
 
+export function getSavedMeetingUpdate(): MeetingUpdate | null {
+  return mockSavedMeetingUpdate;
+}
+
 async function mockCreateMeeting({ meetingCreate: meeting }: { meetingCreate: MeetingCreate }): Promise<Meeting> {
   mockSavedMeetingCreate = meeting;
   return {
@@ -1056,13 +1060,13 @@ async function mockGetMeetingChanges({ meetingId: id }: { meetingId: number }): 
 
 // laravel log mocks
 export const laravelLogMissing = { missing: false };
-async function mockGetLaravelLog(): Promise<Blob> {
+async function mockGetLaravelLog(): Promise<Blob & { name: string }> {
   if (laravelLogMissing.missing) {
     throw new ResponseError(makeResponse('Response Error', 404, 'Not Found'), 'Response returned an error code');
   }
   // u represents the gzipped file laravel.log with contents 'test\n'
   const u = new Uint8Array([31, 139, 8, 0, 0, 0, 0, 0, 2, 3, 43, 73, 45, 46, 225, 2, 0, 198, 53, 185, 59, 5, 0, 0, 0]);
-  return new Blob([u], { type: 'application/gzip' });
+  return Object.assign(new Blob([u], { type: 'application/gzip' }), { name: 'laravel.log' });
 }
 
 // Settings Mock Data and Functions

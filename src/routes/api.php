@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\MeetingChangeController;
 use App\Http\Controllers\Admin\RootServerController;
 use App\Http\Controllers\Admin\ServiceBodyController;
+use App\Http\Controllers\Admin\TimeZoneController;
 use App\Http\Controllers\Admin\TokenController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SwaggerController;
@@ -36,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/refresh', [TokenController::class, 'refresh']);
     Route::post('/auth/logout', [TokenController::class, 'logout']);
     Route::get('/logs/laravel', [LogController::class, 'laravel']);
+    Route::post('/timezone', [TimeZoneController::class, 'store']);
     Route::apiResource('formats', FormatController::class);
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);

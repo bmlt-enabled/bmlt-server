@@ -1763,6 +1763,74 @@
                 ]
             }
         },
+        "/api/v1/timezone": {
+            "post": {
+                "tags": [
+                    "rootServer"
+                ],
+                "summary": "Look up a time zone by coordinates",
+                "description": "Look up the IANA time zone for a set of coordinates using the bundled offline time zone boundary data.",
+                "operationId": "timezone",
+                "requestBody": {
+                    "description": "Pass in the coordinates to look up.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TimeZoneRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Returns the time zone for the coordinates.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TimeZoneResult"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Returns when user is not authenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticationError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Returns when the user is not allowed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthorizationError"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bmltToken": []
+                    }
+                ]
+            }
+        },
         "/api/v1/auth/token": {
             "post": {
                 "tags": [
@@ -3251,6 +3319,38 @@
                         "$ref": "#/components/schemas/SettingsBase"
                     }
                 ]
+            },
+            "TimeZoneRequest": {
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "properties": {
+                    "latitude": {
+                        "description": "The latitude to look up.",
+                        "type": "number",
+                        "format": "float",
+                        "example": 38.8976763
+                    },
+                    "longitude": {
+                        "description": "The longitude to look up.",
+                        "type": "number",
+                        "format": "float",
+                        "example": -77.0365298
+                    }
+                },
+                "type": "object"
+            },
+            "TimeZoneResult": {
+                "properties": {
+                    "timeZone": {
+                        "description": "The IANA time zone identifier for the coordinates, or null if none applies (for example, open ocean).",
+                        "type": "string",
+                        "example": "America/New_York",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
             },
             "Token": {
                 "required": [

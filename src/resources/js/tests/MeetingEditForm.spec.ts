@@ -1,9 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
-import { describe, test } from 'vitest';
+import { describe, test, vi } from 'vitest';
 import MeetingEditForm from '../components/MeetingEditForm.svelte';
 import { translations } from '../stores/localization';
 import type { Format, Meeting, ServiceBody } from 'bmlt-server-client';
-import { allFormats, allServiceBodies, allMeetings, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
+import ApiClientWrapper from '../lib/ServerApi';
+import { allFormats, allServiceBodies, allMeetings, getSavedMeetingUpdate, sharedAfterEach, sharedBeforeAll, sharedBeforeEach } from './sharedDataAndMocks';
 
 const formats: Format[] = allFormats;
 
@@ -128,6 +129,27 @@ describe('MeetingEditForm Component', () => {
     expect(screen.getByLabelText(translations.getString('contact2EmailTitle'))).toHaveValue(selectedMeeting.contactEmail2);
     expect(screen.getByLabelText(translations.getString('commentsTitle'))).toHaveValue(selectedMeeting.comments);
     expect(screen.getByLabelText(translations.getString('adminNotes'))).toHaveValue(selectedMeeting.adminNotes);
+  });
+
+  test('derives the time zone from the coordinates on save when none is set', async () => {
+    // Return a zone different from the fixture's so we can prove it came from the lookup, not the original value.
+    const timezoneSpy = vi.spyOn(ApiClientWrapper.api, 'timezone').mockResolvedValue({ timeZone: 'America/Chicago' });
+
+    render(MeetingEditForm, { props: { selectedMeeting, serviceBodies, formats, onSaved, onClosed, onDeleted } });
+
+    // Clear the time zone so the save handler has to derive it from the coordinates.
+    const timeZoneInput = document.querySelector('input[name="timeZone"]') as HTMLInputElement;
+    await fireEvent.input(timeZoneInput, { target: { value: '' } });
+
+    const applyChangesButton = screen.getByText(translations.getString('applyChangesTitle'));
+    await waitFor(() => expect(applyChangesButton).not.toBeDisabled());
+    await fireEvent.click(applyChangesButton);
+
+    await waitFor(() => expect(getSavedMeetingUpdate()).not.toBeNull());
+    expect(timezoneSpy).toHaveBeenCalledWith({ timeZoneRequest: { latitude: selectedMeeting.latitude, longitude: selectedMeeting.longitude } });
+    expect(getSavedMeetingUpdate()?.timeZone).toBe('America/Chicago');
+
+    timezoneSpy.mockRestore();
   });
 
   test('test Ensure tabs are present for existing meetings', async () => {
