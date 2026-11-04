@@ -1763,7 +1763,7 @@
                 ]
             }
         },
-        "/api/v1/timezone": {
+        "/api/v1/geo/timezone": {
             "post": {
                 "tags": [
                     "rootServer"
@@ -1788,7 +1788,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/TimeZoneResult"
+                                    "$ref": "#/components/schemas/TimeZoneResponse"
                                 }
                             }
                         }
@@ -3341,7 +3341,7 @@
                 },
                 "type": "object"
             },
-            "TimeZoneResult": {
+            "TimeZoneResponse": {
                 "properties": {
                     "timeZone": {
                         "description": "The IANA time zone identifier for the coordinates, or null if none applies (for example, open ocean).",

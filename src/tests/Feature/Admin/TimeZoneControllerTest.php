@@ -19,14 +19,14 @@ class TimeZoneControllerTest extends TestCase
 
     public function testTimeZoneRequiresAuthentication()
     {
-        $this->postJson('/api/v1/timezone', ['latitude' => 38.8976763, 'longitude' => -77.0365298])
+        $this->postJson('/api/v1/geo/timezone', ['latitude' => 38.8976763, 'longitude' => -77.0365298])
             ->assertStatus(401);
     }
 
     public function testTimeZoneRequiresCoordinates()
     {
         $this->withHeaders($this->authHeaderForAdmin())
-            ->postJson('/api/v1/timezone', [])
+            ->postJson('/api/v1/geo/timezone', [])
             ->assertStatus(422)
             ->assertJsonValidationErrors(['latitude', 'longitude']);
     }
@@ -34,7 +34,7 @@ class TimeZoneControllerTest extends TestCase
     public function testTimeZoneRejectsOutOfRangeCoordinates()
     {
         $this->withHeaders($this->authHeaderForAdmin())
-            ->postJson('/api/v1/timezone', ['latitude' => 200, 'longitude' => -77.0365298])
+            ->postJson('/api/v1/geo/timezone', ['latitude' => 200, 'longitude' => -77.0365298])
             ->assertStatus(422)
             ->assertJsonValidationErrors('latitude');
     }
@@ -49,7 +49,7 @@ class TimeZoneControllerTest extends TestCase
         $this->instance(TimeZoneRepositoryInterface::class, $mock);
 
         $this->withHeaders($this->authHeaderForAdmin())
-            ->postJson('/api/v1/timezone', ['latitude' => 38.8976763, 'longitude' => -77.0365298])
+            ->postJson('/api/v1/geo/timezone', ['latitude' => 38.8976763, 'longitude' => -77.0365298])
             ->assertStatus(200)
             ->assertExactJson(['timeZone' => 'America/New_York']);
     }
@@ -61,7 +61,7 @@ class TimeZoneControllerTest extends TestCase
         $this->instance(TimeZoneRepositoryInterface::class, $mock);
 
         $this->withHeaders($this->authHeaderForAdmin())
-            ->postJson('/api/v1/timezone', ['latitude' => 0, 'longitude' => -140])
+            ->postJson('/api/v1/geo/timezone', ['latitude' => 0, 'longitude' => -140])
             ->assertStatus(200)
             ->assertExactJson(['timeZone' => null]);
     }

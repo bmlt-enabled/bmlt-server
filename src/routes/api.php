@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/refresh', [TokenController::class, 'refresh']);
     Route::post('/auth/logout', [TokenController::class, 'logout']);
     Route::get('/logs/laravel', [LogController::class, 'laravel']);
-    Route::post('/timezone', [TimeZoneController::class, 'store']);
+    Route::post('/geo/timezone', [TimeZoneController::class, 'store']);
     Route::apiResource('formats', FormatController::class);
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);
