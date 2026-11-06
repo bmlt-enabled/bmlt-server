@@ -20,7 +20,6 @@
   import { formIsDirty, hasValidCoordinates, isDirty as globalIsDirty, stripLegacyFieldSeparator } from '../lib/utils';
   import { timeZones } from '../lib/timeZone/timeZones';
   import TimeZoneSelect from './TimeZoneSelect.svelte';
-  import { tzFind } from '../lib/timeZone/find';
   import { Geocoder } from '../lib/geocoder';
   import { initGoogleMaps } from '../lib/googleMapsLoader';
   import { importLibrary } from '@googlemaps/js-api-loader';
@@ -223,21 +222,10 @@
 
       if (!values.timeZone && values.latitude && values.longitude) {
         try {
-          const tzData = await tzFind(values.latitude, values.longitude);
+          const foundTimeZone = await RootServerApi.getTimeZone(values.latitude, values.longitude);
 
-          if (!tzData || tzData.length === 0) {
-            errors.set({
-              ...errors.value,
-              timeZone: $translations.timeZoneGeocodeError
-            });
-            spinner.hide();
-            return;
-          }
-
-          const validTimeZone = tzData.find((tz) => timeZones.includes(tz));
-
-          if (validTimeZone) {
-            values.timeZone = validTimeZone;
+          if (foundTimeZone && timeZones.includes(foundTimeZone)) {
+            values.timeZone = foundTimeZone;
           } else {
             errors.set({
               ...errors.value,

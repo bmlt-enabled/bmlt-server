@@ -74,10 +74,6 @@ class ApiClient extends RootServerApi {
     const currentTime = Math.floor(Date.now() / 1000);
     return this._token.expiresAt < currentTime;
   }
-
-  async getLaravelLog(): Promise<Blob> {
-    return this.getLaravelLogRaw().then((response) => response.value());
-  }
 }
 
 type AuthenticationErrorHandler = (error: AuthenticationError) => void;
@@ -323,6 +319,11 @@ class ApiClientWrapper {
 
   async getLaravelLog(): Promise<Blob> {
     return this.api.getLaravelLog();
+  }
+
+  async getTimeZone(latitude: number, longitude: number): Promise<string | null> {
+    const result = await this.api.timezone({ timeZoneRequest: { latitude, longitude } });
+    return result.timeZone ?? null;
   }
 
   async getSettings(): Promise<Record<string, any>> {
