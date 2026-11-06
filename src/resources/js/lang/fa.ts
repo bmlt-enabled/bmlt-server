@@ -76,6 +76,7 @@ export const faTranslations = {
   anteMeridiem: 'ق.ظ',
   applyChangesTitle: 'ذخیره تغییرات',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'بخش منطقه/شهر',
   busLinesTitle: 'خطوط اتوبوس',
   by: 'بوسیله',
@@ -161,11 +162,19 @@ export const faTranslations = {
   formatTypeTitle: 'نوع فرمت',
   formatValidationError: 'خطا: این قالب فرمت می شود و نمی توان حذف شد.',
   generalSettings: 'General Settings', // TODO: Translate
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geocoding failed',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
   googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'راهنمای تماس تلفنی',
   hideDetails: 'مخفی کردن جزئیات',
   homeTitle: 'خانه',
@@ -358,6 +367,7 @@ export const faTranslations = {
   welcome: 'خوش آمدید',
   worldIdTitle: 'کد کمیته جهانی',
   youHaveUnsavedChanges: 'شما تغییرات دخیره نشده ای داشته اید. آیا واقعاً می خواهید ببندید؟',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Your Google Maps API Key',
   zipCodeTitle: 'کد پستی/کد پستی',
   zoomLevel: 'Zoom Level' // TODO: Translate
