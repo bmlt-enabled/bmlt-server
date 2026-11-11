@@ -312,9 +312,49 @@
     // Reload settings from server
     serverSettingsLoaded = false;
     await loadSettings();
+    // The app reads many settings from the blade-injected `settings` global, which is only a
+    // page-load snapshot. Sync the freshly-saved values back into it so changes take effect
+    // everywhere (e.g. the geocoder reads settings.geocodingProvider) without a page reload.
+    syncGlobalSettings(serverSettings);
     setTimeout(() => {
       showSettingsSuccessToast = false;
     }, 3000);
+  }
+
+  // Mirrors the blade mapping in UserInterfaceController so the in-memory global stays
+  // consistent with what a fresh page load would inject.
+  function syncGlobalSettings(s: Record<string, any>): void {
+    const direct = [
+      'bmltTitle',
+      'bmltNotice',
+      'countyAutoGeocodingEnabled',
+      'defaultClosedStatus',
+      'distanceUnits',
+      'geocodingProvider',
+      'googleApiKey',
+      'formatLangNames',
+      'meetingStatesAndProvinces',
+      'meetingCountiesAndSubProvinces',
+      'regionBias',
+      'zipAutoGeocodingEnabled'
+    ] as const;
+    for (const key of direct) {
+      if (s[key] !== undefined) {
+        (settings as any)[key] = s[key];
+      }
+    }
+    const renamed: Record<string, string> = {
+      searchSpecMapCenterLongitude: 'centerLongitude',
+      searchSpecMapCenterLatitude: 'centerLatitude',
+      searchSpecMapCenterZoom: 'centerZoom',
+      defaultDurationTime: 'defaultDuration',
+      enableLanguageSelector: 'isLanguageSelectorEnabled'
+    };
+    for (const [from, to] of Object.entries(renamed)) {
+      if (s[from] !== undefined) {
+        (settings as any)[to] = s[from];
+      }
+    }
   }
 
   $effect(() => {

@@ -1,4 +1,14 @@
 ## 4.2.10 (UNRELEASED)
+* Added a server-side timezone lookup endpoint (`POST /api/v1/timezone`); the meeting editor now uses it instead of the in-browser geobuf lookup.
+* Private fields are now excluded from meeting searches made by unauthenticated users.
+* Cleared private fields are now masked in the public change history.
+* Meeting updates now authorize the destination service body.
+* Service body updates now reject setting a service body's parent to itself or one of its own descendants.
+* Partial updates to a service body now preserve the existing parent when `parentId` is omitted.
+* Fixed the end-time filter in `GetSearchResults` dropping meetings whose end time crossed into the next hour.
+* Meeting-data fields are now sorted in SQL so paged, sorted searches no longer fetch the entire result set.
+* Fixed session token refresh across multiple browser tabs, coordinated via Web Locks so tabs no longer compete to renew the token.
+* PHP 8.4 compatibility: resolved implicit-nullable parameter deprecations.
 * Updated Italian translations.
 
 ## 4.2.9 (October 8, 2026)
