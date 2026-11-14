@@ -13,6 +13,7 @@ declare global {
     defaultDuration: string;
     defaultLanguage: string;
     distanceUnits: string;
+    geocodingProvider: string;
     googleApiKey: string;
     googleApiKeyIsBad: boolean;
     isLanguageSelectorEnabled: boolean;

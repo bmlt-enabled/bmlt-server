@@ -8,6 +8,8 @@ use OpenApi\Attributes as OA;
     schema: 'SettingsBase',
     properties: [
         new OA\Property(property: 'googleApiKey', type: 'string'),
+        new OA\Property(property: 'geocodingProvider', type: 'string'),
+        new OA\Property(property: 'geoApiKey', type: 'string'),
         new OA\Property(property: 'changeDepthForMeetings', type: 'integer'),
         new OA\Property(property: 'defaultSortKey', type: 'string', nullable: true),
         new OA\Property(property: 'language', type: 'string'),
@@ -35,6 +37,8 @@ use OpenApi\Attributes as OA;
     schema: 'SettingsObject',
     properties: [
         new OA\Property(property: 'googleApiKey', type: 'string', example: ''),
+        new OA\Property(property: 'geocodingProvider', type: 'string', example: 'google'),
+        new OA\Property(property: 'geoApiKey', type: 'string', example: ''),
         new OA\Property(property: 'changeDepthForMeetings', type: 'integer', example: 0),
         new OA\Property(property: 'defaultSortKey', type: 'string', example: null, nullable: true),
         new OA\Property(property: 'language', type: 'string', example: 'en'),

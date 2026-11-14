@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ErrorTestController;
 use App\Http\Controllers\Admin\FormatController;
+use App\Http\Controllers\Admin\GeocodeController;
 use App\Http\Controllers\Admin\MeetingController;
 use App\Http\Controllers\Admin\MeetingChangeController;
 use App\Http\Controllers\Admin\RootServerController;
@@ -38,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [TokenController::class, 'logout']);
     Route::get('/logs/laravel', [LogController::class, 'laravel']);
     Route::post('/geo/timezone', [TimeZoneController::class, 'store']);
+    Route::post('/geo/geocode', [GeocodeController::class, 'store']);
     Route::apiResource('formats', FormatController::class);
     Route::patch('/formats/{format}', [FormatController::class, 'partialUpdate']);
     Route::apiResource('meetings', MeetingController::class);

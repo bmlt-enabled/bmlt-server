@@ -1,6 +1,7 @@
 import type { MeetingPartialUpdate } from 'bmlt-server-client';
 import { spinner } from '../stores/spinner';
 import { initGoogleMaps, loadLibraries } from './googleMapsLoader';
+import RootServerApi from './ServerApi';
 import { errorModal } from '../stores/errorModal';
 import { translations } from '../stores/localization';
 
@@ -131,6 +132,29 @@ export class Geocoder {
     }
   }
 
+  // Geocode server-side through the BMLT Geo API. The API key stays on the server,
+  // so the browser only sends the assembled address and receives coordinates.
+  private async geocodeWithBmltGeo(): Promise<GeocodeResult | string> {
+    try {
+      const result = await RootServerApi.geocodeAddress(this.address);
+      if (result.latitude == null || result.longitude == null) {
+        const e = translations.getString('bmltGeoGeocodingFailed');
+        console.error(e);
+        return e;
+      }
+      return {
+        lat: result.latitude,
+        lng: result.longitude,
+        county: result.county ?? '',
+        zipCode: result.zipCode ?? ''
+      };
+    } catch (error) {
+      const e = translations.getString('bmltGeoGeocodingFailed') + (error instanceof Error ? ': ' + error.message : '');
+      console.error(e);
+      return e;
+    }
+  }
+
   private isGoogleMapsLoaded(): boolean {
     return typeof google !== 'undefined' && !!google.maps;
   }
@@ -139,8 +163,15 @@ export class Geocoder {
     spinner.show();
 
     try {
-      const shouldUseGoogle = await this.ensureGoogleMapsReady();
-      return shouldUseGoogle ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
+      switch (settings.geocodingProvider) {
+        case 'bmltgeo':
+          return await this.geocodeWithBmltGeo();
+        case 'nominatim':
+          return await this.geocodeWithNominatim();
+        case 'google':
+        default:
+          return (await this.ensureGoogleMapsReady()) ? await this.geocodeWithGoogle() : await this.geocodeWithNominatim();
+      }
     } catch (error) {
       const e = translations.getString('geocodingFailed') + ': ' + error;
       console.error(e);

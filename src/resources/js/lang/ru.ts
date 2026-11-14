@@ -76,6 +76,7 @@ export const ruTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Apply Changes',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Borough/City Subsection',
   busLinesTitle: 'Bus Lines',
   by: 'by',
@@ -161,11 +162,19 @@ export const ruTranslations = {
   formatTypeTitle: 'Format Type',
   formatValidationError: 'Error: This format is protected and cannot be deleted.',
   generalSettings: 'General Settings', // TODO: Translate
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geocoding failed',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
   googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Helpline',
   hideDetails: 'Скрыть детали',
   homeTitle: 'Home',
@@ -358,6 +367,7 @@ export const ruTranslations = {
   welcome: 'Welcome',
   worldIdTitle: 'World Committee Code',
   youHaveUnsavedChanges: 'You have unsaved changes. Do you really want to close?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Your Google Maps API Key',
   zipCodeTitle: 'Zip Code/Postal Code',
   zoomLevel: 'Zoom Level' // TODO: Translate

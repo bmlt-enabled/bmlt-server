@@ -1,5 +1,8 @@
 ## 4.2.10 (UNRELEASED)
 * Updated Italian translations.
+* Prevented setting a service body's parent to itself or one of its children.
+* Fixed issue when BMLT admin is open in multiple browser tabs.
+* Added a new geocoding provider option (Geo API) selectable on the Settings page.
 
 ## 4.2.9 (October 8, 2026)
 * Added Finnish language translations.
