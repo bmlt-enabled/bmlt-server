@@ -76,6 +76,7 @@ export const fiTranslations = {
   anteMeridiem: 'ap.',
   applyChangesTitle: 'Tallenna muutokset',
   automaticallyCalculatedOnSave: 'Lasketaan automaattisesti tallennettaessa',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Kaupunginosa',
   busLinesTitle: 'Bussilinjat',
   by: 'tekijä:',
@@ -161,11 +162,19 @@ export const fiTranslations = {
   formatTypeTitle: 'Kokousmuodon tyyppi',
   formatValidationError: 'Virhe: tämä kokousmuoto on suojattu, eikä sitä voi poistaa.',
   generalSettings: 'Yleiset asetukset',
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geokoodaus epäonnistui',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Googlen geokoodaus epäonnistui',
   googleKeyProblemDescription: 'Google Mapsin API-avain on virheellinen tai sen asetukset ovat puutteelliset. Päivitä API-avaimen asetukset.',
   googleKeyProblemTitle: 'Ongelma Google Mapsin API-avaimessa',
   googleMapsApiKey: 'Google Mapsin API-avain',
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Infopuhelin',
   hideDetails: 'Piilota tarkemmat tiedot',
   homeTitle: 'Etusivu',
@@ -358,6 +367,7 @@ export const fiTranslations = {
   welcome: 'Tervetuloa',
   worldIdTitle: 'NAWS-tunnus',
   youHaveUnsavedChanges: 'Sinulla on tallentamattomia muutoksia. Haluatko varmasti sulkea?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Google Mapsin API-avaimesi',
   zipCodeTitle: 'Postinumero',
   zoomLevel: 'Zoomaustaso'

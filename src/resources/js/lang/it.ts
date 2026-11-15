@@ -76,6 +76,7 @@ export const itTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Applica modifiche',
   automaticallyCalculatedOnSave: 'Calcolato automaticamente al salvataggio',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Quartiere',
   busLinesTitle: 'Linee di autobus',
   by: 'di',
@@ -161,11 +162,19 @@ export const itTranslations = {
   formatTypeTitle: 'Tipo di formato',
   formatValidationError: 'Errore: questo formato è protetto e non può essere eliminato.',
   generalSettings: 'Impostazioni generali',
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geocodifica fallita',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Geocodifica Google fallita',
   googleKeyProblemDescription: 'La chiave API di Google Maps non è valida o non è configurata correttamente. Aggiorna le impostazioni della chiave API.',
   googleKeyProblemTitle: 'Problema con la chiave API di Google Maps',
   googleMapsApiKey: 'Chiave API di Google Maps',
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Helpline',
   hideDetails: 'Nascondi dettagli',
   homeTitle: 'Home',
@@ -358,6 +367,7 @@ export const itTranslations = {
   welcome: 'Benvenuto',
   worldIdTitle: 'Codice del Comitato mondiale',
   youHaveUnsavedChanges: 'Hai modifiche non salvate. Vuoi davvero chiudere?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'La tua chiave API Google Maps',
   zipCodeTitle: 'CAP',
   zoomLevel: 'Livello di zoom'

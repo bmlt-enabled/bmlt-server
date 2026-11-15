@@ -76,6 +76,7 @@ export const esTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Aplicar cambios',
   automaticallyCalculatedOnSave: 'Automatically calculated on save',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Barrio/subdivisión de la ciudad',
   busLinesTitle: 'Líneas de autobuses',
   by: 'por',
@@ -161,11 +162,19 @@ export const esTranslations = {
   formatTypeTitle: 'Tipo de formato',
   formatValidationError: 'Error: Este formato está protegido y no puede borrarse.',
   generalSettings: 'General Settings', // TODO: Translate
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geocoding failed',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Google geocoding failed',
   googleKeyProblemDescription: 'The Google Maps API key is invalid or not properly configured. Please update your API key settings.',
   googleKeyProblemTitle: 'Google Maps API Key Problem',
   googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Línea de ayuda',
   hideDetails: 'Ocultar detalles',
   homeTitle: 'Hogar',
@@ -358,6 +367,7 @@ export const esTranslations = {
   welcome: 'Bienvenido/a',
   worldIdTitle: 'Código del comité mundial',
   youHaveUnsavedChanges: 'Tiene cambios no guardados. ¿De verdad quiere cerrar?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Your Google Maps API Key',
   zipCodeTitle: 'Código postal',
   zoomLevel: 'Zoom Level' // TODO: Translate

@@ -32,8 +32,16 @@
     { value: 'km', name: $translations.kilometers }
   ]);
 
+  const geocodingProviderItems = $derived([
+    { value: 'google', name: $translations.geocodingProviderGoogle },
+    { value: 'nominatim', name: $translations.geocodingProviderNominatim },
+    { value: 'bmltgeo', name: $translations.geocodingProviderBmltGeo }
+  ]);
+
   const initialValues = {
     googleApiKey: serverSettings.googleApiKey ?? '',
+    geocodingProvider: serverSettings.geocodingProvider ?? 'google',
+    geoApiKey: serverSettings.geoApiKey ?? '',
     language: serverSettings.language ?? 'en',
     bmltTitle: serverSettings.bmltTitle ?? '',
     bmltNotice: serverSettings.bmltNotice ?? '',
@@ -90,6 +98,8 @@
     extend: validator({
       schema: yup.object({
         googleApiKey: yup.string().max(255),
+        geocodingProvider: yup.string().oneOf(['google', 'nominatim', 'bmltgeo']).required(),
+        geoApiKey: yup.string().max(255),
         language: yup.string().required(),
         bmltTitle: yup.string().max(255),
         bmltNotice: yup.string().max(65535),
@@ -218,14 +228,46 @@
       <h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">{$translations.mapsAndGeocoding}</h3>
       <div class="grid gap-4 md:grid-cols-2">
         <div class="md:col-span-2">
-          <Label for="googleApiKey" class="mb-2">{$translations.googleMapsApiKey}</Label>
-          <Input type="text" id="googleApiKey" name="googleApiKey" placeholder={$translations.yourGoogleMapsApiKey} />
+          <Label for="geocodingProvider" class="mb-2">{$translations.geocodingProvider}</Label>
+          <Select
+            id="geocodingProvider"
+            items={geocodingProviderItems}
+            name="geocodingProvider"
+            placeholder={$translations.chooseOption}
+            bind:value={$data.geocodingProvider}
+            class="rounded-lg dark:bg-gray-600"
+          />
+          <Helper class="mt-2">{$translations.geocodingProviderHelperText}</Helper>
           <Helper class="mt-2" color="red">
-            {#if $errors.googleApiKey}
-              {$errors.googleApiKey}
+            {#if $errors.geocodingProvider}
+              {$errors.geocodingProvider}
             {/if}
           </Helper>
         </div>
+        {#if $data.geocodingProvider === 'bmltgeo'}
+          <div class="md:col-span-2">
+            <Label for="geoApiKey" class="mb-2">{$translations.geoApiKey}</Label>
+            <Input type="text" id="geoApiKey" name="geoApiKey" placeholder={$translations.yourGeoApiKey} />
+            <Helper class="mt-2">{$translations.geoApiKeyHelperText}</Helper>
+            <Helper class="mt-2" color="red">
+              {#if $errors.geoApiKey}
+                {$errors.geoApiKey}
+              {/if}
+            </Helper>
+          </div>
+        {/if}
+        {#if $data.geocodingProvider !== 'nominatim'}
+          <div class="md:col-span-2">
+            <Label for="googleApiKey" class="mb-2">{$translations.googleMapsApiKey}</Label>
+            <Input type="text" id="googleApiKey" name="googleApiKey" placeholder={$translations.yourGoogleMapsApiKey} />
+            <Helper class="mt-2">{$translations.googleMapsApiKeyHelperText}</Helper>
+            <Helper class="mt-2" color="red">
+              {#if $errors.googleApiKey}
+                {$errors.googleApiKey}
+              {/if}
+            </Helper>
+          </div>
+        {/if}
         <div>
           <Label for="distanceUnits" class="mb-2">{$translations.distanceUnits}</Label>
           <Select id="distanceUnits" items={distanceUnitsItems} name="distanceUnits" placeholder={$translations.chooseOption} bind:value={$data.distanceUnits} class="rounded-lg dark:bg-gray-600" />

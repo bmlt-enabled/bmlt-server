@@ -21,6 +21,7 @@ export const deTranslations = {
   anteMeridiem: 'AM',
   applyChangesTitle: 'Änderung anwenden',
   automaticallyCalculatedOnSave: 'Wird automatisch beim Speichern berechnet',
+  bmltGeoGeocodingFailed: 'BMLT Geo geocoding failed', // TODO: translate
   boroughTitle: 'Stadtviertel', // TODO: check this - English is Borough/City Subsection
   busLinesTitle: 'Buslinien',
   by: 'von',
@@ -106,11 +107,19 @@ export const deTranslations = {
   formatTypeTitle: 'Formattyp',
   formatValidationError: 'Fehler: Dieses Format ist geschützt und kann nicht gelöscht werden.',
   generalSettings: 'General Settings', // TODO: Translate
+  geoApiKey: 'BMLT Geo API Key', // TODO: translate
+  geoApiKeyHelperText: 'Bearer token from the BMLT Geo service (Settings → API Keys). Stored on the server and never exposed to the browser.', // TODO: translate
   geocodingFailed: 'Geocoding fehlgeschlagen',
+  geocodingProvider: 'Geocoding Provider', // TODO: translate
+  geocodingProviderBmltGeo: 'BMLT Geo API (server)', // TODO: translate
+  geocodingProviderGoogle: 'Google (browser)', // TODO: translate
+  geocodingProviderHelperText: 'Service used to convert meeting addresses into coordinates. BMLT Geo keeps the API key on the server.', // TODO: translate
+  geocodingProviderNominatim: 'Nominatim / OpenStreetMap (browser)', // TODO: translate
   googleGeocodingFailed: 'Google-geocoding fehlgeschlagen',
   googleKeyProblemDescription: 'Der Google Maps API-Schlüssel ist ungültig oder nicht korrekt konfiguriert. Bitte aktualisier deine API-Schlüsseleinstellungen.',
   googleKeyProblemTitle: 'Google Maps API-Schlüsselproblem',
   googleMapsApiKey: 'Google Maps API Key', // TODO: Translate
+  googleMapsApiKeyHelperText: 'Used to display Google map tiles when editing a meeting. Leave blank to use OpenStreetMap.', // TODO: Translate
   helplineTitle: 'Helpline',
   hideDetails: 'Details ausblenden',
   homeTitle: 'Startseite',
@@ -304,6 +313,7 @@ export const deTranslations = {
   welcome: 'Willkommen',
   worldIdTitle: 'World-Committee ID',
   youHaveUnsavedChanges: 'Du hast nicht gespeicherte Änderungen. Möchtest du wirklich schließen?',
+  yourGeoApiKey: 'Your BMLT Geo API Key', // TODO: translate
   yourGoogleMapsApiKey: 'Your Google Maps API Key',
   zipCodeTitle: 'Postleitzahl',
   zoomLevel: 'Zoom Level' // TODO: Translate
