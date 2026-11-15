@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Interfaces\ChangeRepositoryInterface;
 use App\Interfaces\FormatRepositoryInterface;
+use App\Interfaces\GeocodingRepositoryInterface;
 use App\Interfaces\MeetingRepositoryInterface;
 use App\Interfaces\MigrationRepositoryInterface;
 use App\Interfaces\RootServerRepositoryInterface;
@@ -14,6 +15,7 @@ use App\Interfaces\UserRepositoryInterface;
 use App\Models\RootServer;
 use App\Repositories\ChangeRepository;
 use App\Repositories\FormatRepository;
+use App\Repositories\GeocodingRepository;
 use App\Repositories\MeetingRepository;
 use App\Repositories\MigrationRepository;
 use App\Repositories\RootServerRepository;
@@ -34,6 +36,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(ChangeRepositoryInterface::class, ChangeRepository::class);
         $this->app->bind(FormatRepositoryInterface::class, FormatRepository::class);
+        $this->app->bind(GeocodingRepositoryInterface::class, GeocodingRepository::class);
         $this->app->bind(MeetingRepositoryInterface::class, MeetingRepository::class);
         $this->app->bind(MigrationRepositoryInterface::class, MigrationRepository::class);
         $this->app->bind(RootServerRepositoryInterface::class, RootServerRepository::class);

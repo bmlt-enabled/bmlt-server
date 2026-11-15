@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
 use App\Exceptions\GeocodingException;
+use App\Interfaces\GeocodingRepositoryInterface;
 use Illuminate\Support\Facades\App;
 use OpenAPI\Client\Api\GeocodingApi;
 use OpenAPI\Client\ApiException;
 use OpenAPI\Client\Configuration;
 
-class GeoApiGeocoder
+class GeocodingRepository implements GeocodingRepositoryInterface
 {
     private const GEO_API_HOST = 'https://geo.aws.bmlt.app';
     private const POSTAL_CODE_TYPE = 'postal_code';
@@ -18,13 +19,6 @@ class GeoApiGeocoder
     {
     }
 
-    /**
-     * Geocode an address string to coordinates via the BMLT Geo API.
-     *
-     * @return array{latitude: float, longitude: float, county: string, zipCode: string, formattedAddress: string}
-     *
-     * @throws GeocodingException
-     */
     public function geocode(string $address, string $referrer): array
     {
         $application = (string) (bmlt_config('bmltTitle') ?: 'bmlt-server');

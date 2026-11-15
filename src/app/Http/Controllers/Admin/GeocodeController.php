@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\GeocodingException;
-use App\Services\GeoApiGeocoder;
+use App\Interfaces\GeocodingRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class GeocodeController extends ResourceController
 {
-    public function store(Request $request, GeoApiGeocoder $geocoder): JsonResponse
+    public function store(Request $request, GeocodingRepositoryInterface $geocoder): JsonResponse
     {
         if ($request->user()->isDeactivated()) {
             return response()->json(['message' => 'Unauthorized.'], 403);

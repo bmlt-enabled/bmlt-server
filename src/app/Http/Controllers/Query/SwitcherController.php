@@ -17,7 +17,7 @@ use App\Interfaces\MigrationRepositoryInterface;
 use App\Interfaces\ServiceBodyRepositoryInterface;
 use App\Models\Change;
 use App\Models\Meeting;
-use App\Services\GeoApiGeocoder;
+use App\Interfaces\GeocodingRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse as BaseJsonResponse;
 use Illuminate\Support\Facades\App;
@@ -56,7 +56,7 @@ class SwitcherController extends Controller
     {
         $referrer = $request->header('referer') ?: $request->getSchemeAndHttpHost();
         try {
-            $result = app(GeoApiGeocoder::class)->geocode($searchString, $referrer);
+            $result = app(GeocodingRepositoryInterface::class)->geocode($searchString, $referrer);
         } catch (GeocodingException $e) {
             abort($e->status, $e->getMessage());
         }
