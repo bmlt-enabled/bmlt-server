@@ -52,7 +52,7 @@ class DatabaseMigrations
             return true;
         }
 
-        if (!$this->migrationRepository->migrationExists('2026_10_05_000000_add_meeting_update_url_to_service_bodies')) {
+        if (!$this->migrationRepository->migrationExists('2026_10_25_120000_add_geocoding_provider_settings')) {
             return true;
         }
 
